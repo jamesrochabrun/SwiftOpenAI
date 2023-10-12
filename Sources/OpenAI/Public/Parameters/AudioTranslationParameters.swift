@@ -10,6 +10,8 @@ import Foundation
 /// Translates audio into English. [Create translation](https://platform.openai.com/docs/api-reference/audio/createTranslation).
 public struct AudioTranslationParameters: Encodable {
    
+   /// The name of the file asset is not documented in OpenAI's official documentation; however, it is essential for constructing the multipart request.
+   let fileName: String
    /// The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
    let file: Data
    /// ID of the model to use. Only whisper-1 is currently available.
@@ -34,16 +36,33 @@ public struct AudioTranslationParameters: Encodable {
    }
    
    public init(
+      fileName: String,
       file: Data,
       model: Model = .whisperOne,
       prompt: String? = nil,
       responseFormat: String? = nil,
       temperature: Double? = nil)
    {
+      self.fileName = fileName
       self.file = file
       self.model = model.rawValue
       self.prompt = prompt
       self.responseFormat = responseFormat
       self.temperature = temperature
+   }
+}
+
+// MARK: MultipartFormDataParameters
+
+extension AudioTranslationParameters: MultipartFormDataParameters {
+   
+   func encode(boundary: String) -> Data {
+       MultipartFormDataBuilder(boundary: boundary, entries: [
+           .file(paramName: "file", fileName: fileName, fileData: file, contentType: "audio/mpeg"),
+           .string(paramName: "model", value: model),
+           .string(paramName: "prompt", value: prompt),
+           .string(paramName: "responseFormat", value: responseFormat),
+           .string(paramName: "temperature", value: temperature)
+       ]).build()
    }
 }

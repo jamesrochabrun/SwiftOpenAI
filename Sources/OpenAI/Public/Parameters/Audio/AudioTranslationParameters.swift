@@ -57,12 +57,12 @@ public struct AudioTranslationParameters: Encodable {
 extension AudioTranslationParameters: MultipartFormDataParameters {
    
    func encode(boundary: String) -> Data {
-       MultipartFormDataBuilder(boundary: boundary, entries: [
-           .file(paramName: "file", fileName: fileName, fileData: file, contentType: "audio/mpeg"),
-           .string(paramName: "model", value: model),
-           .string(paramName: "prompt", value: prompt),
-           .string(paramName: "responseFormat", value: responseFormat),
-           .string(paramName: "temperature", value: temperature)
-       ]).build()
+      MultipartFormDataBuilder(boundary: boundary, entries: [
+         .file(paramName: Self.CodingKeys.file.rawValue, fileName: fileName, fileData: file, contentType: "audio/mpeg"),
+         .string(paramName: Self.CodingKeys.model.rawValue, value: model),
+         .string(paramName: Self.CodingKeys.prompt.rawValue, value: prompt),
+         .string(paramName: Self.CodingKeys.responseFormat.rawValue, value: responseFormat),
+         .string(paramName: Self.CodingKeys.temperature.rawValue, value: temperature)
+      ]).build()
    }
 }

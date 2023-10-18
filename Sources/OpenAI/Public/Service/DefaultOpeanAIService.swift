@@ -12,13 +12,13 @@ struct DefaultOpenAIService: OpenAIService {
    let session: URLSession
    let decoder: JSONDecoder
 
-   private let sessionID = UUID().uuidString
+   let sessionID = UUID().uuidString
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
-   private let apiKey: String
+   let apiKey: String
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
-   private let organizationID: String?
+   let organizationID: String?
       
-   init(
+   public init(
       apiKey: String,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,

@@ -28,7 +28,7 @@ public class DefaultOpenAIServiceFactory {
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())
-      -> OpenAIService
+      -> some OpenAIService
    {
       DefaultOpenAIService(
          apiKey: apiKey,

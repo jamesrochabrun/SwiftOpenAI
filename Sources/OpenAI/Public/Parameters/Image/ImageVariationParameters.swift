@@ -60,7 +60,7 @@ public struct ImageVariationParameters: Encodable {
 
 extension ImageVariationParameters: MultipartFormDataParameters {
    
-   func encode(boundary: String) -> Data {
+   public func encode(boundary: String) -> Data {
       MultipartFormDataBuilder(boundary: boundary, entries: [
          .file(paramName: Self.CodingKeys.image.rawValue, fileName: "", fileData: image, contentType: "image/png"),
          .string(paramName: Self.CodingKeys.n.rawValue, value: n),

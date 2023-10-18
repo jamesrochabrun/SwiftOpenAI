@@ -24,7 +24,7 @@ public struct FileParameters: Encodable {
 
 extension FileParameters: MultipartFormDataParameters {
    
-   func encode(boundary: String) -> Data {
+   public func encode(boundary: String) -> Data {
       MultipartFormDataBuilder(boundary: boundary, entries: [
          .file(paramName: "file", fileName: fileName, fileData: file, contentType: "application/x-ndjson"),
          .string(paramName: "purpose", value: purpose)

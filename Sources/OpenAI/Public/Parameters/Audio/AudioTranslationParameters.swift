@@ -56,7 +56,7 @@ public struct AudioTranslationParameters: Encodable {
 
 extension AudioTranslationParameters: MultipartFormDataParameters {
    
-   func encode(boundary: String) -> Data {
+   public func encode(boundary: String) -> Data {
       MultipartFormDataBuilder(boundary: boundary, entries: [
          .file(paramName: Self.CodingKeys.file.rawValue, fileName: fileName, fileData: file, contentType: "audio/mpeg"),
          .string(paramName: Self.CodingKeys.model.rawValue, value: model),

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MultipartFormDataParameters {
+public protocol MultipartFormDataParameters {
    
    func encode(boundary: String) -> Data
 }

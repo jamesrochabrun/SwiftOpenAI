@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// [Creates an edited or extended image given an original image and a prompt.](https://platform.openai.com/docs/api-reference/images/createEdit)
-public struct ImageEditParameters: Encodable, MultipartFormDataParameters {
+public struct ImageEditParameters: Encodable {
    
    /// The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.
    let image: Data
@@ -70,9 +70,12 @@ public struct ImageEditParameters: Encodable, MultipartFormDataParameters {
       self.responseFormat = responseFormat?.rawValue
       self.user = user
    }
-   
-   // MARK: MultipartFormDataParameters
+}
 
+// MARK: MultipartFormDataParameters
+
+extension ImageEditParameters: MultipartFormDataParameters {
+   
    public func encode(boundary: String) -> Data {
       MultipartFormDataBuilder(boundary: boundary, entries: [
          .file(paramName: Self.CodingKeys.image.rawValue, fileName: "", fileData: image, contentType: "image/png"),

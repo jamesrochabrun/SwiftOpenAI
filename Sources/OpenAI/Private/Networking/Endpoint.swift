@@ -39,6 +39,7 @@ extension Endpoint {
    
    func request(
       apiKey: String,
+      organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
       queryItems: [URLQueryItem]? = nil)
@@ -47,6 +48,9 @@ extension Endpoint {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
       request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+      if let organizationID {
+         request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+      }
       request.httpMethod = method.rawValue
       if let params {
          request.httpBody = try JSONEncoder().encode(params)
@@ -56,6 +60,7 @@ extension Endpoint {
    
    func multiPartRequest(
       apiKey: String,
+      organizationID: String?,
       method: HTTPMethod,
       params: MultipartFormDataParameters,
       queryItems: [URLQueryItem]? = nil)
@@ -65,6 +70,9 @@ extension Endpoint {
       request.httpMethod = method.rawValue
       let boundary = UUID().uuidString
       request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+      if let organizationID {
+         request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+      }
       request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
       request.httpBody = params.encode(boundary: boundary)
       return request

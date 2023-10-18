@@ -62,8 +62,8 @@ public struct ModelObject: Decodable {
    /// Represents the response from the [delete](https://platform.openai.com/docs/api-reference/models/delete) fine-tuning API
    public struct DeletionStatus: Decodable {
       
-      let id: String
-      let object: String
-      let deleted: Bool
+      public let id: String
+      public let object: String
+      public let deleted: Bool
    }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a [streamed](https://platform.openai.com/docs/api-reference/chat/streaming) chunk of a chat completion response returned by model, based on the provided input.
-struct ChatCompletionChunkObject: Decodable {
+public struct ChatCompletionChunkObject: Decodable {
    
    /// A unique identifier for the chat completion chunk.
    let id: String

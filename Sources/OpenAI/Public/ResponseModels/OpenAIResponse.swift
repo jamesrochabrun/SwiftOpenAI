@@ -32,7 +32,7 @@ import Foundation
  }
  }
 */
-struct OpenAIResponse<T: Decodable>: Decodable {
+public struct OpenAIResponse<T: Decodable>: Decodable {
    
    let object: String?
    let data: [T]

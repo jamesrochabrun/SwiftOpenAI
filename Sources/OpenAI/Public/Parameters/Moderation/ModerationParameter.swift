@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Classifies if text violates OpenAI's Content Policy.](https://platform.openai.com/docs/api-reference/moderations/create)
-struct ModerationParameter<Input: Encodable>: Encodable {
+public struct ModerationParameter<Input: Encodable>: Encodable {
    
    /// The input text to classify, string or array.
    let input: Input

@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Fine-tuning job event object](https://platform.openai.com/docs/api-reference/fine-tuning/event-object)
-struct FineTuningJobEventObject: Decodable {
+public struct FineTuningJobEventObject: Decodable {
    
    let id: String
    

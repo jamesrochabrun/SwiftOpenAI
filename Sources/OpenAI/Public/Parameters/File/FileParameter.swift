@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Upload a file](https://platform.openai.com/docs/api-reference/files/create) that can be used across various endpoints/features. Currently, the size of all the files uploaded by one organization can be up to 1 GB. Please contact us if you need to increase the storage limit.
-struct FileParameters: Encodable {
+public struct FileParameters: Encodable {
    
    /// The name of the file asset is not documented in OpenAI's official documentation; however, it is essential for constructing the multipart request.
    let fileName: String

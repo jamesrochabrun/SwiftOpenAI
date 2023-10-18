@@ -9,7 +9,7 @@ import Foundation
 
 /// [Creates a job](https://platform.openai.com/docs/api-reference/fine-tuning/create) that fine-tunes a specified model from a given dataset.
 ///Response includes details of the enqueued job including job status and the name of the fine-tuned models once complete.
-struct FineTuningJobParameters: Encodable {
+public struct FineTuningJobParameters: Encodable {
    
    /// The name of the model to fine-tune. You can select one of the [supported models](https://platform.openai.com/docs/models/overview).
    let model: String

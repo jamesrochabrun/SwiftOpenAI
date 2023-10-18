@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Creates](https://platform.openai.com/docs/api-reference/embeddings/create) an embedding vector representing the input text.
-struct EmbeddingParameter: Encodable {
+public struct EmbeddingParameter: Encodable {
    
    /// ID of the model to use. You can use the List models API to see all of your available models, or see our [Model overview ](https://platform.openai.com/docs/models/overview) for descriptions of them.
    let model: String

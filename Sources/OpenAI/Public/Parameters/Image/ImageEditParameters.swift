@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// [Creates an edited or extended image given an original image and a prompt.](https://platform.openai.com/docs/api-reference/images/createEdit)
-struct ImageEditParameters: Encodable {
+public struct ImageEditParameters: Encodable {
    
    /// The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.
    let image: Data

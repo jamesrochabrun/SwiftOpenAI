@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Creates an image given a prompt.](https://platform.openai.com/docs/api-reference/images/create)
-struct ImageCreateParameters: Encodable {
+public struct ImageCreateParameters: Encodable {
    
    /// A text description of the desired image(s). The maximum length is 1000 characters.
    let prompt: String

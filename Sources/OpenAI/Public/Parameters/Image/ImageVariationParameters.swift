@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// [Creates a variation of a given image.](https://platform.openai.com/docs/api-reference/images/createVariation)
-struct ImageVariationParameters: Encodable {
+public struct ImageVariationParameters: Encodable {
    
    /// The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB, and square.
    let image: Data

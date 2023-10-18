@@ -8,7 +8,7 @@
 import Foundation
 
 /// Describes an OpenAI [model](https://platform.openai.com/docs/api-reference/models/object) offering that can be used with the API.
-struct ModelObject: Decodable {
+public struct ModelObject: Decodable {
    
    /// The model identifier, which can be referenced in the API endpoints.
    let id: String

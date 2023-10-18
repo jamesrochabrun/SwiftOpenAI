@@ -11,9 +11,9 @@ import Foundation
 public struct FineTuningJobObject: Decodable {
    
    /// The object identifier, which can be referenced in the API endpoints.
-   let id: String
+   public let id: String
    /// The Unix timestamp (in seconds) for when the fine-tuning job was created.
-   let createdAt: Int
+   public let createdAt: Int
    
    //TODO: Error
    /**
@@ -23,30 +23,30 @@ public struct FineTuningJobObject: Decodable {
     */
    
    /// The name of the fine-tuned model that is being created. The value will be null if the fine-tuning job is still running.
-   let fineTunedModel: String?
+   public let fineTunedModel: String?
    /// The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be null if the fine-tuning job is still running.
-   let finishedAt: Int?
+   public let finishedAt: Int?
    /// The hyperparameters used for the fine-tuning job. See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning)  for more details.
-   let hyperparameters: HyperParameters
+   public let hyperparameters: HyperParameters
    /// The base model that is being fine-tuned.
-   let model: String
+   public let model: String
    /// The object type, which is always "fine_tuning.job".
-   let object: String
+   public let object: String
    /// The organization that owns the fine-tuning job.
-   let organizationId: String
+   public let organizationId: String
    /// The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
-   let resultFiles: [String]
+   public let resultFiles: [String]
    /// The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`.
-   let status: String
+   public let status: String
    /// The total number of billable tokens processed by this fine-tuning job. The value will be null if the fine-tuning job is still running.
-   let trainedTokens: Int?
+   public let trainedTokens: Int?
    
    /// The file ID used for training. You can retrieve the training data with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
-   let trainingFile: String
+   public let trainingFile: String
    /// The file ID used for validation. You can retrieve the validation results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
-   let validationFile: String?
+   public let validationFile: String?
 
-   enum Status: String {
+   public enum Status: String {
       case validatingFiles = "validating_files"
       case queued
       case running
@@ -71,9 +71,9 @@ public struct FineTuningJobObject: Decodable {
       case validationFile = "validation_file"
    }
    
-   struct HyperParameters: Decodable {
+   public struct HyperParameters: Decodable {
       /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset. "auto" decides the optimal number of epochs based on the size of the dataset. If setting the number manually, we support any number between 1 and 50 epochs.
-      let nEpochs: IntOrStringValue
+      public let nEpochs: IntOrStringValue
       
       enum CodingKeys: String, CodingKey {
          case nEpochs = "n_epochs"

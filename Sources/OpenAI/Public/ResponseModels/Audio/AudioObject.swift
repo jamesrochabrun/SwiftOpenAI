@@ -11,5 +11,5 @@ import Foundation
 public struct AudioObject: Decodable {
    
    /// The transcribed text if the request uses the `transcriptions` API, or the translated text if the request uses the `translations` endpoint.
-   let text: String
+   public let text: String
 }

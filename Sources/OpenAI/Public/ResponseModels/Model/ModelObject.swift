@@ -11,15 +11,15 @@ import Foundation
 public struct ModelObject: Decodable {
    
    /// The model identifier, which can be referenced in the API endpoints.
-   let id: String
+   public let id: String
    /// The Unix timestamp (in seconds) when the model was created.
-   let created: Int
+   public let created: Int
    /// The object type, which is always "model".
-   let object: String
+   public let object: String
    /// The organization that owns the model.
-   let ownedBy: String
+   public let ownedBy: String
    /// An array representing the current permissions of a model. Each element in the array corresponds to a specific permission setting. If there are no permissions or if the data is unavailable, the array may be nil.
-   let permission: [Permission]?
+   public let permission: [Permission]?
    
    enum CodingKeys: String, CodingKey {
       case id
@@ -29,19 +29,19 @@ public struct ModelObject: Decodable {
       case permission
    }
    
-   struct Permission: Decodable {
-       let id: String?
-       let object: String?
-       let created: Int?
-       let allowCreateEngine: Bool?
-       let allowSampling: Bool?
-       let allowLogprobs: Bool?
-       let allowSearchIndices: Bool?
-       let allowView: Bool?
-       let allowFineTuning: Bool?
-       let organization: String?
-       let group: String?
-       let isBlocking: Bool?
+   public struct Permission: Decodable {
+      public let id: String?
+      public let object: String?
+      public let created: Int?
+      public let allowCreateEngine: Bool?
+      public let allowSampling: Bool?
+      public let allowLogprobs: Bool?
+      public let allowSearchIndices: Bool?
+      public let allowView: Bool?
+      public let allowFineTuning: Bool?
+      public let organization: String?
+      public let group: String?
+      public let isBlocking: Bool?
 
        enum CodingKeys: String, CodingKey {
            case id

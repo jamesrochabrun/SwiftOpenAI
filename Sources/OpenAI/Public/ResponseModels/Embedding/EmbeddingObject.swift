@@ -11,9 +11,9 @@ import Foundation
 public struct EmbeddingObject: Decodable {
    
    /// The object type, which is always "embedding".
-   let object: String
+   public let object: String
    /// The embedding vector, which is a list of floats. The length of vector depends on the model as listed in the embedding guide.[https://platform.openai.com/docs/guides/embeddings]
-   let embedding: [Float]
+   public let embedding: [Float]
    /// The index of the embedding in the list of embeddings.
-   let index: Int
+   public let index: Int
 }

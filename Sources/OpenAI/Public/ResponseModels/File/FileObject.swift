@@ -11,23 +11,23 @@ import Foundation
 public struct FileObject: Decodable {
    
    /// The file identifier, which can be referenced in the API endpoints.
-   let id: String
+   public let id: String
    /// The size of the file in bytes.
-   let bytes: Int
+   public let bytes: Int
    /// The Unix timestamp (in seconds) for when the file was created.
-   let createdAt: Int
+   public let createdAt: Int
    /// The name of the file.
-   let filename: String
+   public let filename: String
    /// The object type, which is always "file".
-   let object: String
+   public let object: String
    /// The intended purpose of the file. Currently, only "fine-tune" is supported.
-   let purpose: String
+   public let purpose: String
    /// The current status of the file, which can be either uploaded, processed, pending, error, deleting or deleted.
-   let status: String
+   public let status: String
    /// Additional details about the status of the file. If the file is in the error state, this will include a message describing the error.
-   let statusDetails: String?
+   public let statusDetails: String?
    
-   enum Status: String {
+   public enum Status: String {
       case uploaded
       case processed
       case pending
@@ -47,7 +47,7 @@ public struct FileObject: Decodable {
        case statusDetails = "status_details"
    }
    
-   init(
+   public init(
       id: String,
       bytes: Int,
       createdAt: Int,
@@ -67,7 +67,7 @@ public struct FileObject: Decodable {
       self.statusDetails = statusDetails
    }
    
-   struct DeletionStatus: Decodable {
+   public struct DeletionStatus: Decodable {
       let id: String
       let object: String
       let deleted: Bool

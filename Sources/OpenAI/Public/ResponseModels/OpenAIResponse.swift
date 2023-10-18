@@ -34,17 +34,17 @@ import Foundation
 */
 public struct OpenAIResponse<T: Decodable>: Decodable {
    
-   let object: String?
-   let data: [T]
-   let model: String?
-   let usage: Usage?
-   let hasMore: Bool?
-   let created: Int?
+   public let object: String?
+   public let data: [T]
+   public let model: String?
+   public let usage: Usage?
+   public let hasMore: Bool?
+   public let created: Int?
    
-   struct Usage: Decodable {
+   public struct Usage: Decodable {
       
-      let promptTokens: Int
-      let totalTokens: Int
+      public let promptTokens: Int
+      public let totalTokens: Int
       
       enum CodingKeys: String, CodingKey {
          case promptTokens = "prompt_tokens"

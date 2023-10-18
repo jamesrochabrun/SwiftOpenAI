@@ -315,7 +315,7 @@ public protocol OpenAIService {
 
 extension OpenAIService {
    
-   func fetchContentsOfFile(
+   public func fetchContentsOfFile(
       request: URLRequest)
       async throws -> [[String: Any]]
    {
@@ -343,7 +343,7 @@ extension OpenAIService {
 
    }
    
-   func fetch<T: Decodable>(
+   public func fetch<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
       async throws -> T
@@ -368,7 +368,7 @@ extension OpenAIService {
       }
    }
    
-   func fetchStream<T: Decodable>(
+   public func fetchStream<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
       async throws -> AsyncThrowingStream<T, Error>

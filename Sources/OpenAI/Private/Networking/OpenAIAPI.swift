@@ -64,15 +64,22 @@ extension OpenAIAPI: Endpoint {
    
    var path: String {
       switch self {
-      case .audio(let category): return "/v1/audio/\(category.rawValue)"
+      case .model(let category):
+         switch category {
+         case .list: return "/v1/models"
+         case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/v1/models/\(modelID)"
+         }
+      case .moderations: return "/v1/moderations"
+      case .images(let category): return "/v1/images/\(category.rawValue)"
       case .chat: return "/v1/chat/completions"
+      case .audio(let category): return "/v1/audio/\(category.rawValue)"
       case .embeddings: return "/v1/embeddings"
       case .fineTuning(let category):
          switch category {
-         case .create, .list: return "v1/fine_tuning/jobs"
-         case .retrieve(let jobID): return "v1/fine_tuning/jobs/\(jobID)"
-         case .cancel(let jobID): return "v1/fine_tuning/jobs/\(jobID)/cancel"
-         case .events(let jobID): return "v1/fine_tuning/jobs/\(jobID)/events"
+         case .create, .list: return "/v1/fine_tuning/jobs"
+         case .retrieve(let jobID): return "/v1/fine_tuning/jobs/\(jobID)"
+         case .cancel(let jobID): return "/v1/fine_tuning/jobs/\(jobID)/cancel"
+         case .events(let jobID): return "/v1/fine_tuning/jobs/\(jobID)/events"
          }
       case .file(let category):
          switch category {
@@ -80,13 +87,6 @@ extension OpenAIAPI: Endpoint {
          case .delete(let fileID), .retrieve(let fileID): return "/v1/files/\(fileID)"
          case .retrieveFileContent(let fileID): return "/v1/files/\(fileID)/content"
          }
-      case .images(let category): return "/v1/images/\(category.rawValue)"
-      case .model(let category):
-         switch category {
-         case .list: return "/v1/models"
-         case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/v1/models/\(modelID)"
-         }
-      case .moderations: return "/v1/moderations"
       }
    }
 }

@@ -42,23 +42,23 @@ public struct ModelObject: Decodable {
       public let organization: String?
       public let group: String?
       public let isBlocking: Bool?
-
-       enum CodingKeys: String, CodingKey {
-           case id
-           case object
-           case created
-           case allowCreateEngine = "allow_create_engine"
-           case allowSampling = "allow_sampling"
-           case allowLogprobs = "allow_logprobs"
-           case allowSearchIndices = "allow_search_indices"
-           case allowView = "allow_view"
-           case allowFineTuning = "allow_fine_tuning"
-           case organization
-           case group
-           case isBlocking = "is_blocking"
-       }
+      
+      enum CodingKeys: String, CodingKey {
+         case id
+         case object
+         case created
+         case allowCreateEngine = "allow_create_engine"
+         case allowSampling = "allow_sampling"
+         case allowLogprobs = "allow_logprobs"
+         case allowSearchIndices = "allow_search_indices"
+         case allowView = "allow_view"
+         case allowFineTuning = "allow_fine_tuning"
+         case organization
+         case group
+         case isBlocking = "is_blocking"
+      }
    }
-
+   
    /// Represents the response from the [delete](https://platform.openai.com/docs/api-reference/models/delete) fine-tuning API
    public struct DeletionStatus: Decodable {
       

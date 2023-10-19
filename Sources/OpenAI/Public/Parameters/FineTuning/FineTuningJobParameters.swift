@@ -53,6 +53,12 @@ public struct FineTuningJobParameters: Encodable {
       /// Defaults to auto.
       let nEpochs: Int?
       
+      public init(
+         nEpochs: Int?)
+      {
+         self.nEpochs = nEpochs
+      }
+      
       enum CodingKeys: String, CodingKey {
          case nEpochs = "n_epochs"
       }

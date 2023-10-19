@@ -15,7 +15,7 @@ public struct ImageObject: Decodable {
    public let b64Json: String?
    
    enum CodingKeys: String, CodingKey {
-       case url
-       case b64Json = "b64_json"
+      case url
+      case b64Json = "b64_json"
    }
 }

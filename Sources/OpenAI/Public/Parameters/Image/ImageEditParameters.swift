@@ -57,7 +57,7 @@ public struct ImageEditParameters: Encodable {
       user: String? = nil)
    {
       if (image.pngData() == nil) {
-          assertionFailure("Failed to get PNG data from image")
+         assertionFailure("Failed to get PNG data from image")
       }
       if let mask, mask.pngData() == nil {
          assertionFailure("Failed to get PNG data from mask")

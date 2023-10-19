@@ -28,11 +28,11 @@ public struct AudioTranslationParameters: Encodable {
    }
    
    enum CodingKeys: String, CodingKey {
-       case file
-       case model
-       case prompt
-       case responseFormat = "response_format"
-       case temperature
+      case file
+      case model
+      case prompt
+      case responseFormat = "response_format"
+      case temperature
    }
    
    public init(

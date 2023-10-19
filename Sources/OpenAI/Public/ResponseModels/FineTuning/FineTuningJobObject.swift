@@ -45,7 +45,7 @@ public struct FineTuningJobObject: Decodable {
    public let trainingFile: String
    /// The file ID used for validation. You can retrieve the validation results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
    public let validationFile: String?
-
+   
    public enum Status: String {
       case validatingFiles = "validating_files"
       case queued
@@ -84,19 +84,19 @@ public struct FineTuningJobObject: Decodable {
 
 public enum IntOrStringValue: Decodable {
    
-    case int(Int)
-    case string(String)
-
+   case int(Int)
+   case string(String)
+   
    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let intValue = try? container.decode(Int.self) {
-            self = .int(intValue)
-            return
-        }
-        if let stringValue = try? container.decode(String.self) {
-            self = .string(stringValue)
-            return
-        }
-        throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid value for IntOrStringValue")
-    }
+      let container = try decoder.singleValueContainer()
+      if let intValue = try? container.decode(Int.self) {
+         self = .int(intValue)
+         return
+      }
+      if let stringValue = try? container.decode(String.self) {
+         self = .string(stringValue)
+         return
+      }
+      throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid value for IntOrStringValue")
+   }
 }

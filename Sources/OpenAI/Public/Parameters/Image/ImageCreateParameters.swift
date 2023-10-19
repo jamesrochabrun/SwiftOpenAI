@@ -1,6 +1,6 @@
 //
 //  ImageCreateParameters.swift
-//  
+//
 //
 //  Created by James Rochabrun on 10/12/23.
 //
@@ -33,11 +33,11 @@ public struct ImageCreateParameters: Encodable {
    }
    
    enum CodingKeys: String, CodingKey {
-       case prompt
-       case n
-       case size
-       case responseFormat = "response_format"
-       case user
+      case prompt
+      case n
+      case size
+      case responseFormat = "response_format"
+      case user
    }
    
    public init(

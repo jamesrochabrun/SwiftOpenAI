@@ -30,12 +30,12 @@ public struct AudioTranscriptionParameters: Encodable {
    }
    
    enum CodingKeys: String, CodingKey {
-       case file
-       case model
-       case prompt
-       case responseFormat = "response_format"
-       case temperature
-       case language
+      case file
+      case model
+      case prompt
+      case responseFormat = "response_format"
+      case temperature
+      case language
    }
    
    public init(

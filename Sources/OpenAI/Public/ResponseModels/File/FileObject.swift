@@ -37,14 +37,14 @@ public struct FileObject: Decodable {
    }
    
    enum CodingKeys: String, CodingKey {
-       case id
-       case bytes
-       case createdAt = "created_at"
-       case filename
-       case object
-       case purpose
-       case status
-       case statusDetails = "status_details"
+      case id
+      case bytes
+      case createdAt = "created_at"
+      case filename
+      case object
+      case purpose
+      case status
+      case statusDetails = "status_details"
    }
    
    public init(

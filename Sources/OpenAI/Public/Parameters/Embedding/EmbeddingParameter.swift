@@ -18,11 +18,11 @@ public struct EmbeddingParameter: Encodable {
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more.](https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids)
    let user: String?
    
-   enum Model: String {
+   public enum Model: String {
       case textEmbeddingAda002 = "text-embedding-ada-002"
    }
    
-   init(
+   public init(
       model: Model = .textEmbeddingAda002,
       input: String,
       user: String? = nil)

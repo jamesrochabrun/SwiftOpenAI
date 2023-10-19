@@ -18,6 +18,16 @@ public struct FileParameters: Encodable {
    /// The intended purpose of the uploaded file.
    /// Use "fine-tune" for [fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning). This allows us to validate the format of the uploaded file is correct for fine-tuning.
    let purpose: String
+   
+   public init(
+      fileName: String,
+      file: Data,
+      purpose: String)
+   {
+      self.fileName = fileName
+      self.file = file
+      self.purpose = purpose
+   }
 }
 
 // MARK: MultipartFormDataParameters

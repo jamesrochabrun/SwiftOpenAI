@@ -42,13 +42,13 @@ public struct FineTuningJobParameters: Encodable {
    /// babbage-002
    /// davinci-002
    /// OpenAI expects gpt-3.5-turbo to be the right model for most users in terms of results and ease of use, unless you are migrating a legacy fine-tuned model.
-   enum Model: String {
+   public enum Model: String {
       case gpt35 = "gpt-3.5-turbo-0613" /// recommended
       case babbage002 = "babbage-002"
       case davinci002 = "davinci-002"
    }
    
-   struct HyperParameters: Encodable {
+   public struct HyperParameters: Encodable {
       /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
       /// Defaults to auto.
       let nEpochs: Int?
@@ -58,7 +58,7 @@ public struct FineTuningJobParameters: Encodable {
       }
    }
    
-   init(
+   public init(
       model: Model,
       trainingFile: String,
       hyperparameters: HyperParameters? = nil,

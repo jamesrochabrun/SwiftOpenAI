@@ -26,13 +26,13 @@ public struct ImageEditParameters: Encodable {
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices)
    let user: String?
    
-   enum ImageSize: String {
+   public enum ImageSize: String {
       case small = "256x256"
       case medium = "512x512"
       case large = "1024x1024"
    }
    
-   enum ImageResponseFormat: String {
+   public enum ImageResponseFormat: String {
       case url = "url"
       case b64Json = "b64_json"
    }
@@ -47,7 +47,7 @@ public struct ImageEditParameters: Encodable {
       case user
    }
    
-   init(
+   public init(
       image: UIImage,
       mask: UIImage? = nil,
       prompt: String,

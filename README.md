@@ -25,7 +25,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 
 ## Getting an API Key
 
-## ⚠️ **Important**
+⚠️ **Important**
 
 To interact with OpenAI services, you'll need an API key. Follow these steps to obtain one:
 
@@ -49,24 +49,24 @@ For more information, consult OpenAI's [official documentation](https://platform
 
 To use SwiftOpenAI in your project, first import the package:
 
-\```swift
+```swift
 import SwiftOpenAI
-\```
+```
 
 Then, initialize the service using your OpenAI API key:
 
-\```swift
+```swift
 let apiKey = "your-openai-api-key-here"
 let service = OpenAIServiceFactory.service(apiKey: apiKey)
-\```
+```
 
 You can optionally specify an organization name if needed.
 
-\```swift
+```swift
 let apiKey = "your-openai-api-key-here"
 let oganizationID = "your_id"
 let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: oganizationID)
-\```
+```
 
 That's all you need to begin accessing the full range of OpenAI endpoints.
 

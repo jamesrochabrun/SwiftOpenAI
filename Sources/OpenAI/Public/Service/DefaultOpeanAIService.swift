@@ -7,18 +7,18 @@
 
 import Foundation
 
-public struct DefaultOpenAIService: OpenAIService {
+struct DefaultOpenAIService: OpenAIService {
 
-   public let session: URLSession
-   public let decoder: JSONDecoder
+   let session: URLSession
+   let decoder: JSONDecoder
 
-   let sessionID = UUID().uuidString
+   private let sessionID = UUID().uuidString
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
-   let apiKey: String
+   private let apiKey: String
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
-   let organizationID: String?
+   private let organizationID: String?
       
-   public init(
+   init(
       apiKey: String,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
@@ -32,7 +32,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Audio
    
-   public func createTranscription(
+   func createTranscription(
       parameters: AudioTranscriptionParameters)
       async throws -> AudioObject
    {
@@ -40,7 +40,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: AudioObject.self, with: request)
    }
    
-   public func createTranslation(
+   func createTranslation(
       parameters: AudioTranslationParameters)
       async throws -> AudioObject
    {
@@ -50,7 +50,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Chat
    
-   public func startChat(
+   func startChat(
       parameters: ChatCompletionParameters)
       async throws -> ChatCompletionObject
    {
@@ -60,7 +60,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: ChatCompletionObject.self, with: request)
    }
    
-   public func startStreamedChat(
+   func startStreamedChat(
       parameters: ChatCompletionParameters)
       async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
    {
@@ -72,7 +72,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Embeddings
    
-   public func createEmbeddings(
+   func createEmbeddings(
       parameters: EmbeddingParameter)
       async throws -> OpenAIResponse<EmbeddingObject>
    {
@@ -82,7 +82,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Fine-tuning
     
-   public func createFineTuningJob(
+    func createFineTuningJob(
        parameters: FineTuningJobParameters)
        async throws -> FineTuningJobObject
     {
@@ -90,7 +90,7 @@ public struct DefaultOpenAIService: OpenAIService {
        return try await fetch(type: FineTuningJobObject.self, with: request)
     }
        
-   public func listFineTuningJobs(
+    func listFineTuningJobs(
        after lastJobID: String? = nil,
        limit: Int? = nil)
        async throws -> OpenAIResponse<FineTuningJobObject>
@@ -108,7 +108,7 @@ public struct DefaultOpenAIService: OpenAIService {
        return try await fetch(type: OpenAIResponse<FineTuningJobObject>.self, with: request)
     }
     
-   public func retrieveFineTuningJob(
+    func retrieveFineTuningJob(
        id: String)
        async throws -> FineTuningJobObject
     {
@@ -116,7 +116,7 @@ public struct DefaultOpenAIService: OpenAIService {
        return try await fetch(type: FineTuningJobObject.self, with: request)
     }
 
-   public func cancelFineTuningJobWith(
+    func cancelFineTuningJobWith(
        id: String)
        async throws -> FineTuningJobObject
     {
@@ -124,7 +124,7 @@ public struct DefaultOpenAIService: OpenAIService {
        return try await fetch(type: FineTuningJobObject.self, with: request)
     }
 
-   public func listFineTuningEventsForJobWith(
+    func listFineTuningEventsForJobWith(
        id: String,
        after lastEventId: String? = nil,
        limit: Int? = nil)
@@ -144,14 +144,14 @@ public struct DefaultOpenAIService: OpenAIService {
     
    // MARK: Files
    
-   public func listFiles()
+   func listFiles()
       async throws -> OpenAIResponse<FileObject>
    {
       let request = try OpenAIAPI.file(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get)
       return try await fetch(type: OpenAIResponse<FileObject>.self, with: request)
    }
    
-   public func uploadFile(
+   func uploadFile(
       parameters: FileParameters)
       async throws -> FileObject
    {
@@ -159,7 +159,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: FileObject.self, with: request)
    }
    
-   public func deleteFileWith(
+   func deleteFileWith(
       id: String)
       async throws -> FileObject.DeletionStatus
    {
@@ -167,7 +167,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: FileObject.DeletionStatus.self, with: request)
    }
    
-   public func retrieveFileWith(
+   func retrieveFileWith(
       id: String)
       async throws -> FileObject
    {
@@ -175,7 +175,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: FileObject.self, with: request)
    }
    
-   public func retrieveFileContentForFileWith(
+   func retrieveFileContentForFileWith(
       id: String)
       async throws -> [[String: Any]]
    {
@@ -185,7 +185,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Images
    
-   public func createImages(
+   func createImages(
       parameters: ImageCreateParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -193,7 +193,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: OpenAIResponse<ImageObject>.self,  with: request)
    }
 
-   public func editImage(
+   func editImage(
       parameters: ImageEditParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -201,7 +201,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: OpenAIResponse<ImageObject>.self, with: request)
    }
    
-   public func createImageVariations(
+   func createImageVariations(
       parameters: ImageVariationParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -211,14 +211,14 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Models
    
-   public func listModels()
+   func listModels()
       async throws -> OpenAIResponse<ModelObject>
    {
       let request = try OpenAIAPI.model(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get)
       return try await fetch(type: OpenAIResponse<ModelObject>.self,  with: request)
    }
    
-   public func retrieveModelWith(
+   func retrieveModelWith(
       id: String)
       async throws -> ModelObject
    {
@@ -226,7 +226,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: ModelObject.self,  with: request)
    }
    
-   public func deleteFineTuneModelWith(
+   func deleteFineTuneModelWith(
       id: String)
       async throws -> ModelObject.DeletionStatus
    {
@@ -236,7 +236,7 @@ public struct DefaultOpenAIService: OpenAIService {
    
    // MARK: Moderations
    
-   public func createModerationFromText(
+   func createModerationFromText(
       parameters: ModerationParameter<String>)
       async throws -> ModerationObject
    {
@@ -244,7 +244,7 @@ public struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: ModerationObject.self, with: request)
    }
    
-   public func createModerationFromTexts(
+   func createModerationFromTexts(
       parameters: ModerationParameter<[String]>)
       async throws -> ModerationObject
    {

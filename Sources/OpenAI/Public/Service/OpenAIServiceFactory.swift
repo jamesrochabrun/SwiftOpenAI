@@ -1,5 +1,5 @@
 //
-//  DefaultOpenAIServiceFactory.swift
+//  OpenAIServiceFactory.swift
 //
 //
 //  Created by James Rochabrun on 10/18/23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class DefaultOpenAIServiceFactory {
+public class OpenAIServiceFactory {
    
    /// Creates and returns an instance of `OpenAIService`.
    ///

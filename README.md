@@ -79,6 +79,7 @@ let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: ogani
 That's all you need to begin accessing the full range of OpenAI endpoints.
 
 ### Audio
+
 #### Audio Transcriptions
 Parameters
 ```swift
@@ -144,10 +145,74 @@ public struct AudioObject: Decodable {
 Usage
 ```swift
 let fileName = "narcos.m4a"
-let data = Data(contentsOfURL:_) // the data content from the file
+let data = Data(contentsOfURL:_) // Data retrieved from the file named "narcos.m4a".
 let parameters = AudioTranscriptionParameters(fileName: fileName, file: data) // **Important**: in the file name always provide the file extension.
+let audioObject =  try await service.createTranscription(parameters: parameters)
+```
+#### Audio Translations
+Parameters
+```swift
+public struct AudioTranslationParameters: Encodable {
+   
+   /// The name of the file asset is not documented in OpenAI's official documentation; however, it is essential for constructing the multipart request.
+   let fileName: String
+   /// The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+   let file: Data
+   /// ID of the model to use. Only whisper-1 is currently available.
+   let model: String
+   /// An optional text to guide the model's style or continue a previous audio segment. The [prompt](https://platform.openai.com/docs/guides/speech-to-text/prompting) should match the audio language.
+   let prompt: String?
+   /// The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt. Defaults to json
+   let responseFormat: String?
+   /// The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit. Defaults to 0
+   let temperature: Double?
+   
+   public enum Model: String {
+      case whisperOne = "whisper-1"
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case file
+      case model
+      case prompt
+      case responseFormat = "response_format"
+      case temperature
+   }
+   
+   public init(
+      fileName: String,
+      file: Data,
+      model: Model = .whisperOne,
+      prompt: String? = nil,
+      responseFormat: String? = nil,
+      temperature: Double? = nil)
+   {
+      self.fileName = fileName
+      self.file = file
+      self.model = model.rawValue
+      self.prompt = prompt
+      self.responseFormat = responseFormat
+      self.temperature = temperature
+   }
+}
 ```
 
+Response
+```swift
+public struct AudioObject: Decodable {
+   
+   /// The transcribed text if the request uses the `transcriptions` API, or the translated text if the request uses the `translations` endpoint.
+   public let text: String
+}
+```
+
+Usage
+```swift
+let fileName = "german.m4a"
+let data = Data(contentsOfURL:_) // Data retrieved from the file named "german.m4a".
+let parameters = AudioTranslationParameters(fileName: fileName, file: data) // **Important**: in the file name always provide the file extension.
+let audioObject = try await service.createTranslation(parameters: parameters)
+```
 
 ### Chat
 ### Embeddings

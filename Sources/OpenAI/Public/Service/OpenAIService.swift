@@ -15,6 +15,7 @@ public enum APIError: Error {
    case responseUnsuccessful(description: String)
    case invalidData
    case jsonDecodingFailure(description: String)
+   case dataCouldNotBeReadMissingData(description: String)
 }
 
 // MARK: Service
@@ -363,7 +364,13 @@ extension OpenAIService {
       debugPrint("\(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
       do {
          return try decoder.decode(type, from: data)
-      } catch {
+      } catch let DecodingError.keyNotFound(key, context) {
+         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+         let codingPath = "codingPath: \(context.codingPath)"
+         let debugMessage = debug + codingPath
+         debugPrint(debugMessage)
+         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+     } catch {
          throw APIError.jsonDecodingFailure(description: error.localizedDescription)
       }
    }

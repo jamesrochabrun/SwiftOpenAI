@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenAI
+@testable import SwiftOpenAI
 
 final class OpenAITests: XCTestCase {
     func testExample() throws {

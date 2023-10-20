@@ -63,15 +63,15 @@ import SwiftOpenAI
 Then, initialize the service using your OpenAI API key:
 
 ```swift
-let apiKey = "your-openai-api-key-here"
+let apiKey = "your_openai_api_key_here"
 let service = OpenAIServiceFactory.service(apiKey: apiKey)
 ```
 
 You can optionally specify an organization name if needed.
 
 ```swift
-let apiKey = "your-openai-api-key-here"
-let oganizationID = "your_id"
+let apiKey = "your_openai_api_key_here"
+let oganizationID = "your_organixation_id"
 let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: oganizationID)
 ```
 

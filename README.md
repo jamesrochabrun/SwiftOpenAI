@@ -141,6 +141,13 @@ public struct AudioObject: Decodable {
 }
 ```
 
+Usage
+```swift
+let fileName = "narcos.m4a"
+let data = Data(contentsOfURL:_) // the data content from the file
+let parameters = AudioTranscriptionParameters(fileName: fileName, file: data) // **Important**: in the file name always provide the file extension.
+```
+
 
 ### Chat
 ### Embeddings

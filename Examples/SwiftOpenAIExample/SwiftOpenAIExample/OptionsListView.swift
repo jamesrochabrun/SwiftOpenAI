@@ -39,6 +39,8 @@ struct OptionsListView: View {
                   AudioDemoView(service: openAIService, title: selection.rawValue)
                case .chat:
                   ChatDemoView(service: openAIService, title: selection.rawValue)
+               case .embeddings:
+                  EmbeddingsDemoView(service: openAIService, title: selection.rawValue)
                default:
                   EmptyView()
                }

@@ -13,6 +13,8 @@
 		7B436B9E2AE256BC003CE281 /* german.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7B436B9D2AE256BC003CE281 /* german.m4a */; };
 		7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA02AE25958003CE281 /* ChatProvider.swift */; };
 		7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA22AE25962003CE281 /* ChatDemoView.swift */; };
+		7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA52AE77F37003CE281 /* Embeddingsprovider.swift */; };
+		7B436BA82AE77F41003CE281 /* EmbeddingsDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA72AE77F41003CE281 /* EmbeddingsDemoView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -49,6 +51,8 @@
 		7B436B9D2AE256BC003CE281 /* german.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = german.m4a; sourceTree = "<group>"; };
 		7B436BA02AE25958003CE281 /* ChatProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProvider.swift; sourceTree = "<group>"; };
 		7B436BA22AE25962003CE281 /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
+		7B436BA52AE77F37003CE281 /* Embeddingsprovider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embeddingsprovider.swift; sourceTree = "<group>"; };
+		7B436BA72AE77F41003CE281 /* EmbeddingsDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -116,6 +120,15 @@
 			path = ChatDemo;
 			sourceTree = "<group>";
 		};
+		7B436BA42AE77EF9003CE281 /* EmbeddingsDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B436BA52AE77F37003CE281 /* Embeddingsprovider.swift */,
+				7B436BA72AE77F41003CE281 /* EmbeddingsDemoView.swift */,
+			);
+			path = EmbeddingsDemo;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +157,7 @@
 				7B436B972AE25045003CE281 /* Utilities */,
 				7BA788FA2AE23B27008825D5 /* AudioDemo */,
 				7B436B9F2AE2593D003CE281 /* ChatDemo */,
+				7B436BA42AE77EF9003CE281 /* EmbeddingsDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
@@ -332,7 +346,9 @@
 				7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,
+				7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */,
 				7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */,
+				7B436BA82AE77F41003CE281 /* EmbeddingsDemoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

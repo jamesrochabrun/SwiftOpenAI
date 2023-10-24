@@ -15,8 +15,8 @@ struct ChatDemoView: View {
    @State private var prompt: String = ""
    private let title: String
    @State private var selectedSegment: ChatConfig = .chatCompeltionStream
-
-      enum ChatConfig {
+   
+   enum ChatConfig {
       case chatCompletion
       case chatCompeltionStream
    }
@@ -36,9 +36,9 @@ struct ChatDemoView: View {
       Picker("Options", selection: $selectedSegment) {
          Text("Chat Completion").tag(ChatConfig.chatCompletion)
          Text("Chat Completion stream").tag(ChatConfig.chatCompeltionStream)
-         }
-         .pickerStyle(SegmentedPickerStyle())
-         .padding()
+      }
+      .pickerStyle(SegmentedPickerStyle())
+      .padding()
    }
    
    var textArea: some View {
@@ -65,24 +65,28 @@ struct ChatDemoView: View {
       .padding()
    }
    
+   /// stream = `false`
+   var chatCompletionResultView: some View {
+      ForEach(Array(chatProvider.messages.enumerated()), id: \.offset) { idx, val in
+         VStack(spacing: 0) {
+            Text("\(val)")
+         }
+      }
+   }
+   
+   /// stream = `true`
    var streamedChatResultView: some View {
       Text(chatProvider.message)
    }
-   
-   
-   
+      
    var body: some View {
       ScrollView {
          VStack {
             titleView
             picker
             textArea
+            chatCompletionResultView
             streamedChatResultView
-            ForEach(Array(chatProvider.messages.enumerated()), id: \.offset) { idx, val in
-               VStack(spacing: 0) {
-                  Text("\(val)")
-               }
-            }
          }
       }
       .overlay(

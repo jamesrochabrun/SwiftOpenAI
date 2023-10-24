@@ -972,6 +972,128 @@ let jobEvents = try await service.listFineTuningEventsForJobWith(id: id, after: 
 ```
 
 ### Files
+Parameters
+```swift
+/// [Upload a file](https://platform.openai.com/docs/api-reference/files/create) that can be used across various endpoints/features. Currently, the size of all the files uploaded by one organization can be up to 1 GB. Please contact us if you need to increase the storage limit.
+public struct FileParameters: Encodable {
+   
+   /// The name of the file asset is not documented in OpenAI's official documentation; however, it is essential for constructing the multipart request.
+   let fileName: String
+   /// The file object (not file name) to be uploaded.
+   /// If the purpose is set to "fine-tune", the file will be used for fine-tuning.
+   let file: Data
+   /// The intended purpose of the uploaded file.
+   /// Use "fine-tune" for [fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning). This allows us to validate the format of the uploaded file is correct for fine-tuning.
+   let purpose: String
+   
+   public init(
+      fileName: String,
+      file: Data,
+      purpose: String)
+   {
+      self.fileName = fileName
+      self.file = file
+      self.purpose = purpose
+   }
+}
+```
+Response
+```swift
+/// The [File object](https://platform.openai.com/docs/api-reference/files/object) represents a document that has been uploaded to OpenAI.
+public struct FileObject: Decodable {
+   
+   /// The file identifier, which can be referenced in the API endpoints.
+   public let id: String
+   /// The size of the file in bytes.
+   public let bytes: Int
+   /// The Unix timestamp (in seconds) for when the file was created.
+   public let createdAt: Int
+   /// The name of the file.
+   public let filename: String
+   /// The object type, which is always "file".
+   public let object: String
+   /// The intended purpose of the file. Currently, only "fine-tune" is supported.
+   public let purpose: String
+   /// The current status of the file, which can be either uploaded, processed, pending, error, deleting or deleted.
+   public let status: String
+   /// Additional details about the status of the file. If the file is in the error state, this will include a message describing the error.
+   public let statusDetails: String?
+   
+   public enum Status: String {
+      case uploaded
+      case processed
+      case pending
+      case error
+      case deleting
+      case deleted
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case bytes
+      case createdAt = "created_at"
+      case filename
+      case object
+      case purpose
+      case status
+      case statusDetails = "status_details"
+   }
+   
+   public init(
+      id: String,
+      bytes: Int,
+      createdAt: Int,
+      filename: String,
+      object: String,
+      purpose: String,
+      status: Status,
+      statusDetails: String?)
+   {
+      self.id = id
+      self.bytes = bytes
+      self.createdAt = createdAt
+      self.filename = filename
+      self.object = object
+      self.purpose = purpose
+      self.status = status.rawValue
+      self.statusDetails = statusDetails
+   }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
+}
+```
+Usage
+List files
+```swift
+let files = try await service.listFiles().data
+```
+Upload file
+```swift
+let fileName = "worldCupData.jsonl"
+let data = Data(contentsOfURL:_) // Data retrieved from the file named "worldCupData.jsonl".
+let parameters = FileParameters(fileName: "WorldCupData", file: data, purpose: "fine-tune") // Important: make sure to provide a file name.
+let uploadedFile =  try await service.uploadFile(parameters: parameters) 
+```
+Delete file
+```swift
+let fileID = "file-abc123"
+let deletedStatus = try await service.deleteFileWith(id: fileID)
+```
+Retrieve file
+```swift
+let fileID = "file-abc123"
+let retrievedFile = try await service.retrieveFileWith(id: fileID)
+```
+Retrieve file content
+```swift
+let fileID = "file-abc123"
+let fileContent = try await service.retrieveContentForFileWith(id: fileID)
+```
+
 ### Images
 ### Models
 ### Moderations

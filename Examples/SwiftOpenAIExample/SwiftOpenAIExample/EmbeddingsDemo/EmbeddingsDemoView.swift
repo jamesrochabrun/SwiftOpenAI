@@ -12,7 +12,8 @@ struct EmbeddingsDemoView: View {
    
    @State private var embeddingsProvider: EmbeddingsProvider
    @State private var isLoading: Bool = false
-   @State private var prompt: String = ""
+   @State private var prompt = ""
+   @State private var errorMessage = ""
    
    init(service: OpenAIService) {
       _embeddingsProvider = State(initialValue: EmbeddingsProvider(service: service))
@@ -27,7 +28,11 @@ struct EmbeddingsDemoView: View {
             Task {
                isLoading = true
                defer { isLoading = false }  // ensure isLoading is set to false when the
-               try await embeddingsProvider.createEmbeddings(parameters: .init(input: prompt))
+               do {
+                  try await embeddingsProvider.createEmbeddings(parameters: .init(input: prompt))
+               } catch {
+                  errorMessage = "\(error)"
+               }
             }
          } label: {
             Image(systemName: "paperplane")
@@ -41,18 +46,31 @@ struct EmbeddingsDemoView: View {
       List {
          ForEach(Array(embeddingsProvider.embeddings.enumerated()), id: \.offset) { _, embeddingObject in
             Section(header: Text("Section \(embeddingObject.index) \(embeddingObject.object)")) {
-                 ForEach(embeddingObject.embedding, id: \.self) { embedding in
-                      Text("Embedding Value \(embedding)")
-                  }
-              }
-          }
+               ForEach(embeddingObject.embedding, id: \.self) { embedding in
+                  Text("Embedding Value \(embedding)")
+               }
+            }
+         }
       }
    }
    
    var body: some View {
       VStack {
          textArea
+         if !errorMessage.isEmpty {
+            Text("Error \(errorMessage)")
+               .bold()
+         }
          list
       }
+      .overlay(
+         Group {
+            if isLoading {
+               ProgressView()
+            } else {
+               EmptyView()
+            }
+         }
+      )
    }
 }

@@ -47,6 +47,8 @@ struct OptionsListView: View {
                      EmbeddingsDemoView(service: openAIService)
                   case .fineTuning:
                      FineTuningJobDemoView(service: openAIService)
+                  case .files:
+                     FilesDemoView(service: openAIService)
                   default:
                      EmptyView()
                   }

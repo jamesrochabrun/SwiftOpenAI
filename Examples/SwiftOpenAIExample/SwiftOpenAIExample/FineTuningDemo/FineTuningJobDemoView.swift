@@ -33,6 +33,15 @@ struct FineTuningJobDemoView: View {
             }
          }
       }
+      .overlay(
+         Group {
+            if isLoading {
+               ProgressView()
+            } else {
+               EmptyView()
+            }
+         }
+      )
    }
 }
 

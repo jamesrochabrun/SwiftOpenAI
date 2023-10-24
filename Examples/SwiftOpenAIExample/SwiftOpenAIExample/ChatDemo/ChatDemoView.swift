@@ -24,6 +24,26 @@ struct ChatDemoView: View {
       _chatProvider = State(initialValue: ChatProvider(service: service))
    }
    
+   var body: some View {
+      ScrollView {
+         VStack {
+            picker
+            textArea
+            chatCompletionResultView
+            streamedChatResultView
+         }
+      }
+      .overlay(
+         Group {
+            if isLoading {
+               ProgressView()
+            } else {
+               EmptyView()
+            }
+         }
+      )
+   }
+   
    var picker: some View {
       Picker("Options", selection: $selectedSegment) {
          Text("Chat Completion").tag(ChatConfig.chatCompletion)
@@ -69,25 +89,5 @@ struct ChatDemoView: View {
    /// stream = `true`
    var streamedChatResultView: some View {
       Text(chatProvider.message)
-   }
-      
-   var body: some View {
-      ScrollView {
-         VStack {
-            picker
-            textArea
-            chatCompletionResultView
-            streamedChatResultView
-         }
-      }
-      .overlay(
-         Group {
-            if isLoading {
-               ProgressView()
-            } else {
-               EmptyView()
-            }
-         }
-      )
    }
 }

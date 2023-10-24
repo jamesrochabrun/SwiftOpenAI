@@ -51,6 +51,8 @@ struct OptionsListView: View {
                      FilesDemoView(service: openAIService)
                   case .images:
                      ImagesDemoView(service: openAIService)
+                  case .models:
+                     ModelsDemoView(service: openAIService)
                   default:
                      EmptyView()
                   }

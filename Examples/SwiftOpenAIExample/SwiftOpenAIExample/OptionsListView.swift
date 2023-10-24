@@ -53,8 +53,8 @@ struct OptionsListView: View {
                      ImagesDemoView(service: openAIService)
                   case .models:
                      ModelsDemoView(service: openAIService)
-                  default:
-                     EmptyView()
+                  case .moderations:
+                     ModerationDemoView(service: openAIService)
                   }
                }
             }

@@ -24,6 +24,8 @@
 		7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BB82AE7A2F2003CE281 /* ImagesDemoView.swift */; };
 		7B436BBC2AE7ABD3003CE281 /* ModelsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BBB2AE7ABD3003CE281 /* ModelsProvider.swift */; };
 		7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BBD2AE7ABDA003CE281 /* ModelsDemoView.swift */; };
+		7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BC02AE7B01F003CE281 /* ModerationProvider.swift */; };
+		7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -71,6 +73,8 @@
 		7B436BB82AE7A2F2003CE281 /* ImagesDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesDemoView.swift; sourceTree = "<group>"; };
 		7B436BBB2AE7ABD3003CE281 /* ModelsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsProvider.swift; sourceTree = "<group>"; };
 		7B436BBD2AE7ABDA003CE281 /* ModelsDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsDemoView.swift; sourceTree = "<group>"; };
+		7B436BC02AE7B01F003CE281 /* ModerationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationProvider.swift; sourceTree = "<group>"; };
+		7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -184,6 +188,15 @@
 			path = ModelsDemo;
 			sourceTree = "<group>";
 		};
+		7B436BBF2AE7B003003CE281 /* ModerationsDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B436BC02AE7B01F003CE281 /* ModerationProvider.swift */,
+				7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */,
+			);
+			path = ModerationsDemo;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -217,6 +230,7 @@
 				7B436BAE2AE7935C003CE281 /* FilesDemo */,
 				7B436BB52AE7A2DA003CE281 /* ImagesDemo */,
 				7B436BBA2AE7ABC4003CE281 /* ModelsDemo */,
+				7B436BBF2AE7B003003CE281 /* ModerationsDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
@@ -400,6 +414,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
+				7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
@@ -413,6 +428,7 @@
 				7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,
+				7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */,
 				7B436BBC2AE7ABD3003CE281 /* ModelsProvider.swift in Sources */,
 				7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */,
 				7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */,

@@ -13,11 +13,9 @@ struct EmbeddingsDemoView: View {
    @State private var embeddingsProvider: EmbeddingsProvider
    @State private var isLoading: Bool = false
    @State private var prompt: String = ""
-   private let title: String
    
-   init(service: OpenAIService, title: String) {
+   init(service: OpenAIService) {
       _embeddingsProvider = State(initialValue: EmbeddingsProvider(service: service))
-      self.title = title
    }
    
    var textArea: some View {
@@ -39,12 +37,6 @@ struct EmbeddingsDemoView: View {
       .padding()
    }
    
-   var titleView: some View {
-      Text(title)
-         .font(.largeTitle)
-         .padding()
-   }
-   
    var list: some View {
       List {
          ForEach(Array(embeddingsProvider.embeddings.enumerated()), id: \.offset) { _, embeddingObject in
@@ -59,7 +51,6 @@ struct EmbeddingsDemoView: View {
    
    var body: some View {
       VStack {
-         titleView
          textArea
          list
       }

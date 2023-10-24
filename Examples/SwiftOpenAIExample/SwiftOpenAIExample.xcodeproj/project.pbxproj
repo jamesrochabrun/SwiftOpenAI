@@ -15,6 +15,8 @@
 		7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA22AE25962003CE281 /* ChatDemoView.swift */; };
 		7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA52AE77F37003CE281 /* Embeddingsprovider.swift */; };
 		7B436BA82AE77F41003CE281 /* EmbeddingsDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BA72AE77F41003CE281 /* EmbeddingsDemoView.swift */; };
+		7B436BAB2AE788F1003CE281 /* FineTuningJobProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BAA2AE788F1003CE281 /* FineTuningJobProvider.swift */; };
+		7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BAC2AE788FB003CE281 /* FineTuningJobDemoView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -53,6 +55,8 @@
 		7B436BA22AE25962003CE281 /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
 		7B436BA52AE77F37003CE281 /* Embeddingsprovider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embeddingsprovider.swift; sourceTree = "<group>"; };
 		7B436BA72AE77F41003CE281 /* EmbeddingsDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingsDemoView.swift; sourceTree = "<group>"; };
+		7B436BAA2AE788F1003CE281 /* FineTuningJobProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningJobProvider.swift; sourceTree = "<group>"; };
+		7B436BAC2AE788FB003CE281 /* FineTuningJobDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FineTuningJobDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -129,6 +133,15 @@
 			path = EmbeddingsDemo;
 			sourceTree = "<group>";
 		};
+		7B436BA92AE788CA003CE281 /* FineTuningDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B436BAA2AE788F1003CE281 /* FineTuningJobProvider.swift */,
+				7B436BAC2AE788FB003CE281 /* FineTuningJobDemoView.swift */,
+			);
+			path = FineTuningDemo;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -158,6 +171,7 @@
 				7BA788FA2AE23B27008825D5 /* AudioDemo */,
 				7B436B9F2AE2593D003CE281 /* ChatDemo */,
 				7B436BA42AE77EF9003CE281 /* EmbeddingsDemo */,
+				7B436BA92AE788CA003CE281 /* FineTuningDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
@@ -343,6 +357,8 @@
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
+				7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */,
+				7B436BAB2AE788F1003CE281 /* FineTuningJobProvider.swift in Sources */,
 				7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,

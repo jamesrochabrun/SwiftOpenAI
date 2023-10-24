@@ -13,11 +13,9 @@ struct AudioDemoView: View {
    @State private var audioProvider: AudioProvider
    @State private var isLoading: Bool = false
    private let contentLoader = ContentLoader()
-   private let title: String
    
-   init(service: OpenAIService, title: String) {
+   init(service: OpenAIService) {
       _audioProvider = State(initialValue: AudioProvider(service: service))
-      self.title = title
    }
    
    var transcriptionView: some View {
@@ -63,9 +61,6 @@ struct AudioDemoView: View {
    var body: some View {
       ScrollView {
          VStack {
-            Text(title)
-               .font(.largeTitle)
-               .padding()
             transcriptionView
                .padding()
             Divider()

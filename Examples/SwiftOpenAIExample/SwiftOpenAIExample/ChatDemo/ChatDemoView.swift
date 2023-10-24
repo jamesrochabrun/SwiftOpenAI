@@ -13,7 +13,6 @@ struct ChatDemoView: View {
    @State private var chatProvider: ChatProvider
    @State private var isLoading: Bool = false
    @State private var prompt: String = ""
-   private let title: String
    @State private var selectedSegment: ChatConfig = .chatCompeltionStream
    
    enum ChatConfig {
@@ -21,15 +20,8 @@ struct ChatDemoView: View {
       case chatCompeltionStream
    }
    
-   init(service: OpenAIService, title: String) {
+   init(service: OpenAIService) {
       _chatProvider = State(initialValue: ChatProvider(service: service))
-      self.title = title
-   }
-   
-   var titleView: some View {
-      Text(title)
-         .font(.largeTitle)
-         .padding()
    }
    
    var picker: some View {
@@ -82,7 +74,6 @@ struct ChatDemoView: View {
    var body: some View {
       ScrollView {
          VStack {
-            titleView
             picker
             textArea
             chatCompletionResultView

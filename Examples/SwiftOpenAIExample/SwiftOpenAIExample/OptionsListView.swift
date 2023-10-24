@@ -34,15 +34,22 @@ struct OptionsListView: View {
       List(APIOption.allCases, id: \.self, selection: $selection) { option in
          Text(option.rawValue)
             .sheet(item: $selection) { selection in
-               switch selection {
-               case .audio:
-                  AudioDemoView(service: openAIService, title: selection.rawValue)
-               case .chat:
-                  ChatDemoView(service: openAIService, title: selection.rawValue)
-               case .embeddings:
-                  EmbeddingsDemoView(service: openAIService, title: selection.rawValue)
-               default:
-                  EmptyView()
+               VStack {
+                  Text(selection.rawValue)
+                     .font(.largeTitle)
+                     .padding()
+                  switch selection {
+                  case .audio:
+                     AudioDemoView(service: openAIService)
+                  case .chat:
+                     ChatDemoView(service: openAIService)
+                  case .embeddings:
+                     EmbeddingsDemoView(service: openAIService)
+                  case .fineTuning:
+                     FineTuningJobDemoView(service: openAIService)
+                  default:
+                     EmptyView()
+                  }
                }
             }
       }

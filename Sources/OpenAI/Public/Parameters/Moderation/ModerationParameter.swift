@@ -16,12 +16,12 @@ public struct ModerationParameter<Input: Encodable>: Encodable {
    /// The default is text-moderation-latest which will be automatically upgraded over time. This ensures you are always using our most accurate model. If you use text-moderation-stable, we will provide advanced notice before updating the model. Accuracy of text-moderation-stable may be slightly lower than for text-moderation-latest.
    let model: String?
    
-   enum Model: String {
+   public enum Model: String {
       case stable = "text-moderation-stable"
       case latest = "text-moderation-latest"
    }
    
-   init(
+   public init(
       input: Input,
       model: Model? = nil)
    {

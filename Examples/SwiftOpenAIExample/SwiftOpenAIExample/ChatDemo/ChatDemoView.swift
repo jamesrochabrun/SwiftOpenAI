@@ -11,8 +11,8 @@ import SwiftOpenAI
 struct ChatDemoView: View {
    
    @State private var chatProvider: ChatProvider
-   @State private var isLoading: Bool = false
-   @State private var prompt: String = ""
+   @State private var isLoading = false
+   @State private var prompt = ""
    @State private var selectedSegment: ChatConfig = .chatCompeltionStream
    
    enum ChatConfig {

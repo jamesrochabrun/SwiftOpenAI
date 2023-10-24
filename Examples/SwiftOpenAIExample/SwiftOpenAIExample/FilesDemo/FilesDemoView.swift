@@ -11,7 +11,7 @@ import SwiftOpenAI
 struct FilesDemoView: View {
    
    @State private var filesProvider: FilesProvider
-   @State private var isLoading: Bool = false
+   @State private var isLoading = false
    private let contentLoader = ContentLoader()
    @State private var errorMessage = ""
    @State private var selectedSegment: Config = .list

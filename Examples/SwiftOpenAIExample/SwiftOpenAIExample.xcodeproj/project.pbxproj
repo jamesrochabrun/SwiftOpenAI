@@ -20,6 +20,8 @@
 		7B436BB02AE79369003CE281 /* FilesDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BAF2AE79369003CE281 /* FilesDemoView.swift */; };
 		7B436BB22AE79370003CE281 /* FilesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BB12AE79370003CE281 /* FilesProvider.swift */; };
 		7B436BB42AE79481003CE281 /* WorldCupData.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = 7B436BB32AE79481003CE281 /* WorldCupData.jsonl */; };
+		7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BB62AE7A2EA003CE281 /* ImagesProvider.swift */; };
+		7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BB82AE7A2F2003CE281 /* ImagesDemoView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -63,6 +65,8 @@
 		7B436BAF2AE79369003CE281 /* FilesDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesDemoView.swift; sourceTree = "<group>"; };
 		7B436BB12AE79370003CE281 /* FilesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesProvider.swift; sourceTree = "<group>"; };
 		7B436BB32AE79481003CE281 /* WorldCupData.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = WorldCupData.jsonl; sourceTree = "<group>"; };
+		7B436BB62AE7A2EA003CE281 /* ImagesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesProvider.swift; sourceTree = "<group>"; };
+		7B436BB82AE7A2F2003CE281 /* ImagesDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -158,6 +162,15 @@
 			path = FilesDemo;
 			sourceTree = "<group>";
 		};
+		7B436BB52AE7A2DA003CE281 /* ImagesDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B436BB62AE7A2EA003CE281 /* ImagesProvider.swift */,
+				7B436BB82AE7A2F2003CE281 /* ImagesDemoView.swift */,
+			);
+			path = ImagesDemo;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -189,6 +202,7 @@
 				7B436BA42AE77EF9003CE281 /* EmbeddingsDemo */,
 				7B436BA92AE788CA003CE281 /* FineTuningDemo */,
 				7B436BAE2AE7935C003CE281 /* FilesDemo */,
+				7B436BB52AE7A2DA003CE281 /* ImagesDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
@@ -372,9 +386,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
+				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
+				7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */,
 				7B436BB22AE79370003CE281 /* FilesProvider.swift in Sources */,
 				7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */,
 				7B436BB02AE79369003CE281 /* FilesDemoView.swift in Sources */,

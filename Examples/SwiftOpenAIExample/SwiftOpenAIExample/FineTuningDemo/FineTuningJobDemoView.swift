@@ -11,7 +11,7 @@ import SwiftOpenAI
 struct FineTuningJobDemoView: View {
    
    @State private var fineTuningJobProvider: FineTuningJobProvider
-   @State private var isLoading: Bool = false
+   @State private var isLoading = false
    
    init(service: OpenAIService) {
       _fineTuningJobProvider = State(initialValue: FineTuningJobProvider(service: service))

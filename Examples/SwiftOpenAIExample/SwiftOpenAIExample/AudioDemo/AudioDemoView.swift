@@ -11,7 +11,7 @@ import SwiftOpenAI
 struct AudioDemoView: View {
    
    @State private var audioProvider: AudioProvider
-   @State private var isLoading: Bool = false
+   @State private var isLoading = false
    private let contentLoader = ContentLoader()
    
    init(service: OpenAIService) {

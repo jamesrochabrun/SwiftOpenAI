@@ -11,7 +11,7 @@ import SwiftOpenAI
 struct EmbeddingsDemoView: View {
    
    @State private var embeddingsProvider: EmbeddingsProvider
-   @State private var isLoading: Bool = false
+   @State private var isLoading = false
    @State private var prompt = ""
    @State private var errorMessage = ""
    

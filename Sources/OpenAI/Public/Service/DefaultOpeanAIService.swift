@@ -175,7 +175,7 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: FileObject.self, with: request)
    }
    
-   func retrieveFileContentForFileWith(
+   func retrieveContentForFileWith(
       id: String)
       async throws -> [[String: Any]]
    {

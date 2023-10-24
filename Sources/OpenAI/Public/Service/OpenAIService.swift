@@ -230,7 +230,7 @@ public protocol OpenAIService {
    /// - Returns: An array of dictionaries containing the file content.
    /// - Throws: An error if the content retrieval process fails.
    ///  For more information, refer to [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
-   func retrieveFileContentForFileWith(
+   func retrieveContentForFileWith(
       id: String)
       async throws -> [[String: Any]]
    

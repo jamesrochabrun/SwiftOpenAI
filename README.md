@@ -750,6 +750,227 @@ let embeddingObjects = try await service.createEmbeddings(parameters: parameters
 ```
 
 ### Fine-tuning
+Parameters
+```swift
+/// [Creates a job](https://platform.openai.com/docs/api-reference/fine-tuning/create) that fine-tunes a specified model from a given dataset.
+///Response includes details of the enqueued job including job status and the name of the fine-tuned models once complete.
+public struct FineTuningJobParameters: Encodable {
+   
+   /// The name of the model to fine-tune. You can select one of the [supported models](https://platform.openai.com/docs/models/overview).
+   let model: String
+   /// The ID of an uploaded file that contains training data.
+   /// See [upload file](https://platform.openai.com/docs/api-reference/files/upload) for how to upload a file.
+   /// Your dataset must be formatted as a JSONL file. Additionally, you must upload your file with the purpose fine-tune.
+   /// See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more details.
+   let trainingFile: String
+   /// The hyperparameters used for the fine-tuning job.
+   let hyperparameters: HyperParameters?
+   /// A string of up to 18 characters that will be added to your fine-tuned model name.
+   /// For example, a suffix of "custom-model-name" would produce a model name like ft:gpt-3.5-turbo:openai:custom-model-name:7p4lURel.
+   /// Defaults to null.
+   let suffix: String?
+   /// The ID of an uploaded file that contains validation data.
+   /// If you provide this file, the data is used to generate validation metrics periodically during fine-tuning. These metrics can be viewed in the fine-tuning results file. The same data should not be present in both train and validation files.
+   /// Your dataset must be formatted as a JSONL file. You must upload your file with the purpose fine-tune.
+   /// See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more details.
+   let validationFile: String?
+   
+   enum CodingKeys: String, CodingKey {
+      case model
+      case trainingFile = "training_file"
+      case validationFile = "validation_file"
+   }
+   
+   
+   /// Fine-tuning is [currently available](https://platform.openai.com/docs/guides/fine-tuning/what-models-can-be-fine-tuned) for the following models:
+   /// gpt-3.5-turbo-0613 (recommended)
+   /// babbage-002
+   /// davinci-002
+   /// OpenAI expects gpt-3.5-turbo to be the right model for most users in terms of results and ease of use, unless you are migrating a legacy fine-tuned model.
+   public enum Model: String {
+      case gpt35 = "gpt-3.5-turbo-0613" /// recommended
+      case babbage002 = "babbage-002"
+      case davinci002 = "davinci-002"
+   }
+   
+   public struct HyperParameters: Encodable {
+      /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
+      /// Defaults to auto.
+      let nEpochs: Int?
+      
+      public init(
+         nEpochs: Int?)
+      {
+         self.nEpochs = nEpochs
+      }
+      
+      enum CodingKeys: String, CodingKey {
+         case nEpochs = "n_epochs"
+      }
+   }
+   
+   public init(
+      model: Model,
+      trainingFile: String,
+      hyperparameters: HyperParameters? = nil,
+      suffix: String? = nil,
+      validationFile: String? = nil)
+   {
+      self.model = model.rawValue
+      self.trainingFile = trainingFile
+      self.hyperparameters = hyperparameters
+      self.suffix = suffix
+      self.validationFile = validationFile
+   }
+}
+```
+Response
+```swift
+/// The fine_tuning.job object represents a [fine-tuning job](https://platform.openai.com/docs/api-reference/fine-tuning/object) that has been created through the API.
+public struct FineTuningJobObject: Decodable {
+   
+   /// The object identifier, which can be referenced in the API endpoints.
+   public let id: String
+   /// The Unix timestamp (in seconds) for when the fine-tuning job was created.
+   public let createdAt: Int
+   
+   //TODO: Error
+   /**
+    error
+    object or null
+    For fine-tuning jobs that have failed, this will contain more information on the cause of the failure.
+    */
+   
+   /// The name of the fine-tuned model that is being created. The value will be null if the fine-tuning job is still running.
+   public let fineTunedModel: String?
+   /// The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be null if the fine-tuning job is still running.
+   public let finishedAt: Int?
+   /// The hyperparameters used for the fine-tuning job. See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning)  for more details.
+   public let hyperparameters: HyperParameters
+   /// The base model that is being fine-tuned.
+   public let model: String
+   /// The object type, which is always "fine_tuning.job".
+   public let object: String
+   /// The organization that owns the fine-tuning job.
+   public let organizationId: String
+   /// The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+   public let resultFiles: [String]
+   /// The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`.
+   public let status: String
+   /// The total number of billable tokens processed by this fine-tuning job. The value will be null if the fine-tuning job is still running.
+   public let trainedTokens: Int?
+   
+   /// The file ID used for training. You can retrieve the training data with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+   public let trainingFile: String
+   /// The file ID used for validation. You can retrieve the validation results with the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+   public let validationFile: String?
+   
+   public enum Status: String {
+      case validatingFiles = "validating_files"
+      case queued
+      case running
+      case succeeded
+      case failed
+      case cancelled
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case createdAt = "created_at"
+      case fineTunedModel = "fine_tuned_model"
+      case finishedAt = "finished_at"
+      case hyperparameters
+      case model
+      case object
+      case organizationId = "organization_id"
+      case resultFiles = "result_files"
+      case status
+      case trainedTokens = "trained_tokens"
+      case trainingFile = "training_file"
+      case validationFile = "validation_file"
+   }
+   
+   public struct HyperParameters: Decodable {
+      /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset. "auto" decides the optimal number of epochs based on the size of the dataset. If setting the number manually, we support any number between 1 and 50 epochs.
+      public let nEpochs: IntOrStringValue
+      
+      enum CodingKeys: String, CodingKey {
+         case nEpochs = "n_epochs"
+      }
+   }
+}
+```
+
+Usage
+List fine-tuning jobs
+```swift
+let fineTuningJobs = try await service.istFineTuningJobs()
+```
+Create fine-tuning job
+```swift
+let trainingFileID = "file-Atc9okK0MOuQwQzDJCZXnrh6" // The id of the file that has been uploaded using the `Files` API. https://platform.openai.com/docs/api-reference/fine-tuning/create#fine-tuning/create-training_file
+let parameters = FineTuningJobParameters(model: .gpt35, trainingFile: trainingFileID)
+let fineTuningJob = try await service.createFineTuningJob(parameters: parameters)
+```
+Retrieve fine-tuning job
+```swift
+let fineTuningJobID = "ftjob-abc123"
+let fineTuningJob = try await service.retrieveFineTuningJob(id: fineTuningJobID)
+```
+Cancel fine-tuning job
+```swift
+let fineTuningJobID = "ftjob-abc123"
+let canceledFineTuningJob = try await service.cancelFineTuningJobWith(id: fineTuningJobID)
+```
+#### Fine-tuning job event object
+Response
+```swift
+/// [Fine-tuning job event object](https://platform.openai.com/docs/api-reference/fine-tuning/event-object)
+public struct FineTuningJobEventObject: Decodable {
+   
+   public let id: String
+   
+   public let createdAt: Int
+   
+   public let level: String
+   
+   public let message: String
+   
+   public let object: String
+   
+   public let type: String?
+   
+   public let data: Data?
+   
+   public struct Data: Decodable {
+      public let step: Int
+      public let trainLoss: Double
+      public let trainMeanTokenAccuracy: Double
+      
+      enum CodingKeys: String, CodingKey {
+         case step
+         case trainLoss = "train_loss"
+         case trainMeanTokenAccuracy = "train_mean_token_accuracy"
+      }
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case createdAt = "created_at"
+      case level
+      case message
+      case object
+      case type
+      case data
+   }
+}
+```
+Usage
+```swift
+let fineTuningJobID = "ftjob-abc123"
+let jobEvents = try await service.listFineTuningEventsForJobWith(id: id, after: nil, limit: nil).data
+```
+
 ### Files
 ### Images
 ### Models

@@ -44,4 +44,3 @@ import SwiftOpenAI
       self.images = urls.compactMap { $0 }
    }
 }
-

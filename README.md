@@ -15,6 +15,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Collaboration](#collaboration)
 
 ## Description
 
@@ -1380,4 +1381,5 @@ let parameters = ModerationParameter(input: prompts)
 let isFlagged = try await service.createModerationFromTexts(parameters: parameters)
 ```
 
-
+### Collaboration
+Open a PR for any proposed change pointing it to `main` branch.

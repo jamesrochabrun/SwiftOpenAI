@@ -502,6 +502,16 @@ public struct ChatCompletionParameters: Encodable {
             self.maximum = maximum
          }
       }
+
+      public init(
+         name: String,
+         description: String?,
+         parameters: JSONSchema)
+      {
+         self.name = name
+         self.description = description
+         self.parameters = parameters
+      }
    }
    
    enum CodingKeys: String, CodingKey {

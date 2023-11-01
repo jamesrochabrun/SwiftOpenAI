@@ -16,6 +16,7 @@ public enum APIError: Error {
    case invalidData
    case jsonDecodingFailure(description: String)
    case dataCouldNotBeReadMissingData(description: String)
+   case bothDecodingStrategiesFailed
 }
 
 // MARK: Service
@@ -47,7 +48,7 @@ public protocol OpenAIService {
    func fetch<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-      async throws -> T
+   async throws -> T
    
    /// Asynchronously fetches a stream of decodable data types from OpenAI's API for chat completions.
    ///
@@ -61,7 +62,7 @@ public protocol OpenAIService {
    func fetchStream<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-      async throws -> AsyncThrowingStream<T, Error>
+   async throws -> AsyncThrowingStream<T, Error>
    
    /// Asynchronously fetches the contents of a file that has been uploaded to OpenAI's service.
    ///
@@ -72,8 +73,8 @@ public protocol OpenAIService {
    /// - Returns: A dictionary array representing the file contents.
    func fetchContentsOfFile(
       request: URLRequest)
-      async throws -> [[String: Any]]
-      
+   async throws -> [[String: Any]]
+   
    // MARK: Audio
    
    /// - Parameter parameters: The audio transcription parameters.
@@ -83,8 +84,8 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Audio Transcription API documentation](https://platform.openai.com/docs/api-reference/audio/createTranscription).
    func createTranscription(
       parameters: AudioTranscriptionParameters)
-      async throws -> AudioObject
-
+   async throws -> AudioObject
+   
    /// - Parameter parameters: The audio translation parameters.
    /// - Returns: Translated text details.
    /// - Throws: An error if the process fails.
@@ -92,10 +93,10 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Audio Translation API documentation](https://platform.openai.com/docs/api-reference/audio/createTranslation).
    func createTranslation(
       parameters: AudioTranslationParameters)
-      async throws -> AudioObject
+   async throws -> AudioObject
    
    // MARK: Chat
-      
+   
    /// - Parameter parameters: Parameters for the chat completion request.
    /// - Returns: A [ChatCompletionObject](https://platform.openai.com/docs/api-reference/chat/object).
    /// - Throws: An error if the chat initiation fails.
@@ -103,8 +104,8 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Audio Translation API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startChat(
       parameters: ChatCompletionParameters)
-      async throws -> ChatCompletionObject
-                                                  
+   async throws -> ChatCompletionObject
+   
    /// - Parameter parameters: Parameters for the chat completion request.
    /// - Returns: A streamed sequence of [ChatCompletionChunkObject](https://platform.openai.com/docs/api-reference/chat/streaming) objects.
    /// - Throws: An error if the chat initiation fails.
@@ -112,7 +113,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Audio Translation API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startStreamedChat(
       parameters: ChatCompletionParameters)
-      async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
+   async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
    
    // MARK: Embeddings
    
@@ -123,7 +124,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Embedding API documentation](https://platform.openai.com/docs/api-reference/embeddings/create).
    func createEmbeddings(
       parameters: EmbeddingParameter)
-      async throws -> OpenAIResponse<EmbeddingObject>
+   async throws -> OpenAIResponse<EmbeddingObject>
    
    // MARK: Fine-tuning
    
@@ -134,7 +135,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/create).
    func createFineTuningJob(
       parameters: FineTuningJobParameters)
-      async throws -> FineTuningJobObject
+   async throws -> FineTuningJobObject
    
    /// Retrieves a paginated list of fine-tuning jobs.
    ///
@@ -148,8 +149,8 @@ public protocol OpenAIService {
    func listFineTuningJobs(
       after lastJobID: String?,
       limit: Int?)
-      async throws -> OpenAIResponse<FineTuningJobObject>
-
+   async throws -> OpenAIResponse<FineTuningJobObject>
+   
    /// Retrieves a specific fine-tuning job by its ID.
    ///
    /// - Parameter id: The identifier of the fine-tuning job to retrieve.
@@ -159,7 +160,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/retrieve).
    func retrieveFineTuningJob(
       id: String)
-      async throws -> FineTuningJobObject
+   async throws -> FineTuningJobObject
    
    /// Cancels an ongoing fine-tuning job specified by its ID.
    ///
@@ -170,7 +171,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/cancel).
    func cancelFineTuningJobWith(
       id: String)
-      async throws -> FineTuningJobObject
+   async throws -> FineTuningJobObject
    
    /// Retrieves a list of events for a specified fine-tuning job, with optional pagination.
    ///
@@ -185,7 +186,7 @@ public protocol OpenAIService {
       id: String,
       after lastEventId: String?,
       limit: Int?)
-      async throws -> OpenAIResponse<FineTuningJobEventObject>
+   async throws -> OpenAIResponse<FineTuningJobEventObject>
    
    // MARK: Files
    
@@ -196,7 +197,7 @@ public protocol OpenAIService {
    ///
    /// For more information, see [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/list).
    func listFiles()
-      async throws -> OpenAIResponse<FileObject>
+   async throws -> OpenAIResponse<FileObject>
    
    /// - Parameter parameters: The parameters and data needed for the file upload.
    /// - Returns: A [FileObject](https://platform.openai.com/docs/api-reference/files/object) representing the uploaded file.
@@ -205,7 +206,7 @@ public protocol OpenAIService {
    /// For more details, refer to [OpenAI's File Upload API documentation](https://platform.openai.com/docs/api-reference/files/create).
    func uploadFile(
       parameters: FileParameters)
-      async throws -> FileObject
+   async throws -> FileObject
    
    /// Deletes a file with the specified ID and returns its deletion status.
    ///
@@ -215,7 +216,7 @@ public protocol OpenAIService {
    /// For more details, refer to [OpenAI's File Upload API documentation](https://platform.openai.com/docs/api-reference/files/delete).
    func deleteFileWith(
       id: String)
-      async throws -> FileObject.DeletionStatus
+   async throws -> FileObject.DeletionStatus
    
    /// - Parameter id: The ID of the file to retrieve.
    /// - Returns: A [FileObject](https://platform.openai.com/docs/api-reference/files/object) containing the details of the retrieved file.
@@ -224,7 +225,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/retrieve).
    func retrieveFileWith(
       id: String)
-      async throws -> FileObject
+   async throws -> FileObject
    
    /// - Parameter id: The ID of the file whose content is to be retrieved.
    /// - Returns: An array of dictionaries containing the file content.
@@ -232,7 +233,7 @@ public protocol OpenAIService {
    ///  For more information, refer to [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
    func retrieveContentForFileWith(
       id: String)
-      async throws -> [[String: Any]]
+   async throws -> [[String: Any]]
    
    // MARK: Images
    
@@ -243,7 +244,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/create).
    func createImages(
       parameters: ImageCreateParameters)
-      async throws -> OpenAIResponse<ImageObject>
+   async throws -> OpenAIResponse<ImageObject>
    
    /// - Parameter parameters: Settings for the image edit request.
    /// - Returns: An `OpenAIResponse` containing a list of [ImageObject](https://platform.openai.com/docs/api-reference/images/object) instances that represent the edited images.
@@ -252,7 +253,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createEdit).
    func editImage(
       parameters: ImageEditParameters)
-      async throws -> OpenAIResponse<ImageObject>
+   async throws -> OpenAIResponse<ImageObject>
    
    /// - Parameter parameters: Settings for the image variation request.
    /// - Returns: An `OpenAIResponse` containing a list of [ImageObject](https://platform.openai.com/docs/api-reference/images/object) instances that represent the created image variations.
@@ -261,7 +262,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createVariation).
    func createImageVariations(
       parameters: ImageVariationParameters)
-      async throws -> OpenAIResponse<ImageObject>
+   async throws -> OpenAIResponse<ImageObject>
    
    // MARK: Models
    
@@ -270,7 +271,7 @@ public protocol OpenAIService {
    ///
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/list).
    func listModels()
-      async throws -> OpenAIResponse<ModelObject>
+   async throws -> OpenAIResponse<ModelObject>
    
    /// - Parameter id: The identifier of the model to be retrieved.
    /// - Returns: A [ModelObject](https://platform.openai.com/docs/api-reference/models/object) containing details of the model matching the specified ID.
@@ -279,7 +280,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/retrieve).
    func retrieveModelWith(
       id: String)
-      async throws -> ModelObject
+   async throws -> ModelObject
    
    /// Deletes a fine-tuned model from OpenAI's service by its ID.
    ///
@@ -290,7 +291,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/delete).
    func deleteFineTuneModelWith(
       id: String)
-      async throws -> ModelObject.DeletionStatus
+   async throws -> ModelObject.DeletionStatus
    
    // MARK: Moderations
    
@@ -301,7 +302,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations/create).
    func createModerationFromText(
       parameters: ModerationParameter<String>)
-      async throws -> ModerationObject
+   async throws -> ModerationObject
    
    /// - Parameter parameters: The array of texts to be moderated according to the specified settings.
    /// - Returns: A [ModerationObject](https://platform.openai.com/docs/api-reference/moderations/object) detailing the results of the moderation process.
@@ -310,7 +311,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations/create).
    func createModerationFromTexts(
       parameters: ModerationParameter<[String]>)
-      async throws -> ModerationObject
+   async throws -> ModerationObject
 }
 
 
@@ -318,36 +319,36 @@ extension OpenAIService {
    
    public func fetchContentsOfFile(
       request: URLRequest)
-      async throws -> [[String: Any]]
+   async throws -> [[String: Any]]
    {
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response")
       }
-
+      
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
       
       var content: [[String: Any]] = []
       if let jsonString = String(data: data, encoding: .utf8) {
-          let lines = jsonString.split(separator: "\n")
-          for line in lines {
-             debugPrint("DEBUG Received line:\n\(line)")
-              if let lineData = line.data(using: .utf8),
-                 let jsonObject = try? JSONSerialization.jsonObject(with: lineData, options: .allowFragments) as? [String: Any] {
-                 content.append(jsonObject)
-              }
-          }
+         let lines = jsonString.split(separator: "\n")
+         for line in lines {
+            debugPrint("DEBUG Received line:\n\(line)")
+            if let lineData = line.data(using: .utf8),
+               let jsonObject = try? JSONSerialization.jsonObject(with: lineData, options: .allowFragments) as? [String: Any] {
+               content.append(jsonObject)
+            }
+         }
       }
       return content
-
+      
    }
    
    public func fetch<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-      async throws -> T
+   async throws -> T
    {
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
@@ -370,7 +371,7 @@ extension OpenAIService {
          let debugMessage = debug + codingPath
          debugPrint(debugMessage)
          throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-     } catch {
+      } catch {
          throw APIError.jsonDecodingFailure(description: error.localizedDescription)
       }
    }
@@ -378,7 +379,7 @@ extension OpenAIService {
    public func fetchStream<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-      async throws -> AsyncThrowingStream<T, Error>
+   async throws -> AsyncThrowingStream<T, Error>
    {
       let (data, response) = try await session.bytes(for: request)
       try Task.checkCancellation()
@@ -397,8 +398,7 @@ extension OpenAIService {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                    // decoder.keyDecodingStrategy = .convertFromSnakeCase
-                     let decoded = try decoder.decode(type, from: data)
+                     let decoded = try decode(type: type, from: data)
                      continuation.yield(decoded)
                   }
                }
@@ -409,10 +409,35 @@ extension OpenAIService {
                let debugMessage = debug + codingPath
                debugPrint(debugMessage)
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-           } catch {
+            } catch {
                continuation.finish(throwing: error)
             }
          }
+      }
+   }
+   
+   /// The OpenAI streamed chat option has inconsistent naming conventions when function calls are present.
+   /// To handle this, we dynamically switch decoding strategies as needed. If both strategies fail, the operation will fail.
+   private func decode<T: Decodable>(
+      type: T.Type,
+      from data: Data)
+      throws -> T
+   {
+      let originalKeyDecodingStrategy = self.decoder.keyDecodingStrategy
+      // Attempt to decode with .convertFromSnakeCase
+      do {
+          self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+          return try self.decoder.decode(T.self, from: data)
+      } catch {
+          // Reset to original strategy
+          self.decoder.keyDecodingStrategy = originalKeyDecodingStrategy
+          
+          // Attempt to decode without any strategy
+          do {
+              return try self.decoder.decode(T.self, from: data)
+          } catch {
+              throw APIError.bothDecodingStrategiesFailed
+          }
       }
    }
 }

@@ -397,7 +397,7 @@ extension OpenAIService {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                     decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    // decoder.keyDecodingStrategy = .convertFromSnakeCase
                      let decoded = try decoder.decode(type, from: data)
                      continuation.yield(decoded)
                   }

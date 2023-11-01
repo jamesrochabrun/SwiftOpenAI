@@ -333,7 +333,7 @@ extension OpenAIService {
       if let jsonString = String(data: data, encoding: .utf8) {
           let lines = jsonString.split(separator: "\n")
           for line in lines {
-             debugPrint("Received line:\n\(line)")
+             debugPrint("DEBUG Received line:\n\(line)")
               if let lineData = line.data(using: .utf8),
                  let jsonObject = try? JSONSerialization.jsonObject(with: lineData, options: .allowFragments) as? [String: Any] {
                  content.append(jsonObject)
@@ -354,14 +354,14 @@ extension OpenAIService {
          throw APIError.requestFailed(description: "invalid response")
       }
       if let jsonString = String(data: data, encoding: .utf8) {
-         debugPrint("Received data:\n\(jsonString)")
+         debugPrint("DEBUG JSON STRING =:\n\(jsonString)")
       } else {
          throw APIError.invalidData
       }
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
-      debugPrint("\(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
       do {
          return try decoder.decode(type, from: data)
       } catch let DecodingError.keyNotFound(key, context) {
@@ -396,14 +396,20 @@ extension OpenAIService {
                   try Task.checkCancellation()
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
-                     debugPrint("\(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                      decoder.keyDecodingStrategy = .convertFromSnakeCase
                      let decoded = try decoder.decode(type, from: data)
                      continuation.yield(decoded)
                   }
                }
                continuation.finish()
-            } catch {
+            } catch let DecodingError.keyNotFound(key, context) {
+               let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+               let codingPath = "codingPath: \(context.codingPath)"
+               let debugMessage = debug + codingPath
+               debugPrint(debugMessage)
+               throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+           } catch {
                continuation.finish(throwing: error)
             }
          }

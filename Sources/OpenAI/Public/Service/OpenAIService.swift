@@ -424,20 +424,25 @@ extension OpenAIService {
       throws -> T
    {
       let originalKeyDecodingStrategy = self.decoder.keyDecodingStrategy
-      // Attempt to decode with .convertFromSnakeCase
+      
+      // This defer block will execute when the function returns or throws
+      defer {
+         self.decoder.keyDecodingStrategy = originalKeyDecodingStrategy
+      }
+      
+      // Attempt to decode with original strategy
       do {
-          self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-          return try self.decoder.decode(T.self, from: data)
+         return try self.decoder.decode(T.self, from: data)
       } catch {
-          // Reset to original strategy
-          self.decoder.keyDecodingStrategy = originalKeyDecodingStrategy
-          
-          // Attempt to decode without any strategy
-          do {
-              return try self.decoder.decode(T.self, from: data)
-          } catch {
-              throw APIError.bothDecodingStrategiesFailed
-          }
+         // Switch to .convertFromSnakeCase
+         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+         
+         // Attempt to decode with .convertFromSnakeCase
+         do {
+            return try self.decoder.decode(T.self, from: data)
+         } catch {
+            throw APIError.bothDecodingStrategiesFailed
+         }
       }
    }
 }

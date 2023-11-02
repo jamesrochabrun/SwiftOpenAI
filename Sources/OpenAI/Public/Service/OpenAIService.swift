@@ -398,8 +398,18 @@ extension OpenAIService {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                     let decoded = try decode(type: type, from: data)
-                     continuation.yield(decoded)
+                     do {
+                        let decoded = try self.decoder.decode(T.self, from: data)
+                        continuation.yield(decoded)
+                     } catch let DecodingError.keyNotFound(key, context) {
+                        let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+                        let codingPath = "codingPath: \(context.codingPath)"
+                        let debugMessage = debug + codingPath
+                        debugPrint(debugMessage)
+                        throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+                     } catch {
+                        continuation.finish(throwing: error)
+                     }
                   }
                }
                continuation.finish()
@@ -412,36 +422,6 @@ extension OpenAIService {
             } catch {
                continuation.finish(throwing: error)
             }
-         }
-      }
-   }
-   
-   /// The OpenAI streamed chat option has inconsistent naming conventions when function calls are present.
-   /// To handle this, we dynamically switch decoding strategies as needed. If both strategies fail, the operation will fail.
-   private func decode<T: Decodable>(
-      type: T.Type,
-      from data: Data)
-      throws -> T
-   {
-      let originalKeyDecodingStrategy = self.decoder.keyDecodingStrategy
-      
-      // This defer block will execute when the function returns or throws
-      defer {
-         self.decoder.keyDecodingStrategy = originalKeyDecodingStrategy
-      }
-      
-      // Attempt to decode with original strategy
-      do {
-         return try self.decoder.decode(T.self, from: data)
-      } catch {
-         // Switch to .convertFromSnakeCase
-         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-         
-         // Attempt to decode with .convertFromSnakeCase
-         do {
-            return try self.decoder.decode(T.self, from: data)
-         } catch {
-            throw APIError.bothDecodingStrategiesFailed
          }
       }
    }

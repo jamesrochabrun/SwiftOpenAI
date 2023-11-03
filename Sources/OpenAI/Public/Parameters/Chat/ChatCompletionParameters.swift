@@ -350,3 +350,23 @@ public struct ChatCompletionParameters: Encodable {
       self.user = user
    }
 }
+
+extension ChatCompletionParameters {
+   
+   public func update(_ parameters: Self) -> Self {
+      .init(
+         messages: parameters.messages,
+         model: Self.Model(rawValue: parameters.model) ?? .gpt35Turbo,
+         frequencyPenalty: parameters.frequencyPenalty,
+         functionCall: parameters.functionCall,
+         functions: parameters.functions,
+         logitBias: parameters.logitBias,
+         maxTokens: parameters.maxTokens,
+         n: parameters.n,
+         presencePenalty: parameters.presencePenalty,
+         stop: parameters.stop,
+         temperature: parameters.temperature,
+         topProbability: parameters.topP,
+         user: parameters.user)
+   }
+}

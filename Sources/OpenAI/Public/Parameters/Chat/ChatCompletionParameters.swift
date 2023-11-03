@@ -353,20 +353,35 @@ public struct ChatCompletionParameters: Encodable {
 
 extension ChatCompletionParameters {
    
-   public func update(_ parameters: Self) -> Self {
-      .init(
-         messages: parameters.messages,
-         model: Self.Model(rawValue: parameters.model) ?? .gpt35Turbo,
-         frequencyPenalty: parameters.frequencyPenalty,
-         functionCall: parameters.functionCall,
-         functions: parameters.functions,
-         logitBias: parameters.logitBias,
-         maxTokens: parameters.maxTokens,
-         n: parameters.n,
-         presencePenalty: parameters.presencePenalty,
-         stop: parameters.stop,
-         temperature: parameters.temperature,
-         topProbability: parameters.topP,
-         user: parameters.user)
+   public func update(
+      messages: [Message]? = nil,
+      model: Model? = nil,
+      frequencyPenalty: Double? = nil,
+      functionCall: FunctionCall? = nil,
+      functions: [ChatFunction]? = nil,
+      logitBias: [Int: Double]? = nil,
+      maxTokens: Int? = nil,
+      n: Int? = nil,
+      presencePenalty: Double? = nil,
+      stop: [String]? = nil,
+      temperature: Double? = nil,
+      topProbability: Double? = nil,
+      user: String? = nil)
+     -> ChatCompletionParameters
+   {
+      ChatCompletionParameters(
+         messages: messages ?? self.messages,
+         model: model ?? Self.Model(rawValue: self.model) ?? .gpt35Turbo,
+         frequencyPenalty: frequencyPenalty ?? self.frequencyPenalty,
+         functionCall: functionCall ?? self.functionCall,
+         functions: functions ?? self.functions,
+         logitBias: logitBias ?? self.logitBias,
+         maxTokens: maxTokens ?? self.maxTokens,
+         n: n ?? self.n,
+         presencePenalty: presencePenalty ?? self.presencePenalty,
+         stop: stop ?? self.stop,
+         temperature: temperature ?? self.temperature,
+         topProbability: topP ?? self.topP,
+         user: user ?? self.user)
    }
 }

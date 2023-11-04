@@ -24,6 +24,7 @@ struct OptionsListView: View {
       case images = "Images"
       case models = "Models"
       case moderations = "Moderations"
+      case chatHistoryConversation = "Chat History Conversation"
       
       var id: String {
          rawValue
@@ -55,6 +56,8 @@ struct OptionsListView: View {
                      ModelsDemoView(service: openAIService)
                   case .moderations:
                      ModerationDemoView(service: openAIService)
+                  case .chatHistoryConversation:
+                     ChatStreamFluidConversationDemoView(service: openAIService)
                   }
                }
             }

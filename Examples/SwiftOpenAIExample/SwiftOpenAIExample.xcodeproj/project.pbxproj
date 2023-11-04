@@ -26,6 +26,12 @@
 		7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BBD2AE7ABDA003CE281 /* ModelsDemoView.swift */; };
 		7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BC02AE7B01F003CE281 /* ModerationProvider.swift */; };
 		7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */; };
+		7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */; };
+		7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */; };
+		7B7239A42AF6289900646679 /* ChatStreamFluidConversationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */; };
+		7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */; };
+		7B7239A82AF6292100646679 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A72AF6292100646679 /* LoadingView.swift */; };
+		7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AA2AF6294C00646679 /* URLImageView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -75,6 +81,12 @@
 		7B436BBD2AE7ABDA003CE281 /* ModelsDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsDemoView.swift; sourceTree = "<group>"; };
 		7B436BC02AE7B01F003CE281 /* ModerationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationProvider.swift; sourceTree = "<group>"; };
 		7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationDemoView.swift; sourceTree = "<group>"; };
+		7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFluidConversationProvider.swift; sourceTree = "<group>"; };
+		7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDisplayMessage.swift; sourceTree = "<group>"; };
+		7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStreamFluidConversationDemoView.swift; sourceTree = "<group>"; };
+		7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDisplayMessageView.swift; sourceTree = "<group>"; };
+		7B7239A72AF6292100646679 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		7B7239AA2AF6294C00646679 /* URLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImageView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -197,6 +209,26 @@
 			path = ModerationsDemo;
 			sourceTree = "<group>";
 		};
+		7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */,
+				7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */,
+				7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */,
+				7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */,
+			);
+			path = ChatStreamFluidConversationDemo;
+			sourceTree = "<group>";
+		};
+		7B7239A92AF6294200646679 /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				7B7239A72AF6292100646679 /* LoadingView.swift */,
+				7B7239AA2AF6294C00646679 /* URLImageView.swift */,
+			);
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +253,7 @@
 			isa = PBXGroup;
 			children = (
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
+				7B7239A92AF6294200646679 /* SharedUI */,
 				7B436B9C2AE2515C003CE281 /* Resources */,
 				7B436B972AE25045003CE281 /* Utilities */,
 				7BA788FA2AE23B27008825D5 /* AudioDemo */,
@@ -230,6 +263,7 @@
 				7B436BAE2AE7935C003CE281 /* FilesDemo */,
 				7B436BB52AE7A2DA003CE281 /* ImagesDemo */,
 				7B436BBA2AE7ABC4003CE281 /* ModelsDemo */,
+				7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */,
 				7B436BBF2AE7B003003CE281 /* ModerationsDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
@@ -415,8 +449,12 @@
 			files = (
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
 				7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */,
+				7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */,
+				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
+				7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */,
+				7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
 				7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */,
@@ -424,9 +462,11 @@
 				7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */,
 				7B436BB02AE79369003CE281 /* FilesDemoView.swift in Sources */,
 				7B436BAB2AE788F1003CE281 /* FineTuningJobProvider.swift in Sources */,
+				7B7239A42AF6289900646679 /* ChatStreamFluidConversationDemoView.swift in Sources */,
 				7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */,
 				7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,
+				7B7239A82AF6292100646679 /* LoadingView.swift in Sources */,
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,
 				7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */,
 				7B436BBC2AE7ABD3003CE281 /* ModelsProvider.swift in Sources */,

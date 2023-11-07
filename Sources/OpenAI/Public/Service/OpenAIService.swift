@@ -379,57 +379,51 @@ extension OpenAIService {
    {
       printURLRequest(request)
       
-      do {
-         let (data, response) = try await session.bytes(for: request)
-         try Task.checkCancellation()
-         guard let httpResponse = response as? HTTPURLResponse else {
-            throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
-         }
-         printHTTPURLResponse(httpResponse)
-         guard httpResponse.statusCode == 200 else {
-            throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
-         }
-         return AsyncThrowingStream { continuation in
-            Task {
-               do {
-                  for try await line in data.lines {
-                     try Task.checkCancellation()
-                     if line.hasPrefix("data:") && line != "data: [DONE]",
-                        let data = line.dropFirst(5).data(using: .utf8) {
-                        debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                        do {
-                           let decoded = try self.decoder.decode(T.self, from: data)
-                           continuation.yield(decoded)
-                        } catch let DecodingError.keyNotFound(key, context) {
-                           let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-                           let codingPath = "codingPath: \(context.codingPath)"
-                           let debugMessage = debug + codingPath
-                           debugPrint(debugMessage)
-                           throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-                        } catch {
-                           debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-                           continuation.finish(throwing: error)
-                        }
+      let (data, response) = try await session.bytes(for: request)
+      try Task.checkCancellation()
+      guard let httpResponse = response as? HTTPURLResponse else {
+         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
+      }
+      printHTTPURLResponse(httpResponse)
+      guard httpResponse.statusCode == 200 else {
+         throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
+      }
+      return AsyncThrowingStream { continuation in
+         Task {
+            do {
+               for try await line in data.lines {
+                  try Task.checkCancellation()
+                  if line.hasPrefix("data:") && line != "data: [DONE]",
+                     let data = line.dropFirst(5).data(using: .utf8) {
+                     debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     do {
+                        let decoded = try self.decoder.decode(T.self, from: data)
+                        continuation.yield(decoded)
+                     } catch let DecodingError.keyNotFound(key, context) {
+                        let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+                        let codingPath = "codingPath: \(context.codingPath)"
+                        let debugMessage = debug + codingPath
+                        debugPrint(debugMessage)
+                        throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+                     } catch {
+                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                        continuation.finish(throwing: error)
                      }
                   }
-                  continuation.finish()
-               } catch let DecodingError.keyNotFound(key, context) {
-                  let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-                  let codingPath = "codingPath: \(context.codingPath)"
-                  let debugMessage = debug + codingPath
-                  debugPrint(debugMessage)
-                  throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-               } catch {
-                  debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-                  continuation.finish(throwing: error)
                }
+               continuation.finish()
+            } catch let DecodingError.keyNotFound(key, context) {
+               let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+               let codingPath = "codingPath: \(context.codingPath)"
+               let debugMessage = debug + codingPath
+               debugPrint(debugMessage)
+               throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+            } catch {
+               debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               continuation.finish(throwing: error)
             }
          }
-      } catch {
-         debugPrint("ERROR \(error)")
-         throw APIError.dataCouldNotBeReadMissingData(description: "\(error)")
       }
-
    }
    
    // MARK: Debug Helpers
@@ -449,11 +443,11 @@ extension OpenAIService {
    func printURLRequest(
       _ request: URLRequest)
    {
-      debugPrint("\n- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -\n")
+      debugPrint("- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -")
       if let url = request.url {
-         debugPrint("URL: \(url.absoluteString)")
-         debugPrint("Method: \(request.httpMethod ?? "No method")")
-         debugPrint("Headers: \(request.allHTTPHeaderFields ?? [:])")
+         print("URL: \(url.absoluteString)")
+         print("Method: \(request.httpMethod ?? "No method")")
+         print("Headers: \(request.allHTTPHeaderFields ?? [:])")
          
          // Add headers if any, masking the Authorization token
          if let headers = request.allHTTPHeaderFields {
@@ -462,15 +456,15 @@ extension OpenAIService {
                if header.lowercased() == "authorization" {
                   maskedValue = maskAuthorizationToken(value)
                }
-               debugPrint(maskedValue)
+               print(maskedValue)
             }
          }
       }
       if let body = request.httpBody {
-         debugPrint("Body: \(prettyPrintJSON(body))")
+         print("Body: \(prettyPrintJSON(body))")
       }
       
-      debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+      print(" - - - - - - - - - - - - - - - - - - - - - - - - - - -")
    }
    
    private func prettyPrintJSON(

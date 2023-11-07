@@ -10,7 +10,7 @@ import SwiftOpenAI
 
 struct ApiKeyIntroView: View {
    
-   @State private var apiKey = ""
+   @State private var apiKey = "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"
    @State private var organizationIdentifier = ""
    @State private var localOrganizationID: String? = nil
    

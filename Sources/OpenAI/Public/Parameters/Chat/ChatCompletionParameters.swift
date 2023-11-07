@@ -50,9 +50,11 @@ public struct ChatCompletionParameters: Encodable {
    
    public enum Model: String {
       case gpt35Turbo = "gpt-3.5-turbo"
+      case gpt35Turbo1006 = "gpt-3.5-turbo-1006" // Most updated
       case gpt4 = "gpt-4"
-      case gpt35Turbo0613 = "gpt-3.5-turbo-0613"
-      case gpt35Turbo16k0613 = "gpt-3.5-turbo-16k-0613"
+      case gpt41106Preview = "gpt-4-1106-preview"  // Most updated
+      case gpt35Turbo0613 = "gpt-3.5-turbo-0613" // To be deprecated "2024-06-13"
+      case gpt35Turbo16k0613 = "gpt-3.5-turbo-16k-0613" // To be deprecated "2024-06-13"
    }
    
    public struct Message: Encodable {

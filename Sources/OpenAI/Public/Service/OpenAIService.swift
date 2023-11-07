@@ -319,7 +319,7 @@ extension OpenAIService {
    
    public func fetchContentsOfFile(
       request: URLRequest)
-   async throws -> [[String: Any]]
+      async throws -> [[String: Any]]
    {
       printURLRequest(request)
       let (data, response) = try await session.data(for: request)
@@ -342,13 +342,12 @@ extension OpenAIService {
          }
       }
       return content
-      
    }
    
    public func fetch<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-   async throws -> T
+      async throws -> T
    {
       printURLRequest(request)
       let (data, response) = try await session.data(for: request)
@@ -376,54 +375,61 @@ extension OpenAIService {
    public func fetchStream<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-   async throws -> AsyncThrowingStream<T, Error>
+      async throws -> AsyncThrowingStream<T, Error>
    {
       printURLRequest(request)
-      let (data, response) = try await session.bytes(for: request)
-      try Task.checkCancellation()
-      guard let httpResponse = response as? HTTPURLResponse else {
-         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
-      }
-      printHTTPURLResponse(httpResponse)
-      guard httpResponse.statusCode == 200 else {
-         throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
-      }
-      return AsyncThrowingStream { continuation in
-         Task {
-            do {
-               for try await line in data.lines {
-                  try Task.checkCancellation()
-                  if line.hasPrefix("data:") && line != "data: [DONE]",
-                     let data = line.dropFirst(5).data(using: .utf8) {
-                     debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                     do {
-                        let decoded = try self.decoder.decode(T.self, from: data)
-                        continuation.yield(decoded)
-                     } catch let DecodingError.keyNotFound(key, context) {
-                        let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-                        let codingPath = "codingPath: \(context.codingPath)"
-                        let debugMessage = debug + codingPath
-                        debugPrint(debugMessage)
-                        throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-                     } catch {
-                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-                        continuation.finish(throwing: error)
+      
+      do {
+         let (data, response) = try await session.bytes(for: request)
+         try Task.checkCancellation()
+         guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
+         }
+         printHTTPURLResponse(httpResponse)
+         guard httpResponse.statusCode == 200 else {
+            throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
+         }
+         return AsyncThrowingStream { continuation in
+            Task {
+               do {
+                  for try await line in data.lines {
+                     try Task.checkCancellation()
+                     if line.hasPrefix("data:") && line != "data: [DONE]",
+                        let data = line.dropFirst(5).data(using: .utf8) {
+                        debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        do {
+                           let decoded = try self.decoder.decode(T.self, from: data)
+                           continuation.yield(decoded)
+                        } catch let DecodingError.keyNotFound(key, context) {
+                           let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+                           let codingPath = "codingPath: \(context.codingPath)"
+                           let debugMessage = debug + codingPath
+                           debugPrint(debugMessage)
+                           throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+                        } catch {
+                           debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                           continuation.finish(throwing: error)
+                        }
                      }
                   }
+                  continuation.finish()
+               } catch let DecodingError.keyNotFound(key, context) {
+                  let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+                  let codingPath = "codingPath: \(context.codingPath)"
+                  let debugMessage = debug + codingPath
+                  debugPrint(debugMessage)
+                  throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+               } catch {
+                  debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                  continuation.finish(throwing: error)
                }
-               continuation.finish()
-            } catch let DecodingError.keyNotFound(key, context) {
-               let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-               let codingPath = "codingPath: \(context.codingPath)"
-               let debugMessage = debug + codingPath
-               debugPrint(debugMessage)
-               throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-            } catch {
-               debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-               continuation.finish(throwing: error)
             }
          }
+      } catch {
+         debugPrint("ERROR \(error)")
+         throw APIError.dataCouldNotBeReadMissingData(description: "\(error)")
       }
+
    }
    
    // MARK: Debug Helpers
@@ -461,7 +467,7 @@ extension OpenAIService {
          }
       }
       if let body = request.httpBody {
-         print("Body: \(prettyPrintJSON(body))")
+         debugPrint("Body: \(prettyPrintJSON(body))")
       }
       
       debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")

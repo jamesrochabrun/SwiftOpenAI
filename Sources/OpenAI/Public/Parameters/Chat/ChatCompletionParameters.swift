@@ -181,10 +181,10 @@ public struct ChatCompletionParameters: Encodable {
       /// The type of the tool. Currently, only `function` is supported.
       let type: String = "function"
       /// object
-      let chatFunction: ChatFunction
+      let function: ChatFunction
       
-      public init(chatFunction: ChatFunction) {
-         self.chatFunction = chatFunction
+      public init(function: ChatFunction) {
+         self.function = function
       }
    }
    

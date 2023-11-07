@@ -321,7 +321,7 @@ extension OpenAIService {
       request: URLRequest)
    async throws -> [[String: Any]]
    {
-      printCurlCommand(request)
+      printURLRequest(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -350,7 +350,7 @@ extension OpenAIService {
       with request: URLRequest)
    async throws -> T
    {
-      printCurlCommand(request)
+      printURLRequest(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -378,7 +378,7 @@ extension OpenAIService {
       with request: URLRequest)
    async throws -> AsyncThrowingStream<T, Error>
    {
-      printCurlCommand(request)
+      printURLRequest(request)
       let (data, response) = try await session.bytes(for: request)
       try Task.checkCancellation()
       guard let httpResponse = response as? HTTPURLResponse else {
@@ -427,40 +427,7 @@ extension OpenAIService {
    }
    
    // MARK: Debug Helpers
-   
-   private func printCurlCommand(
-      _ request: URLRequest)
-   {
-      guard let url = request.url, let httpMethod = request.httpMethod else {
-         debugPrint("Invalid URL or HTTP method.")
-         return
-      }
-      
-      var baseCommand = "curl \(url.absoluteString)"
-      
-      // Add method if not GET
-      if httpMethod != "GET" {
-         baseCommand += " -X \(httpMethod)"
-      }
-      
-      // Add headers if any, masking the Authorization token
-      if let headers = request.allHTTPHeaderFields {
-         for (header, value) in headers {
-            let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
-            baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
-         }
-      }
-      
-      // Add body if present
-      if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
-         // The body string is already pretty printed and should be enclosed in single quotes
-         baseCommand += " \\\n-d '\(bodyString)'"
-      }
-      
-      // Print the final command
-      debugPrint(baseCommand)      
-   }
-   
+
    private func prettyPrintJSON(
       _ data: Data)
       -> String?

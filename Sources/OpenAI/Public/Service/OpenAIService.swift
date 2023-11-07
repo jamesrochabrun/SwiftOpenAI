@@ -440,62 +440,39 @@ extension OpenAIService {
       return prettyPrintedString
    }
    
-   func printURLRequest(
+   private func printCurlCommand(
       _ request: URLRequest)
    {
-      print("- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -")
-      if let url = request.url {
-         print("URL: \(url.absoluteString)")
-         print("Method: \(request.httpMethod ?? "No method")")
-         print("Headers: \(request.allHTTPHeaderFields ?? [:])")
-         
-         // Add headers if any, masking the Authorization token
-         if let headers = request.allHTTPHeaderFields {
-            for (header, value) in headers {
-               var maskedValue = value
-               if header.lowercased() == "authorization" {
-                  maskedValue = maskAuthorizationToken(value)
-               }
-               print(maskedValue)
-            }
-         }
-      }
-      if let body = request.httpBody {
-         print("Body: \(prettyPrintJSON(body))")
+      guard let url = request.url, let httpMethod = request.httpMethod else {
+         debugPrint("Invalid URL or HTTP method.")
+         return
       }
       
-      print(" - - - - - - - - - - - - - - - - - - - - - - - - - - -")
-   }
-   
-   private func printCurlCommand(_ request: URLRequest) {
-       guard let url = request.url, let httpMethod = request.httpMethod else {
-           debugPrint("Invalid URL or HTTP method.")
-           return
-       }
-       
-       var baseCommand = "curl \(url.absoluteString)"
-       
-       // Add method if not GET
-       if httpMethod != "GET" {
-           baseCommand += " -X \(httpMethod)"
-       }
-       
-       // Add headers if any, masking the Authorization token
-       if let headers = request.allHTTPHeaderFields {
-           for (header, value) in headers {
-               let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
-               baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
-           }
-       }
-       
-       // Add body if present
-       if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
-           // The body string is already pretty printed and should be enclosed in single quotes
-           baseCommand += " \\\n-d '\(bodyString)'"
-       }
-       
-       // Print the final command
-       print(baseCommand)
+      var baseCommand = "curl \(url.absoluteString)"
+      
+      // Add method if not GET
+      if httpMethod != "GET" {
+         baseCommand += " -X \(httpMethod)"
+      }
+      
+      // Add headers if any, masking the Authorization token
+      if let headers = request.allHTTPHeaderFields {
+         for (header, value) in headers {
+            let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
+            baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
+         }
+      }
+      
+      // Add body if present
+      if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
+         // The body string is already pretty printed and should be enclosed in single quotes
+         baseCommand += " \\\n-d '\(bodyString)'"
+      }
+      
+      // Print the final command
+   #if DEBUG
+      print(baseCommand)
+   #endif
    }
    
    private func prettyPrintJSON(
@@ -513,6 +490,7 @@ extension OpenAIService {
       _ response: HTTPURLResponse,
       data: Data? = nil)
    {
+   #if DEBUG
       print("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
       print("URL: \(response.url?.absoluteString ?? "No URL")")
       print("Status Code: \(response.statusCode)")
@@ -526,6 +504,7 @@ extension OpenAIService {
          print("Body: \(bodyString)")
       }
       print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+   #endif
    }
    
    private func maskAuthorizationToken(_ token: String) -> String {

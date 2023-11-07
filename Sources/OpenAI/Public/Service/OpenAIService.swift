@@ -321,7 +321,7 @@ extension OpenAIService {
       request: URLRequest)
    async throws -> [[String: Any]]
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -350,7 +350,7 @@ extension OpenAIService {
       with request: URLRequest)
    async throws -> T
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -378,7 +378,7 @@ extension OpenAIService {
       with request: URLRequest)
    async throws -> AsyncThrowingStream<T, Error>
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       let (data, response) = try await session.bytes(for: request)
       try Task.checkCancellation()
       guard let httpResponse = response as? HTTPURLResponse else {
@@ -426,26 +426,44 @@ extension OpenAIService {
    
    // MARK: Debug Helpers
    
-   private func printURLRequest(
+   private func printCurlCommand(
       _ request: URLRequest)
    {
-      print("\n- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -\n")
-      if let url = request.url {
-         print("URL: \(url.absoluteString)")
-         print("Method: \(request.httpMethod ?? "No method")")
-         print("Headers: \(request.allHTTPHeaderFields ?? [:])")
+      guard let url = request.url, let httpMethod = request.httpMethod else {
+         debugPrint("Invalid URL or HTTP method.")
+         return
+      }
+      var baseCommand = "curl \(url.absoluteString)"      
+      // Add method if not GET
+      if httpMethod != "GET" {
+         baseCommand += " -X \(httpMethod)"
       }
       
-      if let body = request.httpBody {
-         print("Body: \(prettyPrintJSON(body))")
+      // Add headers if any, masking the Authorization token
+      if let headers = request.allHTTPHeaderFields {
+         for (header, value) in headers {
+            var escapedValue = value.replacingOccurrences(of: "\"", with: "\\\"").replacingOccurrences(of: "\n", with: "\\n")
+            if header.lowercased() == "authorization", value.count > 6 {
+               let prefix = String(value.prefix(3))
+               let suffix = String(value.suffix(3))
+               escapedValue = "\(prefix)...\(suffix)"
+            }
+            baseCommand += " -H \"\(header): \(escapedValue)\""
+         }
       }
       
-      print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+      // Add body if present
+      if let httpBody = request.httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
+         // Replace line breaks and double quotes in the body to ensure it's a valid cURL command.
+         let escapedBody = bodyString.replacingOccurrences(of: "\"", with: "\\\"").replacingOccurrences(of: "\n", with: "\\n")
+         baseCommand += " -d '\(escapedBody)'"
+      }
+      debugPrint(baseCommand)
    }
-   
+      
    private func prettyPrintJSON(
       _ jsonData: Data)
-   -> String
+      -> String
    {
       if let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []),
          let prettyJsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
@@ -460,19 +478,19 @@ extension OpenAIService {
       _ response: HTTPURLResponse,
       data: Data? = nil)
    {
-      print("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
-      print("URL: \(response.url?.absoluteString ?? "No URL")")
-      print("Status Code: \(response.statusCode)")
-      print("Headers: \(response.allHeaderFields)")
+      debugPrint("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
+      debugPrint("URL: \(response.url?.absoluteString ?? "No URL")")
+      debugPrint("Status Code: \(response.statusCode)")
+      debugPrint("Headers: \(response.allHeaderFields)")
       if let mimeType = response.mimeType {
-         print("MIME Type: \(mimeType)")
+         debugPrint("MIME Type: \(mimeType)")
       }
       if let data = data, response.mimeType == "application/json" {
-         print("Body: \(prettyPrintJSON(data))")
+         debugPrint("Body: \(prettyPrintJSON(data))")
       } else if let data = data, let bodyString = String(data: data, encoding: .utf8) {
-         print("Body: \(bodyString)")
+         debugPrint("Body: \(bodyString)")
       }
-      print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+      debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
    }
    
 }

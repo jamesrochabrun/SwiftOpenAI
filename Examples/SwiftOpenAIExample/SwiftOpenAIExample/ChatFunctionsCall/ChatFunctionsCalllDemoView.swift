@@ -82,7 +82,7 @@ struct ChatFunctionsCalllDemoView: View {
             /// Make the request
             try await chatProvider.startStreamedChat(parameters: .init(
                messages: [.init(role: .user, content: prompt)],
-               model: selectedModel == .gpt3dot5 ? .gpt35Turbo1006 : .gpt41106Preview), prompt: prompt)
+               model: selectedModel == .gpt3dot5 ? .gpt35Turbo1106 : .gpt41106Preview), prompt: prompt)
          }
       } label: {
          Image(systemName: "paperplane")

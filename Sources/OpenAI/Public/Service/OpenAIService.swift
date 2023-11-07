@@ -440,33 +440,41 @@ extension OpenAIService {
       
       // Add method if not GET
       if httpMethod != "GET" {
-         baseCommand += " \\\n-X \(httpMethod)"
+         baseCommand += " -X \(httpMethod)"
       }
       
       // Add headers if any, masking the Authorization token
       if let headers = request.allHTTPHeaderFields {
          for (header, value) in headers {
-            var maskedValue = value
-            if header.lowercased() == "authorization" {
-               maskedValue = maskAuthorizationToken(value)
-            }
+            let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
             baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
          }
       }
       
       // Add body if present
-      if let httpBody = request.httpBody {
-         // Properly escape the JSON string for bash
-         let escapedBody = prettyPrintJSON(httpBody)
-            .replacingOccurrences(of: "\"", with: "\\\"")
-            .replacingOccurrences(of: "\n", with: "\\n")
-         baseCommand += " \\\n-d '\(escapedBody)'"
+      if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
+         baseCommand += " \\\n-d '\(bodyString)'"
       }
       
       debugPrint(baseCommand)
    }
    
-   func printURLRequest(_ request: URLRequest) {
+   private func prettyPrintJSON(
+      _ data: Data)
+      -> String?
+   {
+      guard
+         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+         let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
+         let prettyPrintedString = String(data: prettyData, encoding: .utf8)
+      else { return nil }
+      // Ensuring the JSON string is single-line by removing newlines
+      return prettyPrintedString.replacingOccurrences(of: "\n", with: "\\n")
+   }
+   
+   func printURLRequest(
+      _ request: URLRequest)
+   {
       debugPrint("\n- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -\n")
       if let url = request.url {
          debugPrint("URL: \(url.absoluteString)")
@@ -491,7 +499,10 @@ extension OpenAIService {
       debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
    }
    
-   private func prettyPrintJSON(_ data: Data) -> String {
+   private func prettyPrintJSON(
+      _ data: Data)
+      -> String
+   {
       guard
          let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
          let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),

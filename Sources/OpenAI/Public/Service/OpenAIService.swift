@@ -406,6 +406,7 @@ extension OpenAIService {
                         debugPrint(debugMessage)
                         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
                      } catch {
+                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
                         continuation.finish(throwing: error)
                      }
                   }
@@ -418,6 +419,7 @@ extension OpenAIService {
                debugPrint(debugMessage)
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
             } catch {
+               debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
                continuation.finish(throwing: error)
             }
          }
@@ -464,8 +466,33 @@ extension OpenAIService {
       debugPrint(baseCommand)
    }
    
+   func printURLRequest(_ request: URLRequest) {
+      debugPrint("\n- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -\n")
+      if let url = request.url {
+         debugPrint("URL: \(url.absoluteString)")
+         debugPrint("Method: \(request.httpMethod ?? "No method")")
+         debugPrint("Headers: \(request.allHTTPHeaderFields ?? [:])")
+         
+         // Add headers if any, masking the Authorization token
+         if let headers = request.allHTTPHeaderFields {
+            for (header, value) in headers {
+               var maskedValue = value
+               if header.lowercased() == "authorization" {
+                  maskedValue = maskAuthorizationToken(value)
+               }
+               debugPrint(maskedValue)
+            }
+         }
+      }
+      if let body = request.httpBody {
+         print("Body: \(prettyPrintJSON(body))")
+      }
+      
+      debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+   }
+   
    private func prettyPrintJSON(_ data: Data) -> String {
-      guard 
+      guard
          let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
          let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
          let prettyPrintedString = String(data: prettyData, encoding: .utf8) else { return "Could not print JSON - invalid format" }

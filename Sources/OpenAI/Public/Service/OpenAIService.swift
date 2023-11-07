@@ -433,48 +433,46 @@ extension OpenAIService {
          debugPrint("Invalid URL or HTTP method.")
          return
       }
-      var baseCommand = "curl \(url.absoluteString)"      
+      
+      var baseCommand = "curl \(url.absoluteString)"
+      
       // Add method if not GET
       if httpMethod != "GET" {
-         baseCommand += " -X \(httpMethod)"
+         baseCommand += " \\\n-X \(httpMethod)"
       }
       
       // Add headers if any, masking the Authorization token
       if let headers = request.allHTTPHeaderFields {
          for (header, value) in headers {
-            var escapedValue = value.replacingOccurrences(of: "\"", with: "\\\"").replacingOccurrences(of: "\n", with: "\\n")
-            if header.lowercased() == "authorization", value.count > 6 {
-               let prefix = String(value.prefix(3))
-               let suffix = String(value.suffix(3))
-               escapedValue = "\(prefix)...\(suffix)"
+            var maskedValue = value
+            if header.lowercased() == "authorization" {
+               maskedValue = maskAuthorizationToken(value)
             }
-            baseCommand += " -H \"\(header): \(escapedValue)\""
+            baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
          }
       }
       
       // Add body if present
-      if let httpBody = request.httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
-         // Replace line breaks and double quotes in the body to ensure it's a valid cURL command.
-         let escapedBody = bodyString.replacingOccurrences(of: "\"", with: "\\\"").replacingOccurrences(of: "\n", with: "\\n")
-         baseCommand += " -d '\(escapedBody)'"
+      if let httpBody = request.httpBody {
+         // Properly escape the JSON string for bash
+         let escapedBody = prettyPrintJSON(httpBody)
+            .replacingOccurrences(of: "\"", with: "\\\"")
+            .replacingOccurrences(of: "\n", with: "\\n")
+         baseCommand += " \\\n-d '\(escapedBody)'"
       }
+      
       debugPrint(baseCommand)
    }
-      
-   private func prettyPrintJSON(
-      _ jsonData: Data)
-      -> String
-   {
-      if let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []),
-         let prettyJsonData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
-         let prettyPrintedString = String(data: prettyJsonData, encoding: .utf8) {
-         return prettyPrintedString
-      } else {
-         return String(data: jsonData, encoding: .utf8) ?? "Could not print JSON - invalid format"
-      }
+   
+   private func prettyPrintJSON(_ data: Data) -> String {
+      guard 
+         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+         let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
+         let prettyPrintedString = String(data: prettyData, encoding: .utf8) else { return "Could not print JSON - invalid format" }
+      return prettyPrintedString
    }
    
-   func printHTTPURLResponse(
+   private func printHTTPURLResponse(
       _ response: HTTPURLResponse,
       data: Data? = nil)
    {
@@ -491,6 +489,16 @@ extension OpenAIService {
          debugPrint("Body: \(bodyString)")
       }
       debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+   }
+   
+   private func maskAuthorizationToken(_ token: String) -> String {
+      if token.count > 6 {
+         let prefix = String(token.prefix(3))
+         let suffix = String(token.suffix(3))
+         return "\(prefix)................\(suffix)"
+      } else {
+         return "INVALID TOKEN LENGTH"
+      }
    }
    
 }

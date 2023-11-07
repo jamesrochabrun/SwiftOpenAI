@@ -388,13 +388,16 @@ public struct ChatCompletionParameters: Encodable {
       case messages
       case model
       case frequencyPenalty = "frequency_penalty"
+      case toolChoice = "tool_choice"
       case functionCall = "function_call"
+      case tools
       case functions
       case logitBias = "logit_bias"
       case maxTokens = "max_tokens"
       case n
       case responseFormat = "response_format"
       case presencePenalty = "presence_penalty"
+      case seed
       case stop
       case stream
       case temperature

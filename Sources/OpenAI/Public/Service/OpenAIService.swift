@@ -319,17 +319,17 @@ extension OpenAIService {
    
    public func fetchContentsOfFile(
       request: URLRequest)
-   async throws -> [[String: Any]]
+      async throws -> [[String: Any]]
    {
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
-         throw APIError.requestFailed(description: "invalid response")
+         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
-      
+      printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
-      
       var content: [[String: Any]] = []
       if let jsonString = String(data: data, encoding: .utf8) {
          let lines = jsonString.split(separator: "\n")
@@ -342,27 +342,23 @@ extension OpenAIService {
          }
       }
       return content
-      
    }
    
    public func fetch<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-   async throws -> T
+      async throws -> T
    {
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
-         throw APIError.requestFailed(description: "invalid response")
+         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
-      if let jsonString = String(data: data, encoding: .utf8) {
-         debugPrint("DEBUG JSON STRING =:\n\(jsonString)")
-      } else {
-         throw APIError.invalidData
-      }
+      printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
-      debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      debugPrint("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
       do {
          return try decoder.decode(type, from: data)
       } catch let DecodingError.keyNotFound(key, context) {
@@ -379,17 +375,19 @@ extension OpenAIService {
    public func fetchStream<T: Decodable>(
       type: T.Type,
       with request: URLRequest)
-   async throws -> AsyncThrowingStream<T, Error>
+      async throws -> AsyncThrowingStream<T, Error>
    {
+      printCurlCommand(request)
+      
       let (data, response) = try await session.bytes(for: request)
       try Task.checkCancellation()
       guard let httpResponse = response as? HTTPURLResponse else {
-         throw APIError.requestFailed(description: "invalid response")
+         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
+      printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
-      
       return AsyncThrowingStream { continuation in
          Task {
             do {
@@ -397,7 +395,7 @@ extension OpenAIService {
                   try Task.checkCancellation()
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
-                     debugPrint("DEBUG JSON = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                      do {
                         let decoded = try self.decoder.decode(T.self, from: data)
                         continuation.yield(decoded)
@@ -408,6 +406,7 @@ extension OpenAIService {
                         debugPrint(debugMessage)
                         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
                      } catch {
+                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
                         continuation.finish(throwing: error)
                      }
                   }
@@ -420,9 +419,102 @@ extension OpenAIService {
                debugPrint(debugMessage)
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
             } catch {
+               debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
                continuation.finish(throwing: error)
             }
          }
       }
    }
+   
+   // MARK: Debug Helpers
+
+   private func prettyPrintJSON(
+      _ data: Data)
+      -> String?
+   {
+      guard
+         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+         let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
+         let prettyPrintedString = String(data: prettyData, encoding: .utf8)
+      else { return nil }
+      return prettyPrintedString
+   }
+   
+   private func printCurlCommand(
+      _ request: URLRequest)
+   {
+      guard let url = request.url, let httpMethod = request.httpMethod else {
+         debugPrint("Invalid URL or HTTP method.")
+         return
+      }
+      
+      var baseCommand = "curl \(url.absoluteString)"
+      
+      // Add method if not GET
+      if httpMethod != "GET" {
+         baseCommand += " -X \(httpMethod)"
+      }
+      
+      // Add headers if any, masking the Authorization token
+      if let headers = request.allHTTPHeaderFields {
+         for (header, value) in headers {
+            let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
+            baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
+         }
+      }
+      
+      // Add body if present
+      if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
+         // The body string is already pretty printed and should be enclosed in single quotes
+         baseCommand += " \\\n-d '\(bodyString)'"
+      }
+      
+      // Print the final command
+   #if DEBUG
+      print(baseCommand)
+   #endif
+   }
+   
+   private func prettyPrintJSON(
+      _ data: Data)
+      -> String
+   {
+      guard
+         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+         let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
+         let prettyPrintedString = String(data: prettyData, encoding: .utf8) else { return "Could not print JSON - invalid format" }
+      return prettyPrintedString
+   }
+   
+   private func printHTTPURLResponse(
+      _ response: HTTPURLResponse,
+      data: Data? = nil)
+   {
+   #if DEBUG
+      print("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
+      print("URL: \(response.url?.absoluteString ?? "No URL")")
+      print("Status Code: \(response.statusCode)")
+      print("Headers: \(response.allHeaderFields)")
+      if let mimeType = response.mimeType {
+         print("MIME Type: \(mimeType)")
+      }
+      if let data = data, response.mimeType == "application/json" {
+         print("Body: \(prettyPrintJSON(data))")
+      } else if let data = data, let bodyString = String(data: data, encoding: .utf8) {
+         print("Body: \(bodyString)")
+      }
+      print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+   #endif
+   }
+   
+   private func maskAuthorizationToken(_ token: String) -> String {
+      if token.count > 6 {
+         let prefix = String(token.prefix(3))
+         let suffix = String(token.suffix(3))
+         return "\(prefix)................\(suffix)"
+      } else {
+         return "INVALID TOKEN LENGTH"
+      }
+   }
+   
 }

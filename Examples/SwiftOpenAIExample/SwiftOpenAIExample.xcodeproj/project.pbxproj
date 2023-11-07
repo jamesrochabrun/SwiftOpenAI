@@ -32,6 +32,9 @@
 		7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */; };
 		7B7239A82AF6292100646679 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A72AF6292100646679 /* LoadingView.swift */; };
 		7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AA2AF6294C00646679 /* URLImageView.swift */; };
+		7B7239AE2AF9FF0000646679 /* ChatFunctionsCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */; };
+		7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */; };
+		7B7239B42AFA076A00646679 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7B7239B32AFA076A00646679 /* SwiftOpenAI */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -39,7 +42,6 @@
 		7BA788DF2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
 		7BA788E92AE23A49008825D5 /* SwiftOpenAIExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788E82AE23A49008825D5 /* SwiftOpenAIExampleUITests.swift */; };
 		7BA788EB2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788EA2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift */; };
-		7BA788F92AE23AEF008825D5 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7BA788F82AE23AEF008825D5 /* SwiftOpenAI */; };
 		7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788FB2AE23B42008825D5 /* AudioDemoView.swift */; };
 		7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788FD2AE23B95008825D5 /* AudioProvider.swift */; };
 /* End PBXBuildFile section */
@@ -87,6 +89,8 @@
 		7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDisplayMessageView.swift; sourceTree = "<group>"; };
 		7B7239A72AF6292100646679 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		7B7239AA2AF6294C00646679 /* URLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImageView.swift; sourceTree = "<group>"; };
+		7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCallProvider.swift; sourceTree = "<group>"; };
+		7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCalllDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -107,7 +111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BA788F92AE23AEF008825D5 /* SwiftOpenAI in Frameworks */,
+				7B7239B42AFA076A00646679 /* SwiftOpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,9 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */,
-				7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */,
 				7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */,
-				7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */,
 			);
 			path = ChatStreamFluidConversationDemo;
 			sourceTree = "<group>";
@@ -225,8 +227,26 @@
 			children = (
 				7B7239A72AF6292100646679 /* LoadingView.swift */,
 				7B7239AA2AF6294C00646679 /* URLImageView.swift */,
+				7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */,
 			);
 			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		7B7239AC2AF9FEC300646679 /* ChatFunctionsCall */ = {
+			isa = PBXGroup;
+			children = (
+				7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */,
+				7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */,
+			);
+			path = ChatFunctionsCall;
+			sourceTree = "<group>";
+		};
+		7B7239AF2AF9FF1D00646679 /* SharedModels */ = {
+			isa = PBXGroup;
+			children = (
+				7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */,
+			);
+			path = SharedModels;
 			sourceTree = "<group>";
 		};
 		7BA788C02AE23A48008825D5 = {
@@ -253,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
+				7B7239AF2AF9FF1D00646679 /* SharedModels */,
 				7B7239A92AF6294200646679 /* SharedUI */,
 				7B436B9C2AE2515C003CE281 /* Resources */,
 				7B436B972AE25045003CE281 /* Utilities */,
@@ -264,6 +285,7 @@
 				7B436BB52AE7A2DA003CE281 /* ImagesDemo */,
 				7B436BBA2AE7ABC4003CE281 /* ModelsDemo */,
 				7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */,
+				7B7239AC2AF9FEC300646679 /* ChatFunctionsCall */,
 				7B436BBF2AE7B003003CE281 /* ModerationsDemo */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
@@ -325,7 +347,7 @@
 			);
 			name = SwiftOpenAIExample;
 			packageProductDependencies = (
-				7BA788F82AE23AEF008825D5 /* SwiftOpenAI */,
+				7B7239B32AFA076A00646679 /* SwiftOpenAI */,
 			);
 			productName = SwiftOpenAIExample;
 			productReference = 7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */;
@@ -400,7 +422,7 @@
 			);
 			mainGroup = 7BA788C02AE23A48008825D5;
 			packageReferences = (
-				7BA788F72AE23AEF008825D5 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
+				7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
 			);
 			productRefGroup = 7BA788CA2AE23A48008825D5 /* Products */;
 			projectDirPath = "";
@@ -447,9 +469,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B7239AE2AF9FF0000646679 /* ChatFunctionsCallProvider.swift in Sources */,
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
 				7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */,
 				7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */,
+				7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
@@ -831,20 +855,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7BA788F72AE23AEF008825D5 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
+		7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI";
 			requirement = {
-				branch = main;
+				branch = "jroch-swift-open-ai-1.1";
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7BA788F82AE23AEF008825D5 /* SwiftOpenAI */ = {
+		7B7239B32AFA076A00646679 /* SwiftOpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7BA788F72AE23AEF008825D5 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
+			package = 7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
 			productName = SwiftOpenAI;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -52,7 +52,6 @@ struct ChatDisplayMessageView: View {
    -> some View
    {
       HStack {
-         Text(message.delta?.role ?? "NO ROLE ASSIGNED")
          Image(systemName: message.type == .sent ? "person.circle" : "wand.and.stars")
             .resizable()
             .frame(width: 15, height: 15)

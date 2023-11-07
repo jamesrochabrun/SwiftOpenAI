@@ -1,14 +1,14 @@
 //
-//  ChatFluidConversationProvider.swift
+//  ChatFunctionsCallProvider.swift
 //  SwiftOpenAIExample
 //
-//  Created by James Rochabrun on 11/4/23.
+//  Created by James Rochabrun on 11/6/23.
 //
 
 import SwiftUI
 import SwiftOpenAI
 
-@Observable class ChatFluidConversationProvider {
+@Observable class ChatFunctionsCallProvider {
    
    // MARK: - Private Properties
    private let service: OpenAIService
@@ -25,12 +25,33 @@ import SwiftOpenAI
    // the language model's responses but be mindful as it will also increase the number of tokens sent in each request,
    // thus affecting API consumption. A balance is required; a count of 5 is a reasonable starting point.
    private static var parameterMessagesMaxStorageCount = 5
-
+   
+   // MARK: - Function Call
+   
+   enum FunctionCallName: String {
+      case createImage = "create_image"
+   }
+   
+   var functions: [ChatCompletionParameters.ChatFunction] {
+      [
+         .init(
+            name: FunctionCallName.createImage.rawValue,
+            description: "call this function if the request asks to generate an image",
+            parameters: .init(
+               type: .object,
+               properties: [
+                  "prompt": .init(type: .string, description: "The exact prompt passed in."),
+                  "count": .init(type: .integer, description: "The number of images requested")
+               ],
+               required: ["prompt", "count"]))
+      ]
+   }
+   
    // MARK: - Public Properties
-
+   
    // A collection of messages for display in the UI, representing the conversation.
    var chatMessages: [ChatDisplayMessage] = []
-
+   
    // MARK: - Initializer
    
    init(service: OpenAIService) {
@@ -51,6 +72,7 @@ import SwiftOpenAI
       // Copy the provided parameters and update the messages for the chat stream.
       var localParameters = parameters
       localParameters.messages = parameterMessages
+      localParameters.functions = functions
       
       do {
          // Begin the chat stream with the updated parameters.

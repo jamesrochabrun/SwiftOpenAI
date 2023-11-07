@@ -453,10 +453,12 @@ extension OpenAIService {
       
       // Add body if present
       if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
+         // The body string is already pretty printed and should be enclosed in single quotes
          baseCommand += " \\\n-d '\(bodyString)'"
       }
       
-      debugPrint(baseCommand)
+      // Print the final command
+      debugPrint(baseCommand)      
    }
    
    private func prettyPrintJSON(
@@ -468,8 +470,7 @@ extension OpenAIService {
          let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
          let prettyPrintedString = String(data: prettyData, encoding: .utf8)
       else { return nil }
-      // Ensuring the JSON string is single-line by removing newlines
-      return prettyPrintedString.replacingOccurrences(of: "\n", with: "\\n")
+      return prettyPrintedString
    }
    
    func printURLRequest(

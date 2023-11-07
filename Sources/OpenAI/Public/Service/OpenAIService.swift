@@ -321,7 +321,7 @@ extension OpenAIService {
       request: URLRequest)
       async throws -> [[String: Any]]
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -349,7 +349,7 @@ extension OpenAIService {
       with request: URLRequest)
       async throws -> T
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
@@ -377,7 +377,7 @@ extension OpenAIService {
       with request: URLRequest)
       async throws -> AsyncThrowingStream<T, Error>
    {
-      printURLRequest(request)
+      printCurlCommand(request)
       
       let (data, response) = try await session.bytes(for: request)
       try Task.checkCancellation()
@@ -443,7 +443,7 @@ extension OpenAIService {
    func printURLRequest(
       _ request: URLRequest)
    {
-      debugPrint("- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -")
+      print("- - - - - - - - - - OUTGOING REQUEST - - - - - - - - - -")
       if let url = request.url {
          print("URL: \(url.absoluteString)")
          print("Method: \(request.httpMethod ?? "No method")")
@@ -467,6 +467,37 @@ extension OpenAIService {
       print(" - - - - - - - - - - - - - - - - - - - - - - - - - - -")
    }
    
+   private func printCurlCommand(_ request: URLRequest) {
+       guard let url = request.url, let httpMethod = request.httpMethod else {
+           debugPrint("Invalid URL or HTTP method.")
+           return
+       }
+       
+       var baseCommand = "curl \(url.absoluteString)"
+       
+       // Add method if not GET
+       if httpMethod != "GET" {
+           baseCommand += " -X \(httpMethod)"
+       }
+       
+       // Add headers if any, masking the Authorization token
+       if let headers = request.allHTTPHeaderFields {
+           for (header, value) in headers {
+               let maskedValue = header.lowercased() == "authorization" ? maskAuthorizationToken(value) : value
+               baseCommand += " \\\n-H \"\(header): \(maskedValue)\""
+           }
+       }
+       
+       // Add body if present
+       if let httpBody = request.httpBody, let bodyString = prettyPrintJSON(httpBody) {
+           // The body string is already pretty printed and should be enclosed in single quotes
+           baseCommand += " \\\n-d '\(bodyString)'"
+       }
+       
+       // Print the final command
+       print(baseCommand)
+   }
+   
    private func prettyPrintJSON(
       _ data: Data)
       -> String
@@ -482,19 +513,19 @@ extension OpenAIService {
       _ response: HTTPURLResponse,
       data: Data? = nil)
    {
-      debugPrint("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
-      debugPrint("URL: \(response.url?.absoluteString ?? "No URL")")
-      debugPrint("Status Code: \(response.statusCode)")
-      debugPrint("Headers: \(response.allHeaderFields)")
+      print("\n- - - - - - - - - - INCOMING RESPONSE - - - - - - - - - -\n")
+      print("URL: \(response.url?.absoluteString ?? "No URL")")
+      print("Status Code: \(response.statusCode)")
+      print("Headers: \(response.allHeaderFields)")
       if let mimeType = response.mimeType {
-         debugPrint("MIME Type: \(mimeType)")
+         print("MIME Type: \(mimeType)")
       }
       if let data = data, response.mimeType == "application/json" {
-         debugPrint("Body: \(prettyPrintJSON(data))")
+         print("Body: \(prettyPrintJSON(data))")
       } else if let data = data, let bodyString = String(data: data, encoding: .utf8) {
-         debugPrint("Body: \(bodyString)")
+         print("Body: \(bodyString)")
       }
-      debugPrint("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
+      print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n")
    }
    
    private func maskAuthorizationToken(_ token: String) -> String {

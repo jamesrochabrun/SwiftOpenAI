@@ -26,10 +26,13 @@ import SwiftOpenAI
    // thus affecting API consumption. A balance is required; a count of 5 is a reasonable starting point.
    private static var parameterMessagesMaxStorageCount = 5
    
+   private var toolCallsStreamedArguments: [FunctionCallName: String] = [:]
+   
    // MARK: - Function Call
    
-   enum FunctionCallName: String {
+   enum FunctionCallName: String, CaseIterable {
       case createImage = "create_image"
+      case funFactOfRequestedImage = "fun_fact_of_requested_image"
    }
    
    var functions: [ChatCompletionParameters.ChatFunction] {
@@ -43,7 +46,15 @@ import SwiftOpenAI
                   "prompt": .init(type: .string, description: "The exact prompt passed in."),
                   "count": .init(type: .integer, description: "The number of images requested")
                ],
-               required: ["prompt", "count"]))
+               required: ["prompt", "count"])),
+         .init(
+            name: FunctionCallName.funFactOfRequestedImage.rawValue,
+            description: "Call this function if user asks for an image for the character of an image requested prompt e.g: Show me an image of a cow. Could you prvide also a value in the content? something like Sure let me do that for you.",
+            parameters: .init(
+               type: .object,
+               properties: [
+                  "prompt": .init(type: .string, description: "The exact prompt passed in and the name.")
+               ], required: ["prompt"])),
       ]
    }
    
@@ -72,7 +83,7 @@ import SwiftOpenAI
       // Copy the provided parameters and update the messages for the chat stream.
       var localParameters = parameters
       localParameters.messages = parameterMessages
-      localParameters.functions = functions
+      localParameters.tools = functions.map { .init(function: $0) }
       
       do {
          // Begin the chat stream with the updated parameters.
@@ -81,6 +92,21 @@ import SwiftOpenAI
             // Extract the first choice from the stream results, if none exist, exit the loop.
             guard let choice = result.choices.first else { return }
             
+            /**************Tool Calls ***************/
+            if let toolCalls = choice.delta.toolCalls {
+               for toolCall in toolCalls {
+                  let function = FunctionCallName.allCases[toolCall.index]
+                  if var arguments = toolCallsStreamedArguments[function] {
+                     arguments += toolCall.function.arguments
+                     toolCallsStreamedArguments[function] = arguments
+                  } else {
+                     toolCallsStreamedArguments[function] = toolCall.function.arguments
+                  }
+               }
+            }
+            /**************Tool Calls ***************/
+
+            /**************Context Logic ***************/
             // Store initial `role` and `functionCall` data from the first `choice.delta` for UI display.
             // This information is essential for maintaining context in the conversation and for updating
             // the chat UI with proper role attributions for each message.
@@ -109,7 +135,9 @@ import SwiftOpenAI
                // Append the new message parameter to the collection for future requests.
                updateParameterMessagesArray(newMessage)
             }
+            /**************Context Logic ***************/
          }
+         try await  executeFunctionCalls()
       } catch {
          // If an error occurs, update the UI to display the error message.
          updateLastDisplayedMessage(.init(content: .error("\(error)"), type: .received, delta: nil))
@@ -117,6 +145,29 @@ import SwiftOpenAI
    }
    
    // MARK: - Private Methods
+   
+   private func executeFunctionCalls() async throws  {
+      
+      defer {
+         toolCallsStreamedArguments = [:]
+      }
+      if let createImageArguments = toolCallsStreamedArguments[.createImage] {
+         let dictionary = createImageArguments.toDictionary()!
+         let prompt = dictionary["prompt"] as! String
+         let count = dictionary["count"]  as! Int
+         updateLastDisplayedMessage(.init(content: .text("Writing prompts...\n Dalle -3"), type: .received, delta: nil))
+         let urls = try await service.createImages(
+            parameters: .init(prompt: prompt, numberOfImages: count)).data.compactMap(\.url)
+         updateLastDisplayedMessage(.init(content: .images(urls), type: .received, delta: nil))
+
+         debugPrint("createImageArguments \(prompt), count \(count)")
+      }
+      if let funFactArguments = toolCallsStreamedArguments[.funFactOfRequestedImage] {
+         let dictionary = funFactArguments.toDictionary()!
+         let prompt = dictionary["prompt"]!
+         debugPrint("funFactArguments \(prompt)")
+      }
+   }
    
    @MainActor
    private func startNewUserDisplayMessage(_ prompt: String) {
@@ -167,5 +218,23 @@ import SwiftOpenAI
    
    private func updateLastDisplayedMessage(_ message: ChatDisplayMessage) {
       chatMessages[chatMessages.count - 1] = message
+   }
+}
+
+private extension String {
+   
+   func toDictionary() -> [String: Any]? {
+      guard let jsonData = self.data(using: .utf8) else {
+         print("Failed to convert JSON string to Data.")
+         return nil
+      }
+      
+      do {
+         let dict = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+         return dict
+      } catch let error {
+         print("Failed to deserialize JSON: \(error.localizedDescription)")
+         return nil
+      }
    }
 }

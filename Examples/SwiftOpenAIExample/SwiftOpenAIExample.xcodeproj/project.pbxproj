@@ -34,7 +34,6 @@
 		7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AA2AF6294C00646679 /* URLImageView.swift */; };
 		7B7239AE2AF9FF0000646679 /* ChatFunctionsCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */; };
 		7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */; };
-		7B7239B42AFA076A00646679 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7B7239B32AFA076A00646679 /* SwiftOpenAI */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -44,6 +43,7 @@
 		7BA788EB2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788EA2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift */; };
 		7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788FB2AE23B42008825D5 /* AudioDemoView.swift */; };
 		7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788FD2AE23B95008825D5 /* AudioProvider.swift */; };
+		7BBE7E8F2AFAE1640096A693 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7BBE7E8E2AFAE1640096A693 /* SwiftOpenAI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,7 +111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B7239B42AFA076A00646679 /* SwiftOpenAI in Frameworks */,
+				7BBE7E8F2AFAE1640096A693 /* SwiftOpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +347,7 @@
 			);
 			name = SwiftOpenAIExample;
 			packageProductDependencies = (
-				7B7239B32AFA076A00646679 /* SwiftOpenAI */,
+				7BBE7E8E2AFAE1640096A693 /* SwiftOpenAI */,
 			);
 			productName = SwiftOpenAIExample;
 			productReference = 7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */;
@@ -422,7 +422,7 @@
 			);
 			mainGroup = 7BA788C02AE23A48008825D5;
 			packageReferences = (
-				7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
+				7BBE7E8D2AFAE1640096A693 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
 			);
 			productRefGroup = 7BA788CA2AE23A48008825D5 /* Products */;
 			projectDirPath = "";
@@ -855,20 +855,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
+		7BBE7E8D2AFAE1640096A693 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI";
 			requirement = {
-				branch = "jroch-swift-open-ai-1.1";
+				branch = main;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7B7239B32AFA076A00646679 /* SwiftOpenAI */ = {
+		7BBE7E8E2AFAE1640096A693 /* SwiftOpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7B7239B22AFA076A00646679 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
+			package = 7BBE7E8D2AFAE1640096A693 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
 			productName = SwiftOpenAI;
 		};
 /* End XCSwiftPackageProductDependency section */

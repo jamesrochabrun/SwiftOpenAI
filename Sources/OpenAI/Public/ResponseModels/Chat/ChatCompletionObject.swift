@@ -51,7 +51,7 @@ public struct ChatCompletionObject: Decodable {
             /// The ID of the tool call.
             let id: String?
             /// The type of the tool. Currently, only `function` is supported.
-            let type: String
+            let type: String?
             /// The function that the model called.
             let function: FunctionCall
             

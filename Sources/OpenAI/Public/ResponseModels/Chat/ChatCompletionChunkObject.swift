@@ -18,6 +18,9 @@ public struct ChatCompletionChunkObject: Decodable {
    public let created: Int
    /// The model to generate the completion.
    public let model: String
+   /// This fingerprint represents the backend configuration that the model runs with.
+   /// Can be used in conjunction with the seed request parameter to understand when backend changes have been made that might impact determinism.
+   public let systemFingerprint: String?
    /// The object type, which is always chat.completion.chunk.
    public let object: String
    
@@ -29,6 +32,8 @@ public struct ChatCompletionChunkObject: Decodable {
       public let finishReason: IntOrStringValue?
       /// The index of the choice in the list of choices.
       public let index: Int
+      /// Provided by the Vision API.
+      public let finishDetails: FinishDetails?
       
       public struct Delta: Decodable {
          
@@ -81,10 +86,25 @@ public struct ChatCompletionChunkObject: Decodable {
          }
       }
       
+      /// Provided by the Vision API.
+      public struct FinishDetails: Decodable {
+         let type: String
+      }
+      
       enum CodingKeys: String, CodingKey {
          case delta
          case finishReason = "finish_reason"
          case index
+         case finishDetails = "finish_details"
       }
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case choices
+      case created
+      case model
+      case systemFingerprint = "system_fingerprint"
+      case object
    }
 }

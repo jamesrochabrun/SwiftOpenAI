@@ -334,7 +334,9 @@ extension OpenAIService {
       if let jsonString = String(data: data, encoding: .utf8) {
          let lines = jsonString.split(separator: "\n")
          for line in lines {
-            debugPrint("DEBUG Received line:\n\(line)")
+            #if DEBUG
+            print("DEBUG Received line:\n\(line)")
+            #endif
             if let lineData = line.data(using: .utf8),
                let jsonObject = try? JSONSerialization.jsonObject(with: lineData, options: .allowFragments) as? [String: Any] {
                content.append(jsonObject)
@@ -358,14 +360,18 @@ extension OpenAIService {
       guard httpResponse.statusCode == 200 else {
          throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
       }
-      debugPrint("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      #if DEBUG
+      print("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      #endif
       do {
          return try decoder.decode(type, from: data)
       } catch let DecodingError.keyNotFound(key, context) {
          let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
          let codingPath = "codingPath: \(context.codingPath)"
          let debugMessage = debug + codingPath
-         debugPrint(debugMessage)
+      #if DEBUG
+         print(debugMessage)
+      #endif
          throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
       } catch {
          throw APIError.jsonDecodingFailure(description: error.localizedDescription)
@@ -395,7 +401,9 @@ extension OpenAIService {
                   try Task.checkCancellation()
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
-                     debugPrint("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     #if DEBUG
+                     print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     #endif
                      do {
                         let decoded = try self.decoder.decode(T.self, from: data)
                         continuation.yield(decoded)
@@ -403,10 +411,14 @@ extension OpenAIService {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"
                         let debugMessage = debug + codingPath
-                        debugPrint(debugMessage)
+                     #if DEBUG
+                        print(debugMessage)
+                     #endif
                         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
                      } catch {
+                     #if DEBUG
                         debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                     #endif
                         continuation.finish(throwing: error)
                      }
                   }
@@ -416,10 +428,14 @@ extension OpenAIService {
                let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                let codingPath = "codingPath: \(context.codingPath)"
                let debugMessage = debug + codingPath
-               debugPrint(debugMessage)
+               #if DEBUG
+               print(debugMessage)
+               #endif
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
             } catch {
-               debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               #if DEBUG
+               print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               #endif
                continuation.finish(throwing: error)
             }
          }

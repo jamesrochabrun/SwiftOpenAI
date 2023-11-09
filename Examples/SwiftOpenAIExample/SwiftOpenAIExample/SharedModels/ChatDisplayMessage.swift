@@ -6,6 +6,31 @@
 //
 
 import Foundation
+import SwiftOpenAI
+
+extension ChatCompletionParameters.Message.ContentType.MessageContent: Equatable, Hashable {
+   
+   public func hash(into hasher: inout Hasher) {
+       switch self {
+       case .text(let string):
+           hasher.combine(string)
+       case .imageUrl(let url):
+           hasher.combine(url)
+       }
+   }
+   
+   public static func ==(lhs: ChatCompletionParameters.Message.ContentType.MessageContent, rhs: ChatCompletionParameters.Message.ContentType.MessageContent) -> Bool {
+       switch (lhs, rhs) {
+       case let (.text(a), .text(b)):
+           return a == b
+       case let (.imageUrl(a), .imageUrl(b)):
+           return a == b
+       default:
+           return false
+       }
+   }
+   
+}
 
 struct ChatDisplayMessage: Identifiable {
    
@@ -24,12 +49,15 @@ struct ChatDisplayMessage: Identifiable {
    enum DisplayContent: Equatable {
       case text(String)
       case images([URL])
+      case content([ChatCompletionParameters.Message.ContentType.MessageContent])
       case error(String)
       
       static func ==(lhs: DisplayContent, rhs: DisplayContent) -> Bool {
          switch (lhs, rhs) {
          case let (.images(a), .images(b)):
             return a == b
+         case let (.content(a), .content(b)):
+             return a == b
          case let (.error(a), .error(b)):
             return a == b
          default:

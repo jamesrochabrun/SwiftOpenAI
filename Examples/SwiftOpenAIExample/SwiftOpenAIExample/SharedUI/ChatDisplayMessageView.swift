@@ -10,12 +10,33 @@ import SwiftUI
 struct ChatDisplayMessageView: View {
    
    let message: ChatDisplayMessage
+   @State private var urls: [URL] = []
 
    var body: some View {
       VStack(alignment: .leading, spacing: 8) {
          headerFor(message: message)
          Group {
             switch message.content {
+            case .content(let content):
+               let text = content.compactMap { contentItem -> String? in
+                  if case .text(let text) = contentItem {
+                      return text
+                  } else {
+                      return nil
+                  }
+               }.first ?? ""
+               
+               let urls = content.compactMap { contentItem -> URL? in
+                  if case .imageUrl(let url) = contentItem {
+                      return url
+                  } else {
+                      return nil
+                  }
+              }
+               VStack(alignment: .leading, spacing: 8) {
+                  chatImagesViewFrom(urls: urls)
+                  chatMessageViewWith(text)
+               }
             case .error(let error):
                Text(error)
                   .padding()

@@ -22,7 +22,7 @@ struct URLImageView: View {
          case .success(let image):
             image
                .resizable()
-               .aspectRatio(contentMode: .fit)
+               .frame(width: 100, height: 100)
                .transition(.opacity)
          case .failure:
             Image(systemName: "wifi.slash")
@@ -30,7 +30,7 @@ struct URLImageView: View {
             EmptyView()
          }
       }
-      .frame(width: 120, height: 120)
+      .frame(width: 100, height: 100)
       .background(Color.gray)
       .clipShape(RoundedRectangle(cornerRadius: 10))
    }

@@ -64,9 +64,20 @@ struct ChatDemoView: View {
                defer { isLoading = false }  // ensure isLoading is set to false when the
                switch selectedSegment {
                case .chatCompletion:
-                  try await chatProvider.startChat(parameters: .init(messages: [.init(role: .assistant, content: prompt)], model: .gpt35Turbo))
+                  try await chatProvider.startChat(parameters: .init(messages: [
+                     .init(role: .user, content: .contentArray([
+                        .text(prompt), .imageUrl(URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")!)
+                     ]))
+                  ], model: .gpt4VisionPreview))
                case .chatCompeltionStream:
-                  try await chatProvider.startStreamedChat(parameters: .init(messages: [.init(role: .assistant, content: prompt)], model: .gpt35Turbo))
+                  try await chatProvider
+                     .startStreamedChat(
+                        parameters: .init(messages: [.init(
+                           role: .user,
+                           content: .contentArray([
+                              .text(prompt), .imageUrl(URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")!)
+                           ]))],
+                                          model: .gpt4VisionPreview))
                }
             }
          } label: {

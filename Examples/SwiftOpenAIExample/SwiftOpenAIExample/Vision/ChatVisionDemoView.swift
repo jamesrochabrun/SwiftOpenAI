@@ -86,9 +86,7 @@ struct ChatVisionDemoView: View {
             let content: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
                .text(prompt)
             ] + selectedImageURLS.map { .imageUrl($0) }
-            prompt = ""
-            selectedImages = []
-            selectedItems = []
+            resetInput()
             try await chatProvider.startStreamedChat(parameters: .init(
                messages: [.init(role: .user, content: .contentArray(content
                ))],
@@ -133,6 +131,14 @@ struct ChatVisionDemoView: View {
                .padding(4)
          }
       }
+   }
+   
+   /// Called when the user taps on the send button. Clears the selected images and prompt.
+   private func resetInput() {
+      prompt = ""
+      selectedImages = []
+      selectedItems = []
+      selectedImageURLS = []
    }
 }
 

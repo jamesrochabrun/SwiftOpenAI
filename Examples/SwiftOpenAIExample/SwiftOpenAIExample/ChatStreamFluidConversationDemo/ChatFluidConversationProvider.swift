@@ -83,7 +83,7 @@ import SwiftOpenAI
                debugPrint("FINISH_REASON \(finishReason)")
                // Construct a new message parameter with the role and content derived from the delta.
                // Intentionally force unwrapped, if fails is programming error.
-               let newMessage = ChatCompletionParameters.Message(role: .init(rawValue: newDelta.role)!, content: newDelta.content)
+               let newMessage = ChatCompletionParameters.Message(role: .init(rawValue: newDelta.role)!, content: .text(newDelta.content))
                // Append the new message parameter to the collection for future requests.
                updateParameterMessagesArray(newMessage)
             }
@@ -104,7 +104,7 @@ import SwiftOpenAI
          type: .sent, delta: nil)
       addMessage(startingMessage)
       // Stores a new
-      let newParameterMessage = ChatCompletionParameters.Message(role: .user, content: prompt)
+      let newParameterMessage = ChatCompletionParameters.Message(role: .user, content: .text(prompt))
       updateParameterMessagesArray(newParameterMessage)
    }
    

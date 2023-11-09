@@ -81,7 +81,7 @@ struct ChatStreamFluidConversationDemoView: View {
             }
             /// Make the request
             try await chatProvider.startStreamedChat(parameters: .init(
-               messages: [.init(role: .user, content: prompt)],
+               messages: [.init(role: .user, content: .text(prompt))],
                model: selectedModel == .gpt3dot5 ? .gpt35Turbo : .gpt4), prompt: prompt)
          }
       } label: {

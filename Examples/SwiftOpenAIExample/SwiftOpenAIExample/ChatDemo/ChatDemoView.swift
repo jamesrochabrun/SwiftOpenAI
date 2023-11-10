@@ -62,9 +62,12 @@ struct ChatDemoView: View {
             Task {
                isLoading = true
                defer { isLoading = false }  // ensure isLoading is set to false when the
+               
+               let content: ChatCompletionParameters.Message.ContentType = .text(prompt)
+               prompt = ""
                let parameters = ChatCompletionParameters(messages: [.init(
                   role: .user,
-                  content: .text(prompt))], model: .gpt41106Preview)
+                  content: content)], model: .gpt41106Preview)
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

@@ -90,7 +90,7 @@ struct ChatVisionDemoView: View {
             try await chatProvider.startStreamedChat(parameters: .init(
                messages: [.init(role: .user, content: .contentArray(content
                ))],
-               model: .gpt4VisionPreview), content: content)
+               model: .gpt4VisionPreview, maxTokens: 300), content: content)
          }
       } label: {
          Image(systemName: "paperplane")

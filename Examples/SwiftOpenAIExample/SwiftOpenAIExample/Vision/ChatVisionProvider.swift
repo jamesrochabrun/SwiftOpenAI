@@ -64,7 +64,7 @@ import SwiftOpenAI
             // Assign the content received in the current message to the newDelta.
             newDelta.content = temporalReceivedMessageContent
             // Update the UI with the latest assistant message and the corresponding delta.
-            updateLastAssistantMessage(content: choice.delta.content ?? "", delta: newDelta)
+            await updateLastAssistantMessage(content: choice.delta.content ?? "", delta: newDelta)
          }
       } catch {
          // If an error occurs, update the UI to display the error message.
@@ -93,6 +93,7 @@ import SwiftOpenAI
       addMessage(newMessage)
    }
    
+   @MainActor
    private func updateLastAssistantMessage(
       content: String,
       delta: ChatDisplayMessage.Delta)

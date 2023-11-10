@@ -161,6 +161,14 @@ public struct ChatCompletionParameters: Encodable {
          let arguments: String
          /// The name of the function to call.
          let name: String
+         
+         public init(
+            arguments: String,
+            name: String)
+         {
+            self.arguments = arguments
+            self.name = name
+         }
       }
       
       enum CodingKeys: String, CodingKey {

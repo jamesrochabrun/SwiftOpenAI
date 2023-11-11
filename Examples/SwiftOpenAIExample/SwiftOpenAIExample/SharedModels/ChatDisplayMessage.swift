@@ -8,30 +8,6 @@
 import Foundation
 import SwiftOpenAI
 
-extension ChatCompletionParameters.Message.ContentType.MessageContent: Equatable, Hashable {
-   
-   public func hash(into hasher: inout Hasher) {
-       switch self {
-       case .text(let string):
-           hasher.combine(string)
-       case .imageUrl(let url):
-           hasher.combine(url)
-       }
-   }
-   
-   public static func ==(lhs: ChatCompletionParameters.Message.ContentType.MessageContent, rhs: ChatCompletionParameters.Message.ContentType.MessageContent) -> Bool {
-       switch (lhs, rhs) {
-       case let (.text(a), .text(b)):
-           return a == b
-       case let (.imageUrl(a), .imageUrl(b)):
-           return a == b
-       default:
-           return false
-       }
-   }
-   
-}
-
 struct ChatDisplayMessage: Identifiable {
    
    let id: UUID

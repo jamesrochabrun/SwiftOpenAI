@@ -105,7 +105,8 @@ public struct ChatCompletionParameters: Encodable {
             }
          }
          
-         public enum MessageContent: Encodable {
+         public enum MessageContent: Encodable, Equatable, Hashable {
+            
             case text(String)
             case imageUrl(URL)
             
@@ -125,6 +126,26 @@ public struct ChatCompletionParameters: Encodable {
                   try container.encode("image_url", forKey: .type)
                   try container.encode(url, forKey: .imageUrl)
                }
+            }
+            
+            public func hash(into hasher: inout Hasher) {
+                switch self {
+                case .text(let string):
+                    hasher.combine(string)
+                case .imageUrl(let url):
+                    hasher.combine(url)
+                }
+            }
+            
+            public static func ==(lhs: MessageContent, rhs: MessageContent) -> Bool {
+                switch (lhs, rhs) {
+                case let (.text(a), .text(b)):
+                    return a == b
+                case let (.imageUrl(a), .imageUrl(b)):
+                    return a == b
+                default:
+                    return false
+                }
             }
          }
       }

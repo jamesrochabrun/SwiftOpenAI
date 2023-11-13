@@ -10,7 +10,7 @@ import Foundation
 enum Sizes {}
 
 extension Sizes {
-   
+
    static let spacingExtraSmall: CGFloat = 4.0
    static let spacingSmall: CGFloat = 6
    static let spacingMedium: CGFloat = 8

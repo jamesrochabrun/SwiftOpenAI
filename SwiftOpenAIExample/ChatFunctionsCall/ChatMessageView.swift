@@ -5,10 +5,11 @@
 //  Created by James Rochabrun on 11/13/23.
 //
 
+import Foundation
 import SwiftUI
 
 struct ChatMessageView: View {
-   
+
    let message: ChatMessageDisplayModel
 
    @ViewBuilder
@@ -25,7 +26,7 @@ struct ChatMessageView: View {
          headerWith("person.circle", title: "USER")
       }
    }
-   
+
    var body: some View {
       VStack(alignment: .leading, spacing: 8) {
          header
@@ -51,7 +52,7 @@ struct ChatMessageView: View {
          .padding(.leading, 23)
       }
    }
-   
+
    @ViewBuilder
    func chatMessageViewWith(
       _ text: String?)
@@ -68,7 +69,7 @@ struct ChatMessageView: View {
          EmptyView()
       }
    }
-   
+
    func headerWith(
       _ systemImageName: String,
       title: String)
@@ -83,7 +84,7 @@ struct ChatMessageView: View {
       }
       .foregroundColor(.gray.opacity(0.9))
    }
-   
+
    func imagesFrom(
       urls: [URL])
       -> some View

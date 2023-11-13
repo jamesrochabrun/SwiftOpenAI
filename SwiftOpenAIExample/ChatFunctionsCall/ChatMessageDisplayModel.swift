@@ -9,16 +9,16 @@ import Foundation
 import SwiftOpenAI
 
 struct ChatMessageDisplayModel: Identifiable {
-   
+
    let id: UUID
    var content: DisplayContent
    let origin: MessageOrigin
-   
+
    enum DisplayContent: Equatable {
-      
+
       case content(DisplayMessageType)
       case error(String)
-      
+
       static func ==(lhs: DisplayContent, rhs: DisplayContent) -> Bool {
          switch (lhs, rhs) {
          case let (.content(a), .content(b)):
@@ -29,13 +29,13 @@ struct ChatMessageDisplayModel: Identifiable {
             return false
          }
       }
-      
+
       struct DisplayMessageType: Equatable {
          var text: String?
          var urls: [URL]? = nil
       }
    }
-   
+
    init(
       id: UUID = UUID(),
       content: DisplayContent,
@@ -45,12 +45,12 @@ struct ChatMessageDisplayModel: Identifiable {
       self.content = content
       self.origin = origin
    }
-   
+
    enum MessageOrigin {
-      
+
       case received(ReceivedSource)
       case sent
-      
+
       enum ReceivedSource {
          case gpt
          case dalle

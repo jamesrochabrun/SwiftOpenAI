@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftopenai",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jamesrochabrun/SwiftOpenAI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c25c17bb3bda18095bd4f82d08787a1b4d714606"
+      }
+    }
+  ],
+  "version" : 2
+}

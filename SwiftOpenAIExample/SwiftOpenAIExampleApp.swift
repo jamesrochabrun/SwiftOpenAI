@@ -11,7 +11,9 @@ import SwiftUI
 struct SwiftOpenAIExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+           ApiKeyIntroView()
         }
     }
 }
+
+

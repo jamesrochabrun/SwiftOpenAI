@@ -54,7 +54,6 @@ struct FunctionCallStreamedResponse {
    
    // MARK: - Private Properties
    
-   private static let yourAPIKey = "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" // Start with your API Key.
    private let service: OpenAIService
    private var temporalReceivedMessageContent: String = ""
    private var lastDisplayedMessageID: UUID?

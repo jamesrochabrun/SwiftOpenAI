@@ -402,15 +402,18 @@ extension OpenAIService {
       }
       printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
+         var errorMessage = "status code \(httpResponse.statusCode)"
          do {
             let data = try await data.reduce(into: Data()) { data, byte in
                data.append(byte)
             }
             let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
-            throw APIError.responseUnsuccessful(description: (error.error.message ?? "") + " status code \(httpResponse.statusCode)")
+            errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
          } catch {
-            throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
+            // If decoding fails, proceed with a general error message
+            errorMessage = "status code \(httpResponse.statusCode)"
          }
+         throw APIError.responseUnsuccessful(description: errorMessage)
       }
       return AsyncThrowingStream { continuation in
          Task {

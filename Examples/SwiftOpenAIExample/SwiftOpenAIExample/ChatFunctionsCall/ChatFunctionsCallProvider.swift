@@ -148,18 +148,17 @@ struct FunctionCallStreamedResponse {
          }
          // # extend conversation with assistant's reply
          // Append the `assistantMessage` in to the `chatMessageParameters` to extend the conversation
-         if let assistantMessage = createAssistantMessage() {
+         if !functionCallsMap.isEmpty {
+            
+            let assistantMessage = createAssistantMessage()
             chatMessageParameters.append(assistantMessage)
-         }
-         
-         /// # Step 4: send the info for each function call and function response to the model
-         if let toolMessages = try await createToolsMessages() {
+            /// # Step 4: send the info for each function call and function response to the model
+            let toolMessages = try await createToolsMessages()
             chatMessageParameters.append(contentsOf: toolMessages)
+            
+            // Lastly call the chat again
+            await continueChat()
          }
-         
-         // Lastly call the chat again
-         
-         await continueChat()
          
          // TUTORIAL
       } catch {
@@ -195,7 +194,7 @@ struct FunctionCallStreamedResponse {
       .init(role: .user, content: .text(prompt))
    }
    
-   func createAssistantMessage() -> ChatCompletionParameters.Message? {
+   func createAssistantMessage() -> ChatCompletionParameters.Message {
       var toolCalls: [ToolCall] = []
       for (_, functionCallStreamedResponse) in functionCallsMap {
          let toolCall = functionCallStreamedResponse.toolCall
@@ -205,14 +204,11 @@ struct FunctionCallStreamedResponse {
             function: .init(arguments: toolCall.function.arguments, name: toolCall.function.name!))
          toolCalls.append(messageToolCall)
       }
-      if toolCalls.isEmpty {
-         return nil
-      }
       return .init(role: .assistant, content: .text(temporalReceivedMessageContent), toolCalls: toolCalls)
    }
    
    func createToolsMessages() async throws
-   -> [ChatCompletionParameters.Message]?
+   -> [ChatCompletionParameters.Message]
    {
       var toolMessages: [ChatCompletionParameters.Message] = []
       for (key, functionCallStreamedResponse) in functionCallsMap {
@@ -229,7 +225,7 @@ struct FunctionCallStreamedResponse {
             toolCallID: id)
          toolMessages.append(toolMessage)
       }
-      return toolMessages.isEmpty ? nil : toolMessages
+      return toolMessages
    }
    
    func continueChat() async {

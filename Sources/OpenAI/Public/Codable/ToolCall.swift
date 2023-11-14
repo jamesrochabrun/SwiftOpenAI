@@ -18,8 +18,8 @@ public struct ToolCall: Codable {
    public let function: FunctionCall
    
    public init(
-      index: Int,
-      id: String,
+      index: Int? = nil,
+      id: String?,
       type: String = "function",
       function: FunctionCall)
    {

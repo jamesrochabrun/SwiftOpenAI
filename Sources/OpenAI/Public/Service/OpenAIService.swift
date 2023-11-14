@@ -339,12 +339,15 @@ extension OpenAIService {
       }
       printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
+         var errorMessage = "status code \(httpResponse.statusCode)"
          do {
             let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
-            throw APIError.responseUnsuccessful(description: (error.error.message ?? "") + " status code \(httpResponse.statusCode)")
+            errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
          } catch {
-            throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
+            // If decoding fails, proceed with a general error message
+            errorMessage = "status code \(httpResponse.statusCode)"
          }
+         throw APIError.responseUnsuccessful(description: errorMessage)
       }
       var content: [[String: Any]] = []
       if let jsonString = String(data: data, encoding: .utf8) {
@@ -374,12 +377,15 @@ extension OpenAIService {
       }
       printHTTPURLResponse(httpResponse)
       guard httpResponse.statusCode == 200 else {
+         var errorMessage = "status code \(httpResponse.statusCode)"
          do {
             let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
-            throw APIError.responseUnsuccessful(description: (error.error.message ?? "") + " status code \(httpResponse.statusCode)")
+            errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
          } catch {
-            throw APIError.responseUnsuccessful(description: "status code \(httpResponse.statusCode)")
+            // If decoding fails, proceed with a general error message
+            errorMessage = "status code \(httpResponse.statusCode)"
          }
+         throw APIError.responseUnsuccessful(description: errorMessage)
       }
       #if DEBUG
       print("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")

@@ -1,5 +1,5 @@
 //
-//  ChatFunctionsCallProvider.swift
+//  ChatFunctionsCallStreamProvider.swift
 //  SwiftOpenAIExample
 //
 //  Created by James Rochabrun on 11/6/23.
@@ -12,31 +12,6 @@ import SwiftOpenAI
  This is a demo in how to implement parallel function calling when using the completion API stream = true
  */
 
-/// 1 Define the function calls
-
-enum FunctionCall: String, CaseIterable {
-   
-   case createImage = "create_image"
-   // Add more functions if needed, parallel function calling is supported.
-   
-   var functionTool: ChatCompletionParameters.Tool {
-      switch self {
-      case .createImage:
-         return .init(function: .init(
-            name: self.rawValue,
-            description: "call this function if the request asks to generate an image",
-            parameters: .init(
-               type: .object,
-               properties: [
-                  "prompt": .init(type: .string, description: "The exact prompt passed in."),
-                  "count": .init(type: .integer, description: "The number of images requested")
-               ],
-               required: ["prompt", "count"])))
-      }
-   }
-}
-
-/// 2 Define a FunctionCall streamed response
 struct FunctionCallStreamedResponse {
    let name: String
    let id: String
@@ -44,17 +19,16 @@ struct FunctionCallStreamedResponse {
    var argument: String
 }
 
-@Observable class ChatFunctionsCallProvider {
+@Observable class ChatFunctionsCallStreamProvider {
    
    // MARK: - Private Properties
    
    private let service: OpenAIService
-   private var temporalReceivedMessageContent: String = ""
    private var lastDisplayedMessageID: UUID?
    /// To be used for a new request
    private var chatMessageParameters: [ChatCompletionParameters.Message] = []
-   private var functionCallsMap: [FunctionCall: FunctionCallStreamedResponse] = [:]
-   private var availableFunctions: [FunctionCall: (@MainActor (String) async throws -> String)] = [:]
+   private var functionCallsMap: [FunctionCallDefinition: FunctionCallStreamedResponse] = [:]
+   private var availableFunctions: [FunctionCallDefinition: (@MainActor (String) async throws -> String)] = [:]
    
    @MainActor
    func generateImage(arguments: String) async throws -> String {
@@ -113,7 +87,7 @@ struct FunctionCallStreamedResponse {
       let userMessage = createUserMessage(prompt)
       chatMessageParameters.append(userMessage)
       
-      let tools = FunctionCall.allCases.map { $0.functionTool }
+      let tools = FunctionCallDefinition.allCases.map { $0.functionTool }
 
       let parameters = ChatCompletionParameters(
          messages: chatMessageParameters,
@@ -172,7 +146,7 @@ struct FunctionCallStreamedResponse {
    {
       for toolCall in toolCalls {
          // Intentionally force unwrapped to catch errrors quickly on demo. // This should be properly handled.
-         let function = FunctionCall.allCases[toolCall.index!]
+         let function = FunctionCallDefinition.allCases[toolCall.index!]
          if var streamedFunctionCallResponse = functionCallsMap[function] {
             streamedFunctionCallResponse.argument += toolCall.function.arguments
             functionCallsMap[function] = streamedFunctionCallResponse
@@ -204,7 +178,7 @@ struct FunctionCallStreamedResponse {
             function: .init(arguments: toolCall.function.arguments, name: toolCall.function.name!))
          toolCalls.append(messageToolCall)
       }
-      return .init(role: .assistant, content: .text(temporalReceivedMessageContent), toolCalls: toolCalls)
+      return .init(role: .assistant, content: .text(""), toolCalls: toolCalls)
    }
    
    func createToolsMessages() async throws
@@ -263,9 +237,8 @@ struct FunctionCallStreamedResponse {
    
    @MainActor
    private func startNewAssistantEmptyDisplayMessage() {
-      temporalReceivedMessageContent = ""
       let newMessage = ChatMessageDisplayModel(
-         content: .content(.init(text: temporalReceivedMessageContent)),
+         content: .content(.init(text: "")),
          origin: .received(.gpt))
       addMessage(newMessage)
    }

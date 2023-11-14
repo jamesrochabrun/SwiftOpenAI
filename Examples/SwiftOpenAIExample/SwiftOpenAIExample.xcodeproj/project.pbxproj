@@ -32,8 +32,8 @@
 		7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */; };
 		7B7239A82AF6292100646679 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A72AF6292100646679 /* LoadingView.swift */; };
 		7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AA2AF6294C00646679 /* URLImageView.swift */; };
-		7B7239AE2AF9FF0000646679 /* ChatFunctionsCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */; };
-		7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */; };
+		7B7239AE2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AD2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift */; };
+		7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -50,6 +50,8 @@
 		7BBE7EA72B02E8AC0096A693 /* ThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EA62B02E8AC0096A693 /* ThemeColor.swift */; };
 		7BBE7EA92B02E8E50096A693 /* ChatMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EA82B02E8E50096A693 /* ChatMessageView.swift */; };
 		7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */; };
+		7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */; };
+		7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,8 +97,8 @@
 		7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDisplayMessageView.swift; sourceTree = "<group>"; };
 		7B7239A72AF6292100646679 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		7B7239AA2AF6294C00646679 /* URLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImageView.swift; sourceTree = "<group>"; };
-		7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCallProvider.swift; sourceTree = "<group>"; };
-		7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCalllDemoView.swift; sourceTree = "<group>"; };
+		7B7239AD2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCallStreamProvider.swift; sourceTree = "<group>"; };
+		7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCalllStreamDemoView.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -116,6 +118,8 @@
 		7BBE7EA62B02E8AC0096A693 /* ThemeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeColor.swift; sourceTree = "<group>"; };
 		7BBE7EA82B02E8E50096A693 /* ChatMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageView.swift; sourceTree = "<group>"; };
 		7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageDisplayModel.swift; sourceTree = "<group>"; };
+		7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallProvider.swift; sourceTree = "<group>"; };
+		7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallDemoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -248,9 +252,9 @@
 		7B7239AC2AF9FEC300646679 /* ChatFunctionsCall */ = {
 			isa = PBXGroup;
 			children = (
-				7B7239AD2AF9FF0000646679 /* ChatFunctionsCallProvider.swift */,
+				7BBE7EDC2B0371670096A693 /* Completion */,
+				7BBE7EDB2B0370E60096A693 /* Stream */,
 				7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */,
-				7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift */,
 				7BBE7EA82B02E8E50096A693 /* ChatMessageView.swift */,
 			);
 			path = ChatFunctionsCall;
@@ -362,6 +366,24 @@
 				7BBE7EA62B02E8AC0096A693 /* ThemeColor.swift */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		7BBE7EDB2B0370E60096A693 /* Stream */ = {
+			isa = PBXGroup;
+			children = (
+				7B7239AD2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift */,
+				7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift */,
+			);
+			path = Stream;
+			sourceTree = "<group>";
+		};
+		7BBE7EDC2B0371670096A693 /* Completion */ = {
+			isa = PBXGroup;
+			children = (
+				7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */,
+				7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */,
+			);
+			path = Completion;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -504,16 +526,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BBE7EA92B02E8E50096A693 /* ChatMessageView.swift in Sources */,
-				7B7239AE2AF9FF0000646679 /* ChatFunctionsCallProvider.swift in Sources */,
+				7B7239AE2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift in Sources */,
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
 				7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */,
 				7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */,
-				7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllDemoView.swift in Sources */,
+				7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift in Sources */,
 				7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */,
 				7BBE7EA52B02E8A70096A693 /* Sizes.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
+				7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */,
 				7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */,
 				7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
@@ -537,6 +560,7 @@
 				7BBE7EA72B02E8AC0096A693 /* ThemeColor.swift in Sources */,
 				7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */,
 				7B436BA82AE77F41003CE281 /* EmbeddingsDemoView.swift in Sources */,
+				7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

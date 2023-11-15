@@ -142,7 +142,7 @@ public struct MessageObject: Decodable {
                   }
                }
                
-               private enum CodingKeys: String, CodingKey {
+               enum CodingKeys: String, CodingKey {
                   case type
                   case text
                   case fileCitation = "file_citation"
@@ -151,7 +151,7 @@ public struct MessageObject: Decodable {
                   case endIndex = "end_index"
                }
                
-               private enum AnnotationTypeKey: CodingKey {
+               enum AnnotationTypeKey: CodingKey {
                   case type
                }
                
@@ -175,13 +175,13 @@ public struct MessageObject: Decodable {
          }
       }
       
-      private enum CodingKeys: String, CodingKey {
+      enum CodingKeys: String, CodingKey {
          case type
          case imageFile = "image_file"
          case text
       }
       
-      private enum ContentTypeKey: CodingKey {
+      enum ContentTypeKey: CodingKey {
          case type
       }
       
@@ -203,7 +203,6 @@ public struct MessageObject: Decodable {
          }
       }
    }
-
    
    enum CodingKeys: String, CodingKey {
       case id

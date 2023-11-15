@@ -48,6 +48,14 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: AudioObject.self, with: request)
    }
    
+   func createSpeech(
+      parameters: AudioSpeechParameters)
+      async throws -> AudioSpeechObject
+   {
+      let request = try OpenAIAPI.audio(.speech).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(type: AudioSpeechObject.self, with: request)
+   }
+   
    // MARK: Chat
    
    func startChat(

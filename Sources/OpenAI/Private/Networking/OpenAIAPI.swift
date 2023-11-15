@@ -23,6 +23,7 @@ enum OpenAIAPI {
    enum AudioCategory: String {
       case transcriptions
       case translations
+      case speech
    }
    
    enum FineTuningCategory {

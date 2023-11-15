@@ -106,6 +106,15 @@ public protocol OpenAIService {
       parameters: AudioTranslationParameters)
    async throws -> AudioObject
    
+   /// - Parameter parameters: The audio speech parameters.
+   /// - Returns: The audio file content.
+   /// - Throws: An error if the process fails.
+   ///
+   /// For more information, refer to [OpenAI's Audio Speech API documentation](https://platform.openai.com/docs/api-reference/audio/createSpeech).
+   func createSpeech(
+      parameters: AudioSpeechParameters)
+   async throws -> AudioSpeechObject
+   
    // MARK: Chat
    
    /// - Parameter parameters: Parameters for the chat completion request.

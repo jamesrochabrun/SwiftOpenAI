@@ -86,6 +86,17 @@ public protocol OpenAIService {
       request: URLRequest)
    async throws -> [[String: Any]]
    
+   /// Asynchronously fetches audio data.
+   ///
+   /// This method is used exclusively for handling audio data responses.
+   ///
+   /// - Parameter request: The `URLRequest` describing the API request to fetch the file.
+   /// - Throws: An error if the request fails.
+   /// - Returns: The audio Data
+   func fetchAudio(
+      with request: URLRequest)
+   async throws -> Data
+
    // MARK: Audio
    
    /// - Parameter parameters: The audio transcription parameters.
@@ -372,6 +383,31 @@ extension OpenAIService {
          }
       }
       return content
+   }
+   
+   public func fetchAudio(with request: URLRequest) async throws -> Data {
+      printCurlCommand(request)
+      let (data, response) = try await session.data(for: request)
+      
+      guard let httpResponse = response as? HTTPURLResponse else {
+         throw APIError.requestFailed(description: "Invalid response: unable to get a valid HTTPURLResponse")
+      }
+      printHTTPURLResponse(httpResponse)
+      guard httpResponse.statusCode == 200 else {
+         var errorMessage = "Status code \(httpResponse.statusCode)"
+         do {
+            let errorResponse = try decoder.decode(OpenAIErrorResponse.self, from: data)
+            errorMessage += " \(errorResponse.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+         } catch {
+            if let errorString = String(data: data, encoding: .utf8), !errorString.isEmpty {
+               errorMessage += " - \(errorString)"
+            } else {
+               errorMessage += " - No error message provided"
+            }
+         }
+         throw APIError.responseUnsuccessful(description: errorMessage)
+      }
+      return data
    }
    
    public func fetch<T: Decodable>(

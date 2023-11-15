@@ -53,7 +53,8 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AudioSpeechObject
    {
       let request = try OpenAIAPI.audio(.speech).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: AudioSpeechObject.self, with: request)
+      let data = try await fetchAudio(with: request)
+      return AudioSpeechObject(output: data)
    }
    
    // MARK: Chat

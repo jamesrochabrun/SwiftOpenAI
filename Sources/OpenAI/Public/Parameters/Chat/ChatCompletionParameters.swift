@@ -259,7 +259,7 @@ public struct ChatCompletionParameters: Encodable {
       }
    }
    
-   public struct ChatFunction: Encodable, Equatable {
+   public struct ChatFunction: Codable, Equatable {
       
       /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
       let name: String
@@ -269,7 +269,7 @@ public struct ChatCompletionParameters: Encodable {
       /// To describe a function that accepts no parameters, provide the value `{"type": "object", "properties": {}}`.
       let parameters: JSONSchema
       
-      public struct JSONSchema: Encodable, Equatable {
+      public struct JSONSchema: Codable, Equatable {
          
          public let type: JSONType
          public let properties: [String: Property]?
@@ -287,7 +287,7 @@ public struct ChatCompletionParameters: Encodable {
             case multipleOf, minimum, maximum
          }
          
-         public struct Property: Encodable, Equatable {
+         public struct Property: Codable, Equatable {
             
             public let type: JSONType
             public let description: String?
@@ -344,7 +344,7 @@ public struct ChatCompletionParameters: Encodable {
             }
          }
          
-         public enum JSONType: String, Encodable {
+         public enum JSONType: String, Codable {
             case integer = "integer"
             case string = "string"
             case boolean = "boolean"
@@ -354,7 +354,7 @@ public struct ChatCompletionParameters: Encodable {
             case `null` = "null"
          }
          
-         public struct Items: Encodable, Equatable {
+         public struct Items: Codable, Equatable {
             
             public let type: JSONType
             public let properties: [String: Property]?

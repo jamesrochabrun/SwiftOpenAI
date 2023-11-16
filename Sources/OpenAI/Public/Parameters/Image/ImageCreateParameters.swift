@@ -52,7 +52,7 @@ public struct ImageCreateParameters: Encodable {
    public init(
       prompt: String,
       model: Dalle,
-      numberOfImages: Int? = nil,
+      numberOfImages: Int = 1,
       quality: String? = nil,
       responseFormat: ImageResponseFormat? = nil,
       style: String? = nil,

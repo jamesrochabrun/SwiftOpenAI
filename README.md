@@ -107,15 +107,6 @@ public struct AudioTranscriptionParameters: Encodable {
       case whisperOne = "whisper-1"
    }
    
-   enum CodingKeys: String, CodingKey {
-      case file
-      case model
-      case prompt
-      case responseFormat = "response_format"
-      case temperature
-      case language
-   }
-   
    public init(
       fileName: String,
       file: Data,
@@ -172,14 +163,6 @@ public struct AudioTranslationParameters: Encodable {
    
    public enum Model: String {
       case whisperOne = "whisper-1"
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case file
-      case model
-      case prompt
-      case responseFormat = "response_format"
-      case temperature
    }
    
    public init(
@@ -254,15 +237,7 @@ public struct AudioSpeechParameters: Encodable {
       case aac
       case flac
    }
-
-   enum CodingKeys: String, CodingKey {
-       case model
-       case input
-       case voice
-       case responseFormat = "response_format"
-       case speed
-   }
-
+   
    public init(
       model: TTSModel,
       input: String,
@@ -440,15 +415,6 @@ public struct ChatCompletionParameters: Encodable {
          case user // content, role
          case assistant // content, role, tool_calls
          case tool // content, role, tool_call_id
-      }
-      
-      enum CodingKeys: String, CodingKey {
-         case role
-         case content
-         case name
-         case functionCall = "function_call"
-         case toolCalls = "tool_calls"
-         case toolCallID = "tool_call_id"
       }
       
       public init(
@@ -736,27 +702,6 @@ public struct ChatCompletionParameters: Encodable {
       }
    }
    
-   enum CodingKeys: String, CodingKey {
-      case messages
-      case model
-      case frequencyPenalty = "frequency_penalty"
-      case toolChoice = "tool_choice"
-      case functionCall = "function_call"
-      case tools
-      case functions
-      case logitBias = "logit_bias"
-      case maxTokens = "max_tokens"
-      case n
-      case responseFormat = "response_format"
-      case presencePenalty = "presence_penalty"
-      case seed
-      case stop
-      case stream
-      case temperature
-      case topP = "top_p"
-      case user
-   }
-   
    public init(
       messages: [Message],
       model: Model,
@@ -846,31 +791,7 @@ public struct ChatCompletionObject: Decodable {
          public struct FinishDetails: Decodable {
             let type: String
          }
-         
-         enum CodingKeys: String, CodingKey {
-            case content
-            case toolCalls = "tool_calls"
-            case functionCall = "function_call"
-            case role
-            case finishDetails = "finish_details"
-         }
       }
-      
-      enum CodingKeys: String, CodingKey {
-         case finishReason = "finish_reason"
-         case index
-         case message
-      }
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case choices
-      case created
-      case model
-      case systemFingerprint = "system_fingerprint"
-      case object
-      case usage
    }
    
    public struct ChatUsage: Decodable {
@@ -881,12 +802,6 @@ public struct ChatCompletionObject: Decodable {
       public let promptTokens: Int
       /// Total number of tokens used in the request (prompt + completion).
       public let totalTokens: Int
-      
-      enum CodingKeys: String, CodingKey {
-         case completionTokens = "completion_tokens"
-         case promptTokens = "prompt_tokens"
-         case totalTokens = "total_tokens"
-      }
    }
 }
 ```
@@ -940,35 +855,12 @@ public struct ChatCompletionChunkObject: Decodable {
          public let functionCall: FunctionCall?
          /// The role of the author of this message.
          public let role: String?
-         
-         enum CodingKeys: String, CodingKey {
-            case content
-            case toolCalls = "tool_calls"
-            case functionCall = "function_call"
-            case role
-         }
       }
       
       /// Provided by the Vision API.
       public struct FinishDetails: Decodable {
          let type: String
       }
-      
-      enum CodingKeys: String, CodingKey {
-         case delta
-         case finishReason = "finish_reason"
-         case index
-         case finishDetails = "finish_details"
-      }
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case choices
-      case created
-      case model
-      case systemFingerprint = "system_fingerprint"
-      case object
    }
 }
 ```
@@ -1141,13 +1033,6 @@ public struct FineTuningJobParameters: Encodable {
    /// See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more details.
    let validationFile: String?
    
-   enum CodingKeys: String, CodingKey {
-      case model
-      case trainingFile = "training_file"
-      case validationFile = "validation_file"
-   }
-   
-   
    /// Fine-tuning is [currently available](https://platform.openai.com/docs/guides/fine-tuning/what-models-can-be-fine-tuned) for the following models:
    /// gpt-3.5-turbo-0613 (recommended)
    /// babbage-002
@@ -1168,10 +1053,6 @@ public struct FineTuningJobParameters: Encodable {
          nEpochs: Int?)
       {
          self.nEpochs = nEpochs
-      }
-      
-      enum CodingKeys: String, CodingKey {
-         case nEpochs = "n_epochs"
       }
    }
    
@@ -1240,29 +1121,9 @@ public struct FineTuningJobObject: Decodable {
       case cancelled
    }
    
-   enum CodingKeys: String, CodingKey {
-      case id
-      case createdAt = "created_at"
-      case fineTunedModel = "fine_tuned_model"
-      case finishedAt = "finished_at"
-      case hyperparameters
-      case model
-      case object
-      case organizationId = "organization_id"
-      case resultFiles = "result_files"
-      case status
-      case trainedTokens = "trained_tokens"
-      case trainingFile = "training_file"
-      case validationFile = "validation_file"
-   }
-   
    public struct HyperParameters: Decodable {
       /// The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset. "auto" decides the optimal number of epochs based on the size of the dataset. If setting the number manually, we support any number between 1 and 50 epochs.
       public let nEpochs: IntOrStringValue
-      
-      enum CodingKeys: String, CodingKey {
-         case nEpochs = "n_epochs"
-      }
    }
 }
 ```
@@ -1312,22 +1173,6 @@ public struct FineTuningJobEventObject: Decodable {
       public let step: Int
       public let trainLoss: Double
       public let trainMeanTokenAccuracy: Double
-      
-      enum CodingKeys: String, CodingKey {
-         case step
-         case trainLoss = "train_loss"
-         case trainMeanTokenAccuracy = "train_mean_token_accuracy"
-      }
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case createdAt = "created_at"
-      case level
-      case message
-      case object
-      case type
-      case data
    }
 }
 ```
@@ -1393,18 +1238,7 @@ public struct FileObject: Decodable {
       case deleting
       case deleted
    }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case bytes
-      case createdAt = "created_at"
-      case filename
-      case object
-      case purpose
-      case status
-      case statusDetails = "status_details"
-   }
-   
+
    public init(
       id: String,
       bytes: Int,
@@ -1461,21 +1295,98 @@ let fileContent = try await service.retrieveContentForFileWith(id: fileID)
 ```
 
 ### Images
+
+For handling image sizes, we utilize the `Dalle` model. An enum with associated values has been defined to represent its size constraints accurately.
+
+ [DALL·E](https://platform.openai.com/docs/models/dall-e)
+ 
+ DALL·E is a AI system that can create realistic images and art from a description in natural language. DALL·E 3 currently supports the ability, given a prompt, to create a new image with a specific size. DALL·E 2 also support the ability to edit an existing image, or create variations of a user provided image.
+ 
+ DALL·E 3 is available through our Images API along with DALL·E 2. You can try DALL·E 3 through ChatGPT Plus.
+ 
+ 
+ | MODEL     | DESCRIPTION                                                  |
+ |-----------|--------------------------------------------------------------|
+ | dall-e-3  | DALL·E 3 New                                                 |
+ |           | The latest DALL·E model released in Nov 2023. Learn more.    |
+ | dall-e-2  | The previous DALL·E model released in Nov 2022.              |
+ |           | The 2nd iteration of DALL·E with more realistic, accurate,   |
+ |           | and 4x greater resolution images than the original model.    |
+
+public enum Dalle {
+   
+   case dalle2(Dalle2ImageSize)
+   case dalle3(Dalle3ImageSize)
+   
+   public enum Dalle2ImageSize: String {
+      case small = "256x256"
+      case medium = "512x512"
+      case large = "1024x1024"
+   }
+   
+   public enum Dalle3ImageSize: String {
+      case largeSquare = "1024x1024"
+      case landscape  = "1792x1024"
+      case portrait = "1024x1792"
+   }
+   
+   var model: String {
+      switch self {
+      case .dalle2: return Model.dalle2.rawValue
+      case .dalle3: return Model.dalle3.rawValue
+      }
+   }
+   
+   var size: String {
+      switch self {
+      case .dalle2(let dalle2ImageSize):
+         return dalle2ImageSize.rawValue
+      case .dalle3(let dalle3ImageSize):
+         return dalle3ImageSize.rawValue
+      }
+   }
+}
+
 #### Image create
 Parameters
 ```swift
 public struct ImageCreateParameters: Encodable {
    
-   /// A text description of the desired image(s). The maximum length is 1000 characters.
+   /// A text description of the desired image(s). The maximum length is 1000 characters for dall-e-2 and 4000 characters for dall-e-3.
    let prompt: String
-   /// The number of images to generate. Must be between 1 and 10. Defaults to 1
+   /// The model to use for image generation. Defaults to dall-e-2
+   let model: String?
+   /// The number of images to generate. Must be between 1 and 10. For dall-e-3, only n=1 is supported.
    let n: Int?
-   /// The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024. Defaults to 1024x1024
-   let size: String?
+   /// The quality of the image that will be generated. hd creates images with finer details and greater consistency across the image. This param is only supported for dall-e-3. Defaults to standard
+   let quality: String?
    /// The format in which the generated images are returned. Must be one of url or b64_json. Defaults to url
    let responseFormat: String?
+   /// The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024 for dall-e-2. Must be one of 1024x1024, 1792x1024, or 1024x1792 for dall-e-3 models. Defaults to 1024x1024
+   let size: String?
+   /// The style of the generated images. Must be one of vivid or natural. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images. This param is only supported for dall-e-3. Defaults to vivid
+   let style: String?
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices)
    let user: String?
+   
+   public init(
+      prompt: String,
+      model: Dalle,
+      numberOfImages: Int = 1,
+      quality: String? = nil,
+      responseFormat: ImageResponseFormat? = nil,
+      style: String? = nil,
+      user: String? = nil)
+   {
+   self.prompt = prompt
+   self.model = model.model
+   self.n = numberOfImages
+   self.quality = quality
+   self.responseFormat = responseFormat?.rawValue
+   self.size = model.size
+   self.style = style
+   self.user = user
+   }   
 }
 ```
 #### Image Edit 
@@ -1490,6 +1401,8 @@ public struct ImageEditParameters: Encodable {
    let prompt: String
    /// An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where image should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as image.
    let mask: Data?
+   /// The model to use for image generation. Only dall-e-2 is supported at this time. Defaults to dall-e-2
+   let model: String?
    /// The number of images to generate. Must be between 1 and 10. Defaults to 1
    let n: Int?
    /// The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024. Defaults to 1024x1024
@@ -1498,6 +1411,34 @@ public struct ImageEditParameters: Encodable {
    let responseFormat: String?
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices)
    let user: String?
+   
+   public init(
+      image: UIImage,
+      model: Dalle? = nil,
+      mask: UIImage? = nil,
+      prompt: String,
+      numberOfImages: Int? = nil,
+      responseFormat: ImageResponseFormat? = nil,
+      user: String? = nil)
+   {
+      if (image.pngData() == nil) {
+         assertionFailure("Failed to get PNG data from image")
+      }
+      if let mask, mask.pngData() == nil {
+         assertionFailure("Failed to get PNG data from mask")
+      }
+      if let model, model.model != Model.dalle2.rawValue {
+         assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
+      }
+      self.image = image.pngData()!
+      self.model = model?.model
+      self.mask = mask?.pngData()
+      self.prompt = prompt
+      self.n = numberOfImages
+      self.size = model?.size
+      self.responseFormat = responseFormat?.rawValue
+      self.user = user
+   }
 }
 ```
 #### Image variation
@@ -1508,6 +1449,8 @@ public struct ImageVariationParameters: Encodable {
    
    /// The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB, and square.
    let image: Data
+   /// The model to use for image generation. Only dall-e-2 is supported at this time. Defaults to dall-e-2
+   let model: String?
    /// The number of images to generate. Must be between 1 and 10. Defaults to 1
    let n: Int?
    /// The format in which the generated images are returned. Must be one of url or b64_json. Defaults to url
@@ -1516,6 +1459,24 @@ public struct ImageVariationParameters: Encodable {
    let size: String?
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices)
    let user: String?
+   
+   public init(
+      image: UIImage,
+      model: Dalle? = nil,
+      numberOfImages: Int? = nil,
+      responseFormat: ImageResponseFormat? = nil,
+      user: String? = nil)
+   {
+      if let model, model.model != Model.dalle2.rawValue {
+         assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
+      }
+      self.image = image.pngData()!
+      self.n = numberOfImages
+      self.model = model?.model
+      self.size = model?.size
+      self.responseFormat = responseFormat?.rawValue
+      self.user = user
+   }
 }
 ```
 Response
@@ -1526,11 +1487,8 @@ public struct ImageObject: Decodable {
    public let url: URL?
    /// The base64-encoded JSON of the generated image, if response_format is b64_json.
    public let b64Json: String?
-   
-   enum CodingKeys: String, CodingKey {
-      case url
-      case b64Json = "b64_json"
-   }
+   /// The prompt that was used to generate the image, if there was any revision to the prompt.
+   public let revisedPrompt: String?
 }
 ```
 
@@ -1538,7 +1496,7 @@ Usage
 ```swift
 /// Create image
 let prompt = "A mix of a dragon and an unicorn"
-let createParameters = ImageCreateParameters(prompt: prompt, numberOfImages: 4)
+let createParameters = ImageCreateParameters(prompt: prompt, model: .dalle3(.largeSquare))
 let imageURLS = try await service.createImages(parameters: createParameters).data.map(\.url)
 ```
 ```swift
@@ -1546,7 +1504,7 @@ let imageURLS = try await service.createImages(parameters: createParameters).dat
 let data = Data(contentsOfURL:_) // the data from an image.
 let image = UIImage(data: data)
 let prompt = "Add a background filled with pink balloons."
-let editParameters = ImageEditParameters(image: image, prompt: prompt, numberOfImages: 4)
+let editParameters = ImageEditParameters(image: image, prompt: prompt, numberOfImages: 4)  
 let imageURLS = try await service.editImage(parameters: parameters).data.map(\.url)
 ```
 ```swift
@@ -1575,14 +1533,6 @@ public struct ModelObject: Decodable {
    /// An array representing the current permissions of a model. Each element in the array corresponds to a specific permission setting. If there are no permissions or if the data is unavailable, the array may be nil.
    public let permission: [Permission]?
    
-   enum CodingKeys: String, CodingKey {
-      case id
-      case created
-      case object
-      case ownedBy = "owned_by"
-      case permission
-   }
-   
    public struct Permission: Decodable {
       public let id: String?
       public let object: String?
@@ -1596,21 +1546,6 @@ public struct ModelObject: Decodable {
       public let organization: String?
       public let group: String?
       public let isBlocking: Bool?
-      
-      enum CodingKeys: String, CodingKey {
-         case id
-         case object
-         case created
-         case allowCreateEngine = "allow_create_engine"
-         case allowSampling = "allow_sampling"
-         case allowLogprobs = "allow_logprobs"
-         case allowSearchIndices = "allow_search_indices"
-         case allowView = "allow_view"
-         case allowFineTuning = "allow_fine_tuning"
-         case organization
-         case group
-         case isBlocking = "is_blocking"
-      }
    }
    
    /// Represents the response from the [delete](https://platform.openai.com/docs/api-reference/models/delete) fine-tuning API
@@ -1708,26 +1643,6 @@ public struct ModerationObject: Decodable {
          public let violence: T
          /// Content that depicts death, violence, or physical injury in graphic detail.
          public let violenceGraphic: T
-         
-         enum CodingKeys: String, CodingKey {
-            case hate
-            case hateThreatening = "hate/threatening"
-            case harassment
-            case harassmentThreatening = "harassment/threatening"
-            case selfHarm = "self-harm"
-            case selfHarmIntent = "self-harm/intent"
-            case selfHarmInstructions = "self-harm/instructions"
-            case sexual
-            case sexualMinors = "sexual/minors"
-            case violence
-            case violenceGraphic = "violence/graphic"
-         }
-      }
-      
-      enum CodingKeys: String, CodingKey {
-         case categories
-         case categoryScores = "category_scores"
-         case flagged
       }
    }
 }

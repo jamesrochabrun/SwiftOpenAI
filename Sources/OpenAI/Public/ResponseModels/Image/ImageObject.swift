@@ -13,9 +13,12 @@ public struct ImageObject: Decodable {
    public let url: URL?
    /// The base64-encoded JSON of the generated image, if response_format is b64_json.
    public let b64Json: String?
+   /// The prompt that was used to generate the image, if there was any revision to the prompt.
+   public let revisedPrompt: String?
    
    enum CodingKeys: String, CodingKey {
       case url
       case b64Json = "b64_json"
+      case revisedPrompt = "revised_prompt"
    }
 }

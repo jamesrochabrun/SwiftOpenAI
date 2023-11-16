@@ -58,7 +58,7 @@ struct ImagesDemoView: View {
                isLoading = true
                defer { isLoading = false }  // ensure isLoading is set to false when the
                do {
-                  try await imagesProvider.createImages(parameters: .init(prompt: prompt, numberOfImages: 4))
+                  try await imagesProvider.createImages(parameters: .init(prompt: prompt, model: .dalle3(.largeSquare)))
                } catch {
                   errorMessage = "\(error)"
                }

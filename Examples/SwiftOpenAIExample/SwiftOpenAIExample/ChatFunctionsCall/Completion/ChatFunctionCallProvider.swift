@@ -51,7 +51,7 @@ enum FunctionCallDefinition: String, CaseIterable {
          origin: .received(.gpt))
       updateLastAssistantMessage(assistantMessage)
       
-      let urls = try await service.createImages(parameters: .init(prompt: prompt, numberOfImages: count)).data.compactMap(\.url)
+      let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dalle2(.small), numberOfImages: count)).data.compactMap(\.url)
       
       let dalleAssistantMessage = ChatMessageDisplayModel(
          content: .content(.init(text: nil, urls: urls)),

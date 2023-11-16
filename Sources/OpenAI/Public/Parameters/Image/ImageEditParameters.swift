@@ -17,6 +17,8 @@ public struct ImageEditParameters: Encodable {
    let prompt: String
    /// An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where image should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as image.
    let mask: Data?
+   /// The model to use for image generation. Only dall-e-2 is supported at this time. Defaults to dall-e-2
+   let model: String?
    /// The number of images to generate. Must be between 1 and 10. Defaults to 1
    let n: Int?
    /// The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024. Defaults to 1024x1024
@@ -25,12 +27,6 @@ public struct ImageEditParameters: Encodable {
    let responseFormat: String?
    /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](https://platform.openai.com/docs/guides/safety-best-practices)
    let user: String?
-   
-   public enum ImageSize: String {
-      case small = "256x256"
-      case medium = "512x512"
-      case large = "1024x1024"
-   }
    
    public enum ImageResponseFormat: String {
       case url = "url"
@@ -41,6 +37,7 @@ public struct ImageEditParameters: Encodable {
       case image
       case prompt
       case mask
+      case model
       case n
       case size
       case responseFormat = "response_format"
@@ -49,10 +46,10 @@ public struct ImageEditParameters: Encodable {
    
    public init(
       image: UIImage,
+      model: Dalle? = nil,
       mask: UIImage? = nil,
       prompt: String,
       numberOfImages: Int? = nil,
-      size: ImageSize? = nil,
       responseFormat: ImageResponseFormat? = nil,
       user: String? = nil)
    {
@@ -62,11 +59,15 @@ public struct ImageEditParameters: Encodable {
       if let mask, mask.pngData() == nil {
          assertionFailure("Failed to get PNG data from mask")
       }
+      if let model, model.model != Model.dalle2.rawValue {
+         assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
+      }
       self.image = image.pngData()!
+      self.model = model?.model
       self.mask = mask?.pngData()
       self.prompt = prompt
       self.n = numberOfImages
-      self.size = size?.rawValue
+      self.size = model?.size
       self.responseFormat = responseFormat?.rawValue
       self.user = user
    }
@@ -81,6 +82,7 @@ extension ImageEditParameters: MultipartFormDataParameters {
          .file(paramName: Self.CodingKeys.image.rawValue, fileName: "", fileData: image, contentType: "image/png"),
          .string(paramName: Self.CodingKeys.prompt.rawValue, value: prompt),
          .string(paramName: Self.CodingKeys.mask.rawValue, value: mask),
+         .string(paramName: Self.CodingKeys.model.rawValue, value: model),
          .string(paramName: Self.CodingKeys.n.rawValue, value: n),
          .string(paramName: Self.CodingKeys.size.rawValue, value: size),
          .string(paramName: Self.CodingKeys.responseFormat.rawValue, value: responseFormat),

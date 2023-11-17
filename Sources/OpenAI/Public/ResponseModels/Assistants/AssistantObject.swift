@@ -32,7 +32,7 @@ public struct AssistantObject: Decodable {
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    
-   public struct Tool: Decodable {
+   public struct Tool: Codable {
       
       /// The type of tool being defined.
       public let type: String
@@ -59,5 +59,11 @@ public struct AssistantObject: Decodable {
       case tools
       case fileIDS = "file_ids"
       case metadata
+   }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
    }
 }

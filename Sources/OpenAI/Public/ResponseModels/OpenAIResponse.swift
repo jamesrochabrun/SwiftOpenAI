@@ -40,6 +40,8 @@ public struct OpenAIResponse<T: Decodable>: Decodable {
    public let usage: Usage?
    public let hasMore: Bool?
    public let created: Int?
+   public let firstID: String?
+   public let lastID: String?
    
    public struct Usage: Decodable {
       
@@ -59,5 +61,7 @@ public struct OpenAIResponse<T: Decodable>: Decodable {
       case usage
       case hasMore = "has_more"
       case created
+      case firstID = "first_id"
+      case lastID = "last_id"
    }
 }

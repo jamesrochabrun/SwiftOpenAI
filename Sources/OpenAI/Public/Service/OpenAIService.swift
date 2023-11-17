@@ -96,7 +96,7 @@ public protocol OpenAIService {
    func fetchAudio(
       with request: URLRequest)
    async throws -> Data
-
+   
    // MARK: Audio
    
    /// - Parameter parameters: The audio transcription parameters.
@@ -343,6 +343,410 @@ public protocol OpenAIService {
    func createModerationFromTexts(
       parameters: ModerationParameter<[String]>)
    async throws -> ModerationObject
+   
+   // MARK: Assistants [BETA]
+   
+   /// Create an assistant with a model and instructions.
+   ///
+   /// - Parameter parameters: The parameters needed to build an assistant
+   /// - Returns: A [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistant).
+   func createAssistant(
+      parameters: AssistantParameters)
+   async throws -> AssistantObject
+   
+   /// Retrieves an assitant object by its ID.
+   ///
+   /// - Parameter id: The ID of the assistant to retrieve.
+   /// - Returns: The [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistant).
+   func retrieveAssistant(
+      id: String)
+   async throws -> AssistantObject
+   
+   /// Modifies an assistant.
+   ///
+   /// - Parameter id: The ID of the assistant to modify.
+   /// - Returns: The modified [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/modifyAssistant).
+   func modifyAssistant(
+      id: String)
+   async throws -> AssistantObject
+   
+   /// Delete an assistant.
+   ///
+   /// - Parameter id: The ID of the assistant to delete.
+   /// - Returns: Deletion Status
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistant).
+   func deleteAssistant(
+      id: String)
+   async throws -> AssistantObject.DeletionStatus
+   
+   /// Returns a list of assistants.
+   ///
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.  Defaults to desc.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: An `OpenAIResponse<AssistantObject>` containing the list of [assistants](https://platform.openai.com/docs/api-reference/assistants/object).
+   /// - Throws: An error if the retrieval process fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistants).
+   func listAssistants(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<AssistantObject>
+   
+   
+   // MARK: AssistantsFileObject [BETA]
+   
+   /// Create an assistant file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to an [assistant](https://platform.openai.com/docs/api-reference/assistants).
+   ///
+   /// - Parameter parameters: The parameters needed to build an assistant file object
+   /// - Parameter assistantID: The ID of the assistant for which to create a File.
+   /// - Returns: A [AssistantFileObject](https://platform.openai.com/docs/api-reference/assistants/file-object)
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile).
+   func createAssistantFile(
+      assistantID: String,
+      parameters: AssistantFileParamaters)
+   async throws -> AssistantFileObject
+   
+   /// Retrieves an AssistantFile.
+   ///
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter fileID: The ID of the file we're getting.
+   /// - Returns: The [assistant file object](https://platform.openai.com/docs/api-reference/assistants/file-object) matching the specified ID.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistantFile).
+   func retrieveAssistantFile(
+      assistantID: String,
+      fileID: String)
+   async throws -> AssistantFileObject
+   
+   /// Delete an assistant file.
+   ///
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter fileID: The ID of the file to delete.
+   /// - Returns: Deletion status.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistantFile).
+   func deleteAssistantFile(
+      assistantID: String,
+      fileID: String)
+   async throws -> AssistantFileObject.DeletionStatus
+   
+   /// Returns a list of assistant files.
+   ///
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [assistant file](https://platform.openai.com/docs/api-reference/assistants/file-object) objects.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistantFiles).
+   func listAssistantFiles(
+      assistantID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<AssistantFileObject>
+   
+   // MARK: Thread [BETA]
+   
+   /// Create a thread.
+   ///
+   /// - Parameter parameters: The parameters needed to build a thread.
+   /// - Returns: A [thread](https://platform.openai.com/docs/api-reference/threads) object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
+   func createThread(
+      parameters: CreateThreadParameters)
+   async throws -> ThreadObject
+   
+   /// Retrieves a thread.
+   ///
+   /// - Parameter id: The ID of the thread to retrieve.
+   /// - Returns: The [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/getThread).
+   func retrieveThread(
+      id: String)
+   async throws -> ThreadObject
+   
+   /// Modifies a thread.
+   ///
+   /// - Parameter id: The ID of the thread to modify. Only the metadata can be modified.
+   /// - Returns: The modified [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/modifyThread).
+   func modifyThread(
+      id: String)
+   async throws -> ThreadObject
+   
+   /// Delete a thread.
+   ///
+   /// - Parameter id: The ID of the thread to delete.
+   /// - Returns: Deletion status.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/deleteThread).
+   func deleteThread(
+      id: String)
+   async throws -> ThreadObject.DeletionStatus
+   
+   // MARK: Message [BETA]
+   
+   /// Create a message.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to create a message for.
+   /// - Parameter parameters: The parameters needed to build a message.
+   /// - Returns: A [message](https://platform.openai.com/docs/api-reference/messages/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/createMessage).
+   func createMessage(
+      threadID: String,
+      parameters: MessageParameter)
+   async throws -> MessageObject
+   
+   /// Retrieve a message.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this message belongs.
+   /// - Parameter messageID: The ID of the message to retrieve.
+   /// - Returns: The [message](https://platform.openai.com/docs/api-reference/threads/messages/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/getMessage).
+   func retrieveMessage(
+      threadID: String,
+      messageID: String)
+   async throws -> MessageObject
+   
+   /// Modifies a message.
+   ///
+   /// - Parameter threadID: The ID of the thread to which this message belongs.
+   /// - Parameter messageID: The ID of the message to modify.
+   /// - Returns: The modified [message](https://platform.openai.com/docs/api-reference/threads/messages/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/modifyMessage).
+   func modifyMessage(
+      threadID: String,
+      messageID: String)
+   async throws -> MessageObject
+   
+   /// Returns a list of messages for a given thread.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) the messages belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [message](https://platform.openai.com/docs/api-reference/messages) objects.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/listMessages).
+   func listMessages(
+      threadID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<MessageObject>
+   
+   // MARK: Message File [BETA]
+   
+   /// Retrieves a message file.
+   ///
+   /// - Parameter threadID: The ID of the thread to which the message and File belong.
+   /// - Parameter messageID: The ID of the message the file belongs to.
+   /// - Parameter fileID: The ID of the file being retrieved.
+   /// - Returns: The [message](https://platform.openai.com/docs/api-reference/messages/file-object) file object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/getMessageFile).
+   func retrieveMessageFile(
+      threadID: String,
+      messageID: String,
+      fileID: String)
+   async throws -> MessageFileObject
+   
+   /// Returns a list of message files.
+   ///
+   /// - Parameter threadID: The ID of the thread that the message and files belong to.
+   /// - Parameter messageID: The ID of the message that the files belongs to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of message file objects.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/listMessageFiles).
+   func listMessageFiles(
+      threadID: String,
+      messageID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<MessageFileObject>
+   
+   // MARK: Run [BETA]
+   
+   /// Create a run.
+   ///
+   /// - Parameter threadID: The ID of the thread to run.
+   /// - Parameter parameters: The parameters needed to build a Run.
+   /// - Returns: A [run](https://platform.openai.com/docs/api-reference/runs/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createRun).
+   func createRun(
+      threadID: String,
+      parameters: RunParameter)
+   async throws -> RunObject
+   
+   /// Retrieves a run.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+   /// - Parameter runID: The ID of the run to retrieve.
+   /// - Returns: The [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/getRun).
+   func retrieveRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   /// Modifies a run.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+   /// - Parameter runID: The ID of the run to modify.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/modifyRun).
+   func modifyRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   ///  Returns a list of runs belonging to a thread.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) the run belongs to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [run](https://platform.openai.com/docs/api-reference/runs/object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/listRuns).
+   func listRuns(
+      threadID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<RunObject>
+   
+   /// Cancels a run that is in_progress.
+   ///
+   /// - Parameter threadID: The ID of the thread to which this run belongs.
+   /// - Parameter runID: The ID of the run to cancel.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/cancelRun).
+   func cancelRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
+   /// - Parameter runID: The ID of the run that requires the tool output submission.
+   /// - Parameter parameters: The parameters needed for the run tools output.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
+   func submitToolOutputsToRun(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+   async throws -> RunObject
+   
+   /// Create a thread and run it in one request.
+   ///
+   /// - Parameter parameters: The parameters needed to create a thread and run.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
+   func createThreadAndRun(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> RunObject
+   
+   // MARK: Run Step [BETA]
+   
+   /// Retrieves a run step.
+   ///
+   /// - Parameter threadID: The ID of the thread to which the run and run step belongs.
+   /// - Parameter runID: The ID of the run to which the run step belongs.
+   /// - Parameter stepID: The ID of the run step to retrieve.
+   /// - Returns: The [run step](https://platform.openai.com/docs/api-reference/runs/step-object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run step API documentation](https://platform.openai.com/docs/api-reference/runs/getRunStep).
+   func retrieveRunstep(
+      threadID: String,
+      runID: String,
+      stepID: String)
+   async throws -> RunStepObject
+   
+   /// Returns a list of run steps belonging to a run.
+   ///
+   /// - Parameter threadID: The ID of the thread the run and run steps belong to.
+   /// - Parameter runID: The ID of the run the run steps belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.  Defaults to desc.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [run step](https://platform.openai.com/docs/api-reference/runs/step-object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run step API documentation](https://platform.openai.com/docs/api-reference/runs/listRunSteps).
+   func listRunSteps(
+      threadID: String,
+      runID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<RunStepObject>
 }
 
 

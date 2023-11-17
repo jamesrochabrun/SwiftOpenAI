@@ -14,14 +14,8 @@ public struct FineTuningJobObject: Decodable {
    public let id: String
    /// The Unix timestamp (in seconds) for when the fine-tuning job was created.
    public let createdAt: Int
-   
-   //TODO: Error
-   /**
-    error
-    object or null
-    For fine-tuning jobs that have failed, this will contain more information on the cause of the failure.
-    */
-   
+  /// For fine-tuning jobs that have failed, this will contain more information on the cause of the failure.
+   public let error: OpenAIErrorResponse.Error?
    /// The name of the fine-tuned model that is being created. The value will be null if the fine-tuning job is still running.
    public let fineTunedModel: String?
    /// The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be null if the fine-tuning job is still running.
@@ -58,6 +52,7 @@ public struct FineTuningJobObject: Decodable {
    enum CodingKeys: String, CodingKey {
       case id
       case createdAt = "created_at"
+      case error
       case fineTunedModel = "fine_tuned_model"
       case finishedAt = "finished_at"
       case hyperparameters

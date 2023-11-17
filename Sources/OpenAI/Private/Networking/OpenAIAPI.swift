@@ -19,9 +19,10 @@ enum OpenAIAPI {
    case file(FileCategory) // https://platform.openai.com/docs/api-reference/files
    case fineTuning(FineTuningCategory) // https://platform.openai.com/docs/api-reference/fine-tuning
    case images(ImageCategory) // https://platform.openai.com/docs/api-reference/images
+   case message(MessageCategory) //
    case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
    case moderations // https://platform.openai.com/docs/api-reference/moderations
-   case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
+   case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/messages
    
    enum AssistantCategory {
       case create
@@ -64,6 +65,13 @@ enum OpenAIAPI {
       case generations
       case edits
       case variations
+   }
+   
+   enum MessageCategory {
+      case create(threadID: String)
+      case retrieve(threadID: String, messageID: String)
+      case modify(threadID: String, messageID: String)
+      case list(threadID: String)
    }
    
    enum ModelCategory {
@@ -117,6 +125,11 @@ extension OpenAIAPI: Endpoint {
          case .events(let jobID): return "/v1/fine_tuning/jobs/\(jobID)/events"
          }
       case .images(let category): return "/v1/images/\(category.rawValue)"
+      case .message(let category):
+         switch category {
+         case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/messages"
+         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
+         }
       case .model(let category):
          switch category {
          case .list: return "/v1/models"

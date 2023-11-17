@@ -449,6 +449,8 @@ public protocol OpenAIService {
       fileID: String)
    async throws -> AssistantFileObject.DeletionStatus
    
+   /// Returns a list of assistant files.
+   ///
    /// - Parameter assistantID: The ID of the assistant who the file belongs to.
    /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
    /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
@@ -474,7 +476,7 @@ public protocol OpenAIService {
    /// - Returns: A [thread](https://platform.openai.com/docs/api-reference/threads) object.
    /// - Throws: An error if the request fails
    ///
-   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
    func createThread(
       parameters: ThreadParameters)
    async throws -> ThreadObject
@@ -485,18 +487,18 @@ public protocol OpenAIService {
    /// - Returns: The [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
    /// - Throws: An error if the request fails.
    ///
-   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/getThread).
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/getThread).
    func retrieveThread(
       id: String)
    async throws -> ThreadObject
 
-   /// Modifies a thread..
+   /// Modifies a thread.
    ///
    /// - Parameter id: The ID of the thread to modify. Only the metadata can be modified.
    /// - Returns: The modified [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
    /// - Throws: An error if the request fails.
    ///
-   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/modifyThread).
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/modifyThread).
    func modifyThread(
       id: String)
    async throws -> ThreadObject
@@ -507,13 +509,70 @@ public protocol OpenAIService {
    /// - Returns: Deletion status.
    /// - Throws: An error if the request fails.
    ///
-   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/deleteThread).
+   /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/deleteThread).
    func deleteThread(
       id: String)
    async throws -> ThreadObject.DeletionStatus
    
-
+   // MARK: Message [BETA]
    
+   /// Create a message.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to create a message for.
+   /// - Parameter parameters: The parameters needed to build a message.
+   /// - Returns: A [message](https://platform.openai.com/docs/api-reference/messages/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/createMessage).
+   func createMessage(
+      threadID: String,
+      parameters: MessageParameter)
+   async throws -> MessageObject
+   
+   /// Retrieve a message.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this message belongs.
+   /// - Parameter messageID: The ID of the message to retrieve.
+   /// - Returns: The [message](https://platform.openai.com/docs/api-reference/threads/messages/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/getMessage).
+   func retrieveMessage(
+      threadID: String,
+      messageID: String)
+   async throws -> MessageObject
+   
+   /// Modifies a message.
+   ///
+   /// - Parameter threadID: The ID of the thread to which this message belongs.
+   /// - Parameter messageID: The ID of the message to modify.
+   /// - Returns: The modified [message](https://platform.openai.com/docs/api-reference/threads/messages/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/modifyMessage).
+   func modifyMessage(
+      threadID: String,
+      messageID: String)
+   async throws -> MessageObject
+   
+   /// Returns a list of messages for a given thread.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) the messages belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [message](https://platform.openai.com/docs/api-reference/messages) objects.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/listMessages).
+   func listMessages(
+      threadID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<MessageObject>
 }
 
 

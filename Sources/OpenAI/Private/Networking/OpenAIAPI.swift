@@ -24,6 +24,7 @@ enum OpenAIAPI {
    case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
    case moderations // https://platform.openai.com/docs/api-reference/moderations
    case run(RunCategory) // https://platform.openai.com/docs/api-reference/runs
+   case runStep(RunStepCategory) // https://platform.openai.com/docs/api-reference/runs/step-object
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
    
    enum AssistantCategory {
@@ -97,6 +98,11 @@ enum OpenAIAPI {
       case createThreadAndRun
    }
    
+   enum RunStepCategory {
+      case retrieve(threadID: String, runID: String, stepID: String)
+      case list(threadID: String, runID: String)
+   }
+   
    enum ThreadCategory {
       case create
       case retrieve(threadID: String)
@@ -165,6 +171,11 @@ extension OpenAIAPI: Endpoint {
          case .cancel(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/cancel"
          case .submitToolOutput(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)//submit_tool_outputs"
          case .createThreadAndRun: return "/v1/threads/runs"
+         }
+      case .runStep(let category):
+         switch category {
+         case .retrieve(let threadID, let runID, let stepID): return "/v1/threads/\(threadID)/runs/\(runID)/steps/\(stepID)"
+         case .list(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/steps"
          }
       case .thread(let category):
          switch category {

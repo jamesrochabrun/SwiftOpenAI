@@ -580,4 +580,43 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: RunObject.self, with: request)
       
    }
+   
+   // MARK: Run Step [BETA]
+
+   func retrieveRunstep(
+      threadID: String,
+      runID: String,
+      stepID: String)
+      async throws -> RunStepObject
+   {
+      let request = try OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      return try await fetch(type: RunStepObject.self, with: request)
+   }
+   
+   func listRunSteps(
+      threadID: String,
+      runID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<RunStepObject>
+   {
+      var queryItems: [URLQueryItem]?
+      if let limit {
+         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems?.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems?.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems?.append(.init(name: "before", value: before))
+      }
+      let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
+      return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
+
+   }
 }

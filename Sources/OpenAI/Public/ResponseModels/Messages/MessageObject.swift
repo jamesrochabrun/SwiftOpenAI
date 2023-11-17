@@ -24,11 +24,11 @@ public struct MessageObject: Codable {
    /// The content of the message in array of text and/or images.
    public let content: [Content]
    /// If applicable, the ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this message.
-   let assistantID: String?
+   public let assistantID: String?
    /// If applicable, the ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the authoring of this message.
-   let runID: String?
+   public let runID: String?
    /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-   let fileIDS: [String]?
+   public let fileIDS: [String]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]?
    
@@ -104,7 +104,7 @@ public enum Content: Codable {
 /// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
 public struct ImageFile: Codable {
    /// Always image_file.
-   let type: String
+   public let type: String
    
    public struct ImageFile: Codable {
       

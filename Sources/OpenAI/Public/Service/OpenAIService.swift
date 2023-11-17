@@ -96,7 +96,7 @@ public protocol OpenAIService {
    func fetchAudio(
       with request: URLRequest)
    async throws -> Data
-
+   
    // MARK: Audio
    
    /// - Parameter parameters: The audio transcription parameters.
@@ -461,7 +461,7 @@ public protocol OpenAIService {
    ///
    /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistantFiles).
    func listAssistantFiles(
-      assistantID: String, 
+      assistantID: String,
       limit: Int?,
       order: String?,
       after: String?,
@@ -491,7 +491,7 @@ public protocol OpenAIService {
    func retrieveThread(
       id: String)
    async throws -> ThreadObject
-
+   
    /// Modifies a thread.
    ///
    /// - Parameter id: The ID of the thread to modify. Only the metadata can be modified.
@@ -502,7 +502,7 @@ public protocol OpenAIService {
    func modifyThread(
       id: String)
    async throws -> ThreadObject
-
+   
    /// Delete a thread.
    ///
    /// - Parameter id: The ID of the thread to delete.
@@ -613,7 +613,7 @@ public protocol OpenAIService {
    async throws -> OpenAIResponse<MessageFileObject>
    
    // MARK: Run [BETA]
-
+   
    /// Create a run.
    ///
    /// - Parameter threadID: The ID of the thread to run.
@@ -709,10 +709,44 @@ public protocol OpenAIService {
    func createThreadAndRun(
       parameters: CreateThreadAndRunParameter)
    async throws -> RunObject
-
-
-
    
+   // MARK: Run Step [BETA]
+   
+   /// Retrieves a run step.
+   ///
+   /// - Parameter threadID: The ID of the thread to which the run and run step belongs.
+   /// - Parameter runID: The ID of the run to which the run step belongs.
+   /// - Parameter stepID: The ID of the run step to retrieve.
+   /// - Returns: The [run step](https://platform.openai.com/docs/api-reference/runs/step-object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run step API documentation](https://platform.openai.com/docs/api-reference/runs/getRunStep).
+   func retrieveRunstep(
+      threadID: String,
+      runID: String,
+      stepID: String)
+   async throws -> RunStepObject
+   
+   /// Returns a list of run steps belonging to a run.
+   ///
+   /// - Parameter threadID: The ID of the thread the run and run steps belong to.
+   /// - Parameter runID: The ID of the run the run steps belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.  Defaults to desc.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [run step](https://platform.openai.com/docs/api-reference/runs/step-object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run step API documentation](https://platform.openai.com/docs/api-reference/runs/listRunSteps).
+   func listRunSteps(
+      threadID: String,
+      runID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<RunStepObject>
 }
 
 

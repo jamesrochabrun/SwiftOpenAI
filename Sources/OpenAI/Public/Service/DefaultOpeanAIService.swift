@@ -460,5 +460,42 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: "assistants=v1")
       return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
    }
+   
+   // MARK: Message File [BETA]
 
+   func retrieveMessageFile(
+      threadID: String,
+      messageID: String,
+      fileID: String)
+   async throws -> MessageFileObject
+   {
+      let request = try OpenAIAPI.messageFile(.retrieve(threadID: threadID, messageID: messageID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
+      return try await fetch(type: MessageFileObject.self, with: request)
+   }
+   
+   func listMessageFiles(
+      threadID: String,
+      messageID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<MessageFileObject>
+   {
+      var queryItems: [URLQueryItem]?
+      if let limit {
+         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems?.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems?.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems?.append(.init(name: "before", value: before))
+      }
+      let request = try OpenAIAPI.messageFile(.list(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: "assistants=v1")
+      return try await fetch(type: OpenAIResponse<MessageFileObject>.self, with: request)
+   }
 }

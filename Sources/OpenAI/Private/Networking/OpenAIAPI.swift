@@ -19,10 +19,11 @@ enum OpenAIAPI {
    case file(FileCategory) // https://platform.openai.com/docs/api-reference/files
    case fineTuning(FineTuningCategory) // https://platform.openai.com/docs/api-reference/fine-tuning
    case images(ImageCategory) // https://platform.openai.com/docs/api-reference/images
-   case message(MessageCategory) //
+   case message(MessageCategory) // https://platform.openai.com/docs/api-reference/messages
+   case messageFile(MessageFileCategory) // https://platform.openai.com/docs/api-reference/messages/file-object
    case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
    case moderations // https://platform.openai.com/docs/api-reference/moderations
-   case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/messages
+   case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
    
    enum AssistantCategory {
       case create
@@ -72,6 +73,11 @@ enum OpenAIAPI {
       case retrieve(threadID: String, messageID: String)
       case modify(threadID: String, messageID: String)
       case list(threadID: String)
+   }
+   
+   enum MessageFileCategory {
+      case retrieve(threadID: String, messageID: String, fileID: String)
+      case list(threadID: String, messageID: String)
    }
    
    enum ModelCategory {
@@ -129,6 +135,11 @@ extension OpenAIAPI: Endpoint {
          switch category {
          case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/messages"
          case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
+         }
+      case .messageFile(let category):
+         switch category {
+         case .retrieve(let threadID, let messageID, let fileID): return "/v1/threads/\(threadID)/messages/\(messageID)/files/\(fileID)"
+         case .list(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)/files"
          }
       case .model(let category):
          switch category {

@@ -42,14 +42,18 @@ extension Endpoint {
       organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
-      queryItems: [URLQueryItem]? = nil)
+      queryItems: [URLQueryItem]? = nil,
+      betaHeaderField: String? = nil)
       throws -> URLRequest
    {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
       request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
       if let organizationID {
-         request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+         request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+      }
+      if let betaHeaderField {
+         request.addValue(betaHeaderField, forHTTPHeaderField: "OpenAI-Beta")
       }
       request.httpMethod = method.rawValue
       if let params {
@@ -69,11 +73,11 @@ extension Endpoint {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
       request.httpMethod = method.rawValue
       let boundary = UUID().uuidString
-      request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+      request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
       if let organizationID {
-         request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+         request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
       }
-      request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+      request.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
       request.httpBody = params.encode(boundary: boundary)
       return request
    }

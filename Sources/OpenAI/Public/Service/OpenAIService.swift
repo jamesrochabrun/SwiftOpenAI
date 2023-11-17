@@ -343,6 +343,121 @@ public protocol OpenAIService {
    func createModerationFromTexts(
       parameters: ModerationParameter<[String]>)
    async throws -> ModerationObject
+   
+   // MARK: Assistants [BETA]
+   
+   /// - Parameter parameters: The parameters needed to build an assistant
+   /// - Returns: A [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistant).
+   func createAssistant(
+      parameters: AssistantParameters)
+   async throws -> AssistantObject
+   
+   /// Retrieves an assitant object by its ID.
+   ///
+   /// - Parameter id: The ID of the assistant to retrieve.
+   /// - Returns: The [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistant).
+   func retrieveAssistant(
+      id: String)
+   async throws -> AssistantObject
+   
+   /// Modifies an assistant.
+   ///
+   /// - Parameter id: The ID of the assistant to modify.
+   /// - Returns: The modified [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/modifyAssistant).
+   func modifyAssistant(
+      id: String)
+   async throws -> AssistantObject
+   
+   /// Delete an assistant.
+   ///
+   /// - Parameter id: The ID of the assistant to delete.
+   /// - Returns: Deletion Status
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistant).
+   func deleteAssistant(
+      id: String)
+   async throws -> AssistantObject.DeletionStatus
+   
+   /// Returns a list of assistants.
+   ///
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.  Defaults to desc.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: An `OpenAIResponse<AssistantObject>` containing the list of [assistants](https://platform.openai.com/docs/api-reference/assistants/object).
+   /// - Throws: An error if the retrieval process fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistants).
+   func listAssistants(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<AssistantObject>
+   
+   
+   // MARK: AssistantsFileObject [BETA]
+   
+   /// - Parameter parameters: The parameters needed to build an assistant file object
+   /// - Parameter assistantID: The ID of the assistant for which to create a File.
+   /// - Returns: A [AssistantFileObject](https://platform.openai.com/docs/api-reference/assistants/file-object)
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile).
+   func createAssistantFile(
+      assistantID: String,
+      parameters: AssistantFileParamaters)
+   async throws -> AssistantFileObject
+   
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter fileID: The ID of the file we're getting.
+   /// - Returns: The [assistant file object](https://platform.openai.com/docs/api-reference/assistants/file-object) matching the specified ID.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistantFile).
+   func retrieveAssistantFile(
+      assistantID: String,
+      fileID: String)
+   async throws -> AssistantFileObject
+   
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter fileID: The ID of the file to delete.
+   /// - Returns: Deletion status.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistantFile).
+   func deleteAssistantFile(
+      assistantID: String,
+      fileID: String)
+   async throws -> AssistantFileObject.DeletionStatus
+   
+   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [assistant file](https://platform.openai.com/docs/api-reference/assistants/file-object) objects.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistantFiles).
+   func listAssistantFiles(
+      assistantID: String, 
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<AssistantFileObject>
+   
 }
 
 

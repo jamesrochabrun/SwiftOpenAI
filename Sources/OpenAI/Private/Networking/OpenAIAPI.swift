@@ -12,6 +12,8 @@ import Foundation
 enum OpenAIAPI {
    
    case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
+   case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
+   case assistantFile(AssistantFileCategory) // https://platform.openai.com/docs/api-reference/assistants/file-object
    case chat /// https://platform.openai.com/docs/api-reference/chat
    case embeddings // https://platform.openai.com/docs/api-reference/embeddings
    case fineTuning(FineTuningCategory) // https://platform.openai.com/docs/api-reference/fine-tuning
@@ -24,6 +26,21 @@ enum OpenAIAPI {
       case transcriptions
       case translations
       case speech
+   }
+   
+   enum AssistantCategory {
+      case create
+      case list
+      case retrieve(assistantID: String)
+      case modify(assistantID: String)
+      case delete(assistantID: String)
+   }
+   
+   enum AssistantFileCategory {
+      case create(assistantID: String)
+      case retrieve(assistantID: String, fileID: String)
+      case delete(assistantID: String, fileID: String)
+      case list(assistantID: String)
    }
    
    enum FineTuningCategory {
@@ -87,6 +104,16 @@ extension OpenAIAPI: Endpoint {
          case .list, .upload: return "/v1/files"
          case .delete(let fileID), .retrieve(let fileID): return "/v1/files/\(fileID)"
          case .retrieveFileContent(let fileID): return "/v1/files/\(fileID)/content"
+         }
+      case .assistant(let category):
+         switch category {
+         case .create, .list: return "/v1/assistants"
+         case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/v1/assistants/\(assistantID)"
+         }
+      case .assistantFile(let category):
+         switch category {
+         case .create(let assistantID), .list(let assistantID): return "/v1/assistants/\(assistantID)/files"
+         case .retrieve(let assistantID, let fileID), .delete(let assistantID, let fileID): return "/v1/assistants/\(assistantID)/files/\(fileID)"
          }
       }
    }

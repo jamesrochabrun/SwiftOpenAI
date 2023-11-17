@@ -260,4 +260,116 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.moderations.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(type: ModerationObject.self, with: request)
    }
+   
+   // MARK: Assistants [BETA]
+
+   func createAssistant(
+      parameters: AssistantParameters)
+      async throws -> AssistantObject
+   {
+      let request = try OpenAIAPI.assistant(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: "assistants=v1")
+      return try await fetch(type: AssistantObject.self, with: request)
+   }
+   
+   func retrieveAssistant(
+      id: String)
+      async throws -> AssistantObject
+   {
+      let request = try OpenAIAPI.assistant(.retrieve(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
+      return try await fetch(type: AssistantObject.self, with: request)
+   }
+   
+   func modifyAssistant(
+      id: String)
+      async throws -> AssistantObject
+   {
+      let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: "assistants=v1")
+      return try await fetch(type: AssistantObject.self, with: request)
+   }
+   
+   func deleteAssistant(
+      id: String)
+      async throws -> AssistantObject.DeletionStatus
+   {
+      let request = try OpenAIAPI.assistant(.delete(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: "assistants=v1")
+      return try await fetch(type: AssistantObject.DeletionStatus.self, with: request)
+   }
+   
+   func listAssistants(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<AssistantObject>
+   {
+      var queryItems: [URLQueryItem]?
+      if let limit {
+         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems?.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems?.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems?.append(.init(name: "before", value: before))
+      }
+      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
+   }
+   
+   // MARK: AssistantsFileObject [BETA]
+   
+   func createAssistantFile(
+      assistantID: String,
+      parameters: AssistantFileParamaters)
+      async throws -> AssistantFileObject
+   {
+      let request = try OpenAIAPI.assistantFile(.create(assistantID: assistantID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(type: AssistantFileObject.self, with: request)
+   }
+   
+   func retrieveAssistantFile(
+      assistantID: String,
+      fileID: String)
+      async throws -> AssistantFileObject
+   {
+      let request = try OpenAIAPI.assistantFile(.retrieve(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
+      return try await fetch(type: AssistantFileObject.self, with: request)
+   }
+   
+   func deleteAssistantFile(
+      assistantID: String,
+      fileID: String)
+      async throws -> AssistantFileObject.DeletionStatus
+   {
+      let request = try OpenAIAPI.assistantFile(.delete(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete)
+      return try await fetch(type: AssistantFileObject.DeletionStatus.self, with: request)
+   }
+   
+   func listAssistantFiles(
+      assistantID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<AssistantFileObject>
+   {
+      var queryItems: [URLQueryItem]?
+      if let limit {
+         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems?.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems?.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems?.append(.init(name: "before", value: before))
+      }
+      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      return try await fetch(type: OpenAIResponse<AssistantFileObject>.self, with: request)
+   }
 }

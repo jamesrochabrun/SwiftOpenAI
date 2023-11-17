@@ -60,4 +60,10 @@ public struct AssistantObject: Decodable {
       case fileIDS = "file_ids"
       case metadata
    }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
 }

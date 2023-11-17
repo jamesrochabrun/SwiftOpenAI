@@ -315,7 +315,7 @@ struct DefaultOpenAIService: OpenAIService {
       if let before {
          queryItems?.append(.init(name: "before", value: before))
       }
-      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: "assistants=v1")
       return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
    }
    
@@ -326,7 +326,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: AssistantFileParamaters)
       async throws -> AssistantFileObject
    {
-      let request = try OpenAIAPI.assistantFile(.create(assistantID: assistantID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      let request = try OpenAIAPI.assistantFile(.create(assistantID: assistantID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: "assistants=v1")
       return try await fetch(type: AssistantFileObject.self, with: request)
    }
    
@@ -335,7 +335,7 @@ struct DefaultOpenAIService: OpenAIService {
       fileID: String)
       async throws -> AssistantFileObject
    {
-      let request = try OpenAIAPI.assistantFile(.retrieve(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
+      let request = try OpenAIAPI.assistantFile(.retrieve(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
       return try await fetch(type: AssistantFileObject.self, with: request)
    }
    
@@ -344,7 +344,7 @@ struct DefaultOpenAIService: OpenAIService {
       fileID: String)
       async throws -> AssistantFileObject.DeletionStatus
    {
-      let request = try OpenAIAPI.assistantFile(.delete(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete)
+      let request = try OpenAIAPI.assistantFile(.delete(assistantID: assistantID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: "assistants=v1")
       return try await fetch(type: AssistantFileObject.DeletionStatus.self, with: request)
    }
    
@@ -369,7 +369,40 @@ struct DefaultOpenAIService: OpenAIService {
       if let before {
          queryItems?.append(.init(name: "before", value: before))
       }
-      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: "assistants=v1")
       return try await fetch(type: OpenAIResponse<AssistantFileObject>.self, with: request)
+   }
+   
+   // MARK: Thread [BETA]
+   
+   func createThread(
+      parameters: ThreadParameters)
+      async throws -> ThreadObject
+   {
+      let request = try OpenAIAPI.thread(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(type: ThreadObject.self, with: request)
+   }
+   
+   func retrieveThread(id: String)
+      async throws -> ThreadObject
+   {
+      let request = try OpenAIAPI.thread(.retrieve(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
+      return try await fetch(type: ThreadObject.self, with: request)
+   }
+   
+   func modifyThread(
+      id: String)
+      async throws -> ThreadObject
+   {
+      let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
+      return try await fetch(type: ThreadObject.self, with: request)
+   }
+   
+   func deleteThread(
+      id: String)
+      async throws -> ThreadObject.DeletionStatus
+   {
+      let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: "assistants=v1")
+      return try await fetch(type: ThreadObject.DeletionStatus.self, with: request)
    }
 }

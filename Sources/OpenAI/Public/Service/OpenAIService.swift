@@ -346,6 +346,8 @@ public protocol OpenAIService {
    
    // MARK: Assistants [BETA]
    
+   /// Create an assistant with a model and instructions.
+   ///
    /// - Parameter parameters: The parameters needed to build an assistant
    /// - Returns: A [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
    /// - Throws: An error if the request fails
@@ -408,6 +410,8 @@ public protocol OpenAIService {
    
    // MARK: AssistantsFileObject [BETA]
    
+   /// Create an assistant file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to an [assistant](https://platform.openai.com/docs/api-reference/assistants).
+   ///
    /// - Parameter parameters: The parameters needed to build an assistant file object
    /// - Parameter assistantID: The ID of the assistant for which to create a File.
    /// - Returns: A [AssistantFileObject](https://platform.openai.com/docs/api-reference/assistants/file-object)
@@ -419,6 +423,8 @@ public protocol OpenAIService {
       parameters: AssistantFileParamaters)
    async throws -> AssistantFileObject
    
+   /// Retrieves an AssistantFile.
+   ///
    /// - Parameter assistantID: The ID of the assistant who the file belongs to.
    /// - Parameter fileID: The ID of the file we're getting.
    /// - Returns: The [assistant file object](https://platform.openai.com/docs/api-reference/assistants/file-object) matching the specified ID.
@@ -430,6 +436,8 @@ public protocol OpenAIService {
       fileID: String)
    async throws -> AssistantFileObject
    
+   /// Delete an assistant file.
+   ///
    /// - Parameter assistantID: The ID of the assistant who the file belongs to.
    /// - Parameter fileID: The ID of the file to delete.
    /// - Returns: Deletion status.
@@ -457,6 +465,54 @@ public protocol OpenAIService {
       after: String?,
       before: String?)
    async throws -> OpenAIResponse<AssistantFileObject>
+   
+   // MARK: Thread [BETA]
+   
+   /// Create a thread.
+   ///
+   /// - Parameter parameters: The parameters needed to build a thread.
+   /// - Returns: A [thread](https://platform.openai.com/docs/api-reference/threads) object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
+   func createThread(
+      parameters: ThreadParameters)
+   async throws -> ThreadObject
+   
+   /// Retrieves a thread.
+   ///
+   /// - Parameter id: The ID of the thread to retrieve.
+   /// - Returns: The [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/getThread).
+   func retrieveThread(
+      id: String)
+   async throws -> ThreadObject
+
+   /// Modifies a thread..
+   ///
+   /// - Parameter id: The ID of the thread to modify. Only the metadata can be modified.
+   /// - Returns: The modified [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/modifyThread).
+   func modifyThread(
+      id: String)
+   async throws -> ThreadObject
+
+   /// Delete a thread.
+   ///
+   /// - Parameter id: The ID of the thread to delete.
+   /// - Returns: Deletion status.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/threads/deleteThread).
+   func deleteThread(
+      id: String)
+   async throws -> ThreadObject.DeletionStatus
+   
+
    
 }
 

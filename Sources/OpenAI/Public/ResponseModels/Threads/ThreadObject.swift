@@ -26,4 +26,10 @@ public struct ThreadObject: Decodable {
        case createdAt = "created_at"
        case metadata
    }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
 }

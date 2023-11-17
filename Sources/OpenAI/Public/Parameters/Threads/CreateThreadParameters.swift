@@ -1,5 +1,5 @@
 //
-//  ThreadParameters.swift
+//  CreateThreadParameters.swift
 //
 //
 //  Created by James Rochabrun on 11/16/23.
@@ -8,7 +8,7 @@
 import Foundation
 
 /// Create a [Thread](https://platform.openai.com/docs/api-reference/threads/createThread)
-public struct ThreadParameters: Encodable {
+public struct CreateThreadParameters: Encodable {
    
    /// A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start the thread with.
    let messages: [MessageObject]

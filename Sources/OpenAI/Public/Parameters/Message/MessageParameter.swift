@@ -20,7 +20,10 @@ public struct MessageParameter: Encodable {
    let metadata: [String: String]?
    
    enum CodingKeys: String, CodingKey {
+      case role
+      case content
       case fileIDS = "file_ids"
+      case metadata
    }
    
    public init(

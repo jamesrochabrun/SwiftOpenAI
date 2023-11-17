@@ -478,7 +478,7 @@ public protocol OpenAIService {
    ///
    /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
    func createThread(
-      parameters: ThreadParameters)
+      parameters: CreateThreadParameters)
    async throws -> ThreadObject
    
    /// Retrieves a thread.
@@ -611,6 +611,107 @@ public protocol OpenAIService {
       after: String?,
       before: String?)
    async throws -> OpenAIResponse<MessageFileObject>
+   
+   // MARK: Run [BETA]
+
+   /// Create a run.
+   ///
+   /// - Parameter threadID: The ID of the thread to run.
+   /// - Parameter parameters: The parameters needed to build a Run.
+   /// - Returns: A [run](https://platform.openai.com/docs/api-reference/runs/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createRun).
+   func createRun(
+      threadID: String,
+      parameters: RunParameter)
+   async throws -> RunObject
+   
+   /// Retrieves a run.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+   /// - Parameter runID: The ID of the run to retrieve.
+   /// - Returns: The [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/getRun).
+   func retrieveRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   /// Modifies a run.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+   /// - Parameter runID: The ID of the run to modify.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/modifyRun).
+   func modifyRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   ///  Returns a list of runs belonging to a thread.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) the run belongs to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [run](https://platform.openai.com/docs/api-reference/runs/object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/listRuns).
+   func listRuns(
+      threadID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+   async throws -> OpenAIResponse<RunObject>
+   
+   /// Cancels a run that is in_progress.
+   ///
+   /// - Parameter threadID: The ID of the thread to which this run belongs.
+   /// - Parameter runID: The ID of the run to cancel.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/cancelRun).
+   func cancelRun(
+      threadID: String,
+      runID: String)
+   async throws -> RunObject
+   
+   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request.
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
+   /// - Parameter runID: The ID of the run that requires the tool output submission.
+   /// - Parameter parameters: The parameters needed for the run tools output.
+   /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
+   func submitToolOutputsToRun(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+   async throws -> RunObject
+   
+   /// Create a thread and run it in one request.
+   ///
+   /// - Parameter parameters: The parameters needed to create a thread and run.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
+   func createThreadAndRun(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> RunObject
+
+
+
    
 }
 

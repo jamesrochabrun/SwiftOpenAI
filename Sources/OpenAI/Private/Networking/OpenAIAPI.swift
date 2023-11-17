@@ -23,6 +23,7 @@ enum OpenAIAPI {
    case messageFile(MessageFileCategory) // https://platform.openai.com/docs/api-reference/messages/file-object
    case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
    case moderations // https://platform.openai.com/docs/api-reference/moderations
+   case run(RunCategory) // https://platform.openai.com/docs/api-reference/runs
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
    
    enum AssistantCategory {
@@ -86,6 +87,16 @@ enum OpenAIAPI {
       case deleteFineTuneModel(modelID: String)
    }
    
+   enum RunCategory {
+      case create(threadID: String)
+      case retrieve(threadID: String, runID: String)
+      case modify(threadID: String, runID: String)
+      case list(threadID: String)
+      case cancel(threadID: String, runID: String)
+      case submitToolOutput(threadID: String, runID: String)
+      case createThreadAndRun
+   }
+   
    enum ThreadCategory {
       case create
       case retrieve(threadID: String)
@@ -147,6 +158,14 @@ extension OpenAIAPI: Endpoint {
          case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/v1/models/\(modelID)"
          }
       case .moderations: return "/v1/moderations"
+      case .run(let category):
+         switch category {
+         case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/runs"
+         case .retrieve(let threadID, let runID), .modify(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)"
+         case .cancel(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/cancel"
+         case .submitToolOutput(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)//submit_tool_outputs"
+         case .createThreadAndRun: return "/v1/threads/runs"
+         }
       case .thread(let category):
          switch category {
          case .create: return "/v1/threads"

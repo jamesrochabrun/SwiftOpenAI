@@ -9,6 +9,7 @@ import Foundation
 
 /// BETA.
 /// A [run](https://platform.openai.com/docs/api-reference/runs) object, represents an execution run on a [thread](https://platform.openai.com/docs/api-reference/threads).
+/// Related guide: [Assistants](https://platform.openai.com/docs/assistants/overview)
 public struct RunObject: Decodable {
    
    /// The identifier, which can be referenced in API endpoints.

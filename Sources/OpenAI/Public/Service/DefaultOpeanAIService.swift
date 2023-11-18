@@ -298,10 +298,10 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func listAssistants(
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<AssistantObject>
    {
       var queryItems: [URLQueryItem]?
@@ -352,10 +352,10 @@ struct DefaultOpenAIService: OpenAIService {
    
    func listAssistantFiles(
       assistantID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<AssistantFileObject>
    {
       var queryItems: [URLQueryItem]?
@@ -440,10 +440,10 @@ struct DefaultOpenAIService: OpenAIService {
    
    func listMessages(
       threadID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<MessageObject>
    {
       var queryItems: [URLQueryItem]?
@@ -478,10 +478,10 @@ struct DefaultOpenAIService: OpenAIService {
    func listMessageFiles(
       threadID: String,
       messageID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<MessageFileObject>
    {
       var queryItems: [URLQueryItem]?
@@ -530,10 +530,10 @@ struct DefaultOpenAIService: OpenAIService {
    
    func listRuns(
       threadID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<RunObject>
    {
       var queryItems: [URLQueryItem]?
@@ -596,10 +596,10 @@ struct DefaultOpenAIService: OpenAIService {
    func listRunSteps(
       threadID: String,
       runID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<RunStepObject>
    {
       var queryItems: [URLQueryItem]?

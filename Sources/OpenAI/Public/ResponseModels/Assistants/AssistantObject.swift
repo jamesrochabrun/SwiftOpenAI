@@ -46,6 +46,14 @@ public struct AssistantObject: Decodable {
       
       /// Helper.
       public var displayToolType: ToolType? { .init(rawValue: type) }
+      
+      public init(
+         type: ToolType,
+         function: ChatCompletionParameters.ChatFunction? = nil)
+      {
+         self.type = type.rawValue
+         self.function = function
+      }
    }
    
    enum CodingKeys: String, CodingKey {

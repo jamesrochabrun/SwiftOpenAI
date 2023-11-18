@@ -38,7 +38,7 @@ public struct AssistantObject: Decodable {
       public let type: String
       public let function: ChatCompletionParameters.ChatFunction?
       
-      public enum ToolType: String {
+      public enum ToolType: String, CaseIterable {
          case codeInterpreter = "code_interpreter"
          case retrieval
          case function

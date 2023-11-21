@@ -20,7 +20,7 @@ public struct AssistantParameters: Encodable {
    /// The system instructions that the assistant uses. The maximum length is 32768 characters.
    public var instructions: String?
    /// A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types code_interpreter, retrieval, or function. Defaults to []
-   public var tools: [AssistantObject.Tool]?
+   public var tools: [AssistantObject.Tool] = []
    /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs attached to this assistant. There can be a maximum of 20 files attached to the assistant. Files are ordered by their creation date in ascending order.
    public var fileIDS: [String]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
@@ -53,7 +53,7 @@ public struct AssistantParameters: Encodable {
       name: String? = nil,
       description: String? = nil,
       instructions: String? = nil,
-      tools: [AssistantObject.Tool]? = nil,
+      tools: [AssistantObject.Tool] = [],
       fileIDS: [String]? = nil,
       metadata: [String : String]? = nil)
    {

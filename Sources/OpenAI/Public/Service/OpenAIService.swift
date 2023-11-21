@@ -371,12 +371,14 @@ public protocol OpenAIService {
    /// Modifies an assistant.
    ///
    /// - Parameter id: The ID of the assistant to modify.
+   /// - Parameter parameters: The parameters needed to modify an assistant
    /// - Returns: The modified [AssistantObject](https://platform.openai.com/docs/api-reference/assistants/object)
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/modifyAssistant).
    func modifyAssistant(
-      id: String)
+      id: String,
+      parameters: AssistantParameters)
    async throws -> AssistantObject
    
    /// Delete an assistant.

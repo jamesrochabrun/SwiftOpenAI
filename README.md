@@ -1861,7 +1861,70 @@ let assistant = try await service.createAssistant(parameters: parameters)
 ```
 
 ### Threads
-Documentation in progress. 👷‍♂️
+Parameters
+```swift
+/// Create a [Thread](https://platform.openai.com/docs/api-reference/threads/createThread)
+public struct CreateThreadParameters: Encodable {
+   
+   /// A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start the thread with.
+   public var messages: [MessageObject]?
+   
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public var metadata: [String: String]?
+   
+   public init(
+      messages: [MessageObject]? = nil,
+      metadata: [String : String]? = nil)
+   {
+      self.messages = messages
+      self.metadata = metadata
+   }
+}
+```
+Response
+```swift
+/// A [thread object](https://platform.openai.com/docs/api-reference/threads) represents a thread that contains [messages](https://platform.openai.com/docs/api-reference/messages).
+public struct ThreadObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the thread was created.
+   public let createdAt: Int
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public let metadata: [String: String]
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
+}
+```
+
+Usage
+
+Create thread.
+```swift
+let parameters = CreateThreadParameters()
+let thread = try await service.createThread(parameters: parameters)
+```
+Retrieve thread.
+```swift
+let threadID = "thread_abc123"
+let thread = try await service.retrieveThread(id: id)
+```
+Modify thread.
+```swift
+let threadID = "thread_abc123"
+let thread = try await service.modifyThread(id: id)
+```
+Delete thread.
+```swift
+let threadID = "thread_abc123"
+let thread = try await service.deleteThread(id: id)
+```
 
 ### Messages
 Documentation in progress. 👷‍♂️

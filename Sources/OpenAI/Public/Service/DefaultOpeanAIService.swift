@@ -282,10 +282,11 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func modifyAssistant(
-      id: String)
+      id: String,
+      parameters: AssistantParameters)
       async throws -> AssistantObject
    {
-      let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: AssistantObject.self, with: request)
    }
    

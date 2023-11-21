@@ -34,6 +34,15 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Models](#models)
 - [Moderations](#moderations)
 
+### **BETA**
+- [Assistants](#assistants)
+   - [Assistants File Object](#assistants-file-object)
+- [Threads](#threads)
+- [Messages](#messages)
+   - [Message File Object](#message-file-object)
+- [Runs](#runs)
+   - [Run Step object](#run-step-object)
+
 ## Getting an API Key
 
 ⚠️ **Important**
@@ -1271,7 +1280,7 @@ List files
 ```swift
 let files = try await service.listFiles().data
 ```
-Upload file
+### Upload file
 ```swift
 let fileName = "worldCupData.jsonl"
 let data = Data(contentsOfURL:_) // Data retrieved from the file named "worldCupData.jsonl".
@@ -1660,6 +1669,211 @@ let prompts = ["I am going to kill him", "I am going to die"]
 let parameters = ModerationParameter(input: prompts)
 let isFlagged = try await service.createModerationFromTexts(parameters: parameters)
 ```
+
+### **BETA**
+### Assistants
+Parameters
+```swift
+/// Create an [assistant](https://platform.openai.com/docs/api-reference/assistants/createAssistant) with a model and instructions.
+/// Modifies an [assistant](https://platform.openai.com/docs/api-reference/assistants/modifyAssistant).
+public struct AssistantParameters: Encodable {
+   
+   /// ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models/overview) for descriptions of them.
+   public var model: String?
+   /// The name of the assistant. The maximum length is 256 characters.
+   public var name: String?
+   /// The description of the assistant. The maximum length is 512 characters.
+   public var description: String?
+   /// The system instructions that the assistant uses. The maximum length is 32768 characters.
+   public var instructions: String?
+   /// A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types code_interpreter, retrieval, or function. Defaults to []
+   public var tools: [AssistantObject.Tool] = []
+   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs attached to this assistant. There can be a maximum of 20 files attached to the assistant. Files are ordered by their creation date in ascending order.
+   public var fileIDS: [String]?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public var metadata: [String: String]?
+   
+   public enum Action {
+      case create(model: String) // model is required on creation of assistant.
+      case modify(model: String?) // model is optional on modification of assistant.
+      
+      var model: String? {
+         switch self {
+         case .create(let model): return model
+         case .modify(let model): return model
+         }
+      }
+   }
+   
+   public init(
+      action: Action,
+      name: String? = nil,
+      description: String? = nil,
+      instructions: String? = nil,
+      tools: [AssistantObject.Tool] = [],
+      fileIDS: [String]? = nil,
+      metadata: [String : String]? = nil)
+   {
+      self.model = action.model
+      self.name = name
+      self.description = description
+      self.instructions = instructions
+      self.tools = tools
+      self.fileIDS = fileIDS
+      self.metadata = metadata
+   }
+}
+```
+Response
+```swift
+/// Represents an [assistant](https://platform.openai.com/docs/api-reference/assistants) that can call the model and use tools.
+public struct AssistantObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always "assistant".
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the assistant was created.
+   public let createdAt: Int
+   /// The name of the assistant. The maximum length is 256 characters.
+   public let name: String?
+   /// The description of the assistant. The maximum length is 512 characters.
+   public let description: String?
+   /// ID of the model to use. You can use the [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](https://platform.openai.com/docs/models/overview) for descriptions of them.
+   public let model: String
+   /// The system instructions that the assistant uses. The maximum length is 32768 characters.
+   public let instructions: String?
+   /// A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types code_interpreter, retrieval, or function.
+   public let tools: [Tool]
+   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs attached to this assistant. There can be a maximum of 20 files attached to the assistant. Files are ordered by their creation date in ascending order.
+   public let fileIDS: [String]
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public let metadata: [String: String]
+   
+   public struct Tool: Codable {
+      
+      /// The type of tool being defined.
+      public let type: String
+      public let function: ChatCompletionParameters.ChatFunction?
+      
+      public enum ToolType: String, CaseIterable {
+         case codeInterpreter = "code_interpreter"
+         case retrieval
+         case function
+      }
+      
+      /// Helper.
+      public var displayToolType: ToolType? { .init(rawValue: type) }
+      
+      public init(
+         type: ToolType,
+         function: ChatCompletionParameters.ChatFunction? = nil)
+      {
+         self.type = type.rawValue
+         self.function = function
+      }
+   }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
+}
+```
+
+Usage
+
+Create Assistant
+```swift
+let parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue), name: "Math tutor")
+let assistant = try await service.createAssistant(parameters: parameters)
+```
+Retrieve Assistant
+```swift
+let assistantID = "asst_abc123"
+let assistant = try await service.retrieveAssistant(id: assistantID)
+```
+Modify Assistant
+```swift
+let assistantID = "asst_abc123"
+let parameters = AssistantParameters(action: .modify, name: "Math tutor for kids")
+let assistant = try await service.modifyAssistant(id: assistantID, parameters: parameters)
+```
+Delete Assistant
+```swift
+let assistantID = "asst_abc123"
+let deletionStatus = try await service.deleteAssistant(id: assistantID)
+```
+List Assistants
+```swift
+let assistants = try await service.listAssistants()
+```
+
+### Assistants File Object
+Parameters
+```swift
+/// [Creates an assistant file.](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile)
+public struct AssistantFileParamaters: Encodable {
+   
+   /// A [File](https://platform.openai.com/docs/api-reference/files) ID (with purpose="assistants") that the assistant should use.
+   /// Useful for tools like retrieval and code_interpreter that can access files.
+   let fileID: String
+}
+```
+Response
+```swift
+/// The [assistant file object.](https://platform.openai.com/docs/api-reference/assistants/file-object)
+/// A list of [Files](https://platform.openai.com/docs/api-reference/files) attached to an assistant.
+public struct AssistantFileObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always assistant.file.
+   let object: String
+   /// The Unix timestamp (in seconds) for when the assistant file was created.
+   let createdAt: Int
+   /// The assistant ID that the file is attached to.
+   let assistantID: String
+   
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case object
+      case createdAt = "created_at"
+      case assistantID = "assistant_id"
+   }
+   
+   public struct DeletionStatus: Decodable {
+      public let id: String
+      public let object: String
+      public let deleted: Bool
+   }
+}
+```
+Usage
+
+Refer to the [Upload file](#upload-file) section or consult the Files[https://platform.openai.com/docs/api-reference/files] OpenAI documentation for details on how to upload a file that can be attached to the assistant.
+```swift
+let fileID = "file-abc123"
+let parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue), name: "Math tutor", fileIDS: [fileID])
+let assistant = try await service.createAssistant(parameters: parameters)
+```
+
+### Threads
+Documentation in progress. 👷‍♂️
+
+### Messages
+Documentation in progress. 👷‍♂️
+
+### Message File Object
+Documentation in progress. 👷‍♂️
+
+### Runs
+Documentation in progress. 👷‍♂️
+
+### Run Step Object
+Documentation in progress. 👷‍♂️
 
 ### Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

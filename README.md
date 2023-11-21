@@ -1783,6 +1783,7 @@ public struct AssistantObject: Decodable {
 ```
 
 Usage
+
 Create Assistant
 ```swift
 let parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue), name: "Math tutor")
@@ -1851,6 +1852,7 @@ public struct AssistantFileObject: Decodable {
 }
 ```
 Usage
+
 Refer to the [Upload file](#upload-file) section or consult the Files[https://platform.openai.com/docs/api-reference/files] OpenAI documentation for details on how to upload a file that can be attached to the assistant.
 ```swift
 let fileID = "file-abc123"

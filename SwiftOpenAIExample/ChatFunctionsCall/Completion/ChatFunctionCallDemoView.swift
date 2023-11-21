@@ -1,21 +1,21 @@
 //
-//  ChatFunctionsCalllDemoView.swift
+//  ChatFunctionCallDemoView.swift
 //  SwiftOpenAIExample
 //
-//  Created by James Rochabrun on 11/6/23.
+//  Created by James Rochabrun on 11/14/23.
 //
 
 import SwiftUI
 import SwiftOpenAI
 
-struct ChatFunctionsCalllDemoView: View {
+struct ChatFunctionCallDemoView: View {
    
+   @State private var chatProvider: ChatFunctionCallProvider
    @State private var isLoading = false
    @State private var prompt = ""
-   @State private var chatProvider: ChatFunctionsCallProvider
    
    init(service: OpenAIService) {
-      _chatProvider = State(initialValue: ChatFunctionsCallProvider(service: service))
+      _chatProvider = State(initialValue: ChatFunctionCallProvider(service: service))
    }
    
    var body: some View {
@@ -36,7 +36,7 @@ struct ChatFunctionsCalllDemoView: View {
          }
       }
    }
-   
+
    var textArea: some View {
       HStack(spacing: 0) {
          VStack(alignment: .leading, spacing: 0) {
@@ -73,7 +73,7 @@ struct ChatFunctionsCalllDemoView: View {
             // Clears text field.
             let userPrompt = prompt
             prompt = ""
-            try await chatProvider.chat(prompt: userPrompt)
+            try await chatProvider.startChat(prompt: userPrompt)
          }
       } label: {
          Image(systemName: "paperplane")

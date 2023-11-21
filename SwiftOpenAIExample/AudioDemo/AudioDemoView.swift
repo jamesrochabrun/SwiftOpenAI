@@ -13,9 +13,29 @@ struct AudioDemoView: View {
    @State private var audioProvider: AudioProvider
    @State private var isLoading = false
    private let contentLoader = ContentLoader()
+   @State private var prompt = ""
    
    init(service: OpenAIService) {
       _audioProvider = State(initialValue: AudioProvider(service: service))
+   }
+   
+   var textArea: some View {
+      HStack(spacing: 4) {
+         TextField("Enter message to convert to speech", text: $prompt, axis: .vertical)
+            .textFieldStyle(.roundedBorder)
+            .padding()
+         Button {
+            Task {
+               isLoading = true
+               defer { isLoading = false }  // ensure isLoading is set to false when the
+               try await audioProvider.speech(parameters: .init(model: .tts1, input: prompt, voice: .shimmer))
+            }
+         } label: {
+            Image(systemName: "paperplane")
+         }
+         .buttonStyle(.bordered)
+      }
+      .padding()
    }
    
    var transcriptionView: some View {
@@ -61,6 +81,10 @@ struct AudioDemoView: View {
    var body: some View {
       ScrollView {
          VStack {
+            VStack {
+               Text("Add a text to convert to speech")
+               textArea
+            }
             transcriptionView
                .padding()
             Divider()

@@ -1,5 +1,5 @@
 //
-//  ChatFunctionsCallProvider.swift
+//  ChatFunctionsCallStreamProvider.swift
 //  SwiftOpenAIExample
 //
 //  Created by James Rochabrun on 11/6/23.
@@ -8,60 +8,27 @@
 import SwiftUI
 import SwiftOpenAI
 
-/// 1 Define the function calls
+/**
+ This is a demo in how to implement parallel function calling when using the completion API stream = true
+ */
 
-enum FunctionCall: String, CaseIterable {
-   
-   case createImage = "create_image"
-   case changeText = "change_text"
-   
-   var functionTool: ChatCompletionParameters.Tool {
-      switch self {
-      case .createImage:
-         return .init(function: .init(
-            name: self.rawValue,
-            description: "call this function if the request asks to generate an image",
-            parameters: .init(
-               type: .object,
-               properties: [
-                  "prompt": .init(type: .string, description: "The exact prompt passed in."),
-                  "count": .init(type: .integer, description: "The number of images requested")
-               ],
-               required: ["prompt", "count"])))
-      case .changeText:
-         return .init(function: .init(
-            name: self.rawValue,
-            description: "call this function if user asks for a mathematical operation",
-            parameters: .init(
-               type: .object,
-               properties: [
-                  "prompt": .init(type: .string, description: "The exact prompt passed in."),
-               ],
-               required: ["prompt"])))
-      }
-   }
-}
-
-/// 2 Define a FunctionCall streamed response
 struct FunctionCallStreamedResponse {
    let name: String
    let id: String
-   let toolCall: ChatCompletionChunkObject.ChatChoice.Delta.ToolCall
+   let toolCall: ToolCall
    var argument: String
 }
 
-@Observable class ChatFunctionsCallProvider {
+@Observable class ChatFunctionsCallStreamProvider {
    
    // MARK: - Private Properties
    
-   private static let yourAPIKey = "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" // Start with your API Key.
    private let service: OpenAIService
-   private var temporalReceivedMessageContent: String = ""
    private var lastDisplayedMessageID: UUID?
    /// To be used for a new request
    private var chatMessageParameters: [ChatCompletionParameters.Message] = []
-   private var functionCallsMap: [FunctionCall: FunctionCallStreamedResponse] = [:]
-   private var availableFunctions: [FunctionCall: (@MainActor (String) async throws -> String)] = [:]
+   private var functionCallsMap: [FunctionCallDefinition: FunctionCallStreamedResponse] = [:]
+   private var availableFunctions: [FunctionCallDefinition: (@MainActor (String) async throws -> String)] = [:]
    
    @MainActor
    func generateImage(arguments: String) async throws -> String {
@@ -69,14 +36,14 @@ struct FunctionCallStreamedResponse {
       let prompt = dictionary["prompt"] as! String
       let count = (dictionary["count"]  as? Int) ??  1
       
-      // TODO: Improve the loading state!
+      // TODO: Improve the loading state
       let assistantMessage = ChatMessageDisplayModel(
-         content: .content(.init(text: "Generating images")),
+         content: .content(.init(text: "Generating images...")),
          origin: .received(.gpt))
       updateLastAssistantMessage(assistantMessage)
       
       let urls = try await service.createImages(
-         parameters: .init(prompt: prompt, numberOfImages: count)).data.compactMap(\.url)
+         parameters: .init(prompt: prompt, model: .dalle2(.small), numberOfImages: count)).data.compactMap(\.url)
       
       let dalleAssistantMessage = ChatMessageDisplayModel(
          content: .content(.init(text: nil, urls: urls)),
@@ -84,10 +51,6 @@ struct FunctionCallStreamedResponse {
       updateLastAssistantMessage(dalleAssistantMessage)
       
       return prompt
-   }
-   
-   func generateText(arguments: String) -> String {
-      return "Change this text for a mathematical operation" // Dummy example
    }
    
    // MARK: - Public Properties
@@ -111,26 +74,26 @@ struct FunctionCallStreamedResponse {
       defer {
          functionCallsMap = [:]
          chatMessageParameters = []
-         print("Defered --------------")
       }
       
       await startNewUserDisplayMessage(prompt)
       
       await startNewAssistantEmptyDisplayMessage()
-      
-      availableFunctions = [.changeText: generateText(arguments:), .createImage: generateImage(arguments:)]
-      
+         
       let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are an artist powered by AI, if the messages has a tool message you will weight that bigger in order to create a response, and you are providing me an image, you always respond in readable language and never providing URLs of images, most of the times you add an emoji on your responses if makes sense, do not describe the image. also always offer more help"))
       chatMessageParameters.append(systemMessage)
       
+      /// # Step 1: send the conversation and available functions to the model
       let userMessage = createUserMessage(prompt)
       chatMessageParameters.append(userMessage)
       
+      let tools = FunctionCallDefinition.allCases.map { $0.functionTool }
+
       let parameters = ChatCompletionParameters(
          messages: chatMessageParameters,
          model: .gpt35Turbo1106,
          toolChoice: ChatCompletionParameters.ToolChoice.auto,
-         tools: FunctionCall.allCases.map { $0.functionTool })
+         tools: tools)
       
       do {
          // Begin the chat stream with the updated parameters.
@@ -138,12 +101,15 @@ struct FunctionCallStreamedResponse {
          for try await result in stream {
             // Extract the first choice from the stream results, if none exist, exit the loop.
             guard let choice = result.choices.first else { return }
-            print("sasha result.choices \(result.choices.count)")
-            
             /// Because we are using the stream API we need to wait to populate
             /// the needed values that comes from the streamed API to construct a valid tool call response.
             /// This is not needed if the stream is set to false in the API completion request.
+            /// # Step 2: check if the model wanted to call a function
             if let toolCalls = choice.delta.toolCalls {
+               
+               /// # Step 3: Define the available functions to be called
+               availableFunctions = [.createImage: generateImage(arguments:)]
+
                mapStreamedToolCallsResponse(toolCalls)
             }
             
@@ -155,18 +121,18 @@ struct FunctionCallStreamedResponse {
             }
          }
          // # extend conversation with assistant's reply
-         if let assistantMessage = createAssistantMessage() {
+         // Append the `assistantMessage` in to the `chatMessageParameters` to extend the conversation
+         if !functionCallsMap.isEmpty {
+            
+            let assistantMessage = createAssistantMessage()
             chatMessageParameters.append(assistantMessage)
-         }
-         
-         // # Create tool messages to extend conversation
-         if let toolMessages = try await createToolsMessages() {
+            /// # Step 4: send the info for each function call and function response to the model
+            let toolMessages = try await createToolsMessages()
             chatMessageParameters.append(contentsOf: toolMessages)
+            
+            // Lastly call the chat again
+            await continueChat()
          }
-         
-         // Lastly call the chat again
-         
-         await continueChat()
          
          // TUTORIAL
       } catch {
@@ -176,10 +142,11 @@ struct FunctionCallStreamedResponse {
    }
    
    func mapStreamedToolCallsResponse(
-      _ toolCalls:  [ChatCompletionChunkObject.ChatChoice.Delta.ToolCall])
+      _ toolCalls:  [ToolCall])
    {
       for toolCall in toolCalls {
-         let function = FunctionCall.allCases[toolCall.index]
+         // Intentionally force unwrapped to catch errrors quickly on demo. // This should be properly handled.
+         let function = FunctionCallDefinition.allCases[toolCall.index!]
          if var streamedFunctionCallResponse = functionCallsMap[function] {
             streamedFunctionCallResponse.argument += toolCall.function.arguments
             functionCallsMap[function] = streamedFunctionCallResponse
@@ -201,23 +168,21 @@ struct FunctionCallStreamedResponse {
       .init(role: .user, content: .text(prompt))
    }
    
-   func createAssistantMessage() -> ChatCompletionParameters.Message? {
-      var toolCalls: [ChatCompletionParameters.Message.ToolCall] = []
+   func createAssistantMessage() -> ChatCompletionParameters.Message {
+      var toolCalls: [ToolCall] = []
       for (_, functionCallStreamedResponse) in functionCallsMap {
          let toolCall = functionCallStreamedResponse.toolCall
-         let messageToolCall = ChatCompletionParameters.Message.ToolCall(
+         // Intentionally force unwrapped to catch errrors quickly on demo. // This should be properly handled.
+         let messageToolCall = ToolCall(
             id: toolCall.id!,
             function: .init(arguments: toolCall.function.arguments, name: toolCall.function.name!))
          toolCalls.append(messageToolCall)
       }
-      if toolCalls.isEmpty {
-         return nil
-      }
-      return .init(role: .assistant, content: .text(temporalReceivedMessageContent), toolCalls: toolCalls)
+      return .init(role: .assistant, content: .text(""), toolCalls: toolCalls)
    }
    
    func createToolsMessages() async throws
-   -> [ChatCompletionParameters.Message]?
+   -> [ChatCompletionParameters.Message]
    {
       var toolMessages: [ChatCompletionParameters.Message] = []
       for (key, functionCallStreamedResponse) in functionCallsMap {
@@ -234,7 +199,7 @@ struct FunctionCallStreamedResponse {
             toolCallID: id)
          toolMessages.append(toolMessage)
       }
-      return toolMessages.isEmpty ? nil : toolMessages
+      return toolMessages
    }
    
    func continueChat() async {
@@ -272,9 +237,8 @@ struct FunctionCallStreamedResponse {
    
    @MainActor
    private func startNewAssistantEmptyDisplayMessage() {
-      temporalReceivedMessageContent = ""
       let newMessage = ChatMessageDisplayModel(
-         content: .content(.init(text: temporalReceivedMessageContent)),
+         content: .content(.init(text: "")),
          origin: .received(.gpt))
       addMessage(newMessage)
    }

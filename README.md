@@ -1860,6 +1860,20 @@ let parameters = AssistantParameters(action: .create(model: Model.gpt41106Previe
 let assistant = try await service.createAssistant(parameters: parameters)
 ```
 
+### Threads
+Documentation in progress. 👷‍♂️
+
+### Messages
+Documentation in progress. 👷‍♂️
+
+### Message File Object
+Documentation in progress. 👷‍♂️
+
+### Runs
+Documentation in progress. 👷‍♂️
+
+### Run Step Object
+Documentation in progress. 👷‍♂️
 
 ### Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

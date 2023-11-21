@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */; };
+		7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */; };
 		7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B952AE24A04003CE281 /* OptionsListView.swift */; };
 		7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B982AE25052003CE281 /* ContentLoader.swift */; };
 		7B436B9B2AE25094003CE281 /* narcos.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7B436B9A2AE25093003CE281 /* narcos.m4a */; };
@@ -38,7 +40,6 @@
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
 		7BA788D52AE23A49008825D5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D42AE23A49008825D5 /* Preview Assets.xcassets */; };
-		7BA788DF2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
 		7BA788E92AE23A49008825D5 /* SwiftOpenAIExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788E82AE23A49008825D5 /* SwiftOpenAIExampleUITests.swift */; };
 		7BA788EB2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788EA2AE23A49008825D5 /* SwiftOpenAIExampleUITestsLaunchTests.swift */; };
 		7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788FB2AE23B42008825D5 /* AudioDemoView.swift */; };
@@ -52,6 +53,7 @@
 		7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */; };
 		7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */; };
 		7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */; };
+		7BE9A5AF2B0B33E600CE8103 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +74,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationDemoView.swift; sourceTree = "<group>"; };
+		7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B436B952AE24A04003CE281 /* OptionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsListView.swift; sourceTree = "<group>"; };
 		7B436B982AE25052003CE281 /* ContentLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentLoader.swift; sourceTree = "<group>"; };
 		7B436B9A2AE25093003CE281 /* narcos.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = narcos.m4a; sourceTree = "<group>"; };
@@ -148,6 +152,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B1268032B08241200400694 /* Assistants */ = {
+			isa = PBXGroup;
+			children = (
+				7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */,
+				7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */,
+			);
+			path = Assistants;
+			sourceTree = "<group>";
+		};
 		7B436B972AE25045003CE281 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -294,19 +307,20 @@
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
 				7B7239AF2AF9FF1D00646679 /* SharedModels */,
 				7B7239A92AF6294200646679 /* SharedUI */,
-				7B436B9C2AE2515C003CE281 /* Resources */,
-				7B436B972AE25045003CE281 /* Utilities */,
+				7B1268032B08241200400694 /* Assistants */,
 				7BA788FA2AE23B27008825D5 /* AudioDemo */,
 				7B436B9F2AE2593D003CE281 /* ChatDemo */,
+				7B7239AC2AF9FEC300646679 /* ChatFunctionsCall */,
+				7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */,
 				7B436BA42AE77EF9003CE281 /* EmbeddingsDemo */,
 				7B436BA92AE788CA003CE281 /* FineTuningDemo */,
 				7B436BAE2AE7935C003CE281 /* FilesDemo */,
 				7B436BB52AE7A2DA003CE281 /* ImagesDemo */,
 				7B436BBA2AE7ABC4003CE281 /* ModelsDemo */,
-				7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */,
-				7B7239AC2AF9FEC300646679 /* ChatFunctionsCall */,
-				7BBE7E922AFCC9300096A693 /* Vision */,
 				7B436BBF2AE7B003003CE281 /* ModerationsDemo */,
+				7B436B9C2AE2515C003CE281 /* Resources */,
+				7B436B972AE25045003CE281 /* Utilities */,
+				7BBE7E922AFCC9300096A693 /* Vision */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
@@ -534,6 +548,7 @@
 				7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */,
 				7BBE7EA52B02E8A70096A693 /* Sizes.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
+				7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
 				7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */,
@@ -550,6 +565,7 @@
 				7B436BAB2AE788F1003CE281 /* FineTuningJobProvider.swift in Sources */,
 				7B7239A42AF6289900646679 /* ChatStreamFluidConversationDemoView.swift in Sources */,
 				7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */,
+				7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */,
 				7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,
 				7B7239A82AF6292100646679 /* LoadingView.swift in Sources */,
@@ -568,7 +584,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BA788DF2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift in Sources */,
+				7BE9A5AF2B0B33E600CE8103 /* SwiftOpenAIExampleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

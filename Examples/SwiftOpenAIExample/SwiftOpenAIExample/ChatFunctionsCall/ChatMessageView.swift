@@ -98,3 +98,13 @@ struct ChatMessageView: View {
       }
    }
 }
+
+#Preview {
+   VStack {
+      ChatMessageView(message: .init(content: .content(.init(text: "What is the capital of Peru? and what is the population")), origin: .sent))
+      ChatMessageView(message: .init(content: .content(.init(text: "Lima, an its 28 million habitants.")), origin: .received(.gpt)))
+      ChatMessageView(message: .init(content: .content(.init(text: "The image you requested is ready 🐱", urls: [URL(string: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")!])), origin: .received(.dalle)))
+      ChatMessageView(message: .init(content: .content(.init(text: "")), origin: .received(.gpt)))
+   }
+   .padding()
+}

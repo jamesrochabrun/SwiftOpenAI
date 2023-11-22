@@ -416,7 +416,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: MessageParameter)
       async throws -> MessageObject
    {
-      let request = try OpenAIAPI.message(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: MessageObject.self, with: request)
    }
    
@@ -507,7 +507,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: RunParameter)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: RunObject.self, with: request)
    }
    

@@ -101,10 +101,12 @@ public enum Content: Codable {
 
 // MARK: Image File
 
-/// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
 public struct ImageFile: Codable {
    /// Always image_file.
    public let type: String
+   
+   /// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
+   public let imageFile: ImageFile
    
    public struct ImageFile: Codable {
       
@@ -119,11 +121,12 @@ public struct ImageFile: Codable {
 
 // MARK: Text
 
-/// The text content that is part of a message.
 public struct Text: Codable {
    
    /// Always text.
    public let type: String
+   /// The text content that is part of a message.
+   public let text: Text
    
    public struct Text: Codable {
       /// The data that makes up the text.

@@ -126,10 +126,10 @@ public struct Text: Codable {
    /// Always text.
    public let type: String
    /// The text content that is part of a message.
-   public let text: Text
+   public let text: TextContent
    
-   public struct Text: Codable {
-      /// The data that makes up the text.
+   public struct TextContent: Codable {
+      // The data that makes up the text.
       public let value: String
       
       public let annotations: [Annotation]

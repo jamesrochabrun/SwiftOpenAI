@@ -241,7 +241,7 @@ struct DefaultOpenAIService: OpenAIService {
       id: String)
       async throws -> ModelObject.DeletionStatus
    {
-      let request = try OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
+      let request = try OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete)
       return try await fetch(type: ModelObject.DeletionStatus.self,  with: request)
    }
    
@@ -405,7 +405,7 @@ struct DefaultOpenAIService: OpenAIService {
       id: String)
       async throws -> ThreadObject.DeletionStatus
    {
-      let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: ThreadObject.DeletionStatus.self, with: request)
    }
    

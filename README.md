@@ -1918,7 +1918,8 @@ let thread = try await service.retrieveThread(id: id)
 Modify thread.
 ```swift
 let threadID = "thread_abc123"
-let thread = try await service.modifyThread(id: id)
+let paramaters = CreateThreadParameters(metadata: ["modified": "true", "user": "abc123"]
+let thread = try await service.modifyThread(id: id, parameters: parameters)
 ```
 Delete thread.
 ```swift

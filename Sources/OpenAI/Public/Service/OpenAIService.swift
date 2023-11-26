@@ -497,12 +497,14 @@ public protocol OpenAIService {
    /// Modifies a thread.
    ///
    /// - Parameter id: The ID of the thread to modify. Only the metadata can be modified.
+   /// - Parameter parameters: The parameters needed to modify a thread. Only the metadata can be modified.
    /// - Returns: The modified [thread](https://platform.openai.com/docs/api-reference/threads/object) object matching the specified ID.
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/modifyThread).
    func modifyThread(
-      id: String)
+      id: String,
+      parameters: ModifyThreadParameters)
    async throws -> ThreadObject
    
    /// Delete a thread.

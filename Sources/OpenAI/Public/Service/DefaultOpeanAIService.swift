@@ -394,10 +394,11 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func modifyThread(
-      id: String)
+      id: String,
+      parameters: ModifyThreadParameters)
       async throws -> ThreadObject
    {
-      let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: ThreadObject.self, with: request)
    }
    

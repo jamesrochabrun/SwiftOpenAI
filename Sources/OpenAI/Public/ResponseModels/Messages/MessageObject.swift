@@ -90,7 +90,8 @@ public enum Content: Codable {
          let imageFile = try imageFileContainer.decode(ImageFile.self, forKey: .imageFile)
          self = .imageFile(imageFile)
       case "text":
-         let text = try Text(from: decoder)
+         let textContainer = try decoder.container(keyedBy: CodingKeys.self)
+         let text = try textContainer.decode(Text.self, forKey: .text)
          self = .text(text)
       default:
          throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Invalid type for content")
@@ -100,14 +101,12 @@ public enum Content: Codable {
 
 // MARK: Image File
 
+/// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
 public struct ImageFile: Codable {
    /// Always image_file.
    public let type: String
    
-   /// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
-   public let imageFile: ImageFileContent
-   
-   public struct ImageFileContent: Codable {
+   public struct ImageFile: Codable {
       
       /// The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the message content.
       public let fileID: String
@@ -120,15 +119,14 @@ public struct ImageFile: Codable {
 
 // MARK: Text
 
+/// The text content that is part of a message.
 public struct Text: Codable {
    
    /// Always text.
    public let type: String
-   /// The text content that is part of a message.
-   public let text: TextContent
    
-   public struct TextContent: Codable {
-      // The data that makes up the text.
+   public struct Text: Codable {
+      /// The data that makes up the text.
       public let value: String
       
       public let annotations: [Annotation]

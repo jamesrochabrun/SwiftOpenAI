@@ -550,13 +550,15 @@ public protocol OpenAIService {
    ///
    /// - Parameter threadID: The ID of the thread to which this message belongs.
    /// - Parameter messageID: The ID of the message to modify.
+   /// - Parameter parameters: The parameters needed to modify a message metadata.
    /// - Returns: The modified [message](https://platform.openai.com/docs/api-reference/threads/messages/object) object.
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/modifyMessage).
    func modifyMessage(
       threadID: String,
-      messageID: String)
+      messageID: String,
+      parameters: ModifyMessageParameters)
    async throws -> MessageObject
    
    /// Returns a list of messages for a given thread.

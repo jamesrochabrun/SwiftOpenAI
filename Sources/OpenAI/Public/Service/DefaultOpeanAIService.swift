@@ -432,10 +432,11 @@ struct DefaultOpenAIService: OpenAIService {
    
    func modifyMessage(
       threadID: String,
-      messageID: String)
+      messageID: String,
+      parameters: ModifyMessageParameters)
       async throws -> MessageObject
    {
-      let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: MessageObject.self, with: request)
    }
    

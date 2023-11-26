@@ -1928,7 +1928,200 @@ let thread = try await service.deleteThread(id: id)
 ```
 
 ### Messages
-Documentation in progress. 👷‍♂️
+Parameters
+```swift
+/// [Create a message.](https://platform.openai.com/docs/api-reference/messages/createMessage)
+public struct MessageParameter: Encodable {
+   
+   /// The role of the entity that is creating the message. Currently only user is supported.
+   let role: String
+   /// The content of the message.
+   let content: String
+   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the message should use. There can be a maximum of 10 files attached to a message. Useful for tools like retrieval and code_interpreter that can access and use files. Defaults to []
+   let fileIDS: [String]?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]?
+   
+   public init(
+      role: String,
+      content: String,
+      fileIDS: [String]? = nil,
+      metadata: [String : String]? = nil)
+   {
+      self.role = role
+      self.content = content
+      self.fileIDS = fileIDS
+      self.metadata = metadata
+   }
+}
+```
+Response
+```swift
+/// Represents a [message](https://platform.openai.com/docs/api-reference/messages) within a [thread](https://platform.openai.com/docs/api-reference/threads).
+public struct MessageObject: Codable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.message.
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the message was created.
+   public let createdAt: Int
+   /// The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message belongs to.
+   public let threadID: String
+   /// The entity that produced the message. One of user or assistant.
+   public let role: String
+   /// The content of the message in array of text and/or images.
+   public let content: [Content]
+   /// If applicable, the ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this message.
+   public let assistantID: String?
+   /// If applicable, the ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the authoring of this message.
+   public let runID: String?
+   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
+   public let fileIDS: [String]?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public let metadata: [String: String]?
+   
+   enum Role: String {
+      case user
+      case assistant
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case id
+      case object
+      case createdAt = "created_at"
+      case threadID = "thread_id"
+      case role
+      case content
+      case assistantID = "assistant_id"
+      case runID = "run_id"
+      case fileIDS = "file_ids"
+      case metadata
+   }
+}
+
+// MARK: Content
+
+public enum Content: Codable {
+   
+   case imageFile(ImageFile)
+   case text(Text)
+}
+
+// MARK: Image File
+
+public struct ImageFile: Codable {
+   /// Always image_file.
+   public let type: String
+   
+   /// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
+   public let imageFile: ImageFileContent
+   
+   public struct ImageFileContent: Codable {
+      
+      /// The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the message content.
+      public let fileID: String
+   }
+}
+
+// MARK: Text
+
+public struct Text: Codable {
+   
+   /// Always text.
+   public let type: String
+   /// The text content that is part of a message.
+   public let text: TextContent
+   
+   public struct TextContent: Codable {
+      // The data that makes up the text.
+      public let value: String
+      
+      public let annotations: [Annotation]
+   }
+}
+
+// MARK: Annotation
+
+public enum Annotation: Codable {
+   
+   case fileCitation(FileCitation)
+   case filePath(FilePath)
+}
+
+// MARK: FileCitation
+
+/// A citation within the message that points to a specific quote from a specific File associated with the assistant or the message. Generated when the assistant uses the "retrieval" tool to search files.
+public struct FileCitation: Codable {
+   
+   /// Always file_citation.
+   public let type: String
+   /// The text in the message content that needs to be replaced.
+   public let text: String
+   public let fileCitation: FileCitation
+   public  let startIndex: Int
+   public let endIndex: Int
+   
+   public struct FileCitation: Codable {
+      
+      /// The ID of the specific File the citation is from.
+      public let fileID: String
+      /// The specific quote in the file.
+      public let quote: String
+
+   }
+}
+
+// MARK: FilePath
+
+/// A URL for the file that's generated when the assistant used the code_interpreter tool to generate a file.
+public struct FilePath: Codable {
+   
+   /// Always file_path
+   public let type: String
+   /// The text in the message content that needs to be replaced.
+   public let text: String
+   public let filePath: FilePath
+   public let startIndex: Int
+   public let endIndex: Int
+   
+   public struct FilePath: Codable {
+      /// The ID of the file that was generated.
+      public let fileID: String
+   }
+}
+```
+
+Usage
+
+Create Message.
+```swift
+let threadID = "thread_abc123"
+let prompt = "Give me some ideas for a birthday party."
+let parameters = MessageParameter(role: "user", content: prompt")
+let message = try await service.createMessage(threadID: threadID, parameters: parameters)
+```
+
+Retireve Message.
+```swift
+let threadID = "thread_abc123"
+let messageID = "msg_abc123"
+let message = try await service.retrieveMessage(threadID: threadID, messageID: messageID)
+```
+
+Modify Message.
+```swift
+let threadID = "thread_abc123"
+let messageID = "msg_abc123"
+let parameters = ModifyMessageParameters(metadata: ["modified": "true", "user": "abc123"]
+let message = try await service.modifyMessage(threadID: threadID, messageID: messageID, parameters: parameters)
+```
+
+List Messages
+```swift
+let threadID = "thread_abc123"
+let messages = try await service.listMessages(threadID: threadID, limit: nil, order: nil, after: nil, before: nil) 
+```
 
 ### Message File Object
 Documentation in progress. 👷‍♂️

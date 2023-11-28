@@ -10,7 +10,7 @@ import Foundation
 /// [Create a message.](https://platform.openai.com/docs/api-reference/messages/createMessage)
 public struct MessageParameter: Encodable {
    
-   /// The role of the entity that is creating the message. Currently only user is supported.
+   /// The role of the entity that is creating the message. Currently only `user` is supported.
    let role: String
    /// The content of the message.
    let content: String
@@ -18,6 +18,10 @@ public struct MessageParameter: Encodable {
    let fileIDS: [String]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   
+   public enum Role: String {
+      case user
+   }
    
    enum CodingKeys: String, CodingKey {
       case role
@@ -27,12 +31,12 @@ public struct MessageParameter: Encodable {
    }
    
    public init(
-      role: String,
+      role: Role,
       content: String,
       fileIDS: [String]? = nil,
       metadata: [String : String]? = nil)
    {
-      self.role = role
+      self.role = role.rawValue
       self.content = content
       self.fileIDS = fileIDS
       self.metadata = metadata

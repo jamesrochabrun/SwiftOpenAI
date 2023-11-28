@@ -49,6 +49,30 @@ public struct MessageObject: Codable {
       case fileIDS = "file_ids"
       case metadata
    }
+   
+   public init(
+      id: String,
+      object: String,
+      createdAt: Int,
+      threadID: String,
+      role: String,
+      content: [Content],
+      assistantID: String?,
+      runID: String?,
+      fileIDS: [String]?,
+      metadata: [String : String]?)
+   {
+      self.id = id
+      self.object = object
+      self.createdAt = createdAt
+      self.threadID = threadID
+      self.role = role
+      self.content = content
+      self.assistantID = assistantID
+      self.runID = runID
+      self.fileIDS = fileIDS
+      self.metadata = metadata
+   }
 }
 
 // MARK: Content

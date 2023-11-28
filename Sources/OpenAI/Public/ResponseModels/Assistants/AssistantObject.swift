@@ -74,4 +74,28 @@ public struct AssistantObject: Decodable {
       public let object: String
       public let deleted: Bool
    }
+   
+   public init(
+       id: String,
+       object: String,
+       createdAt: Int,
+       name: String?,
+       description: String?,
+       model: String,
+       instructions: String?,
+       tools: [Tool],
+       fileIDS: [String],
+       metadata: [String: String]
+   ) {
+       self.id = id
+       self.object = object
+       self.createdAt = createdAt
+       self.name = name
+       self.description = description
+       self.model = model
+       self.instructions = instructions
+       self.tools = tools
+       self.fileIDS = fileIDS
+       self.metadata = metadata
+   }
 }

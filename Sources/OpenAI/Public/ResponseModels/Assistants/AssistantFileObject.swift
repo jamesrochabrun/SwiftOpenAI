@@ -35,4 +35,16 @@ public struct AssistantFileObject: Decodable {
       public let object: String
       public let deleted: Bool
    }
+   
+   public init(
+      id: String,
+      object: String,
+      createdAt: Int,
+      assistantID: String)
+   {
+      self.id = id
+      self.object = object
+      self.createdAt = createdAt
+      self.assistantID = assistantID
+   }
 }

@@ -32,4 +32,16 @@ public struct ThreadObject: Decodable {
       public let object: String
       public let deleted: Bool
    }
+   
+   public init(
+      id: String,
+      object: String,
+      createdAt: Int,
+      metadata: [String : String])
+   {
+      self.id = id
+      self.object = object
+      self.createdAt = createdAt
+      self.metadata = metadata
+   }
 }

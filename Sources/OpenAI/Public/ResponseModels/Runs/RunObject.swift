@@ -41,7 +41,7 @@ public struct RunObject: Decodable {
    /// The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let model: String
    /// The instructions that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-   public let instructions: String
+   public let instructions: String?
    /// The list of tools that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let tools: [AssistantObject.Tool]
    /// The list of [File](https://platform.openai.com/docs/api-reference/files) IDs the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
@@ -117,5 +117,45 @@ public struct RunObject: Decodable {
       case fileIDS = "file_ids"
       case tools
       case metadata
+   }
+   
+   public init(
+      id: String,
+      object: String,
+      createdAt: Int,
+      threadID: String,
+      assistantID: String,
+      status: String,
+      requiredAction: RequiredAction?,
+      lastError: LastError?,
+      expiresAt: Int,
+      startedAt: Int?,
+      cancelledAt: Int?,
+      failedAt: Int?,
+      completedAt: Int?,
+      model: String,
+      instructions: String?,
+      tools: [AssistantObject.Tool],
+      fileIDS: [String],
+      metadata: [String : String])
+   {
+      self.id = id
+      self.object = object
+      self.createdAt = createdAt
+      self.threadID = threadID
+      self.assistantID = assistantID
+      self.status = status
+      self.requiredAction = requiredAction
+      self.lastError = lastError
+      self.expiresAt = expiresAt
+      self.startedAt = startedAt
+      self.cancelledAt = cancelledAt
+      self.failedAt = failedAt
+      self.completedAt = completedAt
+      self.model = model
+      self.instructions = instructions
+      self.tools = tools
+      self.fileIDS = fileIDS
+      self.metadata = metadata
    }
 }

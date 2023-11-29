@@ -2136,7 +2136,8 @@ Documentation in progress. 👷‍♂️
 
 ### Runs
 Parameters
-[Create a run](https://platform.openai.com/docs/api-reference/runs/createRun))
+
+[Create a run](https://platform.openai.com/docs/api-reference/runs/createRun)
 ```swift
 public struct RunParameter: Encodable {
    
@@ -2185,7 +2186,7 @@ public struct CreateThreadAndRunParameter: Encodable {
 }
 ```
 [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-```
+```swift
 public struct RunToolsOutputParameter: Encodable {
    
    /// A list of tools for which the outputs are being submitted.
@@ -2286,7 +2287,57 @@ let run = service.createThreadAndRun(parameters: parameters)
 ```
 
 ### Run Step Object
-Documentation in progress. 👷‍♂️
+Represents a [step](https://platform.openai.com/docs/api-reference/runs/step-object) in execution of a run.
+Response
+```swift
+public struct RunStepObject: Decodable {
+   
+   /// The identifier of the run step, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always `thread.run.step``.
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the run step was created.
+   public let createdAt: Int
+   /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) associated with the run step.
+   public let assistantId: String
+   /// The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+   public let threadId: String
+   ///The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step is a part of.
+   public let runId: String
+   /// The type of run step, which can be either message_creation or tool_calls.
+   public let type: String
+   /// The status of the run step, which can be either in_progress, cancelled, failed, completed, or expired.
+   public let status: String
+   /// The details of the run step.
+   public let stepDetails: StepDetail
+   /// The last error associated with this run step. Will be null if there are no errors.
+   public let lastError: RunObject.LastError?
+   /// The Unix timestamp (in seconds) for when the run step expired. A step is considered expired if the parent run is expired.
+   public let expiredAt: Int?
+   /// The Unix timestamp (in seconds) for when the run step was cancelled.
+   public let cancelledAt: Int?
+   /// The Unix timestamp (in seconds) for when the run step failed.
+   public let failedAt: Int?
+   /// The Unix timestamp (in seconds) for when the run step completed.
+   public let completedAt: Int?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public let metadata: [String: String]?
+}
+```
+Usage
+Retrieve a Run step
+```swift
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let stepID = "step_abc123"
+let runStep = try await service.retrieveRunstep(threadID: threadID, runID: runID, stepID: stepID)
+```
+List run steps
+```swift
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let runSteps = try await service.listRunSteps(threadID: threadID, runID: runID, limit: nil, order: nil, after: nil, before: nil) 
+```
 
 ### Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

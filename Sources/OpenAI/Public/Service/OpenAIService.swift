@@ -17,6 +17,7 @@ public enum APIError: Error {
    case jsonDecodingFailure(description: String)
    case dataCouldNotBeReadMissingData(description: String)
    case bothDecodingStrategiesFailed
+   case timeOutError
    
    public var displayDescription: String {
       switch self {
@@ -26,6 +27,7 @@ public enum APIError: Error {
       case .jsonDecodingFailure(let description): return description
       case .dataCouldNotBeReadMissingData(let description): return description
       case .bothDecodingStrategiesFailed: return "Decoding strategies failed."
+      case .timeOutError: return "Time Out Error."
       }
    }
 }

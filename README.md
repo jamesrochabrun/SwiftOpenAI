@@ -1089,14 +1089,8 @@ public struct FineTuningJobObject: Decodable {
    public let id: String
    /// The Unix timestamp (in seconds) for when the fine-tuning job was created.
    public let createdAt: Int
-   
-   //TODO: Error
-   /**
-    error
-    object or null
-    For fine-tuning jobs that have failed, this will contain more information on the cause of the failure.
-    */
-   
+  /// For fine-tuning jobs that have failed, this will contain more information on the cause of the failure.
+   public let error: OpenAIErrorResponse.Error?
    /// The name of the fine-tuned model that is being created. The value will be null if the fine-tuning job is still running.
    public let fineTunedModel: String?
    /// The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be null if the fine-tuning job is still running.
@@ -2132,7 +2126,33 @@ let messages = try await service.listMessages(threadID: threadID, limit: nil, or
 ```
 
 ### Message File Object
-Documentation in progress. 👷‍♂️
+[A list of files attached to a message](https://platform.openai.com/docs/api-reference/messages/file-object)
+Response
+```swift
+public struct MessageFileObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.message.file.
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the message file was created.
+   public let createdAt: Int
+}
+```
+Usage
+[Retrieve Message File](https://platform.openai.com/docs/api-reference/messages/getMessageFile)
+```swift
+let threadID = "thread_abc123"
+let messageID = "msg_abc123"
+let fileID = "file-abc123"
+let messageFile = try await service.retrieveMessageFile(threadID: threadID, messageID: messageID, fileID: fileID)
+```
+[List Message Files](https://platform.openai.com/docs/api-reference/messages/listMessageFiles0)
+```swift
+let threadID = "thread_abc123"
+let messageID = "msg_abc123"
+let messageFiles = try await service.listMessageFiles(threadID: threadID, messageID: messageID, limit: nil, order: nil, after: nil, before: v)
+```
 
 ### Runs
 Parameters

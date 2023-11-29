@@ -28,12 +28,14 @@ protocol Endpoint {
 extension Endpoint {
 
    private func urlComponents(
-      queryItems: [URLQueryItem]? = nil)
+      queryItems: [URLQueryItem])
       -> URLComponents
    {
       var components = URLComponents(string: base)!
       components.path = path
-      components.queryItems = queryItems
+      if !queryItems.isEmpty {
+         components.queryItems = queryItems
+      }
       return components
    }
    
@@ -42,7 +44,7 @@ extension Endpoint {
       organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
-      queryItems: [URLQueryItem]? = nil,
+      queryItems: [URLQueryItem] = [],
       betaHeaderField: String? = nil)
       throws -> URLRequest
    {
@@ -67,7 +69,7 @@ extension Endpoint {
       organizationID: String?,
       method: HTTPMethod,
       params: MultipartFormDataParameters,
-      queryItems: [URLQueryItem]? = nil)
+      queryItems: [URLQueryItem] = [])
       throws -> URLRequest
    {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)

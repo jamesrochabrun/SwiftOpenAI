@@ -106,7 +106,7 @@ struct DefaultOpenAIService: OpenAIService {
        limit: Int? = nil)
        async throws -> OpenAIResponse<FineTuningJobObject>
     {
-       var queryItems: [URLQueryItem]?
+       var queryItems: [URLQueryItem] = []
        if let lastJobID, let limit {
           queryItems = [.init(name: "after", value: lastJobID), .init(name: "limit", value: "\(limit)")]
        } else if let lastJobID {
@@ -141,7 +141,7 @@ struct DefaultOpenAIService: OpenAIService {
        limit: Int? = nil)
        async throws -> OpenAIResponse<FineTuningJobEventObject>
     {
-       var queryItems: [URLQueryItem]?
+       var queryItems: [URLQueryItem] = []
        if let lastEventId, let limit {
           queryItems = [.init(name: "after", value: lastEventId), .init(name: "limit", value: "\(limit)")]
        } else if let lastEventId {
@@ -305,18 +305,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<AssistantObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
@@ -359,18 +359,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<AssistantFileObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<AssistantFileObject>.self, with: request)
@@ -449,18 +449,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<MessageObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
@@ -487,18 +487,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<MessageFileObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.messageFile(.list(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<MessageFileObject>.self, with: request)
@@ -539,18 +539,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<RunObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.run(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<RunObject>.self, with: request)
@@ -605,18 +605,18 @@ struct DefaultOpenAIService: OpenAIService {
       before: String? = nil)
       async throws -> OpenAIResponse<RunStepObject>
    {
-      var queryItems: [URLQueryItem]?
+      var queryItems: [URLQueryItem] = []
       if let limit {
-         queryItems?.append(.init(name: "limit", value: "\(limit)"))
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
       }
       if let order {
-         queryItems?.append(.init(name: "order", value: order))
+         queryItems.append(.init(name: "order", value: order))
       }
       if let after {
-         queryItems?.append(.init(name: "after", value: after))
+         queryItems.append(.init(name: "after", value: after))
       }
       if let before {
-         queryItems?.append(.init(name: "before", value: before))
+         queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)

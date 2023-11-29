@@ -1929,8 +1929,8 @@ let thread = try await service.deleteThread(id: id)
 
 ### Messages
 Parameters
+[Create a Message](https://platform.openai.com/docs/api-reference/messages/createMessage))
 ```swift
-/// [Create a message.](https://platform.openai.com/docs/api-reference/messages/createMessage)
 public struct MessageParameter: Encodable {
    
    /// The role of the entity that is creating the message. Currently only user is supported.
@@ -1953,6 +1953,14 @@ public struct MessageParameter: Encodable {
       self.fileIDS = fileIDS
       self.metadata = metadata
    }
+}
+```
+[Modify a Message](https://platform.openai.com/docs/api-reference/messages/modifyMessage))
+```swift
+public struct ModifyMessageParameters: Encodable {
+   
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public var metadata: [String: String]
 }
 ```
 Response
@@ -2127,7 +2135,155 @@ let messages = try await service.listMessages(threadID: threadID, limit: nil, or
 Documentation in progress. 👷‍♂️
 
 ### Runs
-Documentation in progress. 👷‍♂️
+Parameters
+[Create a run](https://platform.openai.com/docs/api-reference/runs/createRun))
+```swift
+public struct RunParameter: Encodable {
+   
+   /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use to execute this run.
+    let assistantID: String
+   /// The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to execute this run. If a value is provided here, it will override the model associated with the assistant. If not, the model associated with the assistant will be used.
+   let model: String?
+   /// Override the default system message of the assistant. This is useful for modifying the behavior on a per-run basis.
+   let instructions: String?
+   /// Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis.
+   let tools: [AssistantObject.Tool]?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]?
+}
+```
+[Modify a Run](https://platform.openai.com/docs/api-reference/runs/modifyRun)
+```swift
+public struct ModifyRunParameters: Encodable {
+   
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public var metadata: [String: String]
+   
+   public init(
+      metadata: [String : String])
+   {
+      self.metadata = metadata
+   }
+}
+```
+[Creates a Thread and Runs.](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun)
+```swift
+public struct CreateThreadAndRunParameter: Encodable {
+   
+   /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use to execute this run.
+   let assistantId: String
+   /// A thread to create.
+   let thread: CreateThreadParameters?
+   /// The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to execute this run. If a value is provided here, it will override the model associated with the assistant. If not, the model associated with the assistant will be used.
+   let model: String?
+   /// Override the default system message of the assistant. This is useful for modifying the behavior on a per-run basis.
+   let instructions: String?
+   /// Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis.
+   let tools: [AssistantObject.Tool]?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]?
+}
+```
+[Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
+```
+public struct RunToolsOutputParameter: Encodable {
+   
+   /// A list of tools for which the outputs are being submitted.
+   public let toolOutputs: [ToolOutput]
+}
+```
+   
+Response
+```swift
+public struct RunObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.run.
+   public let object: String
+   /// The Unix timestamp (in seconds) for when the run was created.
+   public let createdAt: Int
+   /// The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was executed on as a part of this run.
+   public let threadID: String
+   /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for execution of this run.
+   public let assistantID: String
+   /// The status of the run, which can be either queued, in_progress, requires_action, cancelling, cancelled, failed, completed, or expired.
+   public let status: String
+   /// Details on the action required to continue the run. Will be null if no action is required.
+   public let requiredAction: RequiredAction?
+   /// The last error associated with this run. Will be null if there are no errors.
+   public let lastError: LastError?
+   /// The Unix timestamp (in seconds) for when the run will expire.
+   public let expiresAt: Int
+   /// The Unix timestamp (in seconds) for when the run was started.
+   public let startedAt: Int?
+   /// The Unix timestamp (in seconds) for when the run was cancelled.
+   public let cancelledAt: Int?
+   /// The Unix timestamp (in seconds) for when the run failed.
+   public let failedAt: Int?
+   /// The Unix timestamp (in seconds) for when the run was completed.
+   public let completedAt: Int?
+   /// The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+   public let model: String
+   /// The instructions that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+   public let instructions: String?
+   /// The list of tools that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+   public let tools: [AssistantObject.Tool]
+   /// The list of [File](https://platform.openai.com/docs/api-reference/files) IDs the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+   public let fileIDS: [String]
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   public let metadata: [String: String]
+}
+```
+Usage
+
+Create a Run
+```swift
+let assistantID = "asst_abc123"
+ler parameters = RunParameter(assistantID: assistantID)
+let run = try await service.createRun(threadID: threadID, parameters: parameters)
+```
+Retrieve a Run
+```swift
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let run = try await service.retrieveRun(threadID: threadID, runID: runID)
+```
+Modify a Run
+```swift
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let parameters = ModifyRunParameters(metadata: ["modified": "true", "user": "abc123"]
+let message = try await service.modifyRun(threadID: threadID, messageID: messageID, parameters: parameters)
+```
+List runs
+```swift
+let threadID = "thread_abc123"
+let runs = try await service.listRuns(threadID: threadID, limit: nil, order: nil, after: nil, before: nil) 
+```
+Submit tool outputs to Run
+```swift
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let toolCallID = "call_abc123"
+let output = "28C"
+let parameters = RunToolsOutputParameter(toolOutputs: [.init(toolCallId: toolCallID, output: output)])
+let run = try await service.submitToolOutputsToRun(threadID: threadID", runID: runID", parameters: parameters)
+```
+Cancel a Run
+```swift
+/// Cancels a run that is in_progress.
+let threadID = "thread_abc123"
+let runID = "run_abc123"
+let run = try await service.cancelRun(threadID: threadID, runID: runID)
+```
+Create thread and Run
+```swift
+let assistantID = "asst_abc123"
+let threadParameters = CreateThreadParameters()
+let parameters = CreateThreadAndRunParameter(assistantID: assistantID)
+let run = service.createThreadAndRun(parameters: parameters)
+```
 
 ### Run Step Object
 Documentation in progress. 👷‍♂️

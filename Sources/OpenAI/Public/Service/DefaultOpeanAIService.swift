@@ -524,10 +524,11 @@ struct DefaultOpenAIService: OpenAIService {
    
    func modifyRun(
       threadID: String,
-      runID: String)
+      runID: String,
+      parameters: ModifyRunParameters)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: RunObject.self, with: request)
    }
    

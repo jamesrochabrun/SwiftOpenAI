@@ -11,14 +11,14 @@ import Foundation
 public struct RunToolsOutputParameter: Encodable {
    
    /// A list of tools for which the outputs are being submitted.
-   let toolOutputs: [ToolOutput]
+   public let toolOutputs: [ToolOutput]
    
    public struct ToolOutput: Encodable {
       
       /// The ID of the tool call in the `required_action` object within the run object the output is being submitted for.
-      let toolCallId: String?
+      public let toolCallId: String?
       /// The output of the tool call to be submitted to continue the run.
-      let output: String?
+      public let output: String?
       
       enum CodingKeys: String, CodingKey {
          case toolCallId = "tool_call_id"
@@ -30,3 +30,4 @@ public struct RunToolsOutputParameter: Encodable {
       case toolOutputs = "tool_outputs"
    }
 }
+

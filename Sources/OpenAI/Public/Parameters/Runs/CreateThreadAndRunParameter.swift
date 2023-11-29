@@ -21,7 +21,7 @@ public struct CreateThreadAndRunParameter: Encodable {
    /// Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis.
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
-   let metadata: [String: String]
+   let metadata: [String: String]?
    
    enum CodingKeys: String, CodingKey {
       case assistantId = "assistant_id"
@@ -30,6 +30,22 @@ public struct CreateThreadAndRunParameter: Encodable {
       case instructions
       case tools
       case metadata
+   }
+   
+   public init(
+      assistantId: String,
+      thread: CreateThreadParameters?,
+      model: String?, 
+      instructions: String?,
+      tools: [AssistantObject.Tool]?,
+      metadata: [String : String]? = nil)
+   {
+      self.assistantId = assistantId
+      self.thread = thread
+      self.model = model
+      self.instructions = instructions
+      self.tools = tools
+      self.metadata = metadata
    }
 }
 

@@ -652,13 +652,15 @@ public protocol OpenAIService {
    ///
    /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
    /// - Parameter runID: The ID of the run to modify.
+   /// - Parameter parameters: The parameters needed to modify a run metadata.
    /// - Returns: The modified [run](https://platform.openai.com/docs/api-reference/runs/object) object matching the specified ID.
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/modifyRun).
    func modifyRun(
       threadID: String,
-      runID: String)
+      runID: String,
+      parameters: ModifyRunParameters)
    async throws -> RunObject
    
    ///  Returns a list of runs belonging to a thread.

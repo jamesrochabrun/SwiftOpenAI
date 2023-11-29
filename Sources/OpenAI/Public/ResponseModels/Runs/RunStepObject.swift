@@ -43,7 +43,7 @@ public struct RunStepObject: Decodable {
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    
-   enum Status: String {
+   public enum Status: String {
       case inProgress = "in_progress"
       case cancelled
       case failed
@@ -105,6 +105,42 @@ public struct RunStepObject: Decodable {
       case failedAt = "failed_at"
       case completedAt = "completed_at"
       case metadata
+   }
+   
+   public init(
+      id: String,
+      object: String,
+      createdAt: Int,
+      assistantId: String,
+      threadId: String,
+      runId: String,
+      type: String,
+      status: Status, 
+      stepDetails: StepDetail,
+      toolCalls: [ToolCalls],
+      lastError: RunObject.LastError?,
+      expiredAt: Int?,
+      cancelledAt: Int?,
+      failedAt: Int?,
+      completedAt: Int?,
+      metadata: [String : String])
+   {
+      self.id = id
+      self.object = object
+      self.createdAt = createdAt
+      self.assistantId = assistantId
+      self.threadId = threadId
+      self.runId = runId
+      self.type = type
+      self.status = status.rawValue
+      self.stepDetails = stepDetails
+      self.toolCalls = toolCalls
+      self.lastError = lastError
+      self.expiredAt = expiredAt
+      self.cancelledAt = cancelledAt
+      self.failedAt = failedAt
+      self.completedAt = completedAt
+      self.metadata = metadata
    }
 }
 

@@ -28,8 +28,6 @@ public struct RunStepObject: Decodable {
    public let status: String
    /// The details of the run step.
    public let stepDetails: StepDetail
-   /// Details of the tool call.
-   public let toolCalls: [ToolCalls]
    /// The last error associated with this run step. Will be null if there are no errors.
    public let lastError: RunObject.LastError?
    /// The Unix timestamp (in seconds) for when the run step expired. A step is considered expired if the parent run is expired.
@@ -98,7 +96,6 @@ public struct RunStepObject: Decodable {
       case type
       case status
       case stepDetails = "step_details"
-      case toolCalls = "Tool calls"
       case lastError = "last_error"
       case expiredAt = "expired_at"
       case cancelledAt = "cancelled_at"
@@ -117,7 +114,6 @@ public struct RunStepObject: Decodable {
       type: String,
       status: Status, 
       stepDetails: StepDetail,
-      toolCalls: [ToolCalls],
       lastError: RunObject.LastError?,
       expiredAt: Int?,
       cancelledAt: Int?,
@@ -134,7 +130,6 @@ public struct RunStepObject: Decodable {
       self.type = type
       self.status = status.rawValue
       self.stepDetails = stepDetails
-      self.toolCalls = toolCalls
       self.lastError = lastError
       self.expiredAt = expiredAt
       self.cancelledAt = cancelledAt

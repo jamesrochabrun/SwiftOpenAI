@@ -55,7 +55,7 @@ public struct RunStepObject: Decodable {
       /// Details of the message creation by the run step.
       public let messageCreation: MessageCreation
       /// Details of the tool call.
-      public let toolCalls: [ToolCalls]
+      public let toolCalls: [ToolCalls]?
       
       enum CodingKeys: String, CodingKey {
          case type

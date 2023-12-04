@@ -11,13 +11,13 @@ import Foundation
 public struct FileParameters: Encodable {
    
    /// The name of the file asset is not documented in OpenAI's official documentation; however, it is essential for constructing the multipart request.
-   let fileName: String
+   public let fileName: String
    /// The file object (not file name) to be uploaded.
    /// If the purpose is set to "fine-tune", the file will be used for fine-tuning.
-   let file: Data
+   public let file: Data
    /// The intended purpose of the uploaded file.
    /// Use "fine-tune" for [fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning). This allows us to validate the format of the uploaded file is correct for fine-tuning.
-   let purpose: String
+   public let purpose: String
    
    public init(
       fileName: String,

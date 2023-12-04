@@ -23,8 +23,10 @@ public struct FileObject: Decodable {
    /// The intended purpose of the file. Currently, only "fine-tune" is supported.
    public let purpose: String
    /// The current status of the file, which can be either uploaded, processed, pending, error, deleting or deleted.
+   @available(*, deprecated, message: "Deprecated")
    public let status: String
    /// Additional details about the status of the file. If the file is in the error state, this will include a message describing the error.
+   @available(*, deprecated, message: "Deprecated. For details on why a fine-tuning training file failed validation, see the error field on fine_tuning.job")
    public let statusDetails: String?
    
    public enum Status: String {

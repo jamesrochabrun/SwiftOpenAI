@@ -6,7 +6,13 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+public typealias PlatformImage = UIImage
+#elseif canImport(AppKit)
+import AppKit
+public typealias PlatformImage = NSImage
+#endif
 
 /// [Creates an edited or extended image given an original image and a prompt.](https://platform.openai.com/docs/api-reference/images/createEdit)
 public struct ImageEditParameters: Encodable {
@@ -45,26 +51,33 @@ public struct ImageEditParameters: Encodable {
    }
    
    public init(
-      image: UIImage,
+      image: PlatformImage,
       model: Dalle? = nil,
-      mask: UIImage? = nil,
+      mask: PlatformImage? = nil,
       prompt: String,
       numberOfImages: Int? = nil,
       responseFormat: ImageResponseFormat? = nil,
       user: String? = nil)
    {
-      if (image.pngData() == nil) {
-         assertionFailure("Failed to get PNG data from image")
+      
+   #if canImport(UIKit)
+      let imageData = image.pngData()
+      let maskData = mask?.pngData()
+   #elseif canImport(AppKit)
+      let imageData = image.tiffRepresentation
+      let maskData = mask?.tiffRepresentation
+   #endif
+      
+      if imageData == nil {
+         assertionFailure("Failed to get image data")
       }
-      if let mask, mask.pngData() == nil {
-         assertionFailure("Failed to get PNG data from mask")
+      if maskData == nil {
+         assertionFailure("Failed to get mask data")
       }
-      if let model, model.model != Model.dalle2.rawValue {
-         assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
-      }
-      self.image = image.pngData()!
+      
+      self.image = imageData!
       self.model = model?.model
-      self.mask = mask?.pngData()
+      self.mask = maskData
       self.prompt = prompt
       self.n = numberOfImages
       self.size = model?.size

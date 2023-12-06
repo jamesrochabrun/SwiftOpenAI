@@ -6,7 +6,11 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /// [Creates a variation of a given image.](https://platform.openai.com/docs/api-reference/images/createVariation)
 public struct ImageVariationParameters: Encodable {
@@ -39,7 +43,7 @@ public struct ImageVariationParameters: Encodable {
    }
    
    public init(
-      image: UIImage,
+      image: PlatformImage,
       model: Dalle? = nil,
       numberOfImages: Int? = nil,
       responseFormat: ImageResponseFormat? = nil,
@@ -48,7 +52,18 @@ public struct ImageVariationParameters: Encodable {
       if let model, model.model != Model.dalle2.rawValue {
          assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
       }
-      self.image = image.pngData()!
+      
+   #if canImport(UIKit)
+   let imageData = image.pngData()
+   #elseif canImport(AppKit)
+   let imageData = image.tiffRepresentation
+   #endif
+      
+      if imageData == nil {
+         assertionFailure("Failed ot load image data from image.")
+      }
+      
+      self.image = imageData!
       self.n = numberOfImages
       self.model = model?.model
       self.size = model?.size

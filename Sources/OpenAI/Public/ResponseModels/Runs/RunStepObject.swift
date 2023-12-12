@@ -50,7 +50,7 @@ public struct RunStepObject: Codable {
    }
    
    public struct StepDetail: Codable {
-
+      
       /// `message_creation` or `tool_calls`
       public let type: String
       /// Details of the message creation by the run step.
@@ -83,7 +83,7 @@ public struct RunStepObject: Codable {
        enum CodingKeys: String, CodingKey {
            case id
            case type
-           // Add coding keys for the different tool call types
+           // Coding keys for the different tool call types
            case codeInterpreter = "code_interpreter"
            case retrieval
            case function
@@ -127,7 +127,6 @@ public struct RunStepObject: Codable {
        }
    }
 
-   
    enum CodingKeys: String, CodingKey {
       case id
       case object
@@ -147,28 +146,28 @@ public struct RunStepObject: Codable {
    }
    
    public func encode(to encoder: Encoder) throws {
-       var container = encoder.container(keyedBy: CodingKeys.self)
-       
-       // Encode all properties
-       try container.encode(id, forKey: .id)
-       try container.encode(object, forKey: .object)
-       try container.encode(createdAt, forKey: .createdAt)
-       try container.encode(assistantId, forKey: .assistantId)
-       try container.encode(threadId, forKey: .threadId)
-       try container.encode(runId, forKey: .runId)
-       try container.encode(type, forKey: .type)
-       try container.encode(status, forKey: .status)
-       try container.encode(stepDetails, forKey: .stepDetails)
-       
-       // Encode optional properties only if they are not nil
-       try container.encodeIfPresent(lastError, forKey: .lastError)
-       try container.encodeIfPresent(expiredAt, forKey: .expiredAt)
-       try container.encodeIfPresent(cancelledAt, forKey: .cancelledAt)
-       try container.encodeIfPresent(failedAt, forKey: .failedAt)
-       try container.encodeIfPresent(completedAt, forKey: .completedAt)
-       
-       // For the metadata dictionary, you can encode it directly if it is not nil
-       try container.encodeIfPresent(metadata, forKey: .metadata)
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      
+      // Encode all properties
+      try container.encode(id, forKey: .id)
+      try container.encode(object, forKey: .object)
+      try container.encode(createdAt, forKey: .createdAt)
+      try container.encode(assistantId, forKey: .assistantId)
+      try container.encode(threadId, forKey: .threadId)
+      try container.encode(runId, forKey: .runId)
+      try container.encode(type, forKey: .type)
+      try container.encode(status, forKey: .status)
+      try container.encode(stepDetails, forKey: .stepDetails)
+      
+      // Encode optional properties only if they are not nil
+      try container.encodeIfPresent(lastError, forKey: .lastError)
+      try container.encodeIfPresent(expiredAt, forKey: .expiredAt)
+      try container.encodeIfPresent(cancelledAt, forKey: .cancelledAt)
+      try container.encodeIfPresent(failedAt, forKey: .failedAt)
+      try container.encodeIfPresent(completedAt, forKey: .completedAt)
+      
+      // For the metadata dictionary, you can encode it directly if it is not nil
+      try container.encodeIfPresent(metadata, forKey: .metadata)
    }
    
    public init(
@@ -179,7 +178,7 @@ public struct RunStepObject: Codable {
       threadId: String,
       runId: String,
       type: String,
-      status: Status, 
+      status: Status,
       stepDetails: StepDetail,
       lastError: RunObject.LastError?,
       expiredAt: Int?,
@@ -235,23 +234,23 @@ public enum RunStepToolCall: Codable {
    }
    
    public func encode(to encoder: Encoder) throws {
-       var container = encoder.container(keyedBy: CodingKeys.self)
-       
-       switch self {
-       case .codeInterpreterToolCall(let call):
-           try container.encode(call, forKey: .codeInterpreter)
-       case .retrieveToolCall(let call):
-           try container.encode(call, forKey: .retrieval)
-       case .functionToolCall(let call):
-           try container.encode(call, forKey: .function)
-       }
-    }
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      
+      switch self {
+      case .codeInterpreterToolCall(let call):
+         try container.encode(call, forKey: .codeInterpreter)
+      case .retrieveToolCall(let call):
+         try container.encode(call, forKey: .retrieval)
+      case .functionToolCall(let call):
+         try container.encode(call, forKey: .function)
+      }
+   }
 }
 
 // MARK: CodeInterpreterToolCall
 
 public struct CodeInterpreterToolCall: Codable {
-
+   
    /// The Code Interpreter tool call definition.
    public let codeInterpreter: CodeInterpreter
    
@@ -321,7 +320,7 @@ public struct CodeInterpreterImageOutput: Codable {
 // MARK: RetrievalToolCall
 
 public struct RetrievalToolCall: Codable {
-
+   
    /// For now, this is always going to be an empty object.
    public let retrieval: [String: String]?
    

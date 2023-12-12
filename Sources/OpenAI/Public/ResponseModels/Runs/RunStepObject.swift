@@ -83,25 +83,25 @@ public struct RunStepObject: Codable {
            case id, type
        }
 
-       public init(from decoder: Decoder) throws {
-           let container = try decoder.container(keyedBy: CodingKeys.self)
-           id = try container.decode(String.self, forKey: .id)
-           type = try container.decode(String.self, forKey: .type)
+      public init(from decoder: Decoder) throws {
+          let container = try decoder.container(keyedBy: CodingKeys.self)
+          id = try container.decode(String.self, forKey: .id)
+          type = try container.decode(String.self, forKey: .type)
 
-           switch type {
-           case "code_interpreter":
-               let codeInterpreterCall = try container.decode(CodeInterpreterToolCall.self, forKey: .type)
-               toolCall = .codeInterpreterToolCall(codeInterpreterCall)
-           case "retrieval":
-               let retrievalCall = try container.decode(RetrievalToolCall.self, forKey: .type)
-               toolCall = .retrieveToolCall(retrievalCall)
-           case "function":
-               let functionCall = try container.decode(FunctionToolCall.self, forKey: .type)
-               toolCall = .functionToolCall(functionCall)
-           default:
-               throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unrecognized tool call type")
-           }
-       }
+          switch type {
+          case "code_interpreter":
+              let codeInterpreterCall = try CodeInterpreterToolCall(from: decoder)
+              toolCall = .codeInterpreterToolCall(codeInterpreterCall)
+          case "retrieval":
+              let retrievalCall = try RetrievalToolCall(from: decoder)
+              toolCall = .retrieveToolCall(retrievalCall)
+          case "function":
+              let functionCall = try FunctionToolCall(from: decoder)
+              toolCall = .functionToolCall(functionCall)
+          default:
+              throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unrecognized tool call type")
+          }
+      }
 
        public func encode(to encoder: Encoder) throws {
            var container = encoder.container(keyedBy: CodingKeys.self)

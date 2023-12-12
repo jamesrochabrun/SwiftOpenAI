@@ -50,10 +50,10 @@ public struct RunStepObject: Codable {
    }
    
    public struct StepDetail: Codable {
-      /// Always `message_creation``.
+
       public let type: String
       /// Details of the message creation by the run step.
-      public let messageCreation: MessageCreation
+      public let messageCreation: MessageCreation?
       /// Details of the tool call.
       public let toolCalls: [ToolCalls]?
       
@@ -316,3 +316,4 @@ public struct FunctionToolCall: Codable {
       public let output: String
    }
 }
+

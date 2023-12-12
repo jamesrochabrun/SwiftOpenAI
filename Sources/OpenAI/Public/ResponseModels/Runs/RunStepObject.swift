@@ -258,23 +258,10 @@ public enum RunStepToolCall: Codable {
 
 public struct CodeInterpreterToolCall: Codable {
    
-   /// The Code Interpreter tool call definition.
-   public let codeInterpreter: CodeInterpreter
-   
-   enum CodingKeys: String, CodingKey {
-      case codeInterpreter = "code_interpreter"
-   }
-}
-
-/// The Code Interpreter tool call definition.
-public struct CodeInterpreter: Codable {
-   
-   /// The input to the Code Interpreter tool call.
    public let input: String
-   /// The outputs from the Code Interpreter tool call. Code Interpreter can output one or more items, including text (logs) or images (image). Each of these are represented by a different object type.
+   
    public let outputs: [CodeInterpreterOutput]
 }
-
 
 public enum CodeInterpreterOutput: Codable {
    

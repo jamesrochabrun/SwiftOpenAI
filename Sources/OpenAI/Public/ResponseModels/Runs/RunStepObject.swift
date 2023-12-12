@@ -75,27 +75,56 @@ public struct RunStepObject: Codable {
    }
    
    public struct ToolCall: Codable {
-       public let id: String
-       public let type: String
-       public let toolCall: RunStepToolCall
-
-       enum CodingKeys: String, CodingKey {
-           case id, type, toolCall
-       }
-
-       public init(from decoder: Decoder) throws {
-           let container = try decoder.container(keyedBy: CodingKeys.self)
-           id = try container.decode(String.self, forKey: .id)
-           type = try container.decode(String.self, forKey: .type)
-           toolCall = try RunStepToolCall(from: decoder)
-       }
-
-       public func encode(to encoder: Encoder) throws {
-           var container = encoder.container(keyedBy: CodingKeys.self)
-           try container.encode(id, forKey: .id)
-           try container.encode(type, forKey: .type)
-           try toolCall.encode(to: encoder)
-       }
+      public let id: String
+      public let type: String
+      public let toolCall: RunStepToolCall
+      
+      enum CodingKeys: String, CodingKey {
+         case id, type
+         case codeInterpreter = "code_interpreter"
+         case retrieval, function
+      }
+      
+      public init(from decoder: Decoder) throws {
+         let container = try decoder.container(keyedBy: CodingKeys.self)
+         id = try container.decode(String.self, forKey: .id)
+         type = try container.decode(String.self, forKey: .type)
+         
+         // Based on the type, decode the corresponding tool call
+         switch type {
+         case "code_interpreter":
+            let codeInterpreter = try container.decode(CodeInterpreterToolCall.self, forKey: .codeInterpreter)
+            toolCall = .codeInterpreterToolCall(codeInterpreter)
+         case "retrieval":
+            // Assuming you have a retrieval key in your JSON that corresponds to this type
+            let retrieval = try container.decode(RetrievalToolCall.self, forKey: .retrieval)
+            toolCall = .retrieveToolCall(retrieval)
+         case "function":
+            // Assuming you have a function key in your JSON that corresponds to this type
+            let function = try container.decode(FunctionToolCall.self, forKey: .function)
+            toolCall = .functionToolCall(function)
+         default:
+            throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unrecognized tool call type")
+         }
+      }
+      
+      public func encode(to encoder: Encoder) throws {
+         var container = encoder.container(keyedBy: CodingKeys.self)
+         try container.encode(id, forKey: .id)
+         try container.encode(type, forKey: .type)
+         
+         // Based on the toolCall type, encode the corresponding object
+         switch toolCall {
+         case .codeInterpreterToolCall(let codeInterpreter):
+            try container.encode(codeInterpreter, forKey: .codeInterpreter)
+         case .retrieveToolCall(let retrieval):
+            // Encode retrieval if it's not nil
+            try container.encode(retrieval, forKey: .retrieval)
+         case .functionToolCall(let function):
+            // Encode function if it's not nil
+            try container.encode(function, forKey: .function)
+         }
+      }
    }
 
    enum CodingKeys: String, CodingKey {
@@ -180,16 +209,10 @@ public struct RunStepObject: Codable {
 
 /// Details of the tool call.
 public enum RunStepToolCall: Codable {
+   
     case codeInterpreterToolCall(CodeInterpreterToolCall)
     case retrieveToolCall(RetrievalToolCall)
     case functionToolCall(FunctionToolCall)
-
-    private enum CodingKeys: String, CodingKey {
-        case type
-        case codeInterpreter = "code_interpreter"
-        case retrieval
-        case function
-    }
 
     private enum TypeEnum: String, Decodable {
         case codeInterpreter = "code_interpreter"
@@ -198,35 +221,35 @@ public enum RunStepToolCall: Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decode(TypeEnum.self, forKey: .type)
+        let container = try decoder.singleValueContainer()
         
+        // Decode the `type` property to determine which case to decode
+        let type = try container.decode(TypeEnum.self)
+
+        // Switch to the appropriate case based on the type
         switch type {
         case .codeInterpreter:
-            let value = try container.decode(CodeInterpreterToolCall.self, forKey: .codeInterpreter)
+            let value = try CodeInterpreterToolCall(from: decoder)
             self = .codeInterpreterToolCall(value)
         case .retrieval:
-            let value = try container.decode(RetrievalToolCall.self, forKey: .retrieval)
+            let value = try RetrievalToolCall(from: decoder)
             self = .retrieveToolCall(value)
         case .function:
-            let value = try container.decode(FunctionToolCall.self, forKey: .function)
+            let value = try FunctionToolCall(from: decoder)
             self = .functionToolCall(value)
         }
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
+        var container = encoder.singleValueContainer()
+
         switch self {
         case .codeInterpreterToolCall(let value):
-            try container.encode(TypeEnum.codeInterpreter.rawValue, forKey: .type)
-            try container.encode(value, forKey: .codeInterpreter)
+            try container.encode(value)
         case .retrieveToolCall(let value):
-            try container.encode(TypeEnum.retrieval.rawValue, forKey: .type)
-            try container.encode(value, forKey: .retrieval)
+            try container.encode(value)
         case .functionToolCall(let value):
-            try container.encode(TypeEnum.function.rawValue, forKey: .type)
-            try container.encode(value, forKey: .function)
+            try container.encode(value)
         }
     }
 }

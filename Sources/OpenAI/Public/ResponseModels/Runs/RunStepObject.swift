@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a [step](https://platform.openai.com/docs/api-reference/runs/step-object) in execution of a run.
-public struct RunStepObject: Decodable {
+public struct RunStepObject: Codable {
    
    /// The identifier of the run step, which can be referenced in API endpoints.
    public let id: String
@@ -49,7 +49,7 @@ public struct RunStepObject: Decodable {
       case expired
    }
    
-   public struct StepDetail: Decodable {
+   public struct StepDetail: Codable {
       /// Always `message_creation``.
       public let type: String
       /// Details of the message creation by the run step.
@@ -64,7 +64,7 @@ public struct RunStepObject: Decodable {
       }
    }
    
-   public struct MessageCreation: Decodable {
+   public struct MessageCreation: Codable {
       /// The ID of the message that was created by this run step.
       public let messageID: String
       
@@ -73,7 +73,7 @@ public struct RunStepObject: Decodable {
       }
    }
    
-   public struct ToolCalls: Decodable {
+   public struct ToolCalls: Codable {
       
       /// Always tool_calls.
       public let type: String
@@ -102,6 +102,31 @@ public struct RunStepObject: Decodable {
       case failedAt = "failed_at"
       case completedAt = "completed_at"
       case metadata
+   }
+   
+   public func encode(to encoder: Encoder) throws {
+       var container = encoder.container(keyedBy: CodingKeys.self)
+       
+       // Encode all properties
+       try container.encode(id, forKey: .id)
+       try container.encode(object, forKey: .object)
+       try container.encode(createdAt, forKey: .createdAt)
+       try container.encode(assistantId, forKey: .assistantId)
+       try container.encode(threadId, forKey: .threadId)
+       try container.encode(runId, forKey: .runId)
+       try container.encode(type, forKey: .type)
+       try container.encode(status, forKey: .status)
+       try container.encode(stepDetails, forKey: .stepDetails)
+       
+       // Encode optional properties only if they are not nil
+       try container.encodeIfPresent(lastError, forKey: .lastError)
+       try container.encodeIfPresent(expiredAt, forKey: .expiredAt)
+       try container.encodeIfPresent(cancelledAt, forKey: .cancelledAt)
+       try container.encodeIfPresent(failedAt, forKey: .failedAt)
+       try container.encodeIfPresent(completedAt, forKey: .completedAt)
+       
+       // For the metadata dictionary, you can encode it directly if it is not nil
+       try container.encodeIfPresent(metadata, forKey: .metadata)
    }
    
    public init(
@@ -142,7 +167,7 @@ public struct RunStepObject: Decodable {
 // MARK: RunStepToolCall
 
 /// Details of the tool call.
-public enum RunStepToolCall: Decodable {
+public enum RunStepToolCall: Codable {
    
    case condeInterpreterToolCall(CodeInterpreterToolCall)
    case retrieveToolCall(RetrievalToolCall)
@@ -166,11 +191,24 @@ public enum RunStepToolCall: Decodable {
          throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unable to decode RunStepToolCall"))
       }
    }
+   
+   public func encode(to encoder: Encoder) throws {
+       var container = encoder.container(keyedBy: CodingKeys.self)
+       
+       switch self {
+       case .condeInterpreterToolCall(let call):
+           try container.encode(call, forKey: .codeInterpreter)
+       case .retrieveToolCall(let call):
+           try container.encode(call, forKey: .retrieval)
+       case .functionToolCall(let call):
+           try container.encode(call, forKey: .function)
+       }
+    }
 }
 
 // MARK: CodeInterpreterToolCall
 
-public struct CodeInterpreterToolCall: Decodable {
+public struct CodeInterpreterToolCall: Codable {
    
    /// The ID of the tool call.
    public let id: String
@@ -187,7 +225,7 @@ public struct CodeInterpreterToolCall: Decodable {
 }
 
 /// The Code Interpreter tool call definition.
-public struct CodeInterpreter: Decodable {
+public struct CodeInterpreter: Codable {
    
    /// The input to the Code Interpreter tool call.
    public let input: String
@@ -196,7 +234,7 @@ public struct CodeInterpreter: Decodable {
 }
 
 
-public enum CodeInterpreterOutput: Decodable {
+public enum CodeInterpreterOutput: Codable {
    
    /// The outputs from the Code Interpreter tool call. Code Interpreter can output one or more items,
    /// including text (logs) or images (image). Each of these are represented by a different object type.
@@ -221,7 +259,7 @@ public enum CodeInterpreterOutput: Decodable {
 }
 
 /// Text output from the Code Interpreter tool call as part of a run step.
-public struct CodeInterpreterLogOutput: Decodable {
+public struct CodeInterpreterLogOutput: Codable {
    
    /// Always logs.
    public let type: String
@@ -229,12 +267,12 @@ public struct CodeInterpreterLogOutput: Decodable {
    public let logs: String
 }
 
-public struct CodeInterpreterImageOutput: Decodable {
+public struct CodeInterpreterImageOutput: Codable {
    
    public let type: String
    public let image: Image
    
-   public struct Image: Decodable {
+   public struct Image: Codable {
       /// The [file](https://platform.openai.com/docs/api-reference/files) ID of the image.
       let fileID: String
       
@@ -246,7 +284,7 @@ public struct CodeInterpreterImageOutput: Decodable {
 
 // MARK: RetrievalToolCall
 
-public struct RetrievalToolCall: Decodable {
+public struct RetrievalToolCall: Codable {
    
    /// The ID of the tool call object.
    public let id: String
@@ -259,7 +297,7 @@ public struct RetrievalToolCall: Decodable {
 
 // MARK: FunctionToolCall
 
-public struct FunctionToolCall: Decodable {
+public struct FunctionToolCall: Codable {
    
    /// The ID of the tool call object.
    let id: String
@@ -268,7 +306,7 @@ public struct FunctionToolCall: Decodable {
    /// The definition of the function that was called.
    let function: Function
    
-   public struct Function: Decodable {
+   public struct Function: Codable {
       
       /// The name of the function.
       public let name: String

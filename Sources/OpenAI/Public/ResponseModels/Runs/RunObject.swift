@@ -87,7 +87,7 @@ public struct RunObject: Decodable {
       }
    }
    
-   public struct LastError: Decodable {
+   public struct LastError: Codable {
       
       /// One of server_error or rate_limit_exceeded.
       let code: String

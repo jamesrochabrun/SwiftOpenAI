@@ -267,7 +267,7 @@ public struct CodeInterpreterToolCall: Codable {
    public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       input = try container.decode(String.self, forKey: .input)
-      // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"" which breaks the decoding.
+      // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"
       input = input.replacingOccurrences(of: "\\n", with: "\n")
       outputs = try container.decode([CodeInterpreterOutput].self, forKey: .outputs)
    }
@@ -284,24 +284,41 @@ public struct CodeInterpreterToolCall: Codable {
 
 public enum CodeInterpreterOutput: Codable {
    
-   /// The outputs from the Code Interpreter tool call. Code Interpreter can output one or more items,
-   /// including text (logs) or images (image). Each of these are represented by a different object type.
    case logs(CodeInterpreterLogOutput)
    case images(CodeInterpreterImageOutput)
    
-   enum CodingKeys: String, CodingKey {
-      case logs
-      case images
+   private enum CodingKeys: String, CodingKey {
+      case type
+   }
+   
+   private enum OutputType: String, Decodable {
+      case logs, images
    }
    
    public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
-      if let logOutput = try container.decodeIfPresent(CodeInterpreterLogOutput.self, forKey: .logs) {
+      let outputType = try container.decode(OutputType.self, forKey: .type)
+      
+      switch outputType {
+      case .logs:
+         let logOutput = try CodeInterpreterLogOutput(from: decoder)
          self = .logs(logOutput)
-      } else if let imageOutput = try container.decodeIfPresent(CodeInterpreterImageOutput.self, forKey: .images) {
+      case .images:
+         let imageOutput = try CodeInterpreterImageOutput(from: decoder)
          self = .images(imageOutput)
-      } else {
-         throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "The container does not have a matching key for logs or images"))
+      }
+   }
+   
+   public func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      
+      switch self {
+      case .logs(let logOutput):
+         try container.encode(OutputType.logs.rawValue, forKey: .type)
+         try logOutput.encode(to: encoder)
+      case .images(let imageOutput):
+         try container.encode(OutputType.images.rawValue, forKey: .type)
+         try imageOutput.encode(to: encoder)
       }
    }
 }

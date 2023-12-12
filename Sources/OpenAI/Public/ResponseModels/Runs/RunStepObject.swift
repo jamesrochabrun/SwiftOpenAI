@@ -75,7 +75,7 @@ public struct RunStepObject: Codable {
    }
    
    public struct ToolCall: Codable {
-       
+
        public let id: String
        public let type: String
        public let toolCall: RunStepToolCall
@@ -83,23 +83,30 @@ public struct RunStepObject: Codable {
        enum CodingKeys: String, CodingKey {
            case id
            case type
+           // Add coding keys for the different tool call types
+           case codeInterpreter = "code_interpreter"
+           case retrieval
+           case function
        }
-       
+
        public init(from decoder: Decoder) throws {
            let container = try decoder.container(keyedBy: CodingKeys.self)
            id = try container.decode(String.self, forKey: .id)
            type = try container.decode(String.self, forKey: .type)
 
-           // Decode toolCall based on its type
-           let toolCallContainer = try decoder.singleValueContainer()
-           if let call = try? toolCallContainer.decode(CodeInterpreterToolCall.self) {
-               toolCall = .codeInterpreterToolCall(call)
-           } else if let call = try? toolCallContainer.decode(RetrievalToolCall.self) {
-               toolCall = .retrieveToolCall(call)
-           } else if let call = try? toolCallContainer.decode(FunctionToolCall.self) {
-               toolCall = .functionToolCall(call)
-           } else {
-               throw DecodingError.dataCorruptedError(in: toolCallContainer, debugDescription: "Unrecognized tool call type")
+           // Decode based on the tool call type
+           switch type {
+           case "code_interpreter":
+               let codeInterpreterCall = try container.decode(CodeInterpreterToolCall.self, forKey: .codeInterpreter)
+               toolCall = .codeInterpreterToolCall(codeInterpreterCall)
+           case "retrieval":
+               let retrievalCall = try container.decode(RetrievalToolCall.self, forKey: .retrieval)
+               toolCall = .retrieveToolCall(retrievalCall)
+           case "function":
+               let functionCall = try container.decode(FunctionToolCall.self, forKey: .function)
+               toolCall = .functionToolCall(functionCall)
+           default:
+               throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unrecognized tool call type")
            }
        }
 
@@ -111,14 +118,15 @@ public struct RunStepObject: Codable {
            // Encode toolCall based on its case
            switch toolCall {
            case .codeInterpreterToolCall(let call):
-               try call.encode(to: encoder)
+               try container.encode(call, forKey: .codeInterpreter)
            case .retrieveToolCall(let call):
-               try call.encode(to: encoder)
+               try container.encode(call, forKey: .retrieval)
            case .functionToolCall(let call):
-               try call.encode(to: encoder)
+               try container.encode(call, forKey: .function)
            }
        }
    }
+
    
    enum CodingKeys: String, CodingKey {
       case id

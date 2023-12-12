@@ -126,7 +126,7 @@ public struct RunStepObject: Codable {
          }
       }
    }
-
+   
    enum CodingKeys: String, CodingKey {
       case id
       case object
@@ -210,57 +210,76 @@ public struct RunStepObject: Codable {
 /// Details of the tool call.
 public enum RunStepToolCall: Codable {
    
-    case codeInterpreterToolCall(CodeInterpreterToolCall)
-    case retrieveToolCall(RetrievalToolCall)
-    case functionToolCall(FunctionToolCall)
-
-    private enum TypeEnum: String, Decodable {
-        case codeInterpreter = "code_interpreter"
-        case retrieval
-        case function
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        
-        // Decode the `type` property to determine which case to decode
-        let type = try container.decode(TypeEnum.self)
-
-        // Switch to the appropriate case based on the type
-        switch type {
-        case .codeInterpreter:
-            let value = try CodeInterpreterToolCall(from: decoder)
-            self = .codeInterpreterToolCall(value)
-        case .retrieval:
-            let value = try RetrievalToolCall(from: decoder)
-            self = .retrieveToolCall(value)
-        case .function:
-            let value = try FunctionToolCall(from: decoder)
-            self = .functionToolCall(value)
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-
-        switch self {
-        case .codeInterpreterToolCall(let value):
-            try container.encode(value)
-        case .retrieveToolCall(let value):
-            try container.encode(value)
-        case .functionToolCall(let value):
-            try container.encode(value)
-        }
-    }
+   case codeInterpreterToolCall(CodeInterpreterToolCall)
+   case retrieveToolCall(RetrievalToolCall)
+   case functionToolCall(FunctionToolCall)
+   
+   private enum TypeEnum: String, Decodable {
+      case codeInterpreter = "code_interpreter"
+      case retrieval
+      case function
+   }
+   
+   public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      
+      // Decode the `type` property to determine which case to decode
+      let type = try container.decode(TypeEnum.self)
+      
+      // Switch to the appropriate case based on the type
+      switch type {
+      case .codeInterpreter:
+         let value = try CodeInterpreterToolCall(from: decoder)
+         self = .codeInterpreterToolCall(value)
+      case .retrieval:
+         let value = try RetrievalToolCall(from: decoder)
+         self = .retrieveToolCall(value)
+      case .function:
+         let value = try FunctionToolCall(from: decoder)
+         self = .functionToolCall(value)
+      }
+   }
+   
+   public func encode(to encoder: Encoder) throws {
+      var container = encoder.singleValueContainer()
+      
+      switch self {
+      case .codeInterpreterToolCall(let value):
+         try container.encode(value)
+      case .retrieveToolCall(let value):
+         try container.encode(value)
+      case .functionToolCall(let value):
+         try container.encode(value)
+      }
+   }
 }
 
 // MARK: CodeInterpreterToolCall
 
 public struct CodeInterpreterToolCall: Codable {
-   
-   public let input: String
-   
+   public var input: String
    public let outputs: [CodeInterpreterOutput]
+   
+   enum CodingKeys: String, CodingKey {
+      case input, outputs
+   }
+   
+   public init(from decoder: Decoder) throws {
+      let container = try decoder.container(keyedBy: CodingKeys.self)
+      input = try container.decode(String.self, forKey: .input)
+      // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"" which breaks the decoding.
+      input = input.replacingOccurrences(of: "\\n", with: "\n")
+      outputs = try container.decode([CodeInterpreterOutput].self, forKey: .outputs)
+   }
+   
+   public func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      
+      // Revert the newline characters to their escaped form
+      let encodedInput = input.replacingOccurrences(of: "\n", with: "\\n")
+      try container.encode(encodedInput, forKey: .input)
+      try container.encode(outputs, forKey: .outputs)
+   }
 }
 
 public enum CodeInterpreterOutput: Codable {

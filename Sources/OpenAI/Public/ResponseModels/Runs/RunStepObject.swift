@@ -75,18 +75,12 @@ public struct RunStepObject: Codable {
    }
    
    public struct ToolCall: Codable {
-
        public let id: String
        public let type: String
        public let toolCall: RunStepToolCall
 
        enum CodingKeys: String, CodingKey {
-           case id
-           case type
-           // Coding keys for the different tool call types
-           case codeInterpreter = "code_interpreter"
-           case retrieval
-           case function
+           case id, type
        }
 
        public init(from decoder: Decoder) throws {
@@ -94,16 +88,15 @@ public struct RunStepObject: Codable {
            id = try container.decode(String.self, forKey: .id)
            type = try container.decode(String.self, forKey: .type)
 
-           // Decode based on the tool call type
            switch type {
            case "code_interpreter":
-               let codeInterpreterCall = try container.decode(CodeInterpreterToolCall.self, forKey: .codeInterpreter)
+               let codeInterpreterCall = try container.decode(CodeInterpreterToolCall.self, forKey: .type)
                toolCall = .codeInterpreterToolCall(codeInterpreterCall)
            case "retrieval":
-               let retrievalCall = try container.decode(RetrievalToolCall.self, forKey: .retrieval)
+               let retrievalCall = try container.decode(RetrievalToolCall.self, forKey: .type)
                toolCall = .retrieveToolCall(retrievalCall)
            case "function":
-               let functionCall = try container.decode(FunctionToolCall.self, forKey: .function)
+               let functionCall = try container.decode(FunctionToolCall.self, forKey: .type)
                toolCall = .functionToolCall(functionCall)
            default:
                throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unrecognized tool call type")
@@ -115,14 +108,13 @@ public struct RunStepObject: Codable {
            try container.encode(id, forKey: .id)
            try container.encode(type, forKey: .type)
 
-           // Encode toolCall based on its case
            switch toolCall {
            case .codeInterpreterToolCall(let call):
-               try container.encode(call, forKey: .codeInterpreter)
+               try container.encode(call, forKey: .type)
            case .retrieveToolCall(let call):
-               try container.encode(call, forKey: .retrieval)
+               try container.encode(call, forKey: .type)
            case .functionToolCall(let call):
-               try container.encode(call, forKey: .function)
+               try container.encode(call, forKey: .type)
            }
        }
    }

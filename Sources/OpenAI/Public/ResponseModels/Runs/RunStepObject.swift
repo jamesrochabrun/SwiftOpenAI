@@ -251,14 +251,11 @@ public enum RunStepToolCall: Codable {
 // MARK: CodeInterpreterToolCall
 
 public struct CodeInterpreterToolCall: Codable {
-   
-   /// The type of tool call. This is always going to be code_interpreter for this type of tool call.
-   public let type: String
+
    /// The Code Interpreter tool call definition.
    public let codeInterpreter: CodeInterpreter
    
    enum CodingKeys: String, CodingKey {
-      case type
       case codeInterpreter = "code_interpreter"
    }
 }
@@ -325,8 +322,6 @@ public struct CodeInterpreterImageOutput: Codable {
 
 public struct RetrievalToolCall: Codable {
 
-   /// The type of tool call. This is always going to be retrieval for this type of tool call.
-   public let type: String
    /// For now, this is always going to be an empty object.
    public let retrieval: [String: String]?
    
@@ -336,8 +331,6 @@ public struct RetrievalToolCall: Codable {
 
 public struct FunctionToolCall: Codable {
    
-   /// The type of tool call. This is always going to be function for this type of tool call.
-   let type: String
    /// The definition of the function that was called.
    let function: Function
    

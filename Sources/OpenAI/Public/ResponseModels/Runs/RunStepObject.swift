@@ -51,11 +51,12 @@ public struct RunStepObject: Codable {
    
    public struct StepDetail: Codable {
 
+      /// `message_creation` or `tool_calls`
       public let type: String
       /// Details of the message creation by the run step.
       public let messageCreation: MessageCreation?
       /// Details of the tool call.
-      public let toolCalls: [ToolCalls]?
+      public let toolCalls: [ToolCall]?
       
       enum CodingKeys: String, CodingKey {
          case type
@@ -73,17 +74,50 @@ public struct RunStepObject: Codable {
       }
    }
    
-   public struct ToolCalls: Codable {
-      
-      /// Always tool_calls.
-      public let type: String
-      /// An array of tool calls the run step was involved in. These can be associated with one of three types of tools: code_interpreter, retrieval, or function.
-      public let toolCalls: [RunStepToolCall]
-      
-      enum CodingKeys: String, CodingKey {
-         case type
-         case toolCalls = "tool_calls"
-      }
+   public struct ToolCall: Codable {
+       
+       public let id: String
+       public let type: String
+       public let toolCall: RunStepToolCall
+
+       enum CodingKeys: String, CodingKey {
+           case id
+           case type
+       }
+       
+       public init(from decoder: Decoder) throws {
+           let container = try decoder.container(keyedBy: CodingKeys.self)
+           id = try container.decode(String.self, forKey: .id)
+           type = try container.decode(String.self, forKey: .type)
+
+           // Decode toolCall based on its type
+           let toolCallContainer = try decoder.singleValueContainer()
+           if let call = try? toolCallContainer.decode(CodeInterpreterToolCall.self) {
+               toolCall = .codeInterpreterToolCall(call)
+           } else if let call = try? toolCallContainer.decode(RetrievalToolCall.self) {
+               toolCall = .retrieveToolCall(call)
+           } else if let call = try? toolCallContainer.decode(FunctionToolCall.self) {
+               toolCall = .functionToolCall(call)
+           } else {
+               throw DecodingError.dataCorruptedError(in: toolCallContainer, debugDescription: "Unrecognized tool call type")
+           }
+       }
+
+       public func encode(to encoder: Encoder) throws {
+           var container = encoder.container(keyedBy: CodingKeys.self)
+           try container.encode(id, forKey: .id)
+           try container.encode(type, forKey: .type)
+
+           // Encode toolCall based on its case
+           switch toolCall {
+           case .codeInterpreterToolCall(let call):
+               try call.encode(to: encoder)
+           case .retrieveToolCall(let call):
+               try call.encode(to: encoder)
+           case .functionToolCall(let call):
+               try call.encode(to: encoder)
+           }
+       }
    }
    
    enum CodingKeys: String, CodingKey {
@@ -169,7 +203,7 @@ public struct RunStepObject: Codable {
 /// Details of the tool call.
 public enum RunStepToolCall: Codable {
    
-   case condeInterpreterToolCall(CodeInterpreterToolCall)
+   case codeInterpreterToolCall(CodeInterpreterToolCall)
    case retrieveToolCall(RetrievalToolCall)
    case functionToolCall(FunctionToolCall)
    
@@ -182,7 +216,7 @@ public enum RunStepToolCall: Codable {
    public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       if let codeInterpreterCall = try container.decodeIfPresent(CodeInterpreterToolCall.self, forKey: .codeInterpreter) {
-         self = .condeInterpreterToolCall(codeInterpreterCall)
+         self = .codeInterpreterToolCall(codeInterpreterCall)
       } else if let retrievalCall = try container.decodeIfPresent(RetrievalToolCall.self, forKey: .retrieval) {
          self = .retrieveToolCall(retrievalCall)
       } else if let functionCall = try container.decodeIfPresent(FunctionToolCall.self, forKey: .function) {
@@ -196,7 +230,7 @@ public enum RunStepToolCall: Codable {
        var container = encoder.container(keyedBy: CodingKeys.self)
        
        switch self {
-       case .condeInterpreterToolCall(let call):
+       case .codeInterpreterToolCall(let call):
            try container.encode(call, forKey: .codeInterpreter)
        case .retrieveToolCall(let call):
            try container.encode(call, forKey: .retrieval)

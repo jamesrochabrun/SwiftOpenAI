@@ -339,7 +339,7 @@ public struct CodeInterpreterImageOutput: Codable {
    
    public struct Image: Codable {
       /// The [file](https://platform.openai.com/docs/api-reference/files) ID of the image.
-      let fileID: String
+      public let fileID: String
       
       enum CodingKeys: String, CodingKey {
          case fileID = "file_id"

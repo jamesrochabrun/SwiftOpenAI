@@ -41,8 +41,8 @@ public enum Dalle {
    
    var model: String {
       switch self {
-      case .dalle2: return Model.dalle2.rawValue
-      case .dalle3: return Model.dalle3.rawValue
+      case .dalle2: return Model.dalle2.value
+      case .dalle3: return Model.dalle3.value
       }
    }
    

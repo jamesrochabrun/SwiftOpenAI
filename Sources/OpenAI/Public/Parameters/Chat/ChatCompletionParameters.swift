@@ -481,7 +481,7 @@ public struct ChatCompletionParameters: Encodable {
       user: String? = nil)
    {
       self.messages = messages
-      self.model = model.rawValue
+      self.model = model.value
       self.frequencyPenalty = frequencyPenalty
       self.functionCall = functionCall
       self.toolChoice = toolChoice

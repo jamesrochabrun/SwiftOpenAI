@@ -49,7 +49,7 @@ public struct ImageVariationParameters: Encodable {
       responseFormat: ImageResponseFormat? = nil,
       user: String? = nil)
    {
-      if let model, model.model != Model.dalle2.rawValue {
+      if let model, model.model != Model.dalle2.value {
          assertionFailure("Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
       }
       

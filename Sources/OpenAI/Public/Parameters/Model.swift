@@ -22,12 +22,12 @@ public enum Model {
    
    /// Images
    case dalle2
-   case dalle3 
+   case dalle3
    
    // custom
    case custom(String)
    
-   var value: String {
+   public var value: String {
       switch self {
       case .gpt35Turbo: return "gpt-3.5-turbo"
       case .gpt35Turbo1106: return "gpt-3.5-turbo-1106"

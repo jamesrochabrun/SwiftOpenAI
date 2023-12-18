@@ -33,7 +33,7 @@ enum AssistantFunctionCallDefinition: String, CaseIterable {
 struct AssistantConfigurationDemoView: View {
    
    @State private var provider: AssistantConfigurationProvider
-   @State private var parameters: AssistantParameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue))
+   @State private var parameters: AssistantParameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.value))
    @State private var isAvatarLoading = false
 
    var isCodeInterpreterOn: Binding<Bool> {

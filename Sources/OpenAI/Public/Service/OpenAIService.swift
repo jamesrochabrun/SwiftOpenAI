@@ -134,7 +134,7 @@ public protocol OpenAIService {
    /// - Returns: A [ChatCompletionObject](https://platform.openai.com/docs/api-reference/chat/object).
    /// - Throws: An error if the chat initiation fails.
    ///
-   /// For more information, refer to [OpenAI's Audio Translation API documentation](https://platform.openai.com/docs/api-reference/chat/create).
+   /// For more information, refer to [OpenAI's Chat completion API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startChat(
       parameters: ChatCompletionParameters)
    async throws -> ChatCompletionObject
@@ -143,7 +143,7 @@ public protocol OpenAIService {
    /// - Returns: A streamed sequence of [ChatCompletionChunkObject](https://platform.openai.com/docs/api-reference/chat/streaming) objects.
    /// - Throws: An error if the chat initiation fails.
    ///
-   /// For more information, refer to [OpenAI's Audio Translation API documentation](https://platform.openai.com/docs/api-reference/chat/create).
+   /// For more information, refer to [OpenAI's Chat completion API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startStreamedChat(
       parameters: ChatCompletionParameters)
    async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>

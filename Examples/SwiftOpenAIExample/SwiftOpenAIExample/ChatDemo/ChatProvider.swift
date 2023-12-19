@@ -40,6 +40,7 @@ import SwiftOpenAI
          let stream = try await service.startStreamedChat(parameters: parameters)
          for try await result in stream {
             self.message += result.choices.first?.delta.content ?? ""
+            dump(result.choices.first?.logprobs)
          }
       } catch {
          self.message = "\(error)"

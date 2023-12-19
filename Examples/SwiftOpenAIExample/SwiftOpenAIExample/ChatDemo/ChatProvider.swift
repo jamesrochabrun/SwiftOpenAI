@@ -23,7 +23,10 @@ import SwiftOpenAI
       parameters: ChatCompletionParameters) async throws
    {
       do {
-         self.messages = try await service.startChat(parameters: parameters).choices.compactMap(\.message.content)
+         let choices = try await service.startChat(parameters: parameters).choices
+         let logprobs = choices.compactMap(\.logprobs)
+         dump(logprobs)
+         self.messages = choices.compactMap(\.message.content)
       } catch {
          self.messages = ["\(error)"]
       }

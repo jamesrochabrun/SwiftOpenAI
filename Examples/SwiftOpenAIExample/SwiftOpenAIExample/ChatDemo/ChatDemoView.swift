@@ -65,9 +65,13 @@ struct ChatDemoView: View {
                
                let content: ChatCompletionParameters.Message.ContentType = .text(prompt)
                prompt = ""
-               let parameters = ChatCompletionParameters(messages: [.init(
+               let parameters = ChatCompletionParameters(
+                  messages: [.init(
                   role: .user,
-                  content: content)], model: .gpt41106Preview)
+                  content: content)],
+                  model: .gpt41106Preview,
+                  logProbs: true,
+                  topLogprobs: 1)
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

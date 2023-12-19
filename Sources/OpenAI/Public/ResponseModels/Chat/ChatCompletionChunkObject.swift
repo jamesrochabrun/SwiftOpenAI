@@ -34,6 +34,8 @@ public struct ChatCompletionChunkObject: Decodable {
       public let index: Int
       /// Provided by the Vision API.
       public let finishDetails: FinishDetails?
+      /// Log probability information for the choice.
+      public let logprobs: LogProb?
       
       public struct Delta: Decodable {
          
@@ -55,6 +57,36 @@ public struct ChatCompletionChunkObject: Decodable {
          }
       }
       
+      public struct LogProb: Decodable {
+         /// A list of message content tokens with log probability information.
+         let content: [TokenDetail]
+      }
+      
+      public struct TokenDetail: Decodable {
+         /// The token.
+         let token: String
+         /// The log probability of this token.
+         let logprob: Double
+         /// A list of integers representing the UTF-8 bytes representation of the token. Useful in instances where characters are represented by multiple tokens and their byte representations must be combined to generate the correct text representation. Can be null if there is no bytes representation for the token.
+         let bytes: [Int]?
+         /// List of the most likely tokens and their log probability, at this token position. In rare cases, there may be fewer than the number of requested top_logprobs returned.
+         let topLogprobs: [TopLogProb]
+         
+         enum CodingKeys: String, CodingKey {
+            case token, logprob, bytes
+            case topLogprobs = "top_logprobs"
+         }
+         
+         struct TopLogProb: Decodable {
+            /// The token.
+            let token: String
+            /// The log probability of this token.
+            let logprob: Double
+            /// A list of integers representing the UTF-8 bytes representation of the token. Useful in instances where characters are represented by multiple tokens and their byte representations must be combined to generate the correct text representation. Can be null if there is no bytes representation for the token.
+            let bytes: [Int]?
+         }
+      }
+      
       /// Provided by the Vision API.
       public struct FinishDetails: Decodable {
          let type: String
@@ -65,6 +97,7 @@ public struct ChatCompletionChunkObject: Decodable {
          case finishReason = "finish_reason"
          case index
          case finishDetails = "finish_details"
+         case logprobs
       }
    }
    

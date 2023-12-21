@@ -17,7 +17,7 @@ public struct RunObject: Decodable {
    /// The object type, which is always thread.run.
    public let object: String
    /// The Unix timestamp (in seconds) for when the run was created.
-   public let createdAt: Int
+   public let createdAt: Int?
    /// The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was executed on as a part of this run.
    public let threadID: String
    /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for execution of this run.
@@ -29,7 +29,7 @@ public struct RunObject: Decodable {
    /// The last error associated with this run. Will be null if there are no errors.
    public let lastError: LastError?
    /// The Unix timestamp (in seconds) for when the run will expire.
-   public let expiresAt: Int
+   public let expiresAt: Int?
    /// The Unix timestamp (in seconds) for when the run was started.
    public let startedAt: Int?
    /// The Unix timestamp (in seconds) for when the run was cancelled.

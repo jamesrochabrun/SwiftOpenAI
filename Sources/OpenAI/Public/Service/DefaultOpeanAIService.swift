@@ -750,6 +750,9 @@ extension DefaultOpenAIService {
       #endif
          throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
       } catch {
+      #if DEBUG
+         print("\(error)")
+      #endif
          throw APIError.jsonDecodingFailure(description: error.localizedDescription)
       }
    }

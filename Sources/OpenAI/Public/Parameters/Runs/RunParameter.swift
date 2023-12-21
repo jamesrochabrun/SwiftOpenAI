@@ -11,7 +11,7 @@ import Foundation
 public struct RunParameter: Encodable {
    
    /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use to execute this run.
-    let assistantID: String
+   public let assistantID: String
    /// The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to execute this run. If a value is provided here, it will override the model associated with the assistant. If not, the model associated with the assistant will be used.
    let model: String?
    /// Override the default system message of the assistant. This is useful for modifying the behavior on a per-run basis.

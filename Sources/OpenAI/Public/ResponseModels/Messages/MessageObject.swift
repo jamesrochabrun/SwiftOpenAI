@@ -105,15 +105,17 @@ public enum Content: Codable {
    }
    
    public init(from decoder: Decoder) throws {
-      let container = try decoder.container(keyedBy: CodingKeys.self)
+      let container = try decoder.container(keyedBy: ContentTypeKey.self)
       let type = try container.decode(String.self, forKey: .type)
       
       switch type {
       case "image_file":
-         let imageFile = try container.decode(ImageFile.self, forKey: .imageFile)
+         let imageFileContainer = try decoder.container(keyedBy: CodingKeys.self)
+         let imageFile = try imageFileContainer.decode(ImageFile.self, forKey: .imageFile)
          self = .imageFile(imageFile)
       case "text":
-         let text = try container.decode(Text.self, forKey: .text)
+         let textContainer = try decoder.container(keyedBy: CodingKeys.self)
+         let text = try textContainer.decode(Text.self, forKey: .text)
          self = .text(text)
       default:
          throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Invalid type for content")

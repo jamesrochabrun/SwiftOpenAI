@@ -110,8 +110,7 @@ public enum Content: Codable {
       
       switch type {
       case "image_file":
-         let imageFileContainer = try decoder.container(keyedBy: CodingKeys.self)
-         let imageFile = try imageFileContainer.decode(ImageFile.self, forKey: .imageFile)
+       let imageFile = try ImageFile(from: decoder)
          self = .imageFile(imageFile)
       case "text":
          let text = try Text(from: decoder)
@@ -139,6 +138,11 @@ public struct ImageFile: Codable {
       enum CodingKeys: String, CodingKey {
          case fileID = "file_id"
       }
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case imageFile = "image_file"
+      case type
    }
 }
 

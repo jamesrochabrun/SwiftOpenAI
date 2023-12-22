@@ -353,24 +353,17 @@ public struct RetrievalToolCall: Codable {
    
    /// For now, this is always going to be an empty object.
    public let retrieval: [String: String]?
-   
 }
 
 // MARK: FunctionToolCall
 
 public struct FunctionToolCall: Codable {
    
-   /// The definition of the function that was called.
-   let function: Function
-   
-   public struct Function: Codable {
-      
-      /// The name of the function.
-      public let name: String
-      /// The arguments passed to the function.
-      public let arguments: String
-      /// The output of the function. This will be null if the outputs have not been [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
-      public let output: String
-   }
+   /// The name of the function.
+   public let name: String
+   /// The arguments passed to the function.
+   public let arguments: String
+   /// The output of the function. This will be null if the outputs have not been [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
+   public let output: String?
 }
 

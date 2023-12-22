@@ -114,8 +114,7 @@ public enum Content: Codable {
          let imageFile = try imageFileContainer.decode(ImageFile.self, forKey: .imageFile)
          self = .imageFile(imageFile)
       case "text":
-         let textContainer = try decoder.container(keyedBy: CodingKeys.self)
-         let text = try textContainer.decode(Text.self, forKey: .text)
+         let text = try Text(from: decoder)
          self = .text(text)
       default:
          throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Invalid type for content")

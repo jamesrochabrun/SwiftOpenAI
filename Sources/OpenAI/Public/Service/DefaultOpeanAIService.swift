@@ -774,7 +774,7 @@ extension DefaultOpenAIService {
       printCurlCommand(request)
       
       let (data, response) = try await session.bytes(for: request)
-      try Task.checkCancellation()
+//      try Task.checkCancellation()
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }

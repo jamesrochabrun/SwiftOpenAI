@@ -13,8 +13,11 @@ import SwiftOpenAI
    private let service: OpenAIService
    
    var messages: [String] = []
+   var errorMessage: String = ""
    var message: String = ""
-   
+
+   var streamTask: Task<Void, Never>? = nil
+
    init(service: OpenAIService) {
       self.service = service
    }
@@ -28,22 +31,34 @@ import SwiftOpenAI
          dump(logprobs)
          self.messages = choices.compactMap(\.message.content)
       } catch {
-         self.messages = ["\(error)"]
+         self.errorMessage = "\(error)"
       }
    }
    
    func startStreamedChat(
       parameters: ChatCompletionParameters) async throws
    {
-      // TODO: Create a better logic to improve the UI.
-      do {
-         let stream = try await service.startStreamedChat(parameters: parameters)
-         for try await result in stream {
-            self.message += result.choices.first?.delta.content ?? ""
-            dump(result.choices.first?.logprobs)
-         }
-      } catch {
-         self.message = "\(error)"
-      }
+      streamTask = Task {
+            do {
+                let stream = try await service.startStreamedChat(parameters: parameters)
+                for try await result in stream {
+                  //  try Task.checkCancellation() // Explicitly check for cancellation
+                   let content = result.choices.first?.delta.content ?? ""
+                    self.message += content
+                   print("Zizou \(content)")
+                }
+            } catch {
+                if error is CancellationError {
+                    self.errorMessage = "Stream cancelled"
+                } else {
+                    self.errorMessage = "\(error)"
+                }
+            }
+        }
    }
+   
+   func cancelStream() {
+      streamTask!.cancel()
+   }
+   
 }

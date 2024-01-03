@@ -29,8 +29,14 @@ struct ChatDemoView: View {
          VStack {
             picker
             textArea
-            chatCompletionResultView
-            streamedChatResultView
+            Text(chatProvider.errorMessage)
+               .foregroundColor(.red)
+            switch selectedSegment {
+            case .chatCompeltionStream:
+               streamedChatResultView
+            case .chatCompletion:
+               chatCompletionResultView
+            }
          }
       }
       .overlay(
@@ -98,6 +104,12 @@ struct ChatDemoView: View {
    
    /// stream = `true`
    var streamedChatResultView: some View {
-      Text(chatProvider.message)
+      VStack {
+         Button("Cancel stream") {
+            chatProvider.cancelStream()
+         }
+         Text(chatProvider.message)
+
+      }
    }
 }

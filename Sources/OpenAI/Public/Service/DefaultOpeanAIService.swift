@@ -797,7 +797,7 @@ extension DefaultOpenAIService {
          Task {
             do {
                for try await line in data.lines {
-                  try Task.checkCancellation()
+//                  try Task.checkCancellation()
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      #if DEBUG

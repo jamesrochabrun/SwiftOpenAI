@@ -11,12 +11,11 @@ import SwiftOpenAI
 @Observable class ChatProvider {
    
    private let service: OpenAIService
-   
+   private var streamTask: Task<Void, Never>? = nil
+
    var messages: [String] = []
    var errorMessage: String = ""
    var message: String = ""
-
-   var streamTask: Task<Void, Never>? = nil
 
    init(service: OpenAIService) {
       self.service = service
@@ -42,23 +41,16 @@ import SwiftOpenAI
             do {
                 let stream = try await service.startStreamedChat(parameters: parameters)
                 for try await result in stream {
-                  //  try Task.checkCancellation() // Explicitly check for cancellation
                    let content = result.choices.first?.delta.content ?? ""
                     self.message += content
-                   print("Zizou \(content)")
                 }
             } catch {
-                if error is CancellationError {
-                    self.errorMessage = "Stream cancelled"
-                } else {
-                    self.errorMessage = "\(error)"
-                }
+               self.errorMessage = "\(error)"
             }
         }
    }
    
    func cancelStream() {
-      streamTask!.cancel()
+      streamTask?.cancel()
    }
-   
 }

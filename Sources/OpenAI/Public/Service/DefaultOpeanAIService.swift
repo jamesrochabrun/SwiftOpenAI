@@ -774,7 +774,6 @@ extension DefaultOpenAIService {
       printCurlCommand(request)
       
       let (data, response) = try await session.bytes(for: request)
-//      try Task.checkCancellation()
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
@@ -797,7 +796,6 @@ extension DefaultOpenAIService {
          let task = Task {
             do {
                for try await line in data.lines {
-//                  try Task.checkCancellation()
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      #if DEBUG
@@ -838,9 +836,9 @@ extension DefaultOpenAIService {
                continuation.finish(throwing: error)
             }
          }
-         continuation.onTermination = { _ in
-                task.cancel()
-            }
+         continuation.onTermination = { @Sendable _ in
+            task.cancel()
+         }
       }
    }
    

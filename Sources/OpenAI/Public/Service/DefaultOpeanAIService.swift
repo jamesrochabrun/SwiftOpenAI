@@ -794,7 +794,7 @@ extension DefaultOpenAIService {
          throw APIError.responseUnsuccessful(description: errorMessage)
       }
       return AsyncThrowingStream { continuation in
-         Task {
+         let task = Task {
             do {
                for try await line in data.lines {
 //                  try Task.checkCancellation()
@@ -838,6 +838,9 @@ extension DefaultOpenAIService {
                continuation.finish(throwing: error)
             }
          }
+         continuation.onTermination = { _ in
+                task.cancel()
+            }
       }
    }
    

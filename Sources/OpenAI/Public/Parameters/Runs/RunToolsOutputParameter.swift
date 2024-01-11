@@ -24,10 +24,24 @@ public struct RunToolsOutputParameter: Encodable {
          case toolCallId = "tool_call_id"
          case output
       }
+      
+      public init(
+         toolCallId: String?,
+         output: String?)
+      {
+         self.toolCallId = toolCallId
+         self.output = output
+      }
    }
    
    enum CodingKeys: String, CodingKey {
       case toolOutputs = "tool_outputs"
+   }
+   
+   public init(
+      toolOutputs: [ToolOutput])
+   {
+      self.toolOutputs = toolOutputs
    }
 }
 

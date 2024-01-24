@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Model.swift
+//
 //
 //  Created by James Rochabrun on 11/15/23.
 //

@@ -25,7 +25,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 
 - [Audio](#audio)
    - [Transcriptions](#audio-transcriptions)
-   - [Translations]#audio-translations)
+   - [Translations](#audio-translations)
    - [Speech](#audio-Speech)
 - [Chat](#chat)
    - [Function Calling](#function-calling)
@@ -2433,7 +2433,7 @@ let runSteps = try await service.listRunSteps(threadID: threadID, runID: runID, 
 
 ### Azure OpenAI
 
-This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.
+This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports ONLY chat completions, including both streamed and non-streamed options.
 
 For more information about Azure configuration refer to the [documentation.](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference)
 

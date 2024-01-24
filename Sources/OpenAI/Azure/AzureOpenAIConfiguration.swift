@@ -18,4 +18,14 @@ public struct AzureOpenAIConfiguration {
    
    /// The API version to use for this operation. This follows the YYYY-MM-DD format.
    let apiVersion: String
+   
+   public init(
+      resourceName: String,
+      openAIAPIKey: String,
+      apiVersion: String)
+   {
+      self.resourceName = resourceName
+      self.openAIAPIKey = openAIAPIKey
+      self.apiVersion = apiVersion
+   }
 }

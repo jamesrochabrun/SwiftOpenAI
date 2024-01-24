@@ -24,6 +24,9 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 ### OpenAI ENDPOINTS
 
 - [Audio](#audio)
+   - [Transcriptions](#audio-transcriptions)
+   - [Translations]#audio-translations)
+   - [Speech](#audio-Speech)
 - [Chat](#chat)
    - [Function Calling](#function-calling)
    - [Vision](#vision)
@@ -42,6 +45,8 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Message File Object](#message-file-object)
 - [Runs](#runs)
    - [Run Step object](#run-step-object)
+   
+### [Azure OpenAI](#azure-openAI)
 
 ## Getting an API Key
 
@@ -92,7 +97,7 @@ That's all you need to begin accessing the full range of OpenAI endpoints.
 
 ### Audio
 
-#### Audio Transcriptions
+### Audio Transcriptions
 Parameters
 ```swift
 public struct AudioTranscriptionParameters: Encodable {
@@ -152,7 +157,7 @@ let data = Data(contentsOfURL:_) // Data retrieved from the file named "narcos.m
 let parameters = AudioTranscriptionParameters(fileName: fileName, file: data) // **Important**: in the file name always provide the file extension.
 let audioObject =  try await service.createTranscription(parameters: parameters)
 ```
-#### Audio Translations
+### Audio Translations
 Parameters
 ```swift
 public struct AudioTranslationParameters: Encodable {
@@ -209,7 +214,7 @@ let parameters = AudioTranslationParameters(fileName: fileName, file: data) // *
 let audioObject = try await service.createTranslation(parameters: parameters)
 ```
 
-#### Audio Speech
+### Audio Speech
 Parameters
 ```swift
 /// [Generates audio from the input text.](https://platform.openai.com/docs/api-reference/audio/createSpeech)
@@ -2425,6 +2430,45 @@ let threadID = "thread_abc123"
 let runID = "run_abc123"
 let runSteps = try await service.listRunSteps(threadID: threadID, runID: runID, limit: nil, order: nil, after: nil, before: nil) 
 ```
+
+### Azure OpenAI
+
+This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.
+
+For more information about Azure configuration refer to the [documentation.](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference)
+
+To instantiate `DefaultOpenAIAzureService` you need to provide a `AzureOpenAIConfiguration`
+
+```swift
+let azureConfiguration = AzureOpenAIConfiguration(
+                           resourceName: "YOUR_RESOURCE_NAME", 
+                           openAIAPIKey: "YOUR_OPENAI_APIKEY, 
+                           apiVersion: "THE_API_VERSION")
+                           
+let service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)           
+```
+
+supported api version can be found on the azure [documentation](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#completions)
+
+Current Supported versions
+
+```2022-12-01```
+```2023-03-15-preview```
+```2023-05-15```
+```2023-06-01-preview```
+```2023-07-01-preview```
+```2023-08-01-preview```
+```2023-09-01-preview```
+
+### Usage on [Chat completions](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#chat-completions):
+
+```swift
+let parameters = ChatCompletionParameters(
+                     messages: [.init(role: .user, content: .text(prompt))], 
+                     model: .custom("DEPLOYMENT_NAME") /// The deployment name you chose when you deployed the model. e.g: "gpt-35-turbo-0613"
+let completionObject = try await service.startChat(parameters: parameters)
+```
+
 
 ### Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

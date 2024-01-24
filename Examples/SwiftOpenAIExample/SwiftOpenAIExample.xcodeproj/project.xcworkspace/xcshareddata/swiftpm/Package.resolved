@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftOpenAI",
       "state" : {
-        "branch" : "jroch-test-async-cancellation",
-        "revision" : "59de4bed6ead42c4152927f09b80c9bf3a9662f8"
+        "branch" : "main",
+        "revision" : "1153951c12e7c4136ae526d6fbb0828b3fd16168"
       }
     }
   ],

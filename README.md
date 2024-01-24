@@ -25,7 +25,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 
 - [Audio](#audio)
    - [Transcriptions](#audio-transcriptions)
-   - [Translations]#audio-translations)
+   - [Translations](#audio-translations)
    - [Speech](#audio-Speech)
 - [Chat](#chat)
    - [Function Calling](#function-calling)

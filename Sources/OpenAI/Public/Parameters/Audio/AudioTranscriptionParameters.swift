@@ -24,6 +24,9 @@ public struct AudioTranscriptionParameters: Encodable {
    let responseFormat: String?
    /// The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit. Defaults to 0
    let temperature: Double?
+   /// Defaults to segment
+   /// The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
+   let timestampGranularities: [String]?
    
    public enum Model: String {
       case whisperOne = "whisper-1"
@@ -36,6 +39,7 @@ public struct AudioTranscriptionParameters: Encodable {
       case responseFormat = "response_format"
       case temperature
       case language
+      case timestampGranularities = "timestamp_granularities[]"
    }
    
    public init(
@@ -45,7 +49,8 @@ public struct AudioTranscriptionParameters: Encodable {
       prompt: String? = nil,
       responseFormat: String? = nil,
       temperature: Double? = nil,
-      language: String? = nil)
+      language: String? = nil,
+      timestampGranularities: [String]? = nil)
    {
       self.fileName = fileName
       self.file = file
@@ -54,6 +59,7 @@ public struct AudioTranscriptionParameters: Encodable {
       self.responseFormat = responseFormat
       self.temperature = temperature
       self.language = language
+      self.timestampGranularities = timestampGranularities
    }
 }
 
@@ -68,7 +74,8 @@ extension AudioTranscriptionParameters: MultipartFormDataParameters {
          .string(paramName: Self.CodingKeys.language.rawValue, value: language),
          .string(paramName: Self.CodingKeys.prompt.rawValue, value: prompt),
          .string(paramName: Self.CodingKeys.responseFormat.rawValue, value: responseFormat),
-         .string(paramName: Self.CodingKeys.temperature.rawValue, value: temperature)
+         .string(paramName: Self.CodingKeys.temperature.rawValue, value: temperature),
+         .string(paramName: Self.CodingKeys.timestampGranularities.rawValue, value: timestampGranularities)
       ]).build()
    }
 }

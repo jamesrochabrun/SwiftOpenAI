@@ -29,8 +29,14 @@ struct ChatDemoView: View {
          VStack {
             picker
             textArea
-            chatCompletionResultView
-            streamedChatResultView
+            Text(chatProvider.errorMessage)
+               .foregroundColor(.red)
+            switch selectedSegment {
+            case .chatCompeltionStream:
+               streamedChatResultView
+            case .chatCompletion:
+               chatCompletionResultView
+            }
          }
       }
       .overlay(
@@ -65,9 +71,13 @@ struct ChatDemoView: View {
                
                let content: ChatCompletionParameters.Message.ContentType = .text(prompt)
                prompt = ""
-               let parameters = ChatCompletionParameters(messages: [.init(
+               let parameters = ChatCompletionParameters(
+                  messages: [.init(
                   role: .user,
-                  content: content)], model: .gpt41106Preview)
+                  content: content)],
+                  model: .gpt41106Preview,
+                  logProbs: true,
+                  topLogprobs: 1)
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)
@@ -94,6 +104,12 @@ struct ChatDemoView: View {
    
    /// stream = `true`
    var streamedChatResultView: some View {
-      Text(chatProvider.message)
+      VStack {
+         Button("Cancel stream") {
+            chatProvider.cancelStream()
+         }
+         Text(chatProvider.message)
+
+      }
    }
 }

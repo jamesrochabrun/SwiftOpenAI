@@ -11,10 +11,12 @@ import SwiftOpenAI
 @Observable class ChatProvider {
    
    private let service: OpenAIService
-   
+   private var streamTask: Task<Void, Never>? = nil
+
    var messages: [String] = []
+   var errorMessage: String = ""
    var message: String = ""
-   
+
    init(service: OpenAIService) {
       self.service = service
    }
@@ -23,23 +25,32 @@ import SwiftOpenAI
       parameters: ChatCompletionParameters) async throws
    {
       do {
-         self.messages = try await service.startChat(parameters: parameters).choices.compactMap(\.message.content)
+         let choices = try await service.startChat(parameters: parameters).choices
+         let logprobs = choices.compactMap(\.logprobs)
+         dump(logprobs)
+         self.messages = choices.compactMap(\.message.content)
       } catch {
-         self.messages = ["\(error)"]
+         self.errorMessage = "\(error)"
       }
    }
    
    func startStreamedChat(
       parameters: ChatCompletionParameters) async throws
    {
-      // TODO: Create a better logic to improve the UI.
-      do {
-         let stream = try await service.startStreamedChat(parameters: parameters)
-         for try await result in stream {
-            self.message += result.choices.first?.delta.content ?? ""
-         }
-      } catch {
-         self.message = "\(error)"
-      }
+      streamTask = Task {
+            do {
+                let stream = try await service.startStreamedChat(parameters: parameters)
+                for try await result in stream {
+                   let content = result.choices.first?.delta.content ?? ""
+                    self.message += content
+                }
+            } catch {
+               self.errorMessage = "\(error)"
+            }
+        }
+   }
+   
+   func cancelStream() {
+      streamTask?.cancel()
    }
 }

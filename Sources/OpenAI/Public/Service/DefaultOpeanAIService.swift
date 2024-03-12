@@ -14,14 +14,14 @@ struct DefaultOpenAIService: OpenAIService {
 
    private let sessionID = UUID().uuidString
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
-   private let apiKey: String
+   private let apiKey: Authorization
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
    private let organizationID: String?
    
    private static let assistantsBeta = "assistants=v1"
       
    init(
-      apiKey: String,
+      apiKey: Authorization,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())

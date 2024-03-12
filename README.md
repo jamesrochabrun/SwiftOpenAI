@@ -82,7 +82,7 @@ Then, initialize the service using your OpenAI API key:
 
 ```swift
 let apiKey = "your_openai_api_key_here"
-let service = OpenAIServiceFactory.service(apiKey: apiKey)
+let service = OpenAIServiceFactory.service(apiKey: .bearer(apiKey))
 ```
 
 You can optionally specify an organization name if needed.
@@ -90,7 +90,7 @@ You can optionally specify an organization name if needed.
 ```swift
 let apiKey = "your_openai_api_key_here"
 let oganizationID = "your_organixation_id"
-let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: oganizationID)
+let service = OpenAIServiceFactory.service(apiKey: .bearer(apiKey), organizationID: oganizationID)
 ```
 
 That's all you need to begin accessing the full range of OpenAI endpoints.
@@ -2442,7 +2442,7 @@ To instantiate `DefaultOpenAIAzureService` you need to provide a `AzureOpenAICon
 ```swift
 let azureConfiguration = AzureOpenAIConfiguration(
                            resourceName: "YOUR_RESOURCE_NAME", 
-                           openAIAPIKey: "YOUR_OPENAI_APIKEY, 
+                           openAIAPIKey: .apiKey("YOUR_OPENAI_APIKEY), 
                            apiVersion: "THE_API_VERSION")
                            
 let service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)           

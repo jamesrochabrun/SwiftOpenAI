@@ -32,6 +32,31 @@ public enum APIError: Error {
    }
 }
 
+// MARK: Authorization
+
+public enum Authorization {
+    case apiKey(String)
+    case bearer(String)
+
+    var headerField: String {
+        switch self {
+        case .apiKey(let string):
+            "api-key"
+        case .bearer(let string):
+            "Authorization"
+        }
+    }
+
+    var value: String {
+        switch self {
+        case .apiKey(let value):
+            value
+        case .bearer(let value):
+            "Bearer \(value)"
+        }
+    }
+}
+
 // MARK: Service
 
 /// A protocol defining the required services for interacting with OpenAI's API.

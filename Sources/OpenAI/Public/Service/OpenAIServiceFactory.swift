@@ -19,7 +19,7 @@ public class OpenAIServiceFactory {
    ///
    /// - Returns: A fully configured object conforming to `OpenAIService`.
    public static func service(
-      apiKey: String,
+      apiKey: Authorization,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())

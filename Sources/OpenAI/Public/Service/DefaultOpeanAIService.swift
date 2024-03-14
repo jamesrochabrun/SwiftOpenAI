@@ -21,14 +21,14 @@ struct DefaultOpenAIService: OpenAIService {
    private static let assistantsBeta = "assistants=v1"
       
    init(
-      apiKey: Authorization,
+      apiKey: String,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())
    {
       self.session = URLSession(configuration: configuration)
       self.decoder = decoder
-      self.apiKey = apiKey
+      self.apiKey = .bearer(apiKey)
       self.organizationID = organizationID
    }
    

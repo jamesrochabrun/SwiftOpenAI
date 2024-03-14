@@ -196,7 +196,7 @@ extension Binding where Value == String? {
 }
 
 #Preview {
-   AssistantConfigurationDemoView(service: OpenAIServiceFactory.service(apiKey: .bearer("")))
+   AssistantConfigurationDemoView(service: OpenAIServiceFactory.service(apiKey: ""))
 }
 
 

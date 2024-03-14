@@ -82,7 +82,7 @@ Then, initialize the service using your OpenAI API key:
 
 ```swift
 let apiKey = "your_openai_api_key_here"
-let service = OpenAIServiceFactory.service(apiKey: .bearer(apiKey))
+let service = OpenAIServiceFactory.service(apiKey: apiKey)
 ```
 
 You can optionally specify an organization name if needed.
@@ -90,7 +90,7 @@ You can optionally specify an organization name if needed.
 ```swift
 let apiKey = "your_openai_api_key_here"
 let oganizationID = "your_organixation_id"
-let service = OpenAIServiceFactory.service(apiKey: .bearer(apiKey), organizationID: oganizationID)
+let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: oganizationID)
 ```
 
 That's all you need to begin accessing the full range of OpenAI endpoints.

@@ -14,7 +14,7 @@ struct DefaultOpenAIService: OpenAIService {
 
    private let sessionID = UUID().uuidString
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
-   private let apiKey: String
+   private let apiKey: Authorization
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
    private let organizationID: String?
    
@@ -28,7 +28,7 @@ struct DefaultOpenAIService: OpenAIService {
    {
       self.session = URLSession(configuration: configuration)
       self.decoder = decoder
-      self.apiKey = apiKey
+      self.apiKey = .bearer(apiKey)
       self.organizationID = organizationID
    }
    

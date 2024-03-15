@@ -23,7 +23,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    
    public let session: URLSession
    public let decoder: JSONDecoder
-   private let apiKey: String
+   private let apiKey: Authorization
    private let apiVersion: String
    
    public func createTranscription(parameters: AudioTranscriptionParameters) async throws -> AudioObject {
@@ -43,7 +43,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       chatParameters.stream = false
       let queryItems: [URLQueryItem]  = [.init(name: "api-version", value: apiVersion)]
       let request = try AzureOpenAIAPI.chat(deploymentID: parameters.model).request(
-         apiKey: apiKey, 
+         apiKey: apiKey,
          organizationID: nil,
          method: .post,
          params: chatParameters,
@@ -56,11 +56,12 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       chatParameters.stream = true
       let queryItems: [URLQueryItem]  = [.init(name: "api-version", value: apiVersion)]
       let request = try AzureOpenAIAPI.chat(deploymentID: parameters.model).request(
-         apiKey: apiKey, 
+         apiKey: apiKey,
          organizationID: nil,
          method: .post,
          params: chatParameters,
-         queryItems: queryItems)
+         queryItems: queryItems
+      )
       return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
    }
    

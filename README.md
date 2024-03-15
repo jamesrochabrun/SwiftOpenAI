@@ -2442,7 +2442,7 @@ To instantiate `DefaultOpenAIAzureService` you need to provide a `AzureOpenAICon
 ```swift
 let azureConfiguration = AzureOpenAIConfiguration(
                            resourceName: "YOUR_RESOURCE_NAME", 
-                           openAIAPIKey: "YOUR_OPENAI_APIKEY, 
+                           openAIAPIKey: .apiKey("YOUR_OPENAI_APIKEY), 
                            apiVersion: "THE_API_VERSION")
                            
 let service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)           

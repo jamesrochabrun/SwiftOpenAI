@@ -40,7 +40,7 @@ extension Endpoint {
    }
    
    func request(
-      apiKey: String,
+      apiKey: Authorization,
       organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
@@ -50,7 +50,7 @@ extension Endpoint {
    {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+      request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
       if let organizationID {
          request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
       }
@@ -65,7 +65,7 @@ extension Endpoint {
    }
    
    func multiPartRequest(
-      apiKey: String,
+      apiKey: Authorization,
       organizationID: String?,
       method: HTTPMethod,
       params: MultipartFormDataParameters,
@@ -75,7 +75,7 @@ extension Endpoint {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
       request.httpMethod = method.rawValue
       let boundary = UUID().uuidString
-      request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+      request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
       if let organizationID {
          request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
       }

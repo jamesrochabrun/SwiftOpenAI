@@ -45,7 +45,10 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Message File Object](#message-file-object)
 - [Runs](#runs)
    - [Run Step object](#run-step-object)
-   
+   - [Run Step details](#run-step-details)
+- [Streaming](#streaming)
+   - [Message Delta Object](#message-delta-object)
+   - [Run Step Delta Object](#run-step-delta-object)
 ### [Azure OpenAI](#azure-openAI)
 
 ## Getting an API Key
@@ -1880,6 +1883,8 @@ Parameters
 /// [Creates an assistant file.](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile)
 public struct AssistantFileParamaters: Encodable {
    
+   /// The ID of the assistant for which to create a File.
+   let assistantID: String
    /// A [File](https://platform.openai.com/docs/api-reference/files) ID (with purpose="assistants") that the assistant should use.
    /// Useful for tools like retrieval and code_interpreter that can access files.
    let fileID: String
@@ -2072,9 +2077,9 @@ public struct MessageObject: Codable {
    }
 }
 
-// MARK: Content
+// MARK: MessageContent
 
-public enum Content: Codable {
+public enum MessageContent: Codable {
    
    case imageFile(ImageFile)
    case text(Text)
@@ -2243,6 +2248,8 @@ public struct RunParameter: Encodable {
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
+   let stream: Bool
 }
 ```
 [Modify a Run](https://platform.openai.com/docs/api-reference/runs/modifyRun)
@@ -2275,6 +2282,8 @@ public struct CreateThreadAndRunParameter: Encodable {
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
+   let stream: Bool
 }
 ```
 [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
@@ -2283,6 +2292,8 @@ public struct RunToolsOutputParameter: Encodable {
    
    /// A list of tools for which the outputs are being submitted.
    public let toolOutputs: [ToolOutput]
+   /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
+   public let stream: Bool
 }
 ```
    
@@ -2401,7 +2412,7 @@ public struct RunStepObject: Decodable {
    /// The status of the run step, which can be either in_progress, cancelled, failed, completed, or expired.
    public let status: String
    /// The details of the run step.
-   public let stepDetails: StepDetail
+   public let stepDetails: RunStepDetails
    /// The last error associated with this run step. Will be null if there are no errors.
    public let lastError: RunObject.LastError?
    /// The Unix timestamp (in seconds) for when the run step expired. A step is considered expired if the parent run is expired.
@@ -2414,6 +2425,8 @@ public struct RunStepObject: Decodable {
    public let completedAt: Int?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]?
+   /// Usage statistics related to the run step. This value will be null while the run step's status is in_progress.
+   public let usage: Usage?
 }
 ```
 Usage
@@ -2429,6 +2442,89 @@ List run steps
 let threadID = "thread_abc123"
 let runID = "run_abc123"
 let runSteps = try await service.listRunSteps(threadID: threadID, runID: runID, limit: nil, order: nil, after: nil, before: nil) 
+```
+
+### Run Step Detail
+
+The details of the run step.
+
+```swift
+public struct RunStepDetails: Codable {
+   
+   /// `message_creation` or `tool_calls`
+   public let type: String
+   /// Details of the message creation by the run step.
+   public let messageCreation: MessageCreation?
+   /// Details of the tool call.
+   public let toolCalls: [ToolCall]?
+}
+```
+
+### Streaming
+
+Assistants API [streaming.](https://platform.openai.com/docs/assistants/overview?context=with-streaming))
+
+### Message Delta Object
+
+[MessageDeltaObject](https://platform.openai.com/docs/api-reference/assistants-streaming/message-delta-object) Represents a message delta i.e. any changed fields on a message during streaming.
+
+```swift
+public struct MessageDeltaObject: Decodable {
+   
+   /// The identifier of the message, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.message.delta.
+   public let object: String
+   /// The delta containing the fields that have changed on the Message.
+   public let delta: Delta
+   
+   public struct Delta: Decodable {
+      
+      /// The entity that produced the message. One of user or assistant.
+      public let role: String
+      /// The content of the message in array of text and/or images.
+      public let content: [MessageContent]
+      /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
+      public let fileIDS: [String]?
+
+      enum Role: String {
+         case user
+         case assistant
+      }
+      
+      enum CodingKeys: String, CodingKey {
+         case role
+         case content
+         case fileIDS = "file_ids"
+      }
+   }
+}
+```
+
+### Run Step Delta Object
+
+Represents a [run step delta](https://platform.openai.com/docs/api-reference/assistants-streaming/run-step-delta-object) i.e. any changed fields on a run step during streaming.
+
+```swift
+public struct RunStepDeltaObject: Decodable {
+   
+   /// The identifier of the run step, which can be referenced in API endpoints.
+   public let id: String
+   /// The object type, which is always thread.run.step.delta.
+   public let object: String
+   /// The delta containing the fields that have changed on the run step.
+   public let delta: Delta
+   
+   public struct Delta: Decodable {
+      
+      /// The details of the run step.
+      public let stepDetails: RunStepDetails
+      
+      private enum CodingKeys: String, CodingKey {
+         case stepDetails = "step_details"
+      }
+   }
+}
 ```
 
 ### Azure OpenAI

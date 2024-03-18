@@ -40,9 +40,9 @@ public enum Authorization {
 
     var headerField: String {
         switch self {
-        case .apiKey(let string):
+        case .apiKey:
             "api-key"
-        case .bearer(let string):
+        case .bearer:
             "Authorization"
         }
     }

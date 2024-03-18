@@ -12,6 +12,8 @@ public struct RunToolsOutputParameter: Encodable {
    
    /// A list of tools for which the outputs are being submitted.
    public let toolOutputs: [ToolOutput]
+   /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
+   public let stream: Bool
    
    public struct ToolOutput: Encodable {
       
@@ -39,9 +41,11 @@ public struct RunToolsOutputParameter: Encodable {
    }
    
    public init(
-      toolOutputs: [ToolOutput])
+      toolOutputs: [ToolOutput],
+      stream: Bool = false)
    {
       self.toolOutputs = toolOutputs
+      self.stream = stream
    }
 }
 

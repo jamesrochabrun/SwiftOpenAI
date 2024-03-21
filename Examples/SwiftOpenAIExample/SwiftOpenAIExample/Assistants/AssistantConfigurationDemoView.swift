@@ -35,6 +35,9 @@ struct AssistantConfigurationDemoView: View {
    @State private var provider: AssistantConfigurationProvider
    @State private var parameters: AssistantParameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.value))
    @State private var isAvatarLoading = false
+   @State private var showAvatarFlow = false
+   private let service: OpenAIService
+
 
    var isCodeInterpreterOn: Binding<Bool> {
        Binding(
@@ -71,6 +74,7 @@ struct AssistantConfigurationDemoView: View {
    }
    
    init(service: OpenAIService) {
+      self.service = service
       _provider = State(initialValue: AssistantConfigurationProvider(service: service))
    }
    
@@ -83,6 +87,8 @@ struct AssistantConfigurationDemoView: View {
             footerActions
          }
          .padding()
+      }.sheet(isPresented: $showAvatarFlow) {
+         AssistantsListDemoView(assistants: provider.assistants, service: service)
       }
    }
    
@@ -96,6 +102,7 @@ struct AssistantConfigurationDemoView: View {
          Button("List") {
             Task {
                try await provider.listAssistants()
+               showAvatarFlow = true
             }
          }
          Button("Delete") {

@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */; };
 		7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */; };
+		7B3DDCC32BAA9ADB004B5C96 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7B3DDCC22BAA9ADB004B5C96 /* SwiftOpenAI */; };
+		7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */; };
+		7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */; };
+		7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */; };
 		7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B952AE24A04003CE281 /* OptionsListView.swift */; };
 		7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B982AE25052003CE281 /* ContentLoader.swift */; };
 		7B436B9B2AE25094003CE281 /* narcos.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7B436B9A2AE25093003CE281 /* narcos.m4a */; };
@@ -53,7 +57,6 @@
 		7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */; };
 		7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */; };
 		7BE9A5AF2B0B33E600CE8103 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
-		7BF6BC952B60ECBE00476EF0 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7BF6BC942B60ECBE00476EF0 /* SwiftOpenAI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +79,9 @@
 /* Begin PBXFileReference section */
 		7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationDemoView.swift; sourceTree = "<group>"; };
 		7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationProvider.swift; sourceTree = "<group>"; };
+		7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantsListDemoView.swift; sourceTree = "<group>"; };
+		7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantThreadConfigurationProvider.swift; sourceTree = "<group>"; };
+		7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantStreamDemoScreen.swift; sourceTree = "<group>"; };
 		7B436B952AE24A04003CE281 /* OptionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsListView.swift; sourceTree = "<group>"; };
 		7B436B982AE25052003CE281 /* ContentLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentLoader.swift; sourceTree = "<group>"; };
 		7B436B9A2AE25093003CE281 /* narcos.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = narcos.m4a; sourceTree = "<group>"; };
@@ -131,7 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BF6BC952B60ECBE00476EF0 /* SwiftOpenAI in Frameworks */,
+				7B3DDCC32BAA9ADB004B5C96 /* SwiftOpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +163,9 @@
 			children = (
 				7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */,
 				7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */,
+				7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */,
+				7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */,
+				7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */,
 			);
 			path = Assistants;
 			sourceTree = "<group>";
@@ -417,7 +426,7 @@
 			);
 			name = SwiftOpenAIExample;
 			packageProductDependencies = (
-				7BF6BC942B60ECBE00476EF0 /* SwiftOpenAI */,
+				7B3DDCC22BAA9ADB004B5C96 /* SwiftOpenAI */,
 			);
 			productName = SwiftOpenAIExample;
 			productReference = 7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */;
@@ -492,7 +501,7 @@
 			);
 			mainGroup = 7BA788C02AE23A48008825D5;
 			packageReferences = (
-				7BF6BC932B60ECBE00476EF0 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
+				7B3DDCC12BAA9ADB004B5C96 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
 			);
 			productRefGroup = 7BA788CA2AE23A48008825D5 /* Products */;
 			projectDirPath = "";
@@ -556,6 +565,9 @@
 				7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
+				7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */,
+				7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */,
+				7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */,
 				7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */,
 				7B436BB22AE79370003CE281 /* FilesProvider.swift in Sources */,
 				7BBE7E942AFCC9640096A693 /* ChatVisionProvider.swift in Sources */,
@@ -935,20 +947,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7BF6BC932B60ECBE00476EF0 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
+		7B3DDCC12BAA9ADB004B5C96 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI";
 			requirement = {
-				branch = main;
+				branch = "jroch-assistants-stream";
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7BF6BC942B60ECBE00476EF0 /* SwiftOpenAI */ = {
+		7B3DDCC22BAA9ADB004B5C96 /* SwiftOpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7BF6BC932B60ECBE00476EF0 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
+			package = 7B3DDCC12BAA9ADB004B5C96 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
 			productName = SwiftOpenAI;
 		};
 /* End XCSwiftPackageProductDependency section */

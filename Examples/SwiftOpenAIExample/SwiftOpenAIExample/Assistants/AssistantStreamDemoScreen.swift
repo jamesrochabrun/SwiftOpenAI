@@ -72,14 +72,13 @@ public struct AssistantStartThreadScreen: View {
                Text("Nice! Message created with id \(message.threadID)")
                Button {
                   Task {
-                     try await threadProvider.createRun(threadID: message.threadID, parameters: .init(assistantID: assistant.id, stream: true))
-                     if let run = threadProvider.runObject {
-                        tutorialStage = .streamRun(run)
-                     }
+                     try await threadProvider.createRunAndStreamMessage(threadID: message.threadID, parameters: .init(assistantID: assistant.id, stream: true))
                   }
                } label: {
-                  Text("Step 3: Create a Run")
+                  Text("Step 3: Create a Run And stream the message response")
                }
+               
+               Text(threadProvider.messageText)
                
             case .streamRun(let run):
                let _ = dump(run)

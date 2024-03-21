@@ -17,6 +17,7 @@ import SwiftOpenAI
    var thread: ThreadObject?
    var message: MessageObject?
    var runObject: RunObject?
+   var messageText: String = ""
    
    // MARK: - Initializer
    
@@ -46,13 +47,22 @@ import SwiftOpenAI
       }
    }
    
-   func createRun(
+   func createRunAndStreamMessage(
       threadID: String,
       parameters: RunParameter)
       async throws
    {
       do {
-         runObject = try await service.createRun(threadID: threadID, parameters: parameters)
+         let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: parameters)
+         for try await result in stream {
+            let content = result.delta.content.first
+            switch content {
+            case .imageFile, nil:
+               break
+            case .text(let textContent):
+               messageText += textContent.text.value
+            }
+         }
       }  catch {
          print("THREAD ERROR: \(error)")
       }

@@ -22,7 +22,7 @@ public struct MessageDeltaObject: Decodable {
    public struct Delta: Decodable {
       
       /// The entity that produced the message. One of user or assistant.
-      public let role: String
+      public let role: String?
       /// The content of the message in array of text and/or images.
       public let content: [MessageContent]
       /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.

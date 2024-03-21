@@ -734,6 +734,19 @@ public protocol OpenAIService {
       after: String?,
       before: String?)
    async throws -> OpenAIResponse<RunStepObject>
+   
+   /// Create a run and streams a message
+   ///
+   /// - Parameter threadID: The ID of the thread to run.
+   /// - Parameter parameters: The parameters needed to build a Run.
+   /// - Returns: A [run](https://platform.openai.com/docs/api-reference/runs/object) object.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createRun).
+   func createRunAndStreamMessage(
+      threadID: String,
+      parameters: RunParameter)
+   async throws -> AsyncThrowingStream<MessageDeltaObject, Error>
 }
 
 

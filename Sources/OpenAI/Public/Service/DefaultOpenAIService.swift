@@ -621,6 +621,15 @@ struct DefaultOpenAIService: OpenAIService {
       }
       let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
-
+   }
+   
+   func createRunAndStreamMessage(
+      threadID: String,
+      parameters: RunParameter)
+      async throws -> AsyncThrowingStream<MessageDeltaObject, Error>
+   {
+      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      return try await fetchStream(type: MessageDeltaObject.self, with: request)
+      
    }
 }

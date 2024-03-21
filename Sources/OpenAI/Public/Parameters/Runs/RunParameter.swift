@@ -32,6 +32,7 @@ public struct RunParameter: Encodable {
       case additionalInstructions = "additional_instructions"
       case tools
       case metadata
+      case stream
    }
    
    public init(

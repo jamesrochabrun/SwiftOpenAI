@@ -922,12 +922,15 @@ extension OpenAIService {
                for try await line in data.lines {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
-                     #if DEBUG
-                     print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                     #endif
+//                     #if DEBUG
+//
+//                     #endif
                      do {
-                        let decoded = try self.decoder.decode(T.self, from: data)
-                        continuation.yield(decoded)
+                        if let decoded = try? self.decoder.decode(T.self, from: data) {
+                           continuation.yield(decoded)
+                        } else {
+                           print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        }
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"

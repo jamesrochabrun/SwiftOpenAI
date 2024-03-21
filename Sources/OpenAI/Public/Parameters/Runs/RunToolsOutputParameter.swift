@@ -38,6 +38,7 @@ public struct RunToolsOutputParameter: Encodable {
    
    enum CodingKeys: String, CodingKey {
       case toolOutputs = "tool_outputs"
+      case stream
    }
    
    public init(

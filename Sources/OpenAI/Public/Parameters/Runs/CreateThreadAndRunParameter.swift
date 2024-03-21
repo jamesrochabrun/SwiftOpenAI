@@ -32,6 +32,7 @@ public struct CreateThreadAndRunParameter: Encodable {
       case instructions
       case tools
       case metadata
+      case stream
    }
    
    public init(

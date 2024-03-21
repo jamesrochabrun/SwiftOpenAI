@@ -927,9 +927,10 @@ extension OpenAIService {
 //                     #endif
                      do {
                         if let decoded = try? self.decoder.decode(T.self, from: data) {
+                           print("STREAM SUCCEED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            continuation.yield(decoded)
                         } else {
-                           print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           print("STREAM FAILED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                         }
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"

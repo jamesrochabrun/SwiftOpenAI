@@ -89,7 +89,7 @@ public struct Text: Codable {
       // The data that makes up the text.
       public let value: String
       
-      public let annotations: [Annotation]
+      public let annotations: [Annotation]?
    }
 }
 

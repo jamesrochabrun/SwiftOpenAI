@@ -18,6 +18,7 @@ import SwiftOpenAI
    var message: MessageObject?
    var runObject: RunObject?
    var messageText: String = ""
+   var toolOuptutMessage: String = ""
    
    // MARK: - Initializer
    
@@ -55,18 +56,34 @@ import SwiftOpenAI
       do {
          let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: parameters)
          for try await result in stream {
-            let content = result.delta.content.first
-            switch content {
-            case .imageFile, nil:
-               break
-            case .text(let textContent):
-               messageText += textContent.text.value
+            
+            switch result {
+            case .threadMessageDelta(let messageDelta):
+                  let content = messageDelta.delta.content.first
+                  switch content {
+                  case .imageFile, nil:
+                     break
+                  case .text(let textContent):
+                     messageText += textContent.text.value
+                  }
+            case .threadRunStepDelta(let runStepDelta):
+                  let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall
+                  switch toolCall {
+                  case .codeInterpreterToolCall(let toolCall):
+                     toolOuptutMessage += toolCall.input ?? ""
+                  case .retrieveToolCall(let toolCall):
+                     print("PROVIDER: Retrieve tool call \(toolCall)")
+                  case .functionToolCall(let toolCall):
+                     print("PROVIDER: Function tool call \(toolCall)")
+                  case nil:
+                     print("PROVIDER: tool call nil")
+                  }
+            default: break
             }
          }
       }  catch {
          print("THREAD ERROR: \(error)")
       }
    }
-   
 }
 

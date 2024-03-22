@@ -256,7 +256,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    public func createRunAndStreamMessage(
       threadID: String,
       parameters: RunParameter)
-      async throws -> AsyncThrowingStream<MessageDeltaObject, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }

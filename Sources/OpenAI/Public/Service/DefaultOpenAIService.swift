@@ -626,9 +626,9 @@ struct DefaultOpenAIService: OpenAIService {
    func createRunAndStreamMessage(
       threadID: String,
       parameters: RunParameter)
-      async throws -> AsyncThrowingStream<MessageDeltaObject, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
       let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
-      return try await fetchAssistantStreamEvent(.threadMessageDelta(MessageDeltaObject.self), with: request)
+      return try await fetchAssistantStreamEvents(with: request)
    }
 }

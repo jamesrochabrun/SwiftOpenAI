@@ -746,7 +746,7 @@ public protocol OpenAIService {
    func createRunAndStreamMessage(
       threadID: String,
       parameters: RunParameter)
-   async throws -> AsyncThrowingStream<MessageDeltaObject, Error>
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
 }
 
 
@@ -966,10 +966,10 @@ extension OpenAIService {
       }
    }
    
-   public func fetchAssistantStreamEvent<T: Decodable>(
-      _ event: AssistantStreamEvent<T>,
+   public func fetchAssistantStreamEvents(
+//      _ events: [AssistantStreamEvent<T>],
       with request: URLRequest)
-      async throws -> AsyncThrowingStream<T, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
       printCurlCommand(request)
       
@@ -999,25 +999,26 @@ extension OpenAIService {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      do {
-                        switch event {
-                        case .threadMessageDelta(let type) where (try? self.decoder.decode(type, from: data)) != nil:
-                        #if DEBUG
-                        print("DEBUG ASSISTANT EVENT DECODE SUCCESS = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                        #endif
-                           let decoded = try self.decoder.decode(type, from: data)
-                           continuation.yield(decoded)
-                           
-                        case .threadRunStepDelta(let type) where (try? self.decoder.decode(type, from: data)) != nil:
-                        #if DEBUG
-                        print("DEBUG ASSISTANT EVENT DECODE SUCCESS = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                        #endif
-                           let decoded = try self.decoder.decode(type, from: data)
-                           continuation.yield(decoded)
-                           
-                        default:
+                        if
+                           let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any],
+                           let object = json["object"] as? String,
+                           let eventObject = AssistantStreamEventObject(rawValue: object),
+                           let delta = eventObject.delta
+                        {
+                           switch eventObject {
+                           case .threadMessageDelta:
+                              let decoded = try self.decoder.decode(delta, from: data)
+                              continuation.yield(.threadMessageDelta(decoded))
+                           case .threadRunStepDelta:
+                              let decoded = try self.decoder.decode(delta, from: data)
+                              continuation.yield(.threadRunStepDelta(decoded))
+                           default:
+                              break
+                           }
+                        } else {
                            print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-                           break
                         }
+
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"
@@ -1148,7 +1149,7 @@ extension OpenAIService {
    }
 }
 
-public enum AssistantStreamEvent<T> {
+public enum AssistantStreamEventObject: String {
    
    /// Occurs when a new thread is created.
    /// - data is a thread
@@ -1200,7 +1201,116 @@ public enum AssistantStreamEvent<T> {
    
    /// Occurs when parts of a run step are being streamed.
    /// - data is a run step delta
-   case threadRunStepDelta(T.Type)
+   case threadRunStepDelta = "thread.run.step.delta"
+   
+   /// Occurs when a run step is completed.
+   /// - data is a run step
+   case threadRunStepCompleted
+   
+   /// Occurs when a run step fails.
+   /// - data is a run step
+   case threadRunStepFailed
+   
+   /// Occurs when a run step is cancelled.
+   /// - data is a run step
+   case threadRunStepCancelled
+   
+   /// Occurs when a run step expires.
+   /// - data is a run step
+   case threadRunStepExpired
+   
+   /// Occurs when a message is created.
+   /// - data is a message
+   case threadMessageCreated
+   
+   /// Occurs when a message moves to an in_progress state.
+   /// - data is a message
+   case threadMessageInProgress
+   
+   case threadMessage = "thread.message"
+   
+   /// Occurs when parts of a message are being streamed.
+   /// - data is a message delta
+   case threadMessageDelta = "thread.message.delta"
+   
+   /// Occurs when a message is completed.
+   /// - data is a message
+   case threadMessageCompleted
+   
+   /// Occurs when a message ends before it is completed.
+   /// - data is a message
+   case threadMessageIncomplete
+   
+   /// Occurs when an error occurs. This can happen due to an internal server error or a timeout.
+   /// - data is an error
+   case error
+   
+   /// Occurs when a stream ends.
+   /// - data is [DONE]
+   case done
+   
+   var delta: (any Delta.Type)? {
+      switch self {
+      case .threadMessageDelta: return MessageDeltaObject.self
+      case .threadRunStepDelta: return RunStepDeltaObject.self
+      default: return nil
+      }
+   }
+}
+
+public enum AssistantStreamEvent {
+   
+   /// Occurs when a new thread is created.
+   /// - data is a thread
+   case threadCreated
+   
+   /// Occurs when a new run is created.
+   /// - data is a run
+   case threadRunCreated
+   
+   /// Occurs when a run moves to a queued status.
+   /// - data is a run
+   case threadRunQueued
+   
+   /// Occurs when a run moves to an in_progress status.
+   /// - data is a run
+   case threadRunInProgress
+   
+   /// Occurs when a run moves to a requires_action status.
+   /// - data is a run
+   case threadRunRequiresAction
+   
+   /// Occurs when a run is completed.
+   /// - data is a run
+   case threadRunCompleted
+   
+   /// Occurs when a run fails.
+   /// - data is a run
+   case threadRunFailed
+   
+   /// Occurs when a run moves to a cancelling status.
+   /// - data is a run
+   case threadRunCancelling
+   
+   /// Occurs when a run is cancelled.
+   /// - data is a run
+   case threadRunCancelled
+   
+   /// Occurs when a run expires.
+   /// - data is a run
+   case threadRunExpired
+   
+   /// Occurs when a run step is created.
+   /// - data is a run step
+   case threadRunStepCreated
+   
+   /// Occurs when a run step moves to an in_progress state.
+   /// - data is a run step
+   case threadRunStepInProgress
+   
+   /// Occurs when parts of a run step are being streamed.
+   /// - data is a run step delta
+   case threadRunStepDelta(any Delta)
    
    /// Occurs when a run step is completed.
    /// - data is a run step
@@ -1228,7 +1338,7 @@ public enum AssistantStreamEvent<T> {
    
    /// Occurs when parts of a message are being streamed.
    /// - data is a message delta
-   case threadMessageDelta(T.Type)
+   case threadMessageDelta(any Delta)
    
    /// Occurs when a message is completed.
    /// - data is a message
@@ -1245,5 +1355,6 @@ public enum AssistantStreamEvent<T> {
    /// Occurs when a stream ends.
    /// - data is [DONE]
    case done
+
 }
 

@@ -10,7 +10,7 @@ import Foundation
 /// [MessageDeltaObject](https://platform.openai.com/docs/api-reference/assistants-streaming/message-delta-object)
 ///
 /// Represents a message delta i.e. any changed fields on a message during streaming.
-public struct MessageDeltaObject: Decodable {
+public struct MessageDeltaObject: Delta {
    
    /// The identifier of the message, which can be referenced in API endpoints.
    public let id: String

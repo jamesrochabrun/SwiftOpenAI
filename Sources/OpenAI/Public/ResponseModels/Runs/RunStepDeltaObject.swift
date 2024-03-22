@@ -5,10 +5,19 @@
 //  Created by James Rochabrun on 3/17/24.
 //
 
+
+public protocol Delta: Decodable {
+   associatedtype T
+   var id: String { get }
+   var object: String { get }
+   var delta: T { get }
+}
+
+
 import Foundation
 
 /// Represents a [run step delta](https://platform.openai.com/docs/api-reference/assistants-streaming/run-step-delta-object) i.e. any changed fields on a run step during streaming.
-public struct RunStepDeltaObject: Decodable {
+public struct RunStepDeltaObject: Delta {
    
    /// The identifier of the run step, which can be referenced in API endpoints.
    public let id: String

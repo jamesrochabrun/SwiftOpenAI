@@ -36,7 +36,7 @@ struct DefaultOpenAIService: OpenAIService {
    
    func createTranscription(
       parameters: AudioTranscriptionParameters)
-   async throws -> AudioObject
+      async throws -> AudioObject
    {
       let request = try OpenAIAPI.audio(.transcriptions).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post,  params: parameters)
       return try await fetch(type: AudioObject.self, with: request)
@@ -44,7 +44,7 @@ struct DefaultOpenAIService: OpenAIService {
    
    func createTranslation(
       parameters: AudioTranslationParameters)
-   async throws -> AudioObject
+      async throws -> AudioObject
    {
       let request = try OpenAIAPI.audio(.translations).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(type: AudioObject.self, with: request)
@@ -52,7 +52,7 @@ struct DefaultOpenAIService: OpenAIService {
    
    func createSpeech(
       parameters: AudioSpeechParameters)
-   async throws -> AudioSpeechObject
+      async throws -> AudioSpeechObject
    {
       let request = try OpenAIAPI.audio(.speech).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
       let data = try await fetchAudio(with: request)
@@ -292,7 +292,7 @@ struct DefaultOpenAIService: OpenAIService {
    
    func deleteAssistant(
       id: String)
-   async throws -> AssistantObject.DeletionStatus
+      async throws -> AssistantObject.DeletionStatus
    {
       let request = try OpenAIAPI.assistant(.delete(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: AssistantObject.DeletionStatus.self, with: request)
@@ -439,7 +439,6 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: MessageObject.self, with: request)
    }
-   
    
    func listMessages(
       threadID: String,

@@ -99,12 +99,6 @@ struct AssistantConfigurationDemoView: View {
                try await provider.createAssistant(parameters: parameters)
             }
          }
-         Button("List") {
-            Task {
-               try await provider.listAssistants()
-               showAvatarFlow = true
-            }
-         }
          Button("Delete") {
             Task {
                for assistant in provider.assistants {
@@ -112,7 +106,14 @@ struct AssistantConfigurationDemoView: View {
                }
             }
          }
+         Button("Show Assistants") {
+            Task {
+               try await provider.listAssistants()
+               showAvatarFlow = true
+            }
+         }
       }
+      .buttonStyle(.borderedProminent)
    }
    
    @ViewBuilder

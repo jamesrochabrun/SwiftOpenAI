@@ -20,9 +20,7 @@ public struct AssistantStartThreadScreen: View {
    enum TutorialState {
       case crateThread
       case createMessage(threadID: String)
-      case createRun(message: MessageObject)
-      case streamRun(RunObject)
-
+      case createRunAndStream(message: MessageObject)
    }
    
    init(assistant: AssistantObject, service: OpenAIService) {
@@ -35,7 +33,7 @@ public struct AssistantStartThreadScreen: View {
       ScrollView {
          VStack {
             Text(assistant.name ?? "No name")
-               .font(.largeTitle)
+               .font(.largeTitle).bold()
             switch tutorialStage {
             case .crateThread:
                Button {
@@ -49,9 +47,12 @@ public struct AssistantStartThreadScreen: View {
                   Text("Step 1: Create a thread")
                }
             case .createMessage(let threadID):
-               VStack(alignment: .leading) {
-                  Text("Nice! Thread created id: \(threadID)")
-                  Text("Step 2: Create a message in the text filed and press the button ✈️")
+               VStack(alignment: .leading, spacing: 20) {
+                  Text("Nice! Thread created id:")
+                     .font(.title).bold()
+                  Text("\(threadID)")
+                  Text("Step 2: Create a message in the text field and press the button ✈️").font(.title)
+                  Text("eg: Briefly explain SwiftUI state.")
                   HStack(spacing: 4) {
                      TextField("Enter prompt", text: $firstMessage, axis: .vertical)
                         .textFieldStyle(.roundedBorder)
@@ -60,7 +61,7 @@ public struct AssistantStartThreadScreen: View {
                         Task {
                            try await threadProvider.createMessage(threadID: threadID, parameters: .init(role: .user, content: firstMessage))
                            if let message = threadProvider.message {
-                              tutorialStage = .createRun(message: message)
+                              tutorialStage = .createRunAndStream(message: message)
                            }
                         }
                      } label: {
@@ -68,21 +69,26 @@ public struct AssistantStartThreadScreen: View {
                      }
                   }
                }
-            case .createRun(let message):
-               Text("Nice! Message created with id \(message.threadID)")
-               Button {
-                  Task {
-                     try await threadProvider.createRunAndStreamMessage(threadID: message.threadID, parameters: .init(assistantID: assistant.id, stream: true))
+               .padding()
+            case .createRunAndStream(let message):
+               VStack(spacing: 20) {
+                  Text("Nice! Message created with id:")
+                     .font(.title).bold()
+                  Text("\(message.threadID)")
+                     .font(.body)
+                  Button {
+                     Task {
+                        try await threadProvider.createRunAndStreamMessage(
+                           threadID: message.threadID,
+                           parameters: .init(assistantID: assistant.id, stream: true))
+                     }
+                  } label: {
+                     Text("Step 3: Run and Straem the message")
                   }
-               } label: {
-                  Text("Step 3: Create a Run And stream the message response")
+                  .buttonStyle(.borderedProminent)
+                  Text(threadProvider.messageText)
+                     .font(.body)
                }
-               
-               Text(threadProvider.messageText)
-               
-            case .streamRun(let run):
-               let _ = dump(run)
-               Text("Run")
             }
          }
          .padding()

@@ -922,15 +922,88 @@ extension OpenAIService {
                for try await line in data.lines {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
-//                     #if DEBUG
-//
-//                     #endif
+                     #if DEBUG
+                     print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     #endif
                      do {
-                        if let decoded = try? self.decoder.decode(T.self, from: data) {
-                           print("STREAM SUCCEED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        let decoded = try self.decoder.decode(T.self, from: data)
+                        continuation.yield(decoded)
+                     } catch let DecodingError.keyNotFound(key, context) {
+                        let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+                        let codingPath = "codingPath: \(context.codingPath)"
+                        let debugMessage = debug + codingPath
+                     #if DEBUG
+                        print(debugMessage)
+                     #endif
+                        throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+                     } catch {
+                     #if DEBUG
+                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                     #endif
+                        continuation.finish(throwing: error)
+                     }
+                  }
+               }
+               continuation.finish()
+            } catch let DecodingError.keyNotFound(key, context) {
+               let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
+               let codingPath = "codingPath: \(context.codingPath)"
+               let debugMessage = debug + codingPath
+               #if DEBUG
+               print(debugMessage)
+               #endif
+               throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+            } catch {
+               #if DEBUG
+               print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               #endif
+               continuation.finish(throwing: error)
+            }
+         }
+         continuation.onTermination = { @Sendable _ in
+            task.cancel()
+         }
+      }
+   }
+      
+   public func fetchAssistantStreamEvent<T: Decodable>(
+      _ event: AssistantStreamEvent<T>,
+      with request: URLRequest)
+      async throws -> AsyncThrowingStream<T, Error>
+   {
+      printCurlCommand(request)
+      
+      let (data, response) = try await session.bytes(for: request)
+      guard let httpResponse = response as? HTTPURLResponse else {
+         throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
+      }
+      printHTTPURLResponse(httpResponse)
+      guard httpResponse.statusCode == 200 else {
+         var errorMessage = "status code \(httpResponse.statusCode)"
+         do {
+            let data = try await data.reduce(into: Data()) { data, byte in
+               data.append(byte)
+            }
+            let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
+            errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+         } catch {
+            // If decoding fails, proceed with a general error message
+            errorMessage = "status code \(httpResponse.statusCode)"
+         }
+         throw APIError.responseUnsuccessful(description: errorMessage)
+      }
+      return AsyncThrowingStream { continuation in
+         let task = Task {
+            do {
+               for try await line in data.lines {
+                  if line.hasPrefix("data:") && line != "data: [DONE]",
+                     let data = line.dropFirst(5).data(using: .utf8) {
+                     do {
+                        switch event {
+                        case .threadMessageDelta(let type):
+                           let decoded = try self.decoder.decode(type, from: data)
                            continuation.yield(decoded)
-                        } else {
-                           print("STREAM FAILED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        default: break
                         }
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
@@ -1063,3 +1136,43 @@ extension OpenAIService {
    
 }
 
+public enum AssistantStreamEvent<T>: Event {
+   
+   case threadCreated
+   case threadRunCreated
+   case threadRunQueued
+   case threadRunInProgress
+   case threadRunRequiresAction
+   case threadRunCompleted
+   case threadRunFailed
+   case threadRunCancelling
+   case threadRunCancelled
+   case threadRunExpired
+   case threadRunStepCreated
+   case threadRunStepInProgress
+   case threadRunStepDelta
+   case threadRunStepCompleted
+   case threadRunStepFailed
+   case threadRunStepCancelled
+   case threadRunStepExpired
+   case threadMessageCreated
+   case threadMessageInProgress
+   case threadMessageDelta(T.Type)
+   case threadMessageCompleted
+   case threadMessageIncomplete
+   case error
+   case done
+   
+   var wrapped: T.Type? {
+      switch self {
+      case .threadMessageDelta(let value):
+         return value
+      default: return nil
+      }
+   }
+}
+
+protocol Event {
+   associatedtype T
+   var wrapped: T.Type? { get }
+}

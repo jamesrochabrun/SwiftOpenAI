@@ -98,15 +98,18 @@ public struct AssistantStartThreadScreen: View {
             .font(.title2).bold()
          Text("\(threadID)")
             .font(.body)
+         Text("Step 3: Run and Stream the message")
+            .font(.title2)
+
          Button {
             Task {
                tutorialStage = .showStream(threadID: threadID)
                try await threadProvider.createRunAndStreamMessage(
                   threadID: threadID,
-                  parameters: .init(assistantID: assistant.id, stream: true))
+                  parameters: .init(assistantID: assistant.id))
             }
          } label: {
-            Text("Step 3: Run and Stream the message")
+            Text("Run and Stream the message")
          }
          .buttonStyle(.borderedProminent)
          ChatStreamView(provider: threadProvider, prompt: prompt, assistantName: assistant.name)
@@ -125,7 +128,7 @@ public struct AssistantStartThreadScreen: View {
                threadProvider.toolOuptutMessage = ""
                try await threadProvider.createRunAndStreamMessage(
                   threadID: threadID,
-                  parameters: .init(assistantID: assistant.id, stream: true))
+                  parameters: .init(assistantID: assistant.id))
             }
          } label: {
             Text("Run and Stream the message")

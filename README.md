@@ -2533,12 +2533,19 @@ public struct RunStepDeltaObject: Decodable {
 }
 ```
 
+Usage
+
+[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun) with stream.
+
+
+
+
 ⚠️ To utilize the new stream APIs, first create an assistant and initiate a thread.
 
 Usage
-[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun)
+[Create Run](https://platform.openai.com/docs/api-reference/runs/createRun) with stream.
 
-The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), you can decide which one you need for your implememntation. e.g: This is how you can access mesage delta amd run step delta objects.
+The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), You can decide which one you need for your implementation. For example, this is how you can access message delta and run step delta objects
 
 ```swift
 let assistantID = "asst_abc123""

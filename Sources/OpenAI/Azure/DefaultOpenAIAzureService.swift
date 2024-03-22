@@ -253,11 +253,25 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func createRunAndStreamMessage(
+   public func createThreadAndRunStream(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func createRunStream(
       threadID: String,
       parameters: RunParameter)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func submitToolOutputsToRunStream(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
 }

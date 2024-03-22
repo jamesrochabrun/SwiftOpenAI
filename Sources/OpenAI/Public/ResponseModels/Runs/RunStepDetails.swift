@@ -140,7 +140,7 @@ public enum RunStepToolCall: Codable {
 // MARK: CodeInterpreterToolCall
 
 public struct CodeInterpreterToolCall: Codable {
-   public var input: String
+   public var input: String?
    public let outputs: [CodeInterpreterOutput]?
    
    enum CodingKeys: String, CodingKey {
@@ -149,9 +149,9 @@ public struct CodeInterpreterToolCall: Codable {
    
    public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
-      input = try container.decode(String.self, forKey: .input)
+      input = try container.decodeIfPresent(String.self, forKey: .input)
       // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"
-      input = input.replacingOccurrences(of: "\\n", with: "\n")
+      input = input?.replacingOccurrences(of: "\\n", with: "\n")
       outputs = try container.decodeIfPresent([CodeInterpreterOutput].self, forKey: .outputs)
    }
    
@@ -159,7 +159,7 @@ public struct CodeInterpreterToolCall: Codable {
       var container = encoder.container(keyedBy: CodingKeys.self)
       
       // Revert the newline characters to their escaped form
-      let encodedInput = input.replacingOccurrences(of: "\n", with: "\\n")
+      let encodedInput = input?.replacingOccurrences(of: "\n", with: "\\n")
       try container.encode(encodedInput, forKey: .input)
       try container.encode(outputs, forKey: .outputs)
    }

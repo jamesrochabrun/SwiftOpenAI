@@ -22,6 +22,8 @@ public struct RunParameter: Encodable {
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
+   var stream: Bool = false
    
    enum CodingKeys: String, CodingKey {
       case assistantID = "assistant_id"
@@ -30,6 +32,7 @@ public struct RunParameter: Encodable {
       case additionalInstructions = "additional_instructions"
       case tools
       case metadata
+      case stream
    }
    
    public init(

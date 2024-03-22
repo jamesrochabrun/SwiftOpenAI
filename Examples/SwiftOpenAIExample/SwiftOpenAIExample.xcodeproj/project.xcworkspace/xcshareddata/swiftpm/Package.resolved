@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftOpenAI",
       "state" : {
-        "branch" : "main",
-        "revision" : "d7db8b479dcc99b9f257718b709e72f37817e8e3"
+        "branch" : "jroch-assistants-stream",
+        "revision" : "6bf320320d9bf9c0881f12da5fd2f891485bb5d5"
       }
     }
   ],

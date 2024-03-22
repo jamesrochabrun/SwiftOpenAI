@@ -1041,6 +1041,7 @@ extension OpenAIService {
                            #if DEBUG
                            print("DEBUG EVENT \(eventObject.rawValue) IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            #endif
+                              break
                            }
                         } else {
                            #if DEBUG

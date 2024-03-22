@@ -32,19 +32,22 @@ public struct RunStepDetails: Codable {
    }
 
    public struct ToolCall: Codable {
-      public let id: String
+      
+      public let index: Int?
+      public let id: String?
       public let type: String
       public let toolCall: RunStepToolCall
       
       enum CodingKeys: String, CodingKey {
-         case id, type
+         case index, id, type
          case codeInterpreter = "code_interpreter"
          case retrieval, function
       }
       
       public init(from decoder: Decoder) throws {
          let container = try decoder.container(keyedBy: CodingKeys.self)
-         id = try container.decode(String.self, forKey: .id)
+         index = try container.decodeIfPresent(Int.self, forKey: .index)
+         id = try container.decodeIfPresent(String.self, forKey: .id)
          type = try container.decode(String.self, forKey: .type)
          
          // Based on the type, decode the corresponding tool call

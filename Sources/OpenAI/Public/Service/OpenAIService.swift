@@ -967,7 +967,6 @@ extension OpenAIService {
    }
    
    public func fetchAssistantStreamEvents(
-//      _ events: [AssistantStreamEvent<T>],
       with request: URLRequest)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
@@ -1002,23 +1001,22 @@ extension OpenAIService {
                         if
                            let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any],
                            let object = json["object"] as? String,
-                           let eventObject = AssistantStreamEventObject(rawValue: object),
-                           let delta = eventObject.delta
+                           let eventObject = AssistantStreamEventObject(rawValue: object)
                         {
                            switch eventObject {
                            case .threadMessageDelta:
-                              let decoded = try self.decoder.decode(delta, from: data)
+                              let decoded = try self.decoder.decode(MessageDeltaObject.self, from: data)
                               continuation.yield(.threadMessageDelta(decoded))
                            case .threadRunStepDelta:
-                              let decoded = try self.decoder.decode(delta, from: data)
+                              let decoded = try self.decoder.decode(RunStepDeltaObject.self, from: data)
                               continuation.yield(.threadRunStepDelta(decoded))
+                              break
                            default:
                               break
                            }
                         } else {
                            print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                         }
-
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"
@@ -1248,14 +1246,6 @@ public enum AssistantStreamEventObject: String {
    /// Occurs when a stream ends.
    /// - data is [DONE]
    case done
-   
-   var delta: (any Delta.Type)? {
-      switch self {
-      case .threadMessageDelta: return MessageDeltaObject.self
-      case .threadRunStepDelta: return RunStepDeltaObject.self
-      default: return nil
-      }
-   }
 }
 
 public enum AssistantStreamEvent {
@@ -1310,7 +1300,7 @@ public enum AssistantStreamEvent {
    
    /// Occurs when parts of a run step are being streamed.
    /// - data is a run step delta
-   case threadRunStepDelta(any Delta)
+   case threadRunStepDelta(RunStepDeltaObject)
    
    /// Occurs when a run step is completed.
    /// - data is a run step
@@ -1338,7 +1328,7 @@ public enum AssistantStreamEvent {
    
    /// Occurs when parts of a message are being streamed.
    /// - data is a message delta
-   case threadMessageDelta(any Delta)
+   case threadMessageDelta(MessageDeltaObject)
    
    /// Occurs when a message is completed.
    /// - data is a message

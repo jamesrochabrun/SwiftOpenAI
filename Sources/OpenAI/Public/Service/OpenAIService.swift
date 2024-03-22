@@ -739,7 +739,7 @@ public protocol OpenAIService {
    ///
    /// - Parameter threadID: The ID of the thread to run.
    /// - Parameter parameters: The parameters needed to build a Run.
-   /// - Returns: A [run](https://platform.openai.com/docs/api-reference/runs/object) object.
+   /// - Returns: A [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) object.
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createRun).
@@ -1012,13 +1012,12 @@ extension OpenAIService {
                               continuation.yield(.threadRunStepDelta(decoded))
                            default:
                            #if DEBUG
-                           print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           print("DEBUG EVENT \(eventObject.rawValue) IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            #endif
-                              break
                            }
                         } else {
                            #if DEBUG
-                           print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           print("DEBUG EVENT DECODE IGNORED= \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            #endif
                         }
                      } catch let DecodingError.keyNotFound(key, context) {

@@ -628,7 +628,9 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: RunParameter)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
-      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      var runParameters = parameters
+      runParameters.stream = true
+      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBeta)
       return try await fetchAssistantStreamEvents(with: request)
    }
 }

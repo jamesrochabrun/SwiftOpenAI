@@ -2249,7 +2249,7 @@ public struct RunParameter: Encodable {
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
    /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
-   let stream: Bool
+   var stream: Bool
 }
 ```
 [Modify a Run](https://platform.openai.com/docs/api-reference/runs/modifyRun)

@@ -6,7 +6,11 @@
       "location" : "https://github.com/jamesrochabrun/SwiftOpenAI",
       "state" : {
         "branch" : "jroch-assistants-stream",
+<<<<<<< HEAD
         "revision" : "6bf320320d9bf9c0881f12da5fd2f891485bb5d5"
+=======
+        "revision" : "6a597f6c4f29258af4f32af7aacf92b206d271b3"
+>>>>>>> 215e2fe (Updating comments in API)
       }
     }
   ],

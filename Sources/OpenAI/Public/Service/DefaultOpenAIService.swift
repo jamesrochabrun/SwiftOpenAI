@@ -8,10 +8,10 @@
 import Foundation
 
 struct DefaultOpenAIService: OpenAIService {
-
+   
    let session: URLSession
    let decoder: JSONDecoder
-
+   
    private let sessionID = UUID().uuidString
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
    private let apiKey: Authorization
@@ -19,7 +19,7 @@ struct DefaultOpenAIService: OpenAIService {
    private let organizationID: String?
    
    private static let assistantsBeta = "assistants=v1"
-      
+   
    init(
       apiKey: String,
       organizationID: String? = nil,
@@ -92,67 +92,67 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    // MARK: Fine-tuning
-    
-    func createFineTuningJob(
-       parameters: FineTuningJobParameters)
-       async throws -> FineTuningJobObject
-    {
-       let request = try OpenAIAPI.fineTuning(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-       return try await fetch(type: FineTuningJobObject.self, with: request)
-    }
-       
-    func listFineTuningJobs(
-       after lastJobID: String? = nil,
-       limit: Int? = nil)
-       async throws -> OpenAIResponse<FineTuningJobObject>
-    {
-       var queryItems: [URLQueryItem] = []
-       if let lastJobID, let limit {
-          queryItems = [.init(name: "after", value: lastJobID), .init(name: "limit", value: "\(limit)")]
-       } else if let lastJobID {
-          queryItems = [.init(name: "after", value: lastJobID)]
-       } else if let limit {
-          queryItems = [.init(name: "limit", value: "\(limit)")]
-       }
-       
-       let request = try OpenAIAPI.fineTuning(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
-       return try await fetch(type: OpenAIResponse<FineTuningJobObject>.self, with: request)
-    }
-    
-    func retrieveFineTuningJob(
-       id: String)
-       async throws -> FineTuningJobObject
-    {
-       let request = try OpenAIAPI.fineTuning(.retrieve(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-       return try await fetch(type: FineTuningJobObject.self, with: request)
-    }
-
-    func cancelFineTuningJobWith(
-       id: String)
-       async throws -> FineTuningJobObject
-    {
-       let request = try OpenAIAPI.fineTuning(.cancel(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post)
-       return try await fetch(type: FineTuningJobObject.self, with: request)
-    }
-
-    func listFineTuningEventsForJobWith(
-       id: String,
-       after lastEventId: String? = nil,
-       limit: Int? = nil)
-       async throws -> OpenAIResponse<FineTuningJobEventObject>
-    {
-       var queryItems: [URLQueryItem] = []
-       if let lastEventId, let limit {
-          queryItems = [.init(name: "after", value: lastEventId), .init(name: "limit", value: "\(limit)")]
-       } else if let lastEventId {
-          queryItems = [.init(name: "after", value: lastEventId)]
-       } else if let limit {
-          queryItems = [.init(name: "limit", value: "\(limit)")]
-       }
-       let request = try OpenAIAPI.fineTuning(.events(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
-       return try await fetch(type: OpenAIResponse<FineTuningJobEventObject>.self, with: request)
-    }
-    
+   
+   func createFineTuningJob(
+      parameters: FineTuningJobParameters)
+      async throws -> FineTuningJobObject
+   {
+      let request = try OpenAIAPI.fineTuning(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(type: FineTuningJobObject.self, with: request)
+   }
+   
+   func listFineTuningJobs(
+      after lastJobID: String? = nil,
+      limit: Int? = nil)
+      async throws -> OpenAIResponse<FineTuningJobObject>
+   {
+      var queryItems: [URLQueryItem] = []
+      if let lastJobID, let limit {
+         queryItems = [.init(name: "after", value: lastJobID), .init(name: "limit", value: "\(limit)")]
+      } else if let lastJobID {
+         queryItems = [.init(name: "after", value: lastJobID)]
+      } else if let limit {
+         queryItems = [.init(name: "limit", value: "\(limit)")]
+      }
+      
+      let request = try OpenAIAPI.fineTuning(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      return try await fetch(type: OpenAIResponse<FineTuningJobObject>.self, with: request)
+   }
+   
+   func retrieveFineTuningJob(
+      id: String)
+      async throws -> FineTuningJobObject
+   {
+      let request = try OpenAIAPI.fineTuning(.retrieve(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
+      return try await fetch(type: FineTuningJobObject.self, with: request)
+   }
+   
+   func cancelFineTuningJobWith(
+      id: String)
+      async throws -> FineTuningJobObject
+   {
+      let request = try OpenAIAPI.fineTuning(.cancel(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post)
+      return try await fetch(type: FineTuningJobObject.self, with: request)
+   }
+   
+   func listFineTuningEventsForJobWith(
+      id: String,
+      after lastEventId: String? = nil,
+      limit: Int? = nil)
+      async throws -> OpenAIResponse<FineTuningJobEventObject>
+   {
+      var queryItems: [URLQueryItem] = []
+      if let lastEventId, let limit {
+         queryItems = [.init(name: "after", value: lastEventId), .init(name: "limit", value: "\(limit)")]
+      } else if let lastEventId {
+         queryItems = [.init(name: "after", value: lastEventId)]
+      } else if let limit {
+         queryItems = [.init(name: "limit", value: "\(limit)")]
+      }
+      let request = try OpenAIAPI.fineTuning(.events(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
+      return try await fetch(type: OpenAIResponse<FineTuningJobEventObject>.self, with: request)
+   }
+   
    // MARK: Files
    
    func listFiles()
@@ -203,7 +203,7 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.images(.generations).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(type: OpenAIResponse<ImageObject>.self,  with: request)
    }
-
+   
    func editImage(
       parameters: ImageEditParameters)
       async throws -> OpenAIResponse<ImageObject>
@@ -264,7 +264,7 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    // MARK: Assistants [BETA]
-
+   
    func createAssistant(
       parameters: AssistantParameters)
       async throws -> AssistantObject
@@ -440,7 +440,6 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: MessageObject.self, with: request)
    }
    
-   
    func listMessages(
       threadID: String,
       limit: Int? = nil,
@@ -467,12 +466,12 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    // MARK: Message File [BETA]
-
+   
    func retrieveMessageFile(
       threadID: String,
       messageID: String,
       fileID: String)
-   async throws -> MessageFileObject
+      async throws -> MessageFileObject
    {
       let request = try OpenAIAPI.messageFile(.retrieve(threadID: threadID, messageID: messageID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: MessageFileObject.self, with: request)
@@ -582,11 +581,10 @@ struct DefaultOpenAIService: OpenAIService {
    {
       let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(type: RunObject.self, with: request)
-      
    }
    
    // MARK: Run Step [BETA]
-
+   
    func retrieveRunstep(
       threadID: String,
       runID: String,
@@ -623,7 +621,7 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
    }
    
-   func createRunAndStreamMessage(
+   func createRunStream(
       threadID: String,
       parameters: RunParameter)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
@@ -631,6 +629,27 @@ struct DefaultOpenAIService: OpenAIService {
       var runParameters = parameters
       runParameters.stream = true
       let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBeta)
+      return try await fetchAssistantStreamEvents(with: request)
+   }
+   
+   func createThreadAndRunStream(
+      parameters: CreateThreadAndRunParameter)
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
+      var runParameters = parameters
+      runParameters.stream = true
+      let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetchAssistantStreamEvents(with: request)
+   }
+   
+   func submitToolOutputsToRunStream(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   {
+      var runToolsOutputParameter = parameters
+      runToolsOutputParameter.stream = true
+      let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
       return try await fetchAssistantStreamEvents(with: request)
    }
 }

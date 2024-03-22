@@ -2533,12 +2533,12 @@ public struct RunStepDeltaObject: Decodable {
 }
 ```
 
-⚠️ To utilize the new stream APIs, first create an assistant and initiate a thread.
+⚠️ To utilize the `createRunAndStreamMessage`, first create an assistant and initiate a thread.
 
 Usage
-[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun)
+[Create Run](https://platform.openai.com/docs/api-reference/runs/createRun) with stream.
 
-The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), you can decide which one you need for your implememntation. e.g: This is how you can access mesage delta amd run step delta objects.
+The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), You can decide which one you need for your implementation. For example, this is how you can access message delta and run step delta objects
 
 ```swift
 let assistantID = "asst_abc123""
@@ -2577,6 +2577,42 @@ let stream = try await service.createRunAndStreamMessage(threadID: threadID, par
 ```
 
 You can go to the [Examples folder](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample) in this package, navigate to the 'Configure Assistants' tab, create an assistant, and follow the subsequent steps.
+
+### Stream support has also been added to:
+
+[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun):
+
+```swift
+   /// Creates a thread and run with stream enabled.
+   ///
+   /// - Parameter parameters: The parameters needed to create a thread and run.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
+   func createThreadAndRunStream(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+```
+
+[Submit Tool Outputs](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs):
+
+```swift
+   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request. Stream enabled
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
+   /// - Parameter runID: The ID of the run that requires the tool output submission.
+   /// - Parameter parameters: The parameters needed for the run tools output.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
+   func submitToolOutputsToRunStream(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+```
 
 ## Azure OpenAI
 

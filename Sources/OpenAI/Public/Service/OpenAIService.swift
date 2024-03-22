@@ -735,17 +735,44 @@ public protocol OpenAIService {
       before: String?)
    async throws -> OpenAIResponse<RunStepObject>
    
-   /// Create a run and streams a message
+   /// Creates a thread and run with stream enabled.
+   ///
+   /// - Parameter parameters: The parameters needed to create a thread and run.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
+   func createThreadAndRunStream(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   
+   /// Create a run with stream enabled.
    ///
    /// - Parameter threadID: The ID of the thread to run.
    /// - Parameter parameters: The parameters needed to build a Run.
-   /// - Returns: A [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) object.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createRun).
-   func createRunAndStreamMessage(
+   func createRunStream(
       threadID: String,
       parameters: RunParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   
+   
+   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request. Stream enabled
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
+   /// - Parameter runID: The ID of the run that requires the tool output submission.
+   /// - Parameter parameters: The parameters needed for the run tools output.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
+   func submitToolOutputsToRunStream(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
 }
 

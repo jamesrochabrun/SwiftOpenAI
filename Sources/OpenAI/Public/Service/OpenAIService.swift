@@ -965,7 +965,7 @@ extension OpenAIService {
          }
       }
    }
-      
+   
    public func fetchAssistantStreamEvent<T: Decodable>(
       _ event: AssistantStreamEvent<T>,
       with request: URLRequest)
@@ -1006,7 +1006,15 @@ extension OpenAIService {
                         #endif
                            let decoded = try self.decoder.decode(type, from: data)
                            continuation.yield(decoded)
-                        default: 
+                           
+                        case .threadRunStepDelta(let type) where (try? self.decoder.decode(type, from: data)) != nil:
+                        #if DEBUG
+                        print("DEBUG ASSISTANT EVENT DECODE SUCCESS = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        #endif
+                           let decoded = try self.decoder.decode(type, from: data)
+                           continuation.yield(decoded)
+                           
+                        default:
                            print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            break
                         }
@@ -1140,43 +1148,102 @@ extension OpenAIService {
    }
 }
 
-public enum AssistantStreamEvent<T>: Event {
+public enum AssistantStreamEvent<T> {
    
+   /// Occurs when a new thread is created.
+   /// - data is a thread
    case threadCreated
-   case threadRunCreated
-   case threadRunQueued
-   case threadRunInProgress
-   case threadRunRequiresAction
-   case threadRunCompleted
-   case threadRunFailed
-   case threadRunCancelling
-   case threadRunCancelled
-   case threadRunExpired
-   case threadRunStepCreated
-   case threadRunStepInProgress
-   case threadRunStepDelta
-   case threadRunStepCompleted
-   case threadRunStepFailed
-   case threadRunStepCancelled
-   case threadRunStepExpired
-   case threadMessageCreated
-   case threadMessageInProgress
-   case threadMessageDelta(T.Type)
-   case threadMessageCompleted
-   case threadMessageIncomplete
-   case error
-   case done
    
-   var wrapped: T.Type? {
-      switch self {
-      case .threadMessageDelta(let value):
-         return value
-      default: return nil
-      }
-   }
+   /// Occurs when a new run is created.
+   /// - data is a run
+   case threadRunCreated
+   
+   /// Occurs when a run moves to a queued status.
+   /// - data is a run
+   case threadRunQueued
+   
+   /// Occurs when a run moves to an in_progress status.
+   /// - data is a run
+   case threadRunInProgress
+   
+   /// Occurs when a run moves to a requires_action status.
+   /// - data is a run
+   case threadRunRequiresAction
+   
+   /// Occurs when a run is completed.
+   /// - data is a run
+   case threadRunCompleted
+   
+   /// Occurs when a run fails.
+   /// - data is a run
+   case threadRunFailed
+   
+   /// Occurs when a run moves to a cancelling status.
+   /// - data is a run
+   case threadRunCancelling
+   
+   /// Occurs when a run is cancelled.
+   /// - data is a run
+   case threadRunCancelled
+   
+   /// Occurs when a run expires.
+   /// - data is a run
+   case threadRunExpired
+   
+   /// Occurs when a run step is created.
+   /// - data is a run step
+   case threadRunStepCreated
+   
+   /// Occurs when a run step moves to an in_progress state.
+   /// - data is a run step
+   case threadRunStepInProgress
+   
+   /// Occurs when parts of a run step are being streamed.
+   /// - data is a run step delta
+   case threadRunStepDelta(T.Type)
+   
+   /// Occurs when a run step is completed.
+   /// - data is a run step
+   case threadRunStepCompleted
+   
+   /// Occurs when a run step fails.
+   /// - data is a run step
+   case threadRunStepFailed
+   
+   /// Occurs when a run step is cancelled.
+   /// - data is a run step
+   case threadRunStepCancelled
+   
+   /// Occurs when a run step expires.
+   /// - data is a run step
+   case threadRunStepExpired
+   
+   /// Occurs when a message is created.
+   /// - data is a message
+   case threadMessageCreated
+   
+   /// Occurs when a message moves to an in_progress state.
+   /// - data is a message
+   case threadMessageInProgress
+   
+   /// Occurs when parts of a message are being streamed.
+   /// - data is a message delta
+   case threadMessageDelta(T.Type)
+   
+   /// Occurs when a message is completed.
+   /// - data is a message
+   case threadMessageCompleted
+   
+   /// Occurs when a message ends before it is completed.
+   /// - data is a message
+   case threadMessageIncomplete
+   
+   /// Occurs when an error occurs. This can happen due to an internal server error or a timeout.
+   /// - data is an error
+   case error
+   
+   /// Occurs when a stream ends.
+   /// - data is [DONE]
+   case done
 }
 
-protocol Event {
-   associatedtype T
-   var wrapped: T.Type? { get }
-}

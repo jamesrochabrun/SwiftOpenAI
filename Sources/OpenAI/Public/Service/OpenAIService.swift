@@ -1000,7 +1000,7 @@ extension OpenAIService {
                      let data = line.dropFirst(5).data(using: .utf8) {
                      do {
                         switch event {
-                        case .threadMessageDelta(let type):
+                        case .threadMessageDelta(let type) where (try? self.decoder.decode(type, from: data)) != nil:
                            let decoded = try self.decoder.decode(type, from: data)
                            continuation.yield(decoded)
                         default: break

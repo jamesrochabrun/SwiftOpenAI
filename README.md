@@ -2533,6 +2533,51 @@ public struct RunStepDeltaObject: Decodable {
 }
 ```
 
+⚠️ To utilize the new stream APIs, first create an assistant and initiate a thread.
+
+Usage
+[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun)
+
+The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), you can decide which one you need for your implememntation. e.g: This is how you can access mesage delta amd run step delta objects.
+
+```swift
+let assistantID = "asst_abc123""
+let threadID = "thread_abc123"
+let messageParameter = MessageParameter(role: .user, content: "Tell me the square root of 1235")
+let message = try await service.createMessage(threadID: threadID, parameters: messageParameter)
+let runParameters = RunParameter(assistantID: assistantID)
+let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: runParameters)
+
+         for try await result in stream {
+            switch result {
+            case .threadMessageDelta(let messageDelta):
+               let content = messageDelta.delta.content.first
+               switch content {
+               case .imageFile, nil:
+                  break
+               case .text(let textContent):
+                  print(textContent.text.value) // this will print the streamed response for a message.
+               }
+               
+            case .threadRunStepDelta(let runStepDelta):
+               if let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall {
+                  switch toolCall {
+                  case .codeInterpreterToolCall(let toolCall):
+                     print(toolCall.input ?? "") // this will print the streamed response for code interpreter tool call.
+                  case .retrieveToolCall(let toolCall):
+                     print("Retrieve tool call")
+                  case .functionToolCall(let toolCall):
+                     print("Function tool call")
+                  case nil:
+                     break
+                  }
+               }
+            }
+         }
+```
+
+You can go to the [Examples folder](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample) in this package, navigate to the 'Configure Assistants' tab, create an assistant, and follow the subsequent steps.
+
 ## Azure OpenAI
 
 This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.

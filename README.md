@@ -15,11 +15,12 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Azure OpenAI](#azure-openAI)
 - [Collaboration](#collaboration)
 
 ## Description
 
-`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints.
+`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints, now with added support for Azure and Assistant stream APIs. 
 
 ### OpenAI ENDPOINTS
 
@@ -46,10 +47,9 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Runs](#runs)
    - [Run Step object](#run-step-object)
    - [Run Step details](#run-step-details)
-- [Streaming](#streaming)
+- [Assistants Streaming](#assistants-streaming)
    - [Message Delta Object](#message-delta-object)
    - [Run Step Delta Object](#run-step-delta-object)
-### [Azure OpenAI](#azure-openAI)
 
 ## Getting an API Key
 
@@ -2460,9 +2460,15 @@ public struct RunStepDetails: Codable {
 }
 ```
 
-### Streaming
+### Assistants Streaming
 
-Assistants API [streaming.](https://platform.openai.com/docs/assistants/overview?context=with-streaming))
+Assistants API [streaming.](https://platform.openai.com/docs/api-reference/assistants-streaming)
+
+Stream the result of executing a Run or resuming a Run after submitting tool outputs.
+
+You can stream events from the [Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun), [Create Run](https://platform.openai.com/docs/api-reference/runs/createRun), and [Submit Tool Outputs](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) endpoints by passing "stream": true. The response will be a Server-Sent events stream.
+
+OpenAI Python tutorial(https://platform.openai.com/docs/assistants/overview?context=with-streaming))
 
 ### Message Delta Object
 
@@ -2527,7 +2533,7 @@ public struct RunStepDeltaObject: Decodable {
 }
 ```
 
-### Azure OpenAI
+## Azure OpenAI
 
 This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.
 
@@ -2564,7 +2570,6 @@ let parameters = ChatCompletionParameters(
                      model: .custom("DEPLOYMENT_NAME") /// The deployment name you chose when you deployed the model. e.g: "gpt-35-turbo-0613"
 let completionObject = try await service.startChat(parameters: parameters)
 ```
-
 
 ### Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

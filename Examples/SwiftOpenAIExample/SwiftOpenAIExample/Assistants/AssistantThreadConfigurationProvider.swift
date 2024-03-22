@@ -54,7 +54,7 @@ import SwiftOpenAI
       async throws
    {
       do {
-         let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: parameters)
+         let stream = try await service.createRunStream(threadID: threadID, parameters: parameters)
          for try await result in stream {
             
             switch result {

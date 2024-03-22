@@ -1001,9 +1001,14 @@ extension OpenAIService {
                      do {
                         switch event {
                         case .threadMessageDelta(let type) where (try? self.decoder.decode(type, from: data)) != nil:
+                        #if DEBUG
+                        print("DEBUG ASSISTANT EVENT DECODE SUCCESS = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        #endif
                            let decoded = try self.decoder.decode(type, from: data)
                            continuation.yield(decoded)
-                        default: break
+                        default: 
+                           print("DEBUG ASSISTANT EVENT DECODE FAILURE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           break
                         }
                      } catch let DecodingError.keyNotFound(key, context) {
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
@@ -1133,7 +1138,6 @@ extension OpenAIService {
          return "INVALID TOKEN LENGTH"
       }
    }
-   
 }
 
 public enum AssistantStreamEvent<T>: Event {

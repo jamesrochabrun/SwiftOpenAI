@@ -141,7 +141,7 @@ public enum RunStepToolCall: Codable {
 
 public struct CodeInterpreterToolCall: Codable {
    public var input: String
-   public let outputs: [CodeInterpreterOutput]
+   public let outputs: [CodeInterpreterOutput]?
    
    enum CodingKeys: String, CodingKey {
       case input, outputs
@@ -152,7 +152,7 @@ public struct CodeInterpreterToolCall: Codable {
       input = try container.decode(String.self, forKey: .input)
       // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"
       input = input.replacingOccurrences(of: "\\n", with: "\n")
-      outputs = try container.decode([CodeInterpreterOutput].self, forKey: .outputs)
+      outputs = try container.decodeIfPresent([CodeInterpreterOutput].self, forKey: .outputs)
    }
    
    public func encode(to encoder: Encoder) throws {

@@ -152,11 +152,11 @@ public struct FileCitation: Codable {
    public let type: String
    /// The text in the message content that needs to be replaced.
    public let text: String
-   public let fileCitation: FileCitation
+   public let fileCitation: FileCitationDetails
    public let startIndex: Int
    public let endIndex: Int
    
-   public struct FileCitation: Codable {
+   public struct FileCitationDetails: Codable {
       
       /// The ID of the specific File the citation is from.
       public let fileID: String
@@ -187,11 +187,11 @@ public struct FilePath: Codable {
    public let type: String
    /// The text in the message content that needs to be replaced.
    public let text: String
-   public let filePath: FilePath
+   public let filePath: FilePathDetails
    public let startIndex: Int
    public let endIndex: Int
    
-   public struct FilePath: Codable {
+   public struct FilePathDetails: Codable {
       /// The ID of the file that was generated.
       public let fileID: String
       

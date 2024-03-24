@@ -38,7 +38,6 @@ struct AssistantConfigurationDemoView: View {
    @State private var showAvatarFlow = false
    private let service: OpenAIService
 
-
    var isCodeInterpreterOn: Binding<Bool> {
        Binding(
            get: {

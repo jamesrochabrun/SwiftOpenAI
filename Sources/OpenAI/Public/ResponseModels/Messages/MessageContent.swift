@@ -153,7 +153,7 @@ public struct FileCitation: Codable {
    /// The text in the message content that needs to be replaced.
    public let text: String
    public let fileCitation: FileCitation
-   public  let startIndex: Int
+   public let startIndex: Int
    public let endIndex: Int
    
    public struct FileCitation: Codable {

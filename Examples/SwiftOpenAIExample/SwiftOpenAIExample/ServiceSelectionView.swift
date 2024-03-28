@@ -1,0 +1,47 @@
+//
+//  ServiceSelectionView.swift
+//  SwiftOpenAIExample
+//
+//  Created by Lou Zell on 3/27/24.
+//
+
+import SwiftUI
+
+struct ServiceSelectionView: View {
+
+   var body: some View {
+      NavigationStack {
+         List {
+            Section("Select Service") {
+               NavigationLink(destination: ApiKeyIntroView()) {
+                  VStack(alignment: .leading) {
+                     Text("Default OpenAI Service")
+                        .padding(.bottom, 10)
+                     Group {
+                        Text("Use this service to test SwiftOpenAI functionality by providing your own OpenAI key.")
+                     }
+                     .font(.caption)
+                     .fontWeight(.light)
+                  }
+               }
+
+               NavigationLink(destination: AIProxyIntroView()) {
+                  VStack(alignment: .leading) {
+                     Text("AI Proxy Service")
+                        .padding(.bottom, 10)
+                     Group {
+                        Text("Use this service to test SwiftOpenAI functionality with requests proxied through AI Proxy for key protection.")
+                     }
+                     .font(.caption)
+                     .fontWeight(.light)
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+
+#Preview {
+    ServiceSelectionView()
+}

@@ -8,7 +8,9 @@
 import Foundation
 import OSLog
 import DeviceCheck
+#if canImport(UIKit)
 import UIKit
+#endif
 
 private let aiproxyLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "UnknownApp",
                                    category: "SwiftOpenAI+AIProxy")
@@ -124,5 +126,9 @@ private func getDeviceCheckToken() async -> String? {
 
 /// Get a unique ID for this user (scoped to the current vendor, and not personally identifiable):
 private func getVendorID() -> String? {
+#if canImport(UIKit)
     return UIDevice.current.identifierForVendor?.uuidString
+#else
+    return nil
+#endif
 }

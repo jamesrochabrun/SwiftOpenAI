@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0DEE5DC12BB40643004894AD /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0DEE5DC02BB40643004894AD /* SwiftOpenAI */; };
+		0DF957842BB53BEF00DD2013 /* ServiceSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF957832BB53BEF00DD2013 /* ServiceSelectionView.swift */; };
+		0DF957862BB543F100DD2013 /* AIProxyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF957852BB543F100DD2013 /* AIProxyIntroView.swift */; };
 		7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */; };
 		7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */; };
 		7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */; };
@@ -77,6 +79,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0DF957832BB53BEF00DD2013 /* ServiceSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSelectionView.swift; sourceTree = "<group>"; };
+		0DF957852BB543F100DD2013 /* AIProxyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIProxyIntroView.swift; sourceTree = "<group>"; };
 		7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationDemoView.swift; sourceTree = "<group>"; };
 		7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantsListDemoView.swift; sourceTree = "<group>"; };
@@ -331,7 +335,9 @@
 				7B436B972AE25045003CE281 /* Utilities */,
 				7BBE7E922AFCC9300096A693 /* Vision */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
+				0DF957852BB543F100DD2013 /* AIProxyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
+				0DF957832BB53BEF00DD2013 /* ServiceSelectionView.swift */,
 				7BA788D02AE23A49008825D5 /* Assets.xcassets */,
 				7BA788D22AE23A49008825D5 /* SwiftOpenAIExample.entitlements */,
 				7BA788D32AE23A49008825D5 /* Preview Content */,
@@ -557,6 +563,7 @@
 				7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */,
 				7BBE7EA52B02E8A70096A693 /* Sizes.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
+				0DF957862BB543F100DD2013 /* AIProxyIntroView.swift in Sources */,
 				7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
@@ -571,6 +578,7 @@
 				7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */,
 				7B436BB22AE79370003CE281 /* FilesProvider.swift in Sources */,
 				7BBE7E942AFCC9640096A693 /* ChatVisionProvider.swift in Sources */,
+				0DF957842BB53BEF00DD2013 /* ServiceSelectionView.swift in Sources */,
 				7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */,
 				7B436BB02AE79369003CE281 /* FilesDemoView.swift in Sources */,
 				7BBE7E912AFCA52A0096A693 /* ChatVisionDemoView.swift in Sources */,

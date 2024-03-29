@@ -15,12 +15,13 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Azure OpenAI](#azure-openAI)
+- [Azure OpenAI](#azure-openai)
+- [AIProxy](#aiproxy)
 - [Collaboration](#collaboration)
 
 ## Description
 
-`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints, now with added support for Azure and Assistant stream APIs. 
+`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints, now with added support for Azure, AIProxy, and Assistant stream APIs.
 
 ### OpenAI ENDPOINTS
 
@@ -62,6 +63,17 @@ To interact with OpenAI services, you'll need an API key. Follow these steps to 
 3. Navigate to the [API key page](https://platform.openai.com/account/api-keys) and follow the instructions to generate a new API key.
 
 For more information, consult OpenAI's [official documentation](https://platform.openai.com/docs/).
+
+⚠️  Please take precaution to keep your API key secure per [OpenAI's guidance](https://platform.openai.com/docs/api-reference/authentication):
+
+> Remember that your API key is a secret! Do not share it with others or expose
+> it in any client-side code (browsers, apps). Production requests must be
+> routed through your own backend server where your API key can be securely
+> loaded from an environment variable or key management service.
+
+SwiftOpenAI has built-in support for AIProxy, which is a backend for AI apps, to satisfy this requirement.
+To configure AIProxy, see the instructions [here](#aiproxy).
+
 
 ## Installation
 
@@ -1021,11 +1033,11 @@ let content: ChatCompletionParameters.Message.ContentType = .text(prompt)
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: content)], model: .gpt41106Preview, tools: [tool])
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
-For more details about how to also uploadin base 64 encoded images in iOS check the [ChatFunctionsCalllDemo](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatFunctionsCall) demo on the Examples section of this package.
+For more details about how to also uploading base 64 encoded images in iOS check the [ChatFunctionsCalllDemo](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatFunctionsCall) demo on the Examples section of this package.
 
 ### Vision
 
-[Vison](https://platform.openai.com/docs/guides/vision) API is available for use; developers must access it through the chat completions API, specifically using the gpt-4-vision-preview model. Using any other model will not provide an image description
+[Vision](https://platform.openai.com/docs/guides/vision) API is available for use; developers must access it through the chat completions API, specifically using the gpt-4-vision-preview model. Using any other model will not provide an image description
 
 Usage
 ```swift
@@ -1038,7 +1050,7 @@ let chatCompletionObject = try await service.startStreamedChat(parameters: param
 
 ![Simulator Screen Recording - iPhone 15 - 2023-11-09 at 17 12 06](https://github.com/jamesrochabrun/SwiftOpenAI/assets/5378604/db2cbb3b-0c80-4ac8-8fe5-dbb782b270da)
 
-For more details about how to also uploadin base 64 encoded images in iOS check the [ChatVision](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/Vision) demo on the Examples section of this package.
+For more details about how to also uploading base 64 encoded images in iOS check the [ChatVision](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/Vision) demo on the Examples section of this package.
 
 ### Embeddings
 Parameters
@@ -2179,7 +2191,7 @@ let parameters = MessageParameter(role: "user", content: prompt")
 let message = try await service.createMessage(threadID: threadID, parameters: parameters)
 ```
 
-Retireve Message.
+Retrieve Message.
 ```swift
 let threadID = "thread_abc123"
 let messageID = "msg_abc123"
@@ -2652,5 +2664,70 @@ let parameters = ChatCompletionParameters(
 let completionObject = try await service.startChat(parameters: parameters)
 ```
 
-### Collaboration
+## AIProxy
+
+### What is it?
+
+[AIProxy](https://www.aiproxy.pro) is a backend for AI apps that proxies requests from your app to OpenAI.
+You can use this service to avoid exposing your OpenAI key in your app.
+We offer AIProxy support so that developers can build **and** distribute apps using SwiftOpenAI.  
+
+### How does my SwiftOpenAI code change?
+
+SwiftOpenAI supports proxying requests through AIProxy with a small change to your integration code.
+
+Instead of initializing `service` with:
+
+        let apiKey = "your_openai_api_key_here"
+        let service = OpenAIServiceFactory.service(apiKey: apiKey)
+
+Use:
+
+        #if DEBUG && targetEnvironment(simulator)
+        let service = OpenAIServiceFactory.service(
+            aiproxyPartialKey: "hardcode_partial_key_here",
+            aiproxyDeviceCheckBypass: "hardcode_device_check_bypass_here"
+        )
+        #else
+        let service = OpenAIServiceFactory.service(
+            aiproxyPartialKey: "hardcode_partial_key_here"
+        )
+        #endif
+
+The `aiproxyPartialKey` and `aiproxyDeviceCheckBypass` values are provided to you on the [AIProxy developer dashboard](https://developer.aiproxy.pro).
+
+⚠️  It is important that you do not let the `aiproxyDeviceCheckBypass` token leak into a distribution
+build of your app (including TestFlight distributions). Please retain the conditional compilation
+checks that are present in the sample code above.
+
+#### What is the `aiproxyDeviceCheckBypass` constant?
+
+AIProxy uses Apple's [DeviceCheck](https://developer.apple.com/documentation/devicecheck) to ensure
+that requests received by the backend originated from your app on a legitimate Apple device.
+However, the iOS simulator cannot produce DeviceCheck tokens. Rather than requiring you to
+constantly build and run on device during development, AIProxy provides a way to skip the
+DeviceCheck integrity check. The token is intended for use by developers only. If an attacker gets
+the token, they can make requests to your AIProxy project without including a DeviceCheck token, and
+thus remove one level of protection.
+
+#### What is the `aiproxyPartialKey` constant?
+
+This constant is intended to be **included** in the distributed version of your app. As the name implies, it is a
+partial representation of your OpenAI key. Specifically, it is one half of an encrypted version of your key.
+The other half resides on AIProxy's backend. As your app makes requests to AIProxy, the two encrypted parts
+are paired, decrypted, and used to fulfill the request to OpenAI.
+
+#### How to setup my project on AIProxy?
+
+Please see the [AIProxy integration guide](https://www.aiproxy.pro/docs/integration-guide.html)
+
+
+### ⚠️  Disclaimer
+
+Contributors of SwiftOpenAI shall not be liable for any damages or losses caused by third parties.
+Contributors of this library provide third party integrations as a convenience. Any use of a third
+party's services are assumed at your own risk.
+
+
+## Collaboration
 Open a PR for any proposed change pointing it to `main` branch.

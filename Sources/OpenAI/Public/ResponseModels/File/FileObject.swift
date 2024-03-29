@@ -13,7 +13,7 @@ public struct FileObject: Decodable {
    /// The file identifier, which can be referenced in the API endpoints.
    public let id: String
    /// The size of the file in bytes.
-   public let bytes: Int
+   public let bytes: Int?
    /// The Unix timestamp (in seconds) for when the file was created.
    public let createdAt: Int
    /// The name of the file.
@@ -22,9 +22,9 @@ public struct FileObject: Decodable {
    public let object: String
    /// The intended purpose of the file. Currently, only "fine-tune" is supported.
    public let purpose: String
-   /// The current status of the file, which can be either uploaded, processed, pending, error, deleting or deleted.
+   /// Deprecated. The current status of the file, which can be either uploaded, processed, or error.
    @available(*, deprecated, message: "Deprecated")
-   public let status: String
+   public let status: String?
    /// Additional details about the status of the file. If the file is in the error state, this will include a message describing the error.
    @available(*, deprecated, message: "Deprecated. For details on why a fine-tuning training file failed validation, see the error field on fine_tuning.job")
    public let statusDetails: String?

@@ -134,7 +134,7 @@ struct FileObjectView: View {
             Text("Created = \(file.createdAt)")
             Text("Object = \(file.object)")
             Text("Purpose = \(file.purpose)")
-            Text("Status = \(file.status)")
+            Text("Status = \(file.status ?? "NO STATUS")")
             Text("Status Details = \(file.statusDetails ?? "NO DETAILS")")
          }
          .font(.callout)

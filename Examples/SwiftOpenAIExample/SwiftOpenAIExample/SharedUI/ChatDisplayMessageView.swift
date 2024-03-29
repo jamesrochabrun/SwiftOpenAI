@@ -61,7 +61,8 @@ struct ChatDisplayMessageView: View {
    -> some View
    {
       if text.isEmpty {
-         LoadingView()
+         ChatMessageLoadingView(animationDuration: 0.5)
+            .frame(width: 10, height: 10)
       } else {
          Text(text)
             .font(.body)

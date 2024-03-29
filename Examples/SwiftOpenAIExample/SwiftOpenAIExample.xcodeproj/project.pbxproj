@@ -15,6 +15,7 @@
 		7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */; };
 		7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */; };
 		7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */; };
+		7B413DFE2BB6846D009684CD /* ChatMessageLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B413DFD2BB6846D009684CD /* ChatMessageLoadingView.swift */; };
 		7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B952AE24A04003CE281 /* OptionsListView.swift */; };
 		7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436B982AE25052003CE281 /* ContentLoader.swift */; };
 		7B436B9B2AE25094003CE281 /* narcos.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7B436B9A2AE25093003CE281 /* narcos.m4a */; };
@@ -86,6 +87,7 @@
 		7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantsListDemoView.swift; sourceTree = "<group>"; };
 		7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantThreadConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantStreamDemoScreen.swift; sourceTree = "<group>"; };
+		7B413DFD2BB6846D009684CD /* ChatMessageLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageLoadingView.swift; sourceTree = "<group>"; };
 		7B436B952AE24A04003CE281 /* OptionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsListView.swift; sourceTree = "<group>"; };
 		7B436B982AE25052003CE281 /* ContentLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentLoader.swift; sourceTree = "<group>"; };
 		7B436B9A2AE25093003CE281 /* narcos.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = narcos.m4a; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				7B7239A72AF6292100646679 /* LoadingView.swift */,
 				7B7239AA2AF6294C00646679 /* URLImageView.swift */,
 				7B7239A52AF628F800646679 /* ChatDisplayMessageView.swift */,
+				7B413DFD2BB6846D009684CD /* ChatMessageLoadingView.swift */,
 			);
 			path = SharedUI;
 			sourceTree = "<group>";
@@ -575,6 +578,7 @@
 				7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */,
 				7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */,
 				7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */,
+				7B413DFE2BB6846D009684CD /* ChatMessageLoadingView.swift in Sources */,
 				7B436BB92AE7A2F2003CE281 /* ImagesDemoView.swift in Sources */,
 				7B436BB22AE79370003CE281 /* FilesProvider.swift in Sources */,
 				7BBE7E942AFCC9640096A693 /* ChatVisionProvider.swift in Sources */,

@@ -36,7 +36,7 @@ struct AIProxyIntroView: View {
             .disabled(partialKey.isEmpty)
             Spacer()
             Group {
-               Text("You can now use SwiftOpenAI for development and production! AI Proxy keeps your OpenAI API key secure. To configure AI Proxy for your project, or to learn more about how it works, please see the docs at ") + Text("[this link](https://www.aiproxy.pro/docs).")
+               Text("You can now use SwiftOpenAI for development and production! AIProxy keeps your OpenAI API key secure. To configure AIProxy for your project, or to learn more about how it works, please see the docs at ") + Text("[this link](https://www.aiproxy.pro/docs).")
             }
             .font(.caption)
          }
@@ -46,7 +46,7 @@ struct AIProxyIntroView: View {
    }
 
    private var aiproxyService: some OpenAIService {
-      // Attention AI Proxy customers!
+      // Attention AIProxy customers!
       //
       // Please do not let a `deviceCheckBypass` slip into an archived version of your app that you distribute (including through TestFlight).
       // Doing so would allow an attacker to use the bypass themselves.

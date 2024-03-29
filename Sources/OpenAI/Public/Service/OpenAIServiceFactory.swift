@@ -72,9 +72,9 @@ public class OpenAIServiceFactory {
    ///     #endif
    ///
    /// - Parameters:
-   ///   - aiproxyPartialKey: The partial key provided in the 'API Keys' section of the AI Proxy dashboard.
+   ///   - aiproxyPartialKey: The partial key provided in the 'API Keys' section of the AIProxy dashboard.
    ///                        Please see the integration guide for acquiring your key, at https://www.aiproxy.pro/docs
-   ///   - aiproxyDeviceCheckBypass: The bypass token that is provided in the 'API Keys' section of the AI Proxy dashboard.
+   ///   - aiproxyDeviceCheckBypass: The bypass token that is provided in the 'API Keys' section of the AIProxy dashboard.
    ///                               Please see the integration guide for acquiring your key, at https://www.aiproxy.pro/docs
    ///   - configuration: The URL session configuration to be used for network calls (default is `.default`).
    ///   - decoder: The JSON decoder to be used for parsing API responses (default is `JSONDecoder.init()`).

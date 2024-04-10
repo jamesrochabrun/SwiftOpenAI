@@ -64,11 +64,11 @@ To interact with OpenAI services, you'll need an API key. Follow these steps to 
 
 For more information, consult OpenAI's [official documentation](https://platform.openai.com/docs/).
 
-⚠️  Please take precaution to keep your API key secure per [OpenAI's guidance](https://platform.openai.com/docs/api-reference/authentication):
+⚠️  Please take precautions to keep your API key secure per [OpenAI's guidance](https://platform.openai.com/docs/api-reference/authentication):
 
 > Remember that your API key is a secret! Do not share it with others or expose
 > it in any client-side code (browsers, apps). Production requests must be
-> routed through your own backend server where your API key can be securely
+> routed through your backend server where your API key can be securely
 > loaded from an environment variable or key management service.
 
 SwiftOpenAI has built-in support for AIProxy, which is a backend for AI apps, to satisfy this requirement.

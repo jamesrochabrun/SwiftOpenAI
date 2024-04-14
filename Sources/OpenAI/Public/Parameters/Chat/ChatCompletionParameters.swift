@@ -202,42 +202,6 @@ public struct ChatCompletionParameters: Encodable {
       }
    }
    
-   /// string `none` means the model will not call a function and instead generates a message.
-   /// `auto` means the model can pick between generating a message or calling a function.
-   /// `object` Specifies a tool the model should use. Use to force the model to call a specific function. The type of the tool. Currently, only` function` is supported. `{"type: "function", "function": {"name": "my_function"}}`
-   public enum ToolChoice: Encodable, Equatable {
-      case none
-      case auto
-      case function(type: String = "function", name: String)
-      
-      enum CodingKeys: String, CodingKey {
-         case none = "none"
-         case auto = "auto"
-         case type = "type"
-         case function = "function"
-      }
-      
-      enum FunctionCodingKeys: String, CodingKey {
-         case name = "name"
-      }
-      
-      public func encode(to encoder: Encoder) throws {
-         switch self {
-         case .none:
-            var container = encoder.singleValueContainer()
-            try container.encode(CodingKeys.none.rawValue)
-         case .auto:
-            var container = encoder.singleValueContainer()
-            try container.encode(CodingKeys.auto.rawValue)
-         case .function(let type, let name):
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
-            var functionContainer = container.nestedContainer(keyedBy: FunctionCodingKeys.self, forKey: .function)
-            try functionContainer.encode(name, forKey: .name)
-         }
-      }
-   }
-   
    public struct Tool: Encodable {
       
       /// The type of the tool. Currently, only `function` is supported.
@@ -427,22 +391,6 @@ public struct ChatCompletionParameters: Encodable {
          self.name = name
          self.description = description
          self.parameters = parameters
-      }
-   }
-   
-   public struct ResponseFormat: Encodable {
-      
-      /// Defaults to text
-      /// Setting to `json_object` enables JSON mode. This guarantees that the message the model generates is valid JSON.
-      /// Note that your system prompt must still instruct the model to produce JSON, and to help ensure you don't forget, the API will throw an error if the string JSON does not appear in your system message.
-      /// Also note that the message content may be partial (i.e. cut off) if `finish_reason="length"`, which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
-      /// Must be one of `text `or `json_object`.
-      public var type: String?
-      
-      public init(
-         type: String?)
-      {
-         self.type = type
       }
    }
    

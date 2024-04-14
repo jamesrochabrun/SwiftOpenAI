@@ -96,7 +96,7 @@ enum FunctionCallDefinition: String, CaseIterable {
       let parameters = ChatCompletionParameters(
          messages: chatMessageParameters,
          model: .gpt41106Preview,
-         toolChoice: ChatCompletionParameters.ToolChoice.auto,
+         toolChoice: ToolChoice.auto,
          tools: tools)
       
       do {

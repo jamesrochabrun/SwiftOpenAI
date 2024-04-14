@@ -2256,12 +2256,29 @@ public struct RunParameter: Encodable {
    let instructions: String?
    /// Appends additional instructions at the end of the instructions for the run. This is useful for modifying the behavior on a per-run basis without overriding other instructions.
    let additionalInstructions: String?
+   /// Adds additional messages to the thread before creating the run.
+   let additionalMessages: [MessageParameter]?
    /// Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis.
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// Optional Defaults to 1
+   let temperature: Double?
    /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
    var stream: Bool
+   /// The maximum number of prompt tokens that may be used over the course of the run. The run will make a best effort to use only the number of prompt tokens specified, across multiple turns of the run. If the run exceeds the number of prompt tokens specified, the run will end with status complete. See incomplete_details for more info.
+   let maxPromptTokens: Int?
+   /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
+   let maxCompletionTokens: Int?
+   
+   let truncationStrategy: TruncationStrategy?
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   let toolChoice: ToolChoice?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   let responseFormat: ResponseFormat?
 }
 ```
 [Modify a Run](https://platform.openai.com/docs/api-reference/runs/modifyRun)

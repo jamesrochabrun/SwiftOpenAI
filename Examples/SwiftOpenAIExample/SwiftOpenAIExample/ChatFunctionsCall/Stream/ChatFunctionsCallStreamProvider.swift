@@ -92,7 +92,7 @@ struct FunctionCallStreamedResponse {
       let parameters = ChatCompletionParameters(
          messages: chatMessageParameters,
          model: .gpt35Turbo1106,
-         toolChoice: ChatCompletionParameters.ToolChoice.auto,
+         toolChoice: ToolChoice.auto,
          tools: tools)
       
       do {

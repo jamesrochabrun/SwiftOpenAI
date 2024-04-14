@@ -208,13 +208,17 @@ public struct ChatCompletionParameters: Encodable {
    public enum ToolChoice: Encodable, Equatable {
       case none
       case auto
-      case function(type: String?, name: String)
+      case function(type: String = "function", name: String)
       
       enum CodingKeys: String, CodingKey {
          case none = "none"
          case auto = "auto"
-         case name = "name"
          case type = "type"
+         case function = "function"
+      }
+      
+      enum FunctionCodingKeys: String, CodingKey {
+         case name = "name"
       }
       
       public func encode(to encoder: Encoder) throws {
@@ -227,10 +231,9 @@ public struct ChatCompletionParameters: Encodable {
             try container.encode(CodingKeys.auto.rawValue)
          case .function(let type, let name):
             var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(name, forKey: .name)
-            if let type {
-               try container.encode(type, forKey: .type)
-            }
+            try container.encode(type, forKey: .type)
+            var functionContainer = container.nestedContainer(keyedBy: FunctionCodingKeys.self, forKey: .function)
+            try functionContainer.encode(name, forKey: .name)
          }
       }
    }

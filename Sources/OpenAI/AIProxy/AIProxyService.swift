@@ -449,7 +449,8 @@ struct AIProxyService: OpenAIService {
       limit: Int? = nil,
       order: String? = nil,
       after: String? = nil,
-      before: String? = nil)
+      before: String? = nil,
+      runID: String? = nil)
       async throws -> OpenAIResponse<MessageObject>
    {
       var queryItems: [URLQueryItem] = []

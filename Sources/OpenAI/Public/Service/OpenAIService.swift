@@ -547,6 +547,7 @@ public protocol OpenAIService {
    /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
    /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
    /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Parameter runID: Filter messages by the run ID that generated them.
    /// - Returns: A list of [message](https://platform.openai.com/docs/api-reference/messages) objects.
    /// - Throws: An error if the request fails
    ///
@@ -556,7 +557,8 @@ public protocol OpenAIService {
       limit: Int?,
       order: String?,
       after: String?,
-      before: String?)
+      before: String?,
+      runID: String?)
    async throws -> OpenAIResponse<MessageObject>
    
    // MARK: Message File [BETA]

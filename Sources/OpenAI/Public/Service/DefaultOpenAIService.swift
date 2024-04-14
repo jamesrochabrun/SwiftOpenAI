@@ -445,7 +445,8 @@ struct DefaultOpenAIService: OpenAIService {
       limit: Int? = nil,
       order: String? = nil,
       after: String? = nil,
-      before: String? = nil)
+      before: String? = nil,
+      runID: String? = nil)
       async throws -> OpenAIResponse<MessageObject>
    {
       var queryItems: [URLQueryItem] = []
@@ -460,6 +461,9 @@ struct DefaultOpenAIService: OpenAIService {
       }
       if let before {
          queryItems.append(.init(name: "before", value: before))
+      }
+      if let runID {
+         queryItems.append(.init(name: "run_id", value: runID))
       }
       let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
       return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)

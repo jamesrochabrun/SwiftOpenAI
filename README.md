@@ -1126,6 +1126,10 @@ public struct FineTuningJobParameters: Encodable {
    /// Your dataset must be formatted as a JSONL file. You must upload your file with the purpose fine-tune.
    /// See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more details.
    let validationFile: String?
+   /// A list of integrations to enable for your fine-tuning job.
+   let integrations: [Integration]?
+   /// The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases. If a seed is not specified, one will be generated for you.
+   let seed: Int?
    
    /// Fine-tuning is [currently available](https://platform.openai.com/docs/guides/fine-tuning/what-models-can-be-fine-tuned) for the following models:
    /// gpt-3.5-turbo-0613 (recommended)

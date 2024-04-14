@@ -51,22 +51,6 @@ public struct RunStepObject: Codable {
       case expired
    }
    
-   public struct Usage: Codable {
-      
-      /// Number of completion tokens used over the course of the run step.
-      public let completionTokens: Int
-      /// Number of prompt tokens used over the course of the run step.
-      public let promptTokens: Int
-      /// Total number of tokens used (prompt + completion).
-      public let totalTokens: Int
-      
-      enum CodingKeys: String, CodingKey {
-         case completionTokens = "completion_tokens"
-         case promptTokens = "prompt_tokens"
-         case totalTokens = "total_tokens"
-      }
-   }
-   
    enum CodingKeys: String, CodingKey {
       case id
       case object

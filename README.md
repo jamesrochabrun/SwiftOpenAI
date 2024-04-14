@@ -2356,6 +2356,8 @@ public struct RunObject: Decodable {
    public let failedAt: Int?
    /// The Unix timestamp (in seconds) for when the run was completed.
    public let completedAt: Int?
+   /// Details on why the run is incomplete. Will be null if the run is not incomplete.
+   public let incompleteDetails: IncompleteDetails?
    /// The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let model: String
    /// The instructions that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
@@ -2366,6 +2368,14 @@ public struct RunObject: Decodable {
    public let fileIDS: [String]
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
+   /// Usage statistics related to the run. This value will be null if the run is not in a terminal state (i.e. in_progress, queued, etc.).
+   public let usage: Usage?
+   /// The sampling temperature used for this run. If not set, defaults to 1.
+   public let temperature: Double?
+   /// The maximum number of prompt tokens specified to have been used over the course of the run.
+   public let maxPromptTokens: Int?
+   /// The maximum number of completion tokens specified to have been used over the course of the run.
+   public let maxCompletionTokens: Int?
 }
 ```
 Usage

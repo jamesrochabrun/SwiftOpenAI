@@ -8,7 +8,7 @@
 import Foundation
 
 
-public struct ResponseFormat: Encodable {
+public struct ResponseFormat: Codable {
    
    /// Defaults to text
    /// Setting to `json_object` enables JSON mode. This guarantees that the message the model generates is valid JSON.

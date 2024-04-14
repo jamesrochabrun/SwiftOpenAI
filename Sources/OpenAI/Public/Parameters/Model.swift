@@ -23,6 +23,15 @@ public enum Model {
    case gpt4TurboPreview // Currently points to gpt-4-0125-preview.
    /// The latest GPT-4 model intended to reduce cases of “laziness” where the model doesn’t complete a task. Returns a maximum of 4,096 output tokens. [Learn more.](https://openai.com/blog/new-embedding-models-and-api-updates)
    case gpt40125Preview // 128,000 tokens
+   /// GPT-4 Turbo with Vision model. Vision requests can now use JSON mode and function calling. gpt-4-turbo currently points to this version.
+   /// 128,000 tokens
+   /// Up to Dec 2023
+   case gpt4Turbo20240409
+   /// GPT-4 Turbo with Vision
+   /// The latest GPT-4 Turbo model with vision capabilities. Vision requests can now use JSON mode and function calling. Currently points to gpt-4-turbo-2024-04-09.
+   /// 128,000 tokens
+   /// Up to Dec 2023
+   case gpt4turbo
    
    /// Vision
    case gpt4VisionPreview // Vision
@@ -48,6 +57,8 @@ public enum Model {
       case .dalle3: return "dall-e-3"
       case .gpt4TurboPreview: return "gpt-4-turbo-preview"
       case .gpt40125Preview: return "gpt-4-0125-preview"
+      case .gpt4Turbo20240409: return "gpt-4-turbo-2024-04-09"
+      case .gpt4turbo: return "gpt-4-turbo"
       case .custom(let model): return model
       }
    }

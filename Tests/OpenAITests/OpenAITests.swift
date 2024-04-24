@@ -6,7 +6,7 @@ final class OpenAITests: XCTestCase {
    // OpenAI is loose with their API contract, unfortunately.
    // Here we test that `tool_choice` is decodable from a string OR an object,
    // which is required for deserializing responses from assistants:
-   // https://platform.openai.com/docs/api-reference/runs-v1/createRun#runs-v1-createrun-tool_choice
+   // https://platform.openai.com/docs/api-reference/runs/createRun#runs-createrun-tool_choice
    func testToolChoiceIsDecodableFromStringOrObject() throws {
       let expectedResponseMappings: [(String, ToolChoice)] = [
          ("\"auto\"", .auto),
@@ -27,7 +27,7 @@ final class OpenAITests: XCTestCase {
 
    // Here we test that `response_format` is decodable from a string OR an object,
    // which is required for deserializing responses from assistants:
-   // https://platform.openai.com/docs/api-reference/runs-v1/createRun#runs-v1-createrun-tool_choice
+   // https://platform.openai.com/docs/api-reference/runs/createRun#runs-createrun-response_format
    func testResponseFormatIsDecodableFromStringOrObject() throws {
       let expectedResponseMappings: [(String, ResponseFormat)] = [
          ("\"auto\"", .auto),

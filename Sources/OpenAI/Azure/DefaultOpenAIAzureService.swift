@@ -193,14 +193,6 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func retrieveMessageFile(threadID: String, messageID: String, fileID: String) async throws -> MessageFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func listMessageFiles(threadID: String, messageID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<MessageFileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
    public func createRun(threadID: String, parameters: RunParameter) async throws -> RunObject {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }

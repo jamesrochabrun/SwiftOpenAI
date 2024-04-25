@@ -416,43 +416,7 @@ struct AIProxyService: OpenAIService {
       return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
    }
 
-   // MARK: Message File [BETA]
-
-   func retrieveMessageFile(
-      threadID: String,
-      messageID: String,
-      fileID: String)
-      async throws -> MessageFileObject
-   {
-      let request = try await OpenAIAPI.messageFile(.retrieve(threadID: threadID, messageID: messageID, fileID: fileID)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: MessageFileObject.self, with: request)
-   }
-
-   func listMessageFiles(
-      threadID: String,
-      messageID: String,
-      limit: Int? = nil,
-      order: String? = nil,
-      after: String? = nil,
-      before: String? = nil)
-      async throws -> OpenAIResponse<MessageFileObject>
-   {
-      var queryItems: [URLQueryItem] = []
-      if let limit {
-         queryItems.append(.init(name: "limit", value: "\(limit)"))
-      }
-      if let order {
-         queryItems.append(.init(name: "order", value: order))
-      }
-      if let after {
-         queryItems.append(.init(name: "after", value: after))
-      }
-      if let before {
-         queryItems.append(.init(name: "before", value: before))
-      }
-      let request = try await OpenAIAPI.messageFile(.list(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: OpenAIResponse<MessageFileObject>.self, with: request)
-   }
+   // MARK: Run [BETA]
 
    func createRun(
       threadID: String,

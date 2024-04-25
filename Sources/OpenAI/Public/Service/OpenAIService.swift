@@ -499,45 +499,7 @@ public protocol OpenAIService {
       before: String?,
       runID: String?)
    async throws -> OpenAIResponse<MessageObject>
-   
-   // MARK: Message File [BETA]
-   
-   /// Retrieves a message file.
-   ///
-   /// - Parameter threadID: The ID of the thread to which the message and File belong.
-   /// - Parameter messageID: The ID of the message the file belongs to.
-   /// - Parameter fileID: The ID of the file being retrieved.
-   /// - Returns: The [message](https://platform.openai.com/docs/api-reference/messages/file-object) file object.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/getMessageFile).
-   func retrieveMessageFile(
-      threadID: String,
-      messageID: String,
-      fileID: String)
-   async throws -> MessageFileObject
-   
-   /// Returns a list of message files.
-   ///
-   /// - Parameter threadID: The ID of the thread that the message and files belong to.
-   /// - Parameter messageID: The ID of the message that the files belongs to.
-   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
-   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
-   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
-   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
-   /// - Returns: A list of message file objects.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/listMessageFiles).
-   func listMessageFiles(
-      threadID: String,
-      messageID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
-   async throws -> OpenAIResponse<MessageFileObject>
-   
+ 
    // MARK: Run [BETA]
    
    /// Create a run.

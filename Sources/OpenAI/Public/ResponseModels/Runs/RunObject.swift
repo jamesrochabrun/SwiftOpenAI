@@ -10,6 +10,7 @@ import Foundation
 /// BETA.
 /// A [run](https://platform.openai.com/docs/api-reference/runs) object, represents an execution run on a [thread](https://platform.openai.com/docs/api-reference/threads).
 /// Related guide: [Assistants](https://platform.openai.com/docs/assistants/overview)
+/// [Run Object](https://platform.openai.com/docs/api-reference/runs/object)
 public struct RunObject: Decodable {
    
    /// The identifier, which can be referenced in API endpoints.
@@ -46,19 +47,19 @@ public struct RunObject: Decodable {
    public let instructions: String?
    /// The list of tools that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let tools: [AssistantObject.Tool]
-   /// The list of [File](https://platform.openai.com/docs/api-reference/files) IDs the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-   public let fileIDS: [String]
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    /// Usage statistics related to the run. This value will be null if the run is not in a terminal state (i.e. in_progress, queued, etc.).
    public let usage: Usage?
    /// The sampling temperature used for this run. If not set, defaults to 1.
    public let temperature: Double?
+   /// The nucleus sampling value used for this run. If not set, defaults to 1.
+   public let topP: Double?
    /// The maximum number of prompt tokens specified to have been used over the course of the run.
    public let maxPromptTokens: Int?
    /// The maximum number of completion tokens specified to have been used over the course of the run.
    public let maxCompletionTokens: Int?
-
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
    public let truncationStrategy: TruncationStrategy?
    /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
    public let toolChoice: ToolChoice?
@@ -130,11 +131,11 @@ public struct RunObject: Decodable {
       case incompleteDetails = "incomplete_details"
       case model
       case instructions
-      case fileIDS = "file_ids"
       case tools
       case metadata
       case usage
       case temperature
+      case topP = "top_p"
       case maxPromptTokens = "max_prompt_tokens"
       case maxCompletionTokens = "max_completion_tokens"
       case truncationStrategy

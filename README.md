@@ -2172,9 +2172,9 @@ public struct RunParameter: Encodable {
    let maxPromptTokens: Int?
    /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
    let maxCompletionTokens: Int?
-   
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
    let truncationStrategy: TruncationStrategy?
-   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "file_search"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
    let toolChoice: ToolChoice?
    /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
    /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
@@ -2212,8 +2212,26 @@ public struct CreateThreadAndRunParameter: Encodable {
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// Defaults to 1
+   let temperature: Double?
+   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+   /// We generally recommend altering this or temperature but not both.
+   let topP: Double?
    /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
-   let stream: Bool
+   var stream: Bool = false
+   /// The maximum number of prompt tokens that may be used over the course of the run. The run will make a best effort to use only the number of prompt tokens specified, across multiple turns of the run. If the run exceeds the number of prompt tokens specified, the run will end with status incomplete. See incomplete_details for more info.
+   let maxPromptTokens: Int?
+   /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
+   let maxCompletionTokens: Int?
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
+   let truncationStrategy: TruncationStrategy?
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "file_search"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   let toolChoice: ToolChoice?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   let responseFormat: ResponseFormat?
 }
 ```
 [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
@@ -2236,7 +2254,7 @@ public struct RunObject: Decodable {
    /// The object type, which is always thread.run.
    public let object: String
    /// The Unix timestamp (in seconds) for when the run was created.
-   public let createdAt: Int
+   public let createdAt: Int?
    /// The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was executed on as a part of this run.
    public let threadID: String
    /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for execution of this run.
@@ -2248,7 +2266,7 @@ public struct RunObject: Decodable {
    /// The last error associated with this run. Will be null if there are no errors.
    public let lastError: LastError?
    /// The Unix timestamp (in seconds) for when the run will expire.
-   public let expiresAt: Int
+   public let expiresAt: Int?
    /// The Unix timestamp (in seconds) for when the run was started.
    public let startedAt: Int?
    /// The Unix timestamp (in seconds) for when the run was cancelled.
@@ -2265,18 +2283,26 @@ public struct RunObject: Decodable {
    public let instructions: String?
    /// The list of tools that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let tools: [AssistantObject.Tool]
-   /// The list of [File](https://platform.openai.com/docs/api-reference/files) IDs the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-   public let fileIDS: [String]
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    /// Usage statistics related to the run. This value will be null if the run is not in a terminal state (i.e. in_progress, queued, etc.).
    public let usage: Usage?
    /// The sampling temperature used for this run. If not set, defaults to 1.
    public let temperature: Double?
+   /// The nucleus sampling value used for this run. If not set, defaults to 1.
+   public let topP: Double?
    /// The maximum number of prompt tokens specified to have been used over the course of the run.
    public let maxPromptTokens: Int?
    /// The maximum number of completion tokens specified to have been used over the course of the run.
    public let maxCompletionTokens: Int?
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
+   public let truncationStrategy: TruncationStrategy?
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   public let toolChoice: ToolChoice?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   public let responseFormat: ResponseFormat?
 }
 ```
 Usage
@@ -2429,19 +2455,6 @@ public struct MessageDeltaObject: Decodable {
       public let role: String
       /// The content of the message in array of text and/or images.
       public let content: [MessageContent]
-      /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-      public let fileIDS: [String]?
-
-      enum Role: String {
-         case user
-         case assistant
-      }
-      
-      enum CodingKeys: String, CodingKey {
-         case role
-         case content
-         case fileIDS = "file_ids"
-      }
    }
 }
 ```

@@ -21,11 +21,11 @@ public struct MessageObject: Codable {
    /// The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message belongs to.
    public let threadID: String
    /// The status of the message, which can be either in_progress, incomplete, or completed.
-   public let status: String
+   public let status: String?
    /// On an incomplete message, details about why the message is incomplete.
    public let incompleteDetails: IncompleteDetails?
    /// The Unix timestamp (in seconds) for when the message was completed.
-   public let completedAt: Int
+   public let completedAt: Int?
    /// The entity that produced the message. One of user or assistant.
    public let role: String
    /// The content of the message in array of text and/or images.
@@ -65,9 +65,9 @@ public struct MessageObject: Codable {
       object: String,
       createdAt: Int,
       threadID: String,
-      status: String,
+      status: String?,
       incompleteDetails: IncompleteDetails?,
-      completedAt: Int,
+      completedAt: Int?,
       role: String,
       content: [MessageContent],
       assistantID: String?,

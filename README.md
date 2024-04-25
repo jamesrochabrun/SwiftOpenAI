@@ -1906,17 +1906,10 @@ public struct CreateThreadParameters: Encodable {
    
    /// A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start the thread with.
    public var messages: [MessageObject]?
-   
+      /// A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+   public var toolResources: ToolResources?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public var metadata: [String: String]?
-   
-   public init(
-      messages: [MessageObject]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.messages = messages
-      self.metadata = metadata
-   }
 }
 ```
 Response
@@ -1930,14 +1923,11 @@ public struct ThreadObject: Decodable {
    public let object: String
    /// The Unix timestamp (in seconds) for when the thread was created.
    public let createdAt: Int
+   /// A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+   public var toolResources: ToolResources?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
 }
 ```
 
@@ -2334,7 +2324,6 @@ let run = try await service.cancelRun(threadID: threadID, runID: runID)
 Create thread and Run
 ```swift
 let assistantID = "asst_abc123"
-let threadParameters = CreateThreadParameters()
 let parameters = CreateThreadAndRunParameter(assistantID: assistantID)
 let run = service.createThreadAndRun(parameters: parameters)
 ```

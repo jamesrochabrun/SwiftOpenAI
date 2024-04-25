@@ -18,7 +18,7 @@ struct DefaultOpenAIService: OpenAIService {
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
    private let organizationID: String?
    
-   private static let assistantsBeta = "assistants=v1"
+   private static let assistantsBeta = "assistants=v2"
    
    init(
       apiKey: String,

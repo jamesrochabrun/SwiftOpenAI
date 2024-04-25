@@ -71,8 +71,8 @@ import SwiftOpenAI
                   switch toolCall {
                   case .codeInterpreterToolCall(let toolCall):
                      toolOuptutMessage += toolCall.input ?? ""
-                  case .retrieveToolCall(let toolCall):
-                     print("PROVIDER: Retrieve tool call \(toolCall)")
+                  case .fileSearchToolCall(let toolCall):
+                     print("PROVIDER: File search tool call \(toolCall)")
                   case .functionToolCall(let toolCall):
                      print("PROVIDER: Function tool call \(toolCall)")
                   case nil:

@@ -14,6 +14,9 @@ import DeviceCheck
 #if canImport(IOKit)
     import IOKit
 #endif
+#if os(watchOS)
+import WatchKit
+#endif
 
 private let aiproxyLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "UnknownApp",
                                    category: "SwiftOpenAI+AIProxy")
@@ -129,7 +132,9 @@ private func getDeviceCheckToken() async -> String? {
 
 /// Get a unique ID for this client
 private func getClientID() -> String? {
-#if canImport(UIKit)
+#if os(watchOS)
+    return WKInterfaceDevice.current().identifierForVendor?.uuidString
+#elseif canImport(UIKit)
     return UIDevice.current.identifierForVendor?.uuidString
 #elseif canImport(IOKit)
     return getIdentifierFromIOKit()

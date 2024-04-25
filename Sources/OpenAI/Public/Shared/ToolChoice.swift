@@ -43,18 +43,23 @@ public enum ToolChoice: Codable, Equatable {
    }
    
    public init(from decoder: Decoder) throws {
-       let container = try decoder.container(keyedBy: CodingKeys.self)
-       if let _ = try? container.decode(String.self, forKey: .none) {
-           self = .none
-           return
-       }
-       if let _ = try? container.decode(String.self, forKey: .auto) {
-           self = .auto
-           return
-       }
-       let functionContainer = try container.nestedContainer(keyedBy: FunctionCodingKeys.self, forKey: .function)
-       let name = try functionContainer.decode(String.self, forKey: .name)
-       // Assuming the type is always "function" as default if decoding this case.
-       self = .function(type: "function", name: name)
+      // Handle the 'function' case:
+      if let container = try? decoder.container(keyedBy: CodingKeys.self),
+         let functionContainer = try? container.nestedContainer(keyedBy: FunctionCodingKeys.self, forKey: .function) {
+          let name = try functionContainer.decode(String.self, forKey: .name)
+          self = .function(type: "function", name: name)
+          return
+      }
+
+      // Handle the 'auto' and 'none' cases
+      let container = try decoder.singleValueContainer()
+      switch try container.decode(String.self) {
+          case "none":
+              self = .none
+          case "auto":
+              self = .auto
+      default:
+          throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid tool_choice structure")
+      }
    }
 }

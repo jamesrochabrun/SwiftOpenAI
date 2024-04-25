@@ -1797,24 +1797,6 @@ public struct AssistantParameters: Encodable {
          }
       }
    }
-   
-   public init(
-      action: Action,
-      name: String? = nil,
-      description: String? = nil,
-      instructions: String? = nil,
-      tools: [AssistantObject.Tool] = [],
-      fileIDS: [String]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.model = action.model
-      self.name = name
-      self.description = description
-      self.instructions = instructions
-      self.tools = tools
-      self.fileIDS = fileIDS
-      self.metadata = metadata
-   }
 }
 ```
 Response
@@ -1995,22 +1977,10 @@ public struct MessageParameter: Encodable {
    let role: String
    /// The content of the message.
    let content: String
-   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the message should use. There can be a maximum of 10 files attached to a message. Useful for tools like retrieval and code_interpreter that can access and use files. Defaults to []
-   let fileIDS: [String]?
+   /// A list of files attached to the message, and the tools they should be added to.
+   let attachments: [MessageAttachment]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
-   
-   public init(
-      role: String,
-      content: String,
-      fileIDS: [String]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.role = role
-      self.content = content
-      self.fileIDS = fileIDS
-      self.metadata = metadata
-   }
 }
 ```
 [Modify a Message](https://platform.openai.com/docs/api-reference/messages/modifyMessage))
@@ -2034,35 +2004,28 @@ public struct MessageObject: Codable {
    public let createdAt: Int
    /// The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message belongs to.
    public let threadID: String
+   /// The status of the message, which can be either in_progress, incomplete, or completed.
+   public let status: String
+   /// On an incomplete message, details about why the message is incomplete.
+   public let incompleteDetails: IncompleteDetails?
+   /// The Unix timestamp (in seconds) for when the message was completed.
+   public let completedAt: Int
    /// The entity that produced the message. One of user or assistant.
    public let role: String
    /// The content of the message in array of text and/or images.
-   public let content: [Content]
+   public let content: [MessageContent]
    /// If applicable, the ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this message.
    public let assistantID: String?
    /// If applicable, the ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the authoring of this message.
    public let runID: String?
-   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-   public let fileIDS: [String]?
+   /// A list of files attached to the message, and the tools they were added to.
+   public let attachments: [MessageAttachment]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]?
    
    enum Role: String {
       case user
       case assistant
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case object
-      case createdAt = "created_at"
-      case threadID = "thread_id"
-      case role
-      case content
-      case assistantID = "assistant_id"
-      case runID = "run_id"
-      case fileIDS = "file_ids"
-      case metadata
    }
 }
 

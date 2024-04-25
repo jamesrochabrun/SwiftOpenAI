@@ -2516,8 +2516,8 @@ let stream = try await service.createRunAndStreamMessage(threadID: threadID, par
                   switch toolCall {
                   case .codeInterpreterToolCall(let toolCall):
                      print(toolCall.input ?? "") // this will print the streamed response for code interpreter tool call.
-                  case .retrieveToolCall(let toolCall):
-                     print("Retrieve tool call")
+                  case .fileSearchToolCall(let toolCall):
+                     print("File search tool call")
                   case .functionToolCall(let toolCall):
                      print("Function tool call")
                   case nil:

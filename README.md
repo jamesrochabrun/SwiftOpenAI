@@ -1916,58 +1916,6 @@ List Assistants
 let assistants = try await service.listAssistants()
 ```
 
-### Assistants File Object
-Parameters
-```swift
-/// [Creates an assistant file.](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile)
-public struct AssistantFileParamaters: Encodable {
-   
-   /// The ID of the assistant for which to create a File.
-   let assistantID: String
-   /// A [File](https://platform.openai.com/docs/api-reference/files) ID (with purpose="assistants") that the assistant should use.
-   /// Useful for tools like retrieval and code_interpreter that can access files.
-   let fileID: String
-}
-```
-Response
-```swift
-/// The [assistant file object.](https://platform.openai.com/docs/api-reference/assistants/file-object)
-/// A list of [Files](https://platform.openai.com/docs/api-reference/files) attached to an assistant.
-public struct AssistantFileObject: Decodable {
-   
-   /// The identifier, which can be referenced in API endpoints.
-   let id: String
-   /// The object type, which is always assistant.file.
-   let object: String
-   /// The Unix timestamp (in seconds) for when the assistant file was created.
-   let createdAt: Int
-   /// The assistant ID that the file is attached to.
-   let assistantID: String
-   
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case object
-      case createdAt = "created_at"
-      case assistantID = "assistant_id"
-   }
-   
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
-}
-```
-Usage
-
-Refer to the [Upload file](#upload-file) section or consult the Files[https://platform.openai.com/docs/api-reference/files] OpenAI documentation for details on how to upload a file that can be attached to the assistant.
-```swift
-let fileID = "file-abc123"
-let parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue), name: "Math tutor", fileIDS: [fileID])
-let assistant = try await service.createAssistant(parameters: parameters)
-```
-
 ### Threads
 Parameters
 ```swift

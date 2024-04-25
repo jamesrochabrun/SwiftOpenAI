@@ -161,22 +161,6 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func createAssistantFile(assistantID: String, parameters: AssistantFileParamaters) async throws -> AssistantFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func retrieveAssistantFile(assistantID: String, fileID: String) async throws -> AssistantFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func deleteAssistantFile(assistantID: String, fileID: String) async throws -> AssistantFileObject.DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func listAssistantFiles(assistantID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<AssistantFileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
    public func createThread(parameters: CreateThreadParameters) async throws -> ThreadObject {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }

@@ -388,67 +388,6 @@ public protocol OpenAIService {
       before: String?)
    async throws -> OpenAIResponse<AssistantObject>
    
-   
-   // MARK: AssistantsFileObject [BETA]
-   
-   /// Create an assistant file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to an [assistant](https://platform.openai.com/docs/api-reference/assistants).
-   ///
-   /// - Parameter parameters: The parameters needed to build an assistant file object
-   /// - Parameter assistantID: The ID of the assistant for which to create a File.
-   /// - Returns: A [AssistantFileObject](https://platform.openai.com/docs/api-reference/assistants/file-object)
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile).
-   func createAssistantFile(
-      assistantID: String,
-      parameters: AssistantFileParamaters)
-   async throws -> AssistantFileObject
-   
-   /// Retrieves an AssistantFile.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter fileID: The ID of the file we're getting.
-   /// - Returns: The [assistant file object](https://platform.openai.com/docs/api-reference/assistants/file-object) matching the specified ID.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistantFile).
-   func retrieveAssistantFile(
-      assistantID: String,
-      fileID: String)
-   async throws -> AssistantFileObject
-   
-   /// Delete an assistant file.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter fileID: The ID of the file to delete.
-   /// - Returns: Deletion status.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistantFile).
-   func deleteAssistantFile(
-      assistantID: String,
-      fileID: String)
-   async throws -> AssistantFileObject.DeletionStatus
-   
-   /// Returns a list of assistant files.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
-   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
-   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
-   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
-   /// - Returns: A list of [assistant file](https://platform.openai.com/docs/api-reference/assistants/file-object) objects.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistantFiles).
-   func listAssistantFiles(
-      assistantID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
-   async throws -> OpenAIResponse<AssistantFileObject>
-   
    // MARK: Thread [BETA]
    
    /// Create a thread.

@@ -34,6 +34,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Vision](#vision)
 - [Embeddings](#embeddings)
 - [Fine-tuning](#fine-tuning)
+- [Batch](#batch)
 - [Files](#files)
 - [Images](#images)
 - [Models](#models)
@@ -1272,6 +1273,131 @@ Usage
 ```swift
 let fineTuningJobID = "ftjob-abc123"
 let jobEvents = try await service.listFineTuningEventsForJobWith(id: id, after: nil, limit: nil).data
+```
+
+### Batch
+Parameters
+```swift
+public struct BatchParameter: Encodable {
+   
+   /// The ID of an uploaded file that contains requests for the new batch.
+   /// See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to upload a file.
+   /// Your input file must be formatted as a [JSONL file](https://platform.openai.com/docs/api-reference/batch/requestInput), and must be uploaded with the purpose batch.
+   let inputFileID: String
+   /// The endpoint to be used for all requests in the batch. Currently only /v1/chat/completions is supported.
+   let endpoint: String
+   /// The time frame within which the batch should be processed. Currently only 24h is supported.
+   let completionWindow: String
+   /// Optional custom metadata for the batch.
+   let metadata: [String: String]?
+   
+   enum CodingKeys: String, CodingKey {
+      case inputFileID = "input_file_id"
+      case endpoint
+      case completionWindow = "completion_window"
+      case metadata
+   }
+}
+```
+Response
+```swift
+public struct BatchObject: Decodable {
+   
+   let id: String
+   /// The object type, which is always batch.
+   let object: String
+   /// The OpenAI API endpoint used by the batch.
+   let endpoint: String
+   
+   let errors: Error
+   /// The ID of the input file for the batch.
+   let inputFileID: String
+   /// The time frame within which the batch should be processed.
+   let completionWindow: String
+   /// The current status of the batch.
+   let status: String
+   /// The ID of the file containing the outputs of successfully executed requests.
+   let outputFileID: String
+   /// The ID of the file containing the outputs of requests with errors.
+   let errorFileID: String
+   /// The Unix timestamp (in seconds) for when the batch was created.
+   let createdAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started processing.
+   let inProgressAt: Int
+   /// The Unix timestamp (in seconds) for when the batch will expire.
+   let expiresAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started finalizing.
+   let finalizingAt: Int
+   /// The Unix timestamp (in seconds) for when the batch was completed.
+   let completedAt: Int
+   /// The Unix timestamp (in seconds) for when the batch failed.
+   let failedAt: Int
+   /// The Unix timestamp (in seconds) for when the batch expired.
+   let expiredAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started cancelling.
+   let cancellingAt: Int
+   /// The Unix timestamp (in seconds) for when the batch was cancelled.
+   let cancelledAt: Int
+   /// The request counts for different statuses within the batch.
+   let requestCounts: RequestCount
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]
+   
+   public struct Error: Decodable {
+      
+      let object: String
+      let data: [Data]
+
+      public struct Data: Decodable {
+         
+         /// An error code identifying the error type.
+         let code: String
+         /// A human-readable message providing more details about the error.
+         let message: String
+         /// The name of the parameter that caused the error, if applicable.
+         let param: String?
+         /// The line number of the input file where the error occurred, if applicable.
+         let line: Int?
+      }
+   }
+   
+   public struct RequestCount: Decodable {
+      
+      /// Total number of requests in the batch.
+      let total: Int
+      /// Number of requests that have been completed successfully.
+      let completed: Int
+      /// Number of requests that have failed.
+      let failed: Int
+   }
+}
+```
+Usage
+
+Create batch
+```swift
+let inputFileID = "file-abc123"
+let endpoint = "/v1/chat/completions"
+let completionWindow = "24h"
+let parameter = BatchParameter(inputFileID: inputFileID, endpoint: endpoint, completionWindow: completionWindow, metadata: nil)
+let batch = try await service.createBatch(parameters: parameters)
+```
+
+Retrieve batch
+```swift
+let batchID = "batch_abc123"
+let batch = try await service.retrieveBatch(id: batchID)
+```
+
+Cancel batch
+```swift
+let batchID = "batch_abc123"
+let batch = try await service.cancelBatch(id: batchID)
+```
+
+List batch
+```swift
+let batches = try await service.listBatch(after: nil, limit: nil)
 ```
 
 ### Files

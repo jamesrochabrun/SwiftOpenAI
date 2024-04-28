@@ -691,7 +691,34 @@ public protocol OpenAIService {
       parameters: BatchParameter)
       async throws -> BatchObject
 
+   /// Retrieves a batch.
+   ///
+   /// - Parameter id: The identifier of the batch to retrieve.
+   /// - Returns: A [BatchObject](https://platform.openai.com/docs/api-reference/batch/object) containing the details of the fine-tuning job.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/batch/retrieve).
+   func retrieveBatch(id: String) async throws -> BatchObject
    
+   /// Cancels an in-progress batch.
+   ///
+   /// - Parameter id: The identifier of the batch to cancel.
+   /// - Returns: A [BatchObject](https://platform.openai.com/docs/api-reference/batch/object) containing the details of the fine-tuning job.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/batch/cancel)
+   func cancelBatch(id: String) async throws -> BatchObject
+
+   /// List your organization's batches.
+   ///
+   /// - Parameters:
+   ///   - after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   ///   - limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Returns: An `OpenAIResponse<BatchObject>` containing a list of paginated [Batch](https://platform.openai.com/docs/api-reference/batch/object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch API documentation](https://platform.openai.com/docs/api-reference/batch/list).
+   func listBatch(after: String?, limit: Int?) async throws -> OpenAIResponse<BatchObject>
 }
 
 

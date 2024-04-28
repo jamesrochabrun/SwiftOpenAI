@@ -231,7 +231,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    
    public func createThreadAndRunStream(
       parameters: CreateThreadAndRunParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -247,7 +247,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       threadID: String,
       runID: String,
       parameters: RunToolsOutputParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -260,4 +260,24 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
+   public func retrieveBatch(
+      id: String)
+      async throws -> BatchObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func cancelBatch(
+      id: String) async throws -> BatchObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+
+   public func listBatch(
+      after: String?,
+      limit: Int?)
+      async throws-> OpenAIResponse<BatchObject>
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
 }

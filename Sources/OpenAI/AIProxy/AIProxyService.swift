@@ -577,6 +577,31 @@ struct AIProxyService: OpenAIService {
       let request = try await OpenAIAPI.batch(.create).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: BatchObject.self, with: request)
    }
+   
+   func retrieveBatch(
+      id: String)
+      async throws -> BatchObject
+   {
+      let request = try await OpenAIAPI.batch(.retrieve(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: BatchObject.self, with: request)
+   }
+   
+   func cancelBatch(
+      id: String)
+      async throws -> BatchObject
+   {
+      let request = try await OpenAIAPI.batch(.cancel(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: BatchObject.self, with: request)
+   }
+   
+   func listBatch(
+      after: String?,
+      limit: Int?)
+      async throws-> OpenAIResponse<BatchObject>
+   {
+      let request = try await OpenAIAPI.batch(.list).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: OpenAIResponse<BatchObject>.self, with: request)
+   }
 }
 
 

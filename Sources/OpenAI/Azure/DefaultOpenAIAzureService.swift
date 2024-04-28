@@ -97,7 +97,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func deleteFileWith(id: String) async throws -> FileObject.DeletionStatus {
+   public func deleteFileWith(id: String) async throws -> DeletionStatus {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -129,7 +129,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func deleteFineTuneModelWith(id: String) async throws -> ModelObject.DeletionStatus {
+   public func deleteFineTuneModelWith(id: String) async throws -> DeletionStatus {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -153,7 +153,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func deleteAssistant(id: String) async throws -> AssistantObject.DeletionStatus {
+   public func deleteAssistant(id: String) async throws -> DeletionStatus {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -173,7 +173,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   public func deleteThread(id: String) async throws -> ThreadObject.DeletionStatus {
+   public func deleteThread(id: String) async throws -> DeletionStatus {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
@@ -277,6 +277,46 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       after: String?,
       limit: Int?)
       async throws-> OpenAIResponse<BatchObject>
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   // MARK: Vector Store
+
+   public func createVectorStore(
+      parameters: VectorStoreParameter)
+      async throws -> VectorStoreObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func listVectorStores(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<VectorStoreObject>
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func retrieveVectorStore(
+      id: String) async throws
+      -> VectorStoreObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func modifyVectorStore(
+      id: String)
+      async throws -> VectorStoreObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func deleteVectorStore(
+      id: String)
+      async throws -> DeletionStatus
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }

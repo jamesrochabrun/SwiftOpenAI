@@ -84,12 +84,6 @@ public struct AssistantObject: Decodable {
       case responseFormat = "response_format"
    }
    
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
-   
    public init(
       id: String,
       object: String,

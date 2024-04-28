@@ -176,10 +176,10 @@ struct AIProxyService: OpenAIService {
 
    func deleteFileWith(
       id: String)
-      async throws -> FileObject.DeletionStatus
+      async throws -> DeletionStatus
    {
       let request = try await OpenAIAPI.file(.delete(fileID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .delete, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: FileObject.DeletionStatus.self, with: request)
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
 
    func retrieveFileWith(
@@ -243,10 +243,10 @@ struct AIProxyService: OpenAIService {
 
    func deleteFineTuneModelWith(
       id: String)
-      async throws -> ModelObject.DeletionStatus
+      async throws -> DeletionStatus
    {
       let request = try await OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .delete, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: ModelObject.DeletionStatus.self,  with: request)
+      return try await fetch(type: DeletionStatus.self,  with: request)
    }
 
    // MARK: Moderations
@@ -296,10 +296,10 @@ struct AIProxyService: OpenAIService {
 
    func deleteAssistant(
       id: String)
-      async throws -> AssistantObject.DeletionStatus
+      async throws -> DeletionStatus
    {
       let request = try await OpenAIAPI.assistant(.delete(assistantID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: AssistantObject.DeletionStatus.self, with: request)
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
 
    func listAssistants(
@@ -354,10 +354,10 @@ struct AIProxyService: OpenAIService {
 
    func deleteThread(
       id: String)
-      async throws -> ThreadObject.DeletionStatus
+      async throws -> DeletionStatus
    {
       let request = try await OpenAIAPI.thread(.delete(threadID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
-      return try await fetch(type: ThreadObject.DeletionStatus.self, with: request)
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
 
    // MARK: Message [BETA]
@@ -574,7 +574,7 @@ struct AIProxyService: OpenAIService {
       parameters: BatchParameter)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.create).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      let request = try await OpenAIAPI.batch(.create).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: parameters, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: BatchObject.self, with: request)
    }
    
@@ -582,7 +582,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.retrieve(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      let request = try await OpenAIAPI.batch(.retrieve(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: BatchObject.self, with: request)
    }
    
@@ -590,7 +590,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.cancel(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      let request = try await OpenAIAPI.batch(.cancel(batchID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: BatchObject.self, with: request)
    }
    
@@ -599,9 +599,75 @@ struct AIProxyService: OpenAIService {
       limit: Int?)
       async throws-> OpenAIResponse<BatchObject>
    {
-      let request = try await OpenAIAPI.batch(.list).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      var queryItems: [URLQueryItem] = []
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      let request = try await OpenAIAPI.batch(.list).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, queryItems: queryItems, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: OpenAIResponse<BatchObject>.self, with: request)
    }
+   
+   // MARK: Vector Store
+   
+   func createVectorStore(
+      parameters: VectorStoreParameter)
+      async throws -> VectorStoreObject
+   {
+      let request = try await OpenAIAPI.vectorStore(.create).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: VectorStoreObject.self, with: request)
+   }
+   
+   func listVectorStores(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<VectorStoreObject>
+   {
+      var queryItems: [URLQueryItem] = []
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      let request = try await OpenAIAPI.vectorStore(.list).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: OpenAIResponse<VectorStoreObject>.self, with: request)
+   }
+   
+   func retrieveVectorStore(
+      id: String) async throws
+      -> VectorStoreObject
+   {
+      let request = try await OpenAIAPI.vectorStore(.retrieve(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: VectorStoreObject.self, with: request)
+   }
+   
+   func modifyVectorStore(
+      id: String)
+      async throws -> VectorStoreObject
+   {
+      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: VectorStoreObject.self, with: request)
+   }
+   
+   func deleteVectorStore(
+      id: String)
+      async throws -> DeletionStatus
+   {
+      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      return try await fetch(type: DeletionStatus.self, with: request)
+   }
+
 }
 
 

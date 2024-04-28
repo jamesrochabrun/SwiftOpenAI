@@ -25,6 +25,7 @@ enum OpenAIAPI {
    case runStep(RunStepCategory) // https://platform.openai.com/docs/api-reference/runs/step-object
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
    case batch(BatchCategory) // https://platform.openai.com/docs/api-reference/batch
+   case vectorStore(VectorStoreCategory) // https://platform.openai.com/docs/api-reference/vector-stores
    
    enum AssistantCategory {
       case create
@@ -103,6 +104,14 @@ enum OpenAIAPI {
       case cancel(batchID: String)
       case list
    }
+   
+   enum VectorStoreCategory {
+      case create
+      case list
+      case retrieve(vectorStoreID: String)
+      case modify(vectorStoreID: String)
+      case delete(vectorStoreID: String)
+   }
 }
 
 // MARK: OpenAIAPI+Endpoint
@@ -171,6 +180,11 @@ extension OpenAIAPI: Endpoint {
          switch category {
          case .create: return "/v1/threads"
          case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/v1/threads/\(threadID)"
+         }
+      case .vectorStore(let category):
+         switch category {
+         case .create, .list: return "/v1/vector_stores"
+         case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)"
          }
       }
    }

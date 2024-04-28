@@ -15,7 +15,7 @@ import SwiftOpenAI
    var assistant: AssistantObject?
    var assistants: [AssistantObject] = []
    var avatarURL: URL?
-   var assistantDeletionStatus: AssistantObject.DeletionStatus?
+   var assistantDeletionStatus: DeletionStatus?
    
    // MARK: - Initializer
    

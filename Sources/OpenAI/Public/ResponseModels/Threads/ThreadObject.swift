@@ -30,12 +30,6 @@ public struct ThreadObject: Decodable {
       case metadata
    }
    
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
-   
    public init(
       id: String,
       object: String,

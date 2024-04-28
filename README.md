@@ -52,6 +52,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Assistants Streaming](#assistants-streaming)
    - [Message Delta Object](#message-delta-object)
    - [Run Step Delta Object](#run-step-delta-object)
+- [Vector Stores](#vector-stores)
 
 ## Getting an API Key
 
@@ -1476,12 +1477,6 @@ public struct FileObject: Decodable {
       self.status = status.rawValue
       self.statusDetails = statusDetails
    }
-   
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
 }
 ```
 Usage
@@ -2609,6 +2604,94 @@ public struct RunStepDeltaObject: Decodable {
       }
    }
 }
+```
+
+### Vector Stores
+Parameters
+```swift
+public struct VectorStoreParameter: Encodable {
+   
+   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector store should use. Useful for tools like file_search that can access files.
+   let fileIDS: [String]?
+   /// The name of the vector store.
+   let name: String?
+   /// The expiration policy for a vector store.
+   let expiresAfter: ExpirationPolicy?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]?
+}
+```
+Response
+```swift
+public struct VectorStoreObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.
+   let object: String
+   /// The Unix timestamp (in seconds) for when the vector store was created.
+   let createdAt: Int
+   /// The name of the vector store.
+   let name: String
+   /// The total number of bytes used by the files in the vector store.
+   let usageBytes: Int
+   
+   let fileCounts: FileCount
+   /// The status of the vector store, which can be either expired, in_progress, or completed. A status of completed indicates that the vector store is ready for use.
+   let status: String
+   /// The expiration policy for a vector store.
+   let expiresAfter: ExpirationPolicy?
+   /// The Unix timestamp (in seconds) for when the vector store will expire.
+   let expiresAt: Int?
+   /// The Unix timestamp (in seconds) for when the vector store was last active.
+   let lastActiveAt: Int?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]
+   
+   public struct FileCount: Decodable {
+      
+      /// The number of files that are currently being processed.
+      let inProgress: Int
+      /// The number of files that have been successfully processed.
+      let completed: Int
+      /// The number of files that have failed to process.
+      let failed: Int
+      /// The number of files that were cancelled.
+      let cancelled: Int
+      /// The total number of files.
+      let total: Int
+   }
+}
+```
+Usage
+[Create vector Store](https://platform.openai.com/docs/api-reference/vector-stores/create)
+```swift
+let name = "Support FAQ"
+let parameters = VectorStoreParameter(name: name)
+try vectorStore = try await service.createVectorStore(parameters: parameters)
+```
+
+[List Vector stores](https://platform.openai.com/docs/api-reference/vector-stores/list)
+```swift
+let vectorStores = try await service.listVectorStores(limit: nil, order: nil, after: nil, before: nil)
+```
+
+[Retrieve Vector store](https://platform.openai.com/docs/api-reference/vector-stores/retrieve)
+```swift
+let vectorStoreID = "vs_abc123"
+let vectorStore = try await service.retrieveVectorStore(id: vectorStoreID)
+```
+
+[Modify Vector store](https://platform.openai.com/docs/api-reference/vector-stores/modify)
+```swift
+let vectorStoreID = "vs_abc123"
+let vectorStore = try await service.modifyVectorStore(id: vectorStoreID)
+```
+
+[Delete Vector store](https://platform.openai.com/docs/api-reference/vector-stores/delete)
+```swift
+let vectorStoreID = "vs_abc123"
+let deletionStatus = try await service.deleteVectorStore(id: vectorStoreID)
 ```
 
 ⚠️ To utilize the `createRunAndStreamMessage`, first create an assistant and initiate a thread.

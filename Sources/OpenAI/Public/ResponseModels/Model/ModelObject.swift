@@ -58,12 +58,4 @@ public struct ModelObject: Decodable {
          case isBlocking = "is_blocking"
       }
    }
-   
-   /// Represents the response from the [delete](https://platform.openai.com/docs/api-reference/models/delete) fine-tuning API
-   public struct DeletionStatus: Decodable {
-      
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
 }

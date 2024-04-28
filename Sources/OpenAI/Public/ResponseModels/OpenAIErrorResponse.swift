@@ -25,7 +25,7 @@ public struct OpenAIErrorResponse: Decodable {
    public struct Error: Decodable {
       public let message: String?
       public let type: String?
-      public  let param: String?
+      public let param: String?
       public let code: String?
    }
 }

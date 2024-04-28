@@ -24,6 +24,7 @@ enum OpenAIAPI {
    case run(RunCategory) // https://platform.openai.com/docs/api-reference/runs
    case runStep(RunStepCategory) // https://platform.openai.com/docs/api-reference/runs/step-object
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
+   case batch(BatchCategory) // https://platform.openai.com/docs/api-reference/batch
    
    enum AssistantCategory {
       case create
@@ -95,6 +96,13 @@ enum OpenAIAPI {
       case modify(threadID: String)
       case delete(threadID: String)
    }
+   
+   enum BatchCategory {
+      case create
+      case retrieve(batchID: String)
+      case cancel(batchID: String)
+      case list
+   }
 }
 
 // MARK: OpenAIAPI+Endpoint
@@ -113,6 +121,12 @@ extension OpenAIAPI: Endpoint {
          case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/v1/assistants/\(assistantID)"
          }
       case .audio(let category): return "/v1/audio/\(category.rawValue)"
+      case .batch(let category):
+         switch category {
+         case .create, .list: return "v1/batches"
+         case .retrieve(let batchID): return "v1/batches/\(batchID)"
+         case .cancel(let batchID): return "v1/batches/\(batchID)/cancel"
+         }
       case .chat: return "/v1/chat/completions"
       case .embeddings: return "/v1/embeddings"
       case .file(let category):

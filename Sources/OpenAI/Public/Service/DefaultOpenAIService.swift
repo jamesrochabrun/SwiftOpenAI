@@ -18,7 +18,7 @@ struct DefaultOpenAIService: OpenAIService {
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
    private let organizationID: String?
    
-   private static let assistantsBeta = "assistants=v2"
+   private static let assistantsBetaV2 = "assistants=v2"
    
    init(
       apiKey: String,
@@ -269,7 +269,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: AssistantParameters)
       async throws -> AssistantObject
    {
-      let request = try OpenAIAPI.assistant(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: AssistantObject.self, with: request)
    }
    
@@ -277,7 +277,7 @@ struct DefaultOpenAIService: OpenAIService {
       id: String)
       async throws -> AssistantObject
    {
-      let request = try OpenAIAPI.assistant(.retrieve(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.retrieve(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: AssistantObject.self, with: request)
    }
    
@@ -286,7 +286,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: AssistantParameters)
       async throws -> AssistantObject
    {
-      let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: AssistantObject.self, with: request)
    }
    
@@ -294,7 +294,7 @@ struct DefaultOpenAIService: OpenAIService {
       id: String)
       async throws -> AssistantObject.DeletionStatus
    {
-      let request = try OpenAIAPI.assistant(.delete(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.delete(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: AssistantObject.DeletionStatus.self, with: request)
    }
    
@@ -318,7 +318,7 @@ struct DefaultOpenAIService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
    }
    
@@ -328,14 +328,14 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: CreateThreadParameters)
       async throws -> ThreadObject
    {
-      let request = try OpenAIAPI.thread(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: ThreadObject.self, with: request)
    }
    
    func retrieveThread(id: String)
       async throws -> ThreadObject
    {
-      let request = try OpenAIAPI.thread(.retrieve(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.retrieve(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: ThreadObject.self, with: request)
    }
    
@@ -344,7 +344,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: ModifyThreadParameters)
       async throws -> ThreadObject
    {
-      let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: ThreadObject.self, with: request)
    }
    
@@ -352,7 +352,7 @@ struct DefaultOpenAIService: OpenAIService {
       id: String)
       async throws -> ThreadObject.DeletionStatus
    {
-      let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: ThreadObject.DeletionStatus.self, with: request)
    }
    
@@ -363,7 +363,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: MessageParameter)
       async throws -> MessageObject
    {
-      let request = try OpenAIAPI.message(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: MessageObject.self, with: request)
    }
    
@@ -372,7 +372,7 @@ struct DefaultOpenAIService: OpenAIService {
       messageID: String)
       async throws -> MessageObject
    {
-      let request = try OpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: MessageObject.self, with: request)
    }
    
@@ -382,7 +382,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: ModifyMessageParameters)
       async throws -> MessageObject
    {
-      let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: MessageObject.self, with: request)
    }
    
@@ -411,7 +411,7 @@ struct DefaultOpenAIService: OpenAIService {
       if let runID {
          queryItems.append(.init(name: "run_id", value: runID))
       }
-      let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
    }
    
@@ -422,7 +422,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: RunParameter)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunObject.self, with: request)
    }
    
@@ -431,7 +431,7 @@ struct DefaultOpenAIService: OpenAIService {
       runID: String)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunObject.self, with: request)
    }
    
@@ -441,7 +441,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: ModifyRunParameters)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunObject.self, with: request)
    }
    
@@ -466,7 +466,7 @@ struct DefaultOpenAIService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try OpenAIAPI.run(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: OpenAIResponse<RunObject>.self, with: request)
    }
    
@@ -475,7 +475,7 @@ struct DefaultOpenAIService: OpenAIService {
       runID: String)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunObject.self, with: request)
    }
    
@@ -485,7 +485,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: RunToolsOutputParameter)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunObject.self, with: request)
    }
    
@@ -505,7 +505,7 @@ struct DefaultOpenAIService: OpenAIService {
       stepID: String)
       async throws -> RunStepObject
    {
-      let request = try OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: RunStepObject.self, with: request)
    }
    
@@ -531,7 +531,7 @@ struct DefaultOpenAIService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
    }
    
@@ -542,7 +542,7 @@ struct DefaultOpenAIService: OpenAIService {
    {
       var runParameters = parameters
       runParameters.stream = true
-      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request)
    }
    
@@ -563,7 +563,18 @@ struct DefaultOpenAIService: OpenAIService {
    {
       var runToolsOutputParameter = parameters
       runToolsOutputParameter.stream = true
-      let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBeta)
+      let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request)
    }
+   
+   // MARK: Batch
+   
+   func createBatch(
+      parameters: BatchParameter)
+      async throws -> BatchObject
+   {
+      let request = try OpenAIAPI.batch(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: BatchObject.self, with: request)
+   }
+
 }

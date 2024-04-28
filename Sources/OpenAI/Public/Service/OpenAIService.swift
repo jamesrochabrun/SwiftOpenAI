@@ -677,6 +677,21 @@ public protocol OpenAIService {
       runID: String,
       parameters: RunToolsOutputParameter)
    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   
+   // MARK: Batch
+
+   /// Creates and executes a batch from an uploaded file of requests
+   ///
+   /// - Parameter parameters: The parameters needed to create a batc,.
+   /// - Returns: A [batch](https://platform.openai.com/docs/api-reference/batch/object) object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Batch API documentation](https://platform.openai.com/docs/api-reference/batch/create).
+   func createBatch(
+      parameters: BatchParameter)
+      async throws -> BatchObject
+
+   
 }
 
 

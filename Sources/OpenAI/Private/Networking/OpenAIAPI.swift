@@ -26,6 +26,8 @@ enum OpenAIAPI {
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
    case batch(BatchCategory) // https://platform.openai.com/docs/api-reference/batch
    case vectorStore(VectorStoreCategory) // https://platform.openai.com/docs/api-reference/vector-stores
+   case vectorStoreFile(VectorStoreFileCategory) // https://platform.openai.com/docs/api-reference/vector-stores-files
+   case vectorStoreFileBatch(VectorStoreFileBatch) // https://platform.openai.com/docs/api-reference/vector-stores-file-batches
    
    enum AssistantCategory {
       case create
@@ -112,6 +114,21 @@ enum OpenAIAPI {
       case modify(vectorStoreID: String)
       case delete(vectorStoreID: String)
    }
+   
+   enum VectorStoreFileCategory {
+      case create(vectorStoreID: String)
+      case list(vectorStoreID: String)
+      case retrieve(vectorStoreID: String, fileID: String)
+      case delete(vectorStoreID: String, fileID: String)
+   }
+   
+   enum VectorStoreFileBatch {
+      case create(vectorStoreID: String)
+      case retrieve(vectorStoreID: String, batchID: String)
+      case cancel(vectorStoreID: String, batchID: String)
+      case list(vectorStoreID: String, batchID: String)
+      
+   }
 }
 
 // MARK: OpenAIAPI+Endpoint
@@ -185,6 +202,18 @@ extension OpenAIAPI: Endpoint {
          switch category {
          case .create, .list: return "/v1/vector_stores"
          case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)"
+         }
+      case .vectorStoreFile(let category):
+         switch category {
+         case .create(let vectorStoreID), .list(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)/files"
+         case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/v1/vector_stores/\(vectorStoreID)/files/\(fileID)"
+         }
+      case .vectorStoreFileBatch(let category):
+         switch category {
+         case .create(let vectorStoreID): return"/v1/vector_stores/\(vectorStoreID)/file_batches"
+         case .retrieve(let vectorStoreID, let batchID): return "v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)"
+         case .cancel(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/cancel"
+         case .list(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/files"
          }
       }
    }

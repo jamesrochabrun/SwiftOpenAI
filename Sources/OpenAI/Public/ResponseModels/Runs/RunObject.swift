@@ -105,13 +105,6 @@ public struct RunObject: Decodable {
       }
    }
    
-   public struct LastError: Codable {
-      /// One of server_error or rate_limit_exceeded.
-      let code: String
-      /// A human-readable description of the error.
-      let message: String
-   }
-   
    public var displayStatus: Status? { .init(rawValue: status) }
    
    private enum CodingKeys: String, CodingKey {

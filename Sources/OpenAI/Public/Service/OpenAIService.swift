@@ -682,7 +682,7 @@ public protocol OpenAIService {
 
    /// Creates and executes a batch from an uploaded file of requests
    ///
-   /// - Parameter parameters: The parameters needed to create a batc,.
+   /// - Parameter parameters: The parameters needed to create a batch.
    /// - Returns: A [batch](https://platform.openai.com/docs/api-reference/batch/object) object.
    /// - Throws: An error if the request fails
    ///
@@ -789,6 +789,70 @@ public protocol OpenAIService {
    func deleteVectorStore(
       id: String)
       async throws -> DeletionStatus
+   
+   // MARK: Vector Store Files
+   
+   /// Create a vector store file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to a vector store.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store for which to create a File.
+   /// - Parameter parameters: The paramaters needed to create a vector store File.
+   /// - Returns: A [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Vectore store file documentation.](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile).
+   func createVectorStoreFile(
+      vectorStoreID: String,
+      parameters: VectorStoreFileParameter)
+      async throws -> VectorStoreFileObject
+   
+   /// Returns a list of vector store files.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the files belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Parameter filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
+   /// - Returns: A list of [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles).
+   func listVectorStoreFiles(
+      vectorStoreID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?,
+      filter: String?)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   /// Retrieves a vector store file.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file belongs to.
+   /// - Parameter fileID: The ID of the file being retrieved.
+   /// - Returns: A [vector store file object](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/getFile).
+   func retrieveVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> VectorStoreFileObject
+   
+   /// Delete a vector store file. This will remove the file from the vector store but the file itself will not be deleted. To delete the file, use the [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file belongs to.
+   /// - Parameter fileID: The ID of the file to delete.
+   /// - Returns: A deletion status.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/deleteFile).
+   func deleteVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> DeletionStatus
+   
+
 }
 
 

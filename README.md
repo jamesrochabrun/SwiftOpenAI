@@ -53,6 +53,9 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Message Delta Object](#message-delta-object)
    - [Run Step Delta Object](#run-step-delta-object)
 - [Vector Stores](#vector-stores)
+   - [Vector store File](#vector-store-file)
+   - [Vector store File Batch](#vector-store-file-batch)
+
 
 ## Getting an API Key
 
@@ -2606,6 +2609,87 @@ public struct RunStepDeltaObject: Decodable {
 }
 ```
 
+⚠️ To utilize the `createRunAndStreamMessage`, first create an assistant and initiate a thread.
+
+Usage
+[Create Run](https://platform.openai.com/docs/api-reference/runs/createRun) with stream.
+
+The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), You can decide which one you need for your implementation. For example, this is how you can access message delta and run step delta objects
+
+```swift
+let assistantID = "asst_abc123""
+let threadID = "thread_abc123"
+let messageParameter = MessageParameter(role: .user, content: "Tell me the square root of 1235")
+let message = try await service.createMessage(threadID: threadID, parameters: messageParameter)
+let runParameters = RunParameter(assistantID: assistantID)
+let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: runParameters)
+
+         for try await result in stream {
+            switch result {
+            case .threadMessageDelta(let messageDelta):
+               let content = messageDelta.delta.content.first
+               switch content {
+               case .imageFile, nil:
+                  break
+               case .text(let textContent):
+                  print(textContent.text.value) // this will print the streamed response for a message.
+               }
+               
+            case .threadRunStepDelta(let runStepDelta):
+               if let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall {
+                  switch toolCall {
+                  case .codeInterpreterToolCall(let toolCall):
+                     print(toolCall.input ?? "") // this will print the streamed response for code interpreter tool call.
+                  case .fileSearchToolCall(let toolCall):
+                     print("File search tool call")
+                  case .functionToolCall(let toolCall):
+                     print("Function tool call")
+                  case nil:
+                     break
+                  }
+               }
+            }
+         }
+```
+
+You can go to the [Examples folder](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample) in this package, navigate to the 'Configure Assistants' tab, create an assistant, and follow the subsequent steps.
+
+### Stream support has also been added to:
+
+[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun):
+
+```swift
+   /// Creates a thread and run with stream enabled.
+   ///
+   /// - Parameter parameters: The parameters needed to create a thread and run.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
+   func createThreadAndRunStream(
+      parameters: CreateThreadAndRunParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+```
+
+[Submit Tool Outputs](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs):
+
+```swift
+   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request. Stream enabled
+   ///
+   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
+   /// - Parameter runID: The ID of the run that requires the tool output submission.
+   /// - Parameter parameters: The parameters needed for the run tools output.
+   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
+   func submitToolOutputsToRunStream(
+      threadID: String,
+      runID: String,
+      parameters: RunToolsOutputParameter)
+   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+```
+
 ### Vector Stores
 Parameters
 ```swift
@@ -2694,85 +2778,63 @@ let vectorStoreID = "vs_abc123"
 let deletionStatus = try await service.deleteVectorStore(id: vectorStoreID)
 ```
 
-⚠️ To utilize the `createRunAndStreamMessage`, first create an assistant and initiate a thread.
+### Vector Store File
+Parameters
+```swift
+public struct VectorStoreFileParameter: Encodable {
+   
+   /// A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store should use. Useful for tools like file_search that can access files.
+   let fileID: String
+}
+```
+Response
+```swift
+public struct VectorStoreFileObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.file.
+   let object: String
+   /// The total vector store usage in bytes. Note that this may be different from the original file size.
+   let usageBytes: Int
+   /// The Unix timestamp (in seconds) for when the vector store file was created.
+   let createdAt: Int
+   /// The ID of the [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+   let vectorStoreID: String
+   /// The status of the vector store file, which can be either in_progress, completed, cancelled, or failed. The status completed indicates that the vector store file is ready for use.
+   let status: String
+   /// The last error associated with this vector store file. Will be null if there are no errors.
+   let lastError: LastError?
+}
+```
 
 Usage
-[Create Run](https://platform.openai.com/docs/api-reference/runs/createRun) with stream.
-
-The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), You can decide which one you need for your implementation. For example, this is how you can access message delta and run step delta objects
-
+[Create vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile)
 ```swift
-let assistantID = "asst_abc123""
-let threadID = "thread_abc123"
-let messageParameter = MessageParameter(role: .user, content: "Tell me the square root of 1235")
-let message = try await service.createMessage(threadID: threadID, parameters: messageParameter)
-let runParameters = RunParameter(assistantID: assistantID)
-let stream = try await service.createRunAndStreamMessage(threadID: threadID, parameters: runParameters)
-
-         for try await result in stream {
-            switch result {
-            case .threadMessageDelta(let messageDelta):
-               let content = messageDelta.delta.content.first
-               switch content {
-               case .imageFile, nil:
-                  break
-               case .text(let textContent):
-                  print(textContent.text.value) // this will print the streamed response for a message.
-               }
-               
-            case .threadRunStepDelta(let runStepDelta):
-               if let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall {
-                  switch toolCall {
-                  case .codeInterpreterToolCall(let toolCall):
-                     print(toolCall.input ?? "") // this will print the streamed response for code interpreter tool call.
-                  case .fileSearchToolCall(let toolCall):
-                     print("File search tool call")
-                  case .functionToolCall(let toolCall):
-                     print("Function tool call")
-                  case nil:
-                     break
-                  }
-               }
-            }
-         }
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let parameters = VectorStoreFileParameter(fileID: fileID)
+let vectoreStoreFile = try await service.createVectorStoreFile(vectorStoreID: vectorStoreID, parameters: parameters)
 ```
 
-You can go to the [Examples folder](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample) in this package, navigate to the 'Configure Assistants' tab, create an assistant, and follow the subsequent steps.
-
-### Stream support has also been added to:
-
-[Create Thread and Run](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun):
-
+[List vector store files](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles)
 ```swift
-   /// Creates a thread and run with stream enabled.
-   ///
-   /// - Parameter parameters: The parameters needed to create a thread and run.
-   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
-   /// - Throws: An error if the request fails.
-   ///
-   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
-   func createThreadAndRunStream(
-      parameters: CreateThreadAndRunParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+let vectorStoreID = "vs_abc123"
+let vectorStoreFiles = try await service.listVectorStoreFiles(vectorStoreID: vectorStoreID, limit: nil, order: nil, aftre: nil, before: nil, filter: nil)
 ```
 
-[Submit Tool Outputs](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs):
-
+[Retrieve vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/getFile)
 ```swift
-   /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request. Stream enabled
-   ///
-   /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) to which this run belongs.
-   /// - Parameter runID: The ID of the run that requires the tool output submission.
-   /// - Parameter parameters: The parameters needed for the run tools output.
-   /// - Returns: An AsyncThrowingStream of [AssistantStreamEvent](https://platform.openai.com/docs/api-reference/assistants-streaming/events) objects.
-   /// - Throws: An error if the request fails.
-   ///
-   /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs).
-   func submitToolOutputsToRunStream(
-      threadID: String,
-      runID: String,
-      parameters: RunToolsOutputParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let vectoreStoreFile = try await service.retrieveVectorStoreFile(vectorStoreID: vectorStoreID, fileID: fileID)
+```
+
+[Delete vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/deleteFile)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let deletionStatus = try await service.deleteVectorStoreFile(vectorStoreID: vectorStoreID, fileID: fileID)
 ```
 
 ## Azure OpenAI

@@ -666,4 +666,63 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: DeletionStatus.self, with: request)
    }
+   
+   // MARK: Vector Store Files
+   
+   func createVectorStoreFile(
+      vectorStoreID: String,
+      parameters: VectorStoreFileParameter)
+   async throws -> VectorStoreFileObject 
+   {
+      let request = try OpenAIAPI.vectorStoreFile(.create(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: VectorStoreFileObject.self, with: request)
+   }
+   
+   func listVectorStoreFiles(
+      vectorStoreID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?,
+      filter: String?)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
+   {
+      var queryItems: [URLQueryItem] = []
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      if let filter {
+         queryItems.append(.init(name: "filter", value: before))
+      }
+      let request = try OpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
+   }
+   
+   func retrieveVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> VectorStoreFileObject
+   {
+      let request = try OpenAIAPI.vectorStoreFile(.retrieve(vectorStoreID: vectorStoreID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: VectorStoreFileObject.self, with: request)
+   }
+   
+   func deleteVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> DeletionStatus
+   {
+      let request = try OpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: DeletionStatus.self, with: request)
+   }
 }
+

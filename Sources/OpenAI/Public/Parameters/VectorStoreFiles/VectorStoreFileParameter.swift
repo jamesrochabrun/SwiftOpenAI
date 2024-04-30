@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  VectorStoreFileParameter.swift
 //  
 //
 //  Created by James Rochabrun on 4/28/24.

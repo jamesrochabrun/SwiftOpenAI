@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  VectorStoreParameter.swift
+//
 //
 //  Created by James Rochabrun on 4/27/24.
 //
@@ -22,6 +22,13 @@ public struct VectorStoreParameter: Encodable {
    let expiresAfter: ExpirationPolicy?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   
+   enum CodingKeys: String, CodingKey {
+      case fileIDS = "file_ids"
+      case name
+      case expiresAfter = "expires_after"
+      case metadata
+   }
    
    public init(
       fileIDS: [String]? = nil,

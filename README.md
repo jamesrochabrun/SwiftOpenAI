@@ -2896,7 +2896,7 @@ let batchID = "vsfb_abc123"
 let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStoreID: vectorStoreID, batchID: batchID)
 ```
 
-⚠️ We currently support Assistants Beta 2, if you need support for Assistants V1 you can acces it in `jroch-supported-branch-for-assistants-v1` branch. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
+⚠️ We currently support Only Assistants Beta 2. If you need support for Assistants V1, you can access it in the jroch-supported-branch-for-assistants-v1 branch or in the v2.3 release.. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
 
 ## Azure OpenAI
 

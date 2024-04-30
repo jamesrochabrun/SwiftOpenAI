@@ -25,8 +25,6 @@ public struct MessageDeltaObject: Delta {
       public let role: String?
       /// The content of the message in array of text and/or images.
       public let content: [MessageContent]
-      /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-      public let fileIDS: [String]?
 
       enum Role: String {
          case user
@@ -36,7 +34,6 @@ public struct MessageDeltaObject: Delta {
       enum CodingKeys: String, CodingKey {
          case role
          case content
-         case fileIDS = "file_ids"
       }
    }
 }

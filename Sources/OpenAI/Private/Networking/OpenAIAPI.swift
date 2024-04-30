@@ -12,7 +12,6 @@ import Foundation
 enum OpenAIAPI {
    
    case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
-   case assistantFile(AssistantFileCategory) // https://platform.openai.com/docs/api-reference/assistants/file-object
    case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
    case chat /// https://platform.openai.com/docs/api-reference/chat
    case embeddings // https://platform.openai.com/docs/api-reference/embeddings
@@ -20,12 +19,15 @@ enum OpenAIAPI {
    case fineTuning(FineTuningCategory) // https://platform.openai.com/docs/api-reference/fine-tuning
    case images(ImageCategory) // https://platform.openai.com/docs/api-reference/images
    case message(MessageCategory) // https://platform.openai.com/docs/api-reference/messages
-   case messageFile(MessageFileCategory) // https://platform.openai.com/docs/api-reference/messages/file-object
    case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
    case moderations // https://platform.openai.com/docs/api-reference/moderations
    case run(RunCategory) // https://platform.openai.com/docs/api-reference/runs
    case runStep(RunStepCategory) // https://platform.openai.com/docs/api-reference/runs/step-object
    case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
+   case batch(BatchCategory) // https://platform.openai.com/docs/api-reference/batch
+   case vectorStore(VectorStoreCategory) // https://platform.openai.com/docs/api-reference/vector-stores
+   case vectorStoreFile(VectorStoreFileCategory) // https://platform.openai.com/docs/api-reference/vector-stores-files
+   case vectorStoreFileBatch(VectorStoreFileBatch) // https://platform.openai.com/docs/api-reference/vector-stores-file-batches
    
    enum AssistantCategory {
       case create
@@ -33,13 +35,6 @@ enum OpenAIAPI {
       case retrieve(assistantID: String)
       case modify(assistantID: String)
       case delete(assistantID: String)
-   }
-   
-   enum AssistantFileCategory {
-      case create(assistantID: String)
-      case retrieve(assistantID: String, fileID: String)
-      case delete(assistantID: String, fileID: String)
-      case list(assistantID: String)
    }
    
    enum AudioCategory: String {
@@ -77,11 +72,6 @@ enum OpenAIAPI {
       case list(threadID: String)
    }
    
-   enum MessageFileCategory {
-      case retrieve(threadID: String, messageID: String, fileID: String)
-      case list(threadID: String, messageID: String)
-   }
-   
    enum ModelCategory {
       case list
       case retrieve(modelID: String)
@@ -109,6 +99,36 @@ enum OpenAIAPI {
       case modify(threadID: String)
       case delete(threadID: String)
    }
+   
+   enum BatchCategory {
+      case create
+      case retrieve(batchID: String)
+      case cancel(batchID: String)
+      case list
+   }
+   
+   enum VectorStoreCategory {
+      case create
+      case list
+      case retrieve(vectorStoreID: String)
+      case modify(vectorStoreID: String)
+      case delete(vectorStoreID: String)
+   }
+   
+   enum VectorStoreFileCategory {
+      case create(vectorStoreID: String)
+      case list(vectorStoreID: String)
+      case retrieve(vectorStoreID: String, fileID: String)
+      case delete(vectorStoreID: String, fileID: String)
+   }
+   
+   enum VectorStoreFileBatch {
+      case create(vectorStoreID: String)
+      case retrieve(vectorStoreID: String, batchID: String)
+      case cancel(vectorStoreID: String, batchID: String)
+      case list(vectorStoreID: String, batchID: String)
+      
+   }
 }
 
 // MARK: OpenAIAPI+Endpoint
@@ -126,12 +146,13 @@ extension OpenAIAPI: Endpoint {
          case .create, .list: return "/v1/assistants"
          case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/v1/assistants/\(assistantID)"
          }
-      case .assistantFile(let category):
-         switch category {
-         case .create(let assistantID), .list(let assistantID): return "/v1/assistants/\(assistantID)/files"
-         case .retrieve(let assistantID, let fileID), .delete(let assistantID, let fileID): return "/v1/assistants/\(assistantID)/files/\(fileID)"
-         }
       case .audio(let category): return "/v1/audio/\(category.rawValue)"
+      case .batch(let category):
+         switch category {
+         case .create, .list: return "v1/batches"
+         case .retrieve(let batchID): return "v1/batches/\(batchID)"
+         case .cancel(let batchID): return "v1/batches/\(batchID)/cancel"
+         }
       case .chat: return "/v1/chat/completions"
       case .embeddings: return "/v1/embeddings"
       case .file(let category):
@@ -152,11 +173,6 @@ extension OpenAIAPI: Endpoint {
          switch category {
          case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/messages"
          case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
-         }
-      case .messageFile(let category):
-         switch category {
-         case .retrieve(let threadID, let messageID, let fileID): return "/v1/threads/\(threadID)/messages/\(messageID)/files/\(fileID)"
-         case .list(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)/files"
          }
       case .model(let category):
          switch category {
@@ -181,6 +197,23 @@ extension OpenAIAPI: Endpoint {
          switch category {
          case .create: return "/v1/threads"
          case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/v1/threads/\(threadID)"
+         }
+      case .vectorStore(let category):
+         switch category {
+         case .create, .list: return "/v1/vector_stores"
+         case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)"
+         }
+      case .vectorStoreFile(let category):
+         switch category {
+         case .create(let vectorStoreID), .list(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)/files"
+         case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/v1/vector_stores/\(vectorStoreID)/files/\(fileID)"
+         }
+      case .vectorStoreFileBatch(let category):
+         switch category {
+         case .create(let vectorStoreID): return"/v1/vector_stores/\(vectorStoreID)/file_batches"
+         case .retrieve(let vectorStoreID, let batchID): return "v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)"
+         case .cancel(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/cancel"
+         case .list(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/files"
          }
       }
    }

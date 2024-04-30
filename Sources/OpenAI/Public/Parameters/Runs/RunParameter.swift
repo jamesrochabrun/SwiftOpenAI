@@ -33,9 +33,9 @@ public struct RunParameter: Encodable {
    let maxPromptTokens: Int?
    /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
    let maxCompletionTokens: Int?
-   
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
    let truncationStrategy: TruncationStrategy?
-   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "file_search"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
    let toolChoice: ToolChoice?
    /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
    /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
@@ -54,7 +54,7 @@ public struct RunParameter: Encodable {
       case temperature
       case maxPromptTokens = "max_prompt_tokens"
       case maxCompletionTokens = "max_completion_tokens"
-      case truncationStrategy
+      case truncationStrategy = "truncation_strategy"
       case toolChoice = "tool_choice"
       case responseFormat = "response_format"
    }

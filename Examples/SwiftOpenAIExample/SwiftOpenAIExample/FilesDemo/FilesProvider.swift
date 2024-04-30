@@ -14,7 +14,7 @@ import SwiftUI
    
    var files: [FileObject] = []
    var uploadedFile: FileObject? = nil
-   var deletedStatus: FileObject.DeletionStatus? = nil
+   var deletedStatus: DeletionStatus? = nil
    var retrievedFile: FileObject? = nil
    var fileContent: [[String: Any]] = []
 

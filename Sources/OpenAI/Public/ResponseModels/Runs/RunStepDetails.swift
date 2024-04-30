@@ -13,7 +13,7 @@ public struct RunStepDetails: Codable {
    public let type: String
    /// Details of the message creation by the run step.
    public let messageCreation: MessageCreation?
-   /// Details of the tool call.
+   /// An array of tool calls the run step was involved in. These can be associated with one of three types of tools: code_interpreter, file_search, or function.
    public let toolCalls: [ToolCall]?
    
    enum CodingKeys: String, CodingKey {
@@ -41,7 +41,8 @@ public struct RunStepDetails: Codable {
       enum CodingKeys: String, CodingKey {
          case index, id, type
          case codeInterpreter = "code_interpreter"
-         case retrieval, function
+         case fileSearch = "file_search"
+         case function
       }
       
       public init(from decoder: Decoder) throws {
@@ -55,10 +56,9 @@ public struct RunStepDetails: Codable {
          case "code_interpreter":
             let codeInterpreter = try container.decode(CodeInterpreterToolCall.self, forKey: .codeInterpreter)
             toolCall = .codeInterpreterToolCall(codeInterpreter)
-         case "retrieval":
-            // Assuming you have a retrieval key in your JSON that corresponds to this type
-            let retrieval = try container.decode(RetrievalToolCall.self, forKey: .retrieval)
-            toolCall = .retrieveToolCall(retrieval)
+         case "file_search":
+            let retrieval = try container.decode(FileSearchToolCall.self, forKey: .fileSearch)
+            toolCall = .fileSearchToolCall(retrieval)
          case "function":
             // Assuming you have a function key in your JSON that corresponds to this type
             let function = try container.decode(FunctionToolCall.self, forKey: .function)
@@ -77,9 +77,9 @@ public struct RunStepDetails: Codable {
          switch toolCall {
          case .codeInterpreterToolCall(let codeInterpreter):
             try container.encode(codeInterpreter, forKey: .codeInterpreter)
-         case .retrieveToolCall(let retrieval):
+         case .fileSearchToolCall(let retrieval):
             // Encode retrieval if it's not nil
-            try container.encode(retrieval, forKey: .retrieval)
+            try container.encode(retrieval, forKey: .fileSearch)
          case .functionToolCall(let function):
             // Encode function if it's not nil
             try container.encode(function, forKey: .function)
@@ -94,12 +94,12 @@ public struct RunStepDetails: Codable {
 public enum RunStepToolCall: Codable {
    
    case codeInterpreterToolCall(CodeInterpreterToolCall)
-   case retrieveToolCall(RetrievalToolCall)
+   case fileSearchToolCall(FileSearchToolCall)
    case functionToolCall(FunctionToolCall)
    
    private enum TypeEnum: String, Decodable {
       case codeInterpreter = "code_interpreter"
-      case retrieval
+      case fileSearch = "file_search"
       case function
    }
    
@@ -114,9 +114,9 @@ public enum RunStepToolCall: Codable {
       case .codeInterpreter:
          let value = try CodeInterpreterToolCall(from: decoder)
          self = .codeInterpreterToolCall(value)
-      case .retrieval:
-         let value = try RetrievalToolCall(from: decoder)
-         self = .retrieveToolCall(value)
+      case .fileSearch:
+         let value = try FileSearchToolCall(from: decoder)
+         self = .fileSearchToolCall(value)
       case .function:
          let value = try FunctionToolCall(from: decoder)
          self = .functionToolCall(value)
@@ -129,7 +129,7 @@ public enum RunStepToolCall: Codable {
       switch self {
       case .codeInterpreterToolCall(let value):
          try container.encode(value)
-      case .retrieveToolCall(let value):
+      case .fileSearchToolCall(let value):
          try container.encode(value)
       case .functionToolCall(let value):
          try container.encode(value)
@@ -230,12 +230,16 @@ public struct CodeInterpreterImageOutput: Codable {
    }
 }
 
-// MARK: RetrievalToolCall
+// MARK: FileSearchToolCall
 
-public struct RetrievalToolCall: Codable {
+public struct FileSearchToolCall: Codable {
    
    /// For now, this is always going to be an empty object.
-   public let retrieval: [String: String]?
+   public let fileSearch: [String: String]?
+   
+   enum CodingKeys: String, CodingKey {
+      case fileSearch = "file_search"
+   }
 }
 
 // MARK: FunctionToolCall

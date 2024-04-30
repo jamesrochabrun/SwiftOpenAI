@@ -34,6 +34,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Vision](#vision)
 - [Embeddings](#embeddings)
 - [Fine-tuning](#fine-tuning)
+- [Batch](#batch)
 - [Files](#files)
 - [Images](#images)
 - [Models](#models)
@@ -51,6 +52,10 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Assistants Streaming](#assistants-streaming)
    - [Message Delta Object](#message-delta-object)
    - [Run Step Delta Object](#run-step-delta-object)
+- [Vector Stores](#vector-stores)
+   - [Vector store File](#vector-store-file)
+   - [Vector store File Batch](#vector-store-file-batch)
+
 
 ## Getting an API Key
 
@@ -1274,6 +1279,131 @@ let fineTuningJobID = "ftjob-abc123"
 let jobEvents = try await service.listFineTuningEventsForJobWith(id: id, after: nil, limit: nil).data
 ```
 
+### Batch
+Parameters
+```swift
+public struct BatchParameter: Encodable {
+   
+   /// The ID of an uploaded file that contains requests for the new batch.
+   /// See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to upload a file.
+   /// Your input file must be formatted as a [JSONL file](https://platform.openai.com/docs/api-reference/batch/requestInput), and must be uploaded with the purpose batch.
+   let inputFileID: String
+   /// The endpoint to be used for all requests in the batch. Currently only /v1/chat/completions is supported.
+   let endpoint: String
+   /// The time frame within which the batch should be processed. Currently only 24h is supported.
+   let completionWindow: String
+   /// Optional custom metadata for the batch.
+   let metadata: [String: String]?
+   
+   enum CodingKeys: String, CodingKey {
+      case inputFileID = "input_file_id"
+      case endpoint
+      case completionWindow = "completion_window"
+      case metadata
+   }
+}
+```
+Response
+```swift
+public struct BatchObject: Decodable {
+   
+   let id: String
+   /// The object type, which is always batch.
+   let object: String
+   /// The OpenAI API endpoint used by the batch.
+   let endpoint: String
+   
+   let errors: Error
+   /// The ID of the input file for the batch.
+   let inputFileID: String
+   /// The time frame within which the batch should be processed.
+   let completionWindow: String
+   /// The current status of the batch.
+   let status: String
+   /// The ID of the file containing the outputs of successfully executed requests.
+   let outputFileID: String
+   /// The ID of the file containing the outputs of requests with errors.
+   let errorFileID: String
+   /// The Unix timestamp (in seconds) for when the batch was created.
+   let createdAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started processing.
+   let inProgressAt: Int
+   /// The Unix timestamp (in seconds) for when the batch will expire.
+   let expiresAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started finalizing.
+   let finalizingAt: Int
+   /// The Unix timestamp (in seconds) for when the batch was completed.
+   let completedAt: Int
+   /// The Unix timestamp (in seconds) for when the batch failed.
+   let failedAt: Int
+   /// The Unix timestamp (in seconds) for when the batch expired.
+   let expiredAt: Int
+   /// The Unix timestamp (in seconds) for when the batch started cancelling.
+   let cancellingAt: Int
+   /// The Unix timestamp (in seconds) for when the batch was cancelled.
+   let cancelledAt: Int
+   /// The request counts for different statuses within the batch.
+   let requestCounts: RequestCount
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]
+   
+   public struct Error: Decodable {
+      
+      let object: String
+      let data: [Data]
+
+      public struct Data: Decodable {
+         
+         /// An error code identifying the error type.
+         let code: String
+         /// A human-readable message providing more details about the error.
+         let message: String
+         /// The name of the parameter that caused the error, if applicable.
+         let param: String?
+         /// The line number of the input file where the error occurred, if applicable.
+         let line: Int?
+      }
+   }
+   
+   public struct RequestCount: Decodable {
+      
+      /// Total number of requests in the batch.
+      let total: Int
+      /// Number of requests that have been completed successfully.
+      let completed: Int
+      /// Number of requests that have failed.
+      let failed: Int
+   }
+}
+```
+Usage
+
+Create batch
+```swift
+let inputFileID = "file-abc123"
+let endpoint = "/v1/chat/completions"
+let completionWindow = "24h"
+let parameter = BatchParameter(inputFileID: inputFileID, endpoint: endpoint, completionWindow: completionWindow, metadata: nil)
+let batch = try await service.createBatch(parameters: parameters)
+```
+
+Retrieve batch
+```swift
+let batchID = "batch_abc123"
+let batch = try await service.retrieveBatch(id: batchID)
+```
+
+Cancel batch
+```swift
+let batchID = "batch_abc123"
+let batch = try await service.cancelBatch(id: batchID)
+```
+
+List batch
+```swift
+let batches = try await service.listBatch(after: nil, limit: nil)
+```
+
 ### Files
 Parameters
 ```swift
@@ -1349,12 +1479,6 @@ public struct FileObject: Decodable {
       self.purpose = purpose
       self.status = status.rawValue
       self.statusDetails = statusDetails
-   }
-   
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
    }
 }
 ```
@@ -1771,10 +1895,20 @@ public struct AssistantParameters: Encodable {
    public var instructions: String?
    /// A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types code_interpreter, retrieval, or function. Defaults to []
    public var tools: [AssistantObject.Tool] = []
-   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs attached to this assistant. There can be a maximum of 20 files attached to the assistant. Files are ordered by their creation date in ascending order.
-   public var fileIDS: [String]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public var metadata: [String: String]?
+   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// Defaults to 1
+   public var temperature: Double?
+   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+  /// We generally recommend altering this or temperature but not both.
+   /// Defaults to 1
+   public var topP: Double?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models since gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   /// Defaults to `auto`
+   public var responseFormat: ResponseFormat?
    
    public enum Action {
       case create(model: String) // model is required on creation of assistant.
@@ -1786,24 +1920,6 @@ public struct AssistantParameters: Encodable {
          case .modify(let model): return model
          }
       }
-   }
-   
-   public init(
-      action: Action,
-      name: String? = nil,
-      description: String? = nil,
-      instructions: String? = nil,
-      tools: [AssistantObject.Tool] = [],
-      fileIDS: [String]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.model = action.model
-      self.name = name
-      self.description = description
-      self.instructions = instructions
-      self.tools = tools
-      self.fileIDS = fileIDS
-      self.metadata = metadata
    }
 }
 ```
@@ -1829,10 +1945,23 @@ public struct AssistantObject: Decodable {
    /// A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types code_interpreter, retrieval, or function.
    public let tools: [Tool]
    /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs attached to this assistant. There can be a maximum of 20 files attached to the assistant. Files are ordered by their creation date in ascending order.
-   public let fileIDS: [String]
+   /// A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+   public let toolResources: ToolResources?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
-   public let metadata: [String: String]
-   
+   public let metadata: [String: String]?
+   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// Defaults to 1
+   public var temperature: Double?
+   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+  /// We generally recommend altering this or temperature but not both.
+   /// Defaults to 1
+   public var topP: Double?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models since gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   /// Defaults to `auto`
+   public var responseFormat: ResponseFormat?
+
    public struct Tool: Codable {
       
       /// The type of tool being defined.
@@ -1841,7 +1970,7 @@ public struct AssistantObject: Decodable {
       
       public enum ToolType: String, CaseIterable {
          case codeInterpreter = "code_interpreter"
-         case retrieval
+         case fileSearch = "file_search"
          case function
       }
       
@@ -1893,58 +2022,6 @@ List Assistants
 let assistants = try await service.listAssistants()
 ```
 
-### Assistants File Object
-Parameters
-```swift
-/// [Creates an assistant file.](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile)
-public struct AssistantFileParamaters: Encodable {
-   
-   /// The ID of the assistant for which to create a File.
-   let assistantID: String
-   /// A [File](https://platform.openai.com/docs/api-reference/files) ID (with purpose="assistants") that the assistant should use.
-   /// Useful for tools like retrieval and code_interpreter that can access files.
-   let fileID: String
-}
-```
-Response
-```swift
-/// The [assistant file object.](https://platform.openai.com/docs/api-reference/assistants/file-object)
-/// A list of [Files](https://platform.openai.com/docs/api-reference/files) attached to an assistant.
-public struct AssistantFileObject: Decodable {
-   
-   /// The identifier, which can be referenced in API endpoints.
-   let id: String
-   /// The object type, which is always assistant.file.
-   let object: String
-   /// The Unix timestamp (in seconds) for when the assistant file was created.
-   let createdAt: Int
-   /// The assistant ID that the file is attached to.
-   let assistantID: String
-   
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case object
-      case createdAt = "created_at"
-      case assistantID = "assistant_id"
-   }
-   
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
-}
-```
-Usage
-
-Refer to the [Upload file](#upload-file) section or consult the Files[https://platform.openai.com/docs/api-reference/files] OpenAI documentation for details on how to upload a file that can be attached to the assistant.
-```swift
-let fileID = "file-abc123"
-let parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.rawValue), name: "Math tutor", fileIDS: [fileID])
-let assistant = try await service.createAssistant(parameters: parameters)
-```
-
 ### Threads
 Parameters
 ```swift
@@ -1953,17 +2030,10 @@ public struct CreateThreadParameters: Encodable {
    
    /// A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start the thread with.
    public var messages: [MessageObject]?
-   
+      /// A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+   public var toolResources: ToolResources?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public var metadata: [String: String]?
-   
-   public init(
-      messages: [MessageObject]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.messages = messages
-      self.metadata = metadata
-   }
 }
 ```
 Response
@@ -1977,14 +2047,11 @@ public struct ThreadObject: Decodable {
    public let object: String
    /// The Unix timestamp (in seconds) for when the thread was created.
    public let createdAt: Int
+   /// A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the code_interpreter tool requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+   public var toolResources: ToolResources?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
 }
 ```
 
@@ -2024,22 +2091,10 @@ public struct MessageParameter: Encodable {
    let role: String
    /// The content of the message.
    let content: String
-   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the message should use. There can be a maximum of 10 files attached to a message. Useful for tools like retrieval and code_interpreter that can access and use files. Defaults to []
-   let fileIDS: [String]?
+   /// A list of files attached to the message, and the tools they should be added to.
+   let attachments: [MessageAttachment]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
-   
-   public init(
-      role: String,
-      content: String,
-      fileIDS: [String]? = nil,
-      metadata: [String : String]? = nil)
-   {
-      self.role = role
-      self.content = content
-      self.fileIDS = fileIDS
-      self.metadata = metadata
-   }
 }
 ```
 [Modify a Message](https://platform.openai.com/docs/api-reference/messages/modifyMessage))
@@ -2063,35 +2118,28 @@ public struct MessageObject: Codable {
    public let createdAt: Int
    /// The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message belongs to.
    public let threadID: String
+   /// The status of the message, which can be either in_progress, incomplete, or completed.
+   public let status: String
+   /// On an incomplete message, details about why the message is incomplete.
+   public let incompleteDetails: IncompleteDetails?
+   /// The Unix timestamp (in seconds) for when the message was completed.
+   public let completedAt: Int
    /// The entity that produced the message. One of user or assistant.
    public let role: String
    /// The content of the message in array of text and/or images.
-   public let content: [Content]
+   public let content: [MessageContent]
    /// If applicable, the ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this message.
    public let assistantID: String?
    /// If applicable, the ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the authoring of this message.
    public let runID: String?
-   /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-   public let fileIDS: [String]?
+   /// A list of files attached to the message, and the tools they were added to.
+   public let attachments: [MessageAttachment]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]?
    
    enum Role: String {
       case user
       case assistant
-   }
-   
-   enum CodingKeys: String, CodingKey {
-      case id
-      case object
-      case createdAt = "created_at"
-      case threadID = "thread_id"
-      case role
-      case content
-      case assistantID = "assistant_id"
-      case runID = "run_id"
-      case fileIDS = "file_ids"
-      case metadata
    }
 }
 
@@ -2218,35 +2266,6 @@ let threadID = "thread_abc123"
 let messages = try await service.listMessages(threadID: threadID, limit: nil, order: nil, after: nil, before: nil) 
 ```
 
-### Message File Object
-[A list of files attached to a message](https://platform.openai.com/docs/api-reference/messages/file-object)
-Response
-```swift
-public struct MessageFileObject: Decodable {
-   
-   /// The identifier, which can be referenced in API endpoints.
-   public let id: String
-   /// The object type, which is always thread.message.file.
-   public let object: String
-   /// The Unix timestamp (in seconds) for when the message file was created.
-   public let createdAt: Int
-}
-```
-Usage
-[Retrieve Message File](https://platform.openai.com/docs/api-reference/messages/getMessageFile)
-```swift
-let threadID = "thread_abc123"
-let messageID = "msg_abc123"
-let fileID = "file-abc123"
-let messageFile = try await service.retrieveMessageFile(threadID: threadID, messageID: messageID, fileID: fileID)
-```
-[List Message Files](https://platform.openai.com/docs/api-reference/messages/listMessageFiles0)
-```swift
-let threadID = "thread_abc123"
-let messageID = "msg_abc123"
-let messageFiles = try await service.listMessageFiles(threadID: threadID, messageID: messageID, limit: nil, order: nil, after: nil, before: v)
-```
-
 ### Runs
 Parameters
 
@@ -2277,9 +2296,9 @@ public struct RunParameter: Encodable {
    let maxPromptTokens: Int?
    /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
    let maxCompletionTokens: Int?
-   
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
    let truncationStrategy: TruncationStrategy?
-   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "file_search"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
    let toolChoice: ToolChoice?
    /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
    /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
@@ -2317,8 +2336,26 @@ public struct CreateThreadAndRunParameter: Encodable {
    let tools: [AssistantObject.Tool]?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]?
+   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// Defaults to 1
+   let temperature: Double?
+   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+   /// We generally recommend altering this or temperature but not both.
+   let topP: Double?
    /// If true, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a data: [DONE] message.
-   let stream: Bool
+   var stream: Bool = false
+   /// The maximum number of prompt tokens that may be used over the course of the run. The run will make a best effort to use only the number of prompt tokens specified, across multiple turns of the run. If the run exceeds the number of prompt tokens specified, the run will end with status incomplete. See incomplete_details for more info.
+   let maxPromptTokens: Int?
+   /// The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status complete. See incomplete_details for more info.
+   let maxCompletionTokens: Int?
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
+   let truncationStrategy: TruncationStrategy?
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "file_search"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   let toolChoice: ToolChoice?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   let responseFormat: ResponseFormat?
 }
 ```
 [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
@@ -2341,7 +2378,7 @@ public struct RunObject: Decodable {
    /// The object type, which is always thread.run.
    public let object: String
    /// The Unix timestamp (in seconds) for when the run was created.
-   public let createdAt: Int
+   public let createdAt: Int?
    /// The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was executed on as a part of this run.
    public let threadID: String
    /// The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for execution of this run.
@@ -2353,7 +2390,7 @@ public struct RunObject: Decodable {
    /// The last error associated with this run. Will be null if there are no errors.
    public let lastError: LastError?
    /// The Unix timestamp (in seconds) for when the run will expire.
-   public let expiresAt: Int
+   public let expiresAt: Int?
    /// The Unix timestamp (in seconds) for when the run was started.
    public let startedAt: Int?
    /// The Unix timestamp (in seconds) for when the run was cancelled.
@@ -2370,18 +2407,26 @@ public struct RunObject: Decodable {
    public let instructions: String?
    /// The list of tools that the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
    public let tools: [AssistantObject.Tool]
-   /// The list of [File](https://platform.openai.com/docs/api-reference/files) IDs the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-   public let fileIDS: [String]
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    public let metadata: [String: String]
    /// Usage statistics related to the run. This value will be null if the run is not in a terminal state (i.e. in_progress, queued, etc.).
    public let usage: Usage?
    /// The sampling temperature used for this run. If not set, defaults to 1.
    public let temperature: Double?
+   /// The nucleus sampling value used for this run. If not set, defaults to 1.
+   public let topP: Double?
    /// The maximum number of prompt tokens specified to have been used over the course of the run.
    public let maxPromptTokens: Int?
    /// The maximum number of completion tokens specified to have been used over the course of the run.
    public let maxCompletionTokens: Int?
+   /// Controls for how a thread will be truncated prior to the run. Use this to control the intial context window of the run.
+   public let truncationStrategy: TruncationStrategy?
+   /// Controls which (if any) tool is called by the model. none means the model will not call any tools and instead generates a message. auto is the default value and means the model can pick between generating a message or calling a tool. Specifying a particular tool like {"type": "TOOL_TYPE"} or {"type": "function", "function": {"name": "my_function"}} forces the model to call that tool.
+   public let toolChoice: ToolChoice?
+   /// Specifies the format that the model must output. Compatible with GPT-4 Turbo and all GPT-3.5 Turbo models newer than gpt-3.5-turbo-1106.
+   /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+   /// Important: when using JSON mode, you must also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly "stuck" request. Also note that the message content may be partially cut off if finish_reason="length", which indicates the generation exceeded max_tokens or the conversation exceeded the max context length.
+   public let responseFormat: ResponseFormat?
 }
 ```
 Usage
@@ -2429,7 +2474,6 @@ let run = try await service.cancelRun(threadID: threadID, runID: runID)
 Create thread and Run
 ```swift
 let assistantID = "asst_abc123"
-let threadParameters = CreateThreadParameters()
 let parameters = CreateThreadAndRunParameter(assistantID: assistantID)
 let run = service.createThreadAndRun(parameters: parameters)
 ```
@@ -2535,19 +2579,6 @@ public struct MessageDeltaObject: Decodable {
       public let role: String
       /// The content of the message in array of text and/or images.
       public let content: [MessageContent]
-      /// A list of [file](https://platform.openai.com/docs/api-reference/files) IDs that the assistant should use. Useful for tools like retrieval and code_interpreter that can access files. A maximum of 10 files can be attached to a message.
-      public let fileIDS: [String]?
-
-      enum Role: String {
-         case user
-         case assistant
-      }
-      
-      enum CodingKeys: String, CodingKey {
-         case role
-         case content
-         case fileIDS = "file_ids"
-      }
    }
 }
 ```
@@ -2609,8 +2640,8 @@ let stream = try await service.createRunAndStreamMessage(threadID: threadID, par
                   switch toolCall {
                   case .codeInterpreterToolCall(let toolCall):
                      print(toolCall.input ?? "") // this will print the streamed response for code interpreter tool call.
-                  case .retrieveToolCall(let toolCall):
-                     print("Retrieve tool call")
+                  case .fileSearchToolCall(let toolCall):
+                     print("File search tool call")
                   case .functionToolCall(let toolCall):
                      print("Function tool call")
                   case nil:
@@ -2658,6 +2689,214 @@ You can go to the [Examples folder](https://github.com/jamesrochabrun/SwiftOpenA
       parameters: RunToolsOutputParameter)
    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
 ```
+
+### Vector Stores
+Parameters
+```swift
+public struct VectorStoreParameter: Encodable {
+   
+   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector store should use. Useful for tools like file_search that can access files.
+   let fileIDS: [String]?
+   /// The name of the vector store.
+   let name: String?
+   /// The expiration policy for a vector store.
+   let expiresAfter: ExpirationPolicy?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]?
+}
+```
+Response
+```swift
+public struct VectorStoreObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.
+   let object: String
+   /// The Unix timestamp (in seconds) for when the vector store was created.
+   let createdAt: Int
+   /// The name of the vector store.
+   let name: String
+   /// The total number of bytes used by the files in the vector store.
+   let usageBytes: Int
+   
+   let fileCounts: FileCount
+   /// The status of the vector store, which can be either expired, in_progress, or completed. A status of completed indicates that the vector store is ready for use.
+   let status: String
+   /// The expiration policy for a vector store.
+   let expiresAfter: ExpirationPolicy?
+   /// The Unix timestamp (in seconds) for when the vector store will expire.
+   let expiresAt: Int?
+   /// The Unix timestamp (in seconds) for when the vector store was last active.
+   let lastActiveAt: Int?
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+   let metadata: [String: String]
+   
+   public struct FileCount: Decodable {
+      
+      /// The number of files that are currently being processed.
+      let inProgress: Int
+      /// The number of files that have been successfully processed.
+      let completed: Int
+      /// The number of files that have failed to process.
+      let failed: Int
+      /// The number of files that were cancelled.
+      let cancelled: Int
+      /// The total number of files.
+      let total: Int
+   }
+}
+```
+Usage
+[Create vector Store](https://platform.openai.com/docs/api-reference/vector-stores/create)
+```swift
+let name = "Support FAQ"
+let parameters = VectorStoreParameter(name: name)
+try vectorStore = try await service.createVectorStore(parameters: parameters)
+```
+
+[List Vector stores](https://platform.openai.com/docs/api-reference/vector-stores/list)
+```swift
+let vectorStores = try await service.listVectorStores(limit: nil, order: nil, after: nil, before: nil)
+```
+
+[Retrieve Vector store](https://platform.openai.com/docs/api-reference/vector-stores/retrieve)
+```swift
+let vectorStoreID = "vs_abc123"
+let vectorStore = try await service.retrieveVectorStore(id: vectorStoreID)
+```
+
+[Modify Vector store](https://platform.openai.com/docs/api-reference/vector-stores/modify)
+```swift
+let vectorStoreID = "vs_abc123"
+let vectorStore = try await service.modifyVectorStore(id: vectorStoreID)
+```
+
+[Delete Vector store](https://platform.openai.com/docs/api-reference/vector-stores/delete)
+```swift
+let vectorStoreID = "vs_abc123"
+let deletionStatus = try await service.deleteVectorStore(id: vectorStoreID)
+```
+
+### Vector Store File
+Parameters
+```swift
+public struct VectorStoreFileParameter: Encodable {
+   
+   /// A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store should use. Useful for tools like file_search that can access files.
+   let fileID: String
+}
+```
+Response
+```swift
+public struct VectorStoreFileObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.file.
+   let object: String
+   /// The total vector store usage in bytes. Note that this may be different from the original file size.
+   let usageBytes: Int
+   /// The Unix timestamp (in seconds) for when the vector store file was created.
+   let createdAt: Int
+   /// The ID of the [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+   let vectorStoreID: String
+   /// The status of the vector store file, which can be either in_progress, completed, cancelled, or failed. The status completed indicates that the vector store file is ready for use.
+   let status: String
+   /// The last error associated with this vector store file. Will be null if there are no errors.
+   let lastError: LastError?
+}
+```
+
+Usage
+[Create vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let parameters = VectorStoreFileParameter(fileID: fileID)
+let vectoreStoreFile = try await service.createVectorStoreFile(vectorStoreID: vectorStoreID, parameters: parameters)
+```
+
+[List vector store files](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles)
+```swift
+let vectorStoreID = "vs_abc123"
+let vectorStoreFiles = try await service.listVectorStoreFiles(vectorStoreID: vectorStoreID, limit: nil, order: nil, aftre: nil, before: nil, filter: nil)
+```
+
+[Retrieve vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/getFile)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let vectoreStoreFile = try await service.retrieveVectorStoreFile(vectorStoreID: vectorStoreID, fileID: fileID)
+```
+
+[Delete vector store file](https://platform.openai.com/docs/api-reference/vector-stores-files/deleteFile)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileID = "file-abc123"
+let deletionStatus = try await service.deleteVectorStoreFile(vectorStoreID: vectorStoreID, fileID: fileID)
+```
+
+### Vector Store File Batch
+Parameters
+```swift
+public struct VectorStoreFileBatchParameter: Encodable {
+   
+   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector store should use. Useful for tools like file_search that can access files.
+   let fileIDS: [String]
+}
+```
+Response
+```swift
+public struct VectorStoreFileBatchObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.file_batch.
+   let object: String
+   /// The Unix timestamp (in seconds) for when the vector store files batch was created.
+   let createdAt: Int
+   /// The ID of the [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+   let vectorStoreID: String
+   /// The status of the vector store files batch, which can be either in_progress, completed, cancelled or failed.
+   let status: String
+   
+   let fileCounts: FileCount
+}
+```
+Usage
+
+[Create vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileIDS = ["file-abc123", "file-abc456"]
+let parameters = VectorStoreFileBatchParameter(fileIDS: fileIDS)
+let vectorStoreFileBatch = try await service.
+   createVectorStoreFileBatch(vectorStoreID: vectorStoreID, parameters: parameters)
+```
+
+[Retrieve vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/getBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFileBatch = try await service.retrieveVectorStoreFileBatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
+[Cancel vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/cancelBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFileBatch = try await service.cancelVectorStoreFileBatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
+[List vector store files in a batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/listBatchFiles)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
+⚠️ We currently support Only Assistants Beta 2. If you need support for Assistants V1, you can access it in the jroch-supported-branch-for-assistants-v1 branch or in the v2.3 release.. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
 
 ## Azure OpenAI
 

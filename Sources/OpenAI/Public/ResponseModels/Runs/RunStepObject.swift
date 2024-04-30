@@ -29,7 +29,7 @@ public struct RunStepObject: Codable {
    /// The details of the run step.
    public let stepDetails: RunStepDetails
    /// The last error associated with this run step. Will be null if there are no errors.
-   public let lastError: RunObject.LastError?
+   public let lastError: LastError?
    /// The Unix timestamp (in seconds) for when the run step expired. A step is considered expired if the parent run is expired.
    public let expiredAt: Int?
    /// The Unix timestamp (in seconds) for when the run step was cancelled.
@@ -106,7 +106,7 @@ public struct RunStepObject: Codable {
       type: String,
       status: Status,
       stepDetails: RunStepDetails,
-      lastError: RunObject.LastError?,
+      lastError: LastError?,
       expiredAt: Int?,
       cancelledAt: Int?,
       failedAt: Int?,

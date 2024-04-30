@@ -68,10 +68,4 @@ public struct FileObject: Decodable {
       self.status = status.rawValue
       self.statusDetails = statusDetails
    }
-   
-   public struct DeletionStatus: Decodable {
-      public let id: String
-      public let object: String
-      public let deleted: Bool
-   }
 }

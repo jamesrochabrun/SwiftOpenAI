@@ -103,7 +103,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Audio Speech API documentation](https://platform.openai.com/docs/api-reference/audio/createSpeech).
    func createSpeech(
       parameters: AudioSpeechParameters)
-   async throws -> AudioSpeechObject
+      async throws -> AudioSpeechObject
    
    // MARK: Chat
    
@@ -114,7 +114,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Chat completion API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startChat(
       parameters: ChatCompletionParameters)
-   async throws -> ChatCompletionObject
+      async throws -> ChatCompletionObject
    
    /// - Parameter parameters: Parameters for the chat completion request.
    /// - Returns: A streamed sequence of [ChatCompletionChunkObject](https://platform.openai.com/docs/api-reference/chat/streaming) objects.
@@ -123,7 +123,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Chat completion API documentation](https://platform.openai.com/docs/api-reference/chat/create).
    func startStreamedChat(
       parameters: ChatCompletionParameters)
-   async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
+      async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
    
    // MARK: Embeddings
    
@@ -134,7 +134,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Embedding API documentation](https://platform.openai.com/docs/api-reference/embeddings/create).
    func createEmbeddings(
       parameters: EmbeddingParameter)
-   async throws -> OpenAIResponse<EmbeddingObject>
+      async throws -> OpenAIResponse<EmbeddingObject>
    
    // MARK: Fine-tuning
    
@@ -145,7 +145,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/create).
    func createFineTuningJob(
       parameters: FineTuningJobParameters)
-   async throws -> FineTuningJobObject
+      async throws -> FineTuningJobObject
    
    /// Retrieves a paginated list of fine-tuning jobs.
    ///
@@ -159,7 +159,7 @@ public protocol OpenAIService {
    func listFineTuningJobs(
       after lastJobID: String?,
       limit: Int?)
-   async throws -> OpenAIResponse<FineTuningJobObject>
+      async throws -> OpenAIResponse<FineTuningJobObject>
    
    /// Retrieves a specific fine-tuning job by its ID.
    ///
@@ -170,7 +170,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/retrieve).
    func retrieveFineTuningJob(
       id: String)
-   async throws -> FineTuningJobObject
+      async throws -> FineTuningJobObject
    
    /// Cancels an ongoing fine-tuning job specified by its ID.
    ///
@@ -181,7 +181,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Fine-Tuning API documentation](https://platform.openai.com/docs/api-reference/fine-tuning/cancel).
    func cancelFineTuningJobWith(
       id: String)
-   async throws -> FineTuningJobObject
+      async throws -> FineTuningJobObject
    
    /// Retrieves a list of events for a specified fine-tuning job, with optional pagination.
    ///
@@ -196,7 +196,7 @@ public protocol OpenAIService {
       id: String,
       after lastEventId: String?,
       limit: Int?)
-   async throws -> OpenAIResponse<FineTuningJobEventObject>
+      async throws -> OpenAIResponse<FineTuningJobEventObject>
    
    // MARK: Files
    
@@ -207,7 +207,7 @@ public protocol OpenAIService {
    ///
    /// For more information, see [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/list).
    func listFiles()
-   async throws -> OpenAIResponse<FileObject>
+      async throws -> OpenAIResponse<FileObject>
    
    /// - Parameter parameters: The parameters and data needed for the file upload.
    /// - Returns: A [FileObject](https://platform.openai.com/docs/api-reference/files/object) representing the uploaded file.
@@ -216,17 +216,17 @@ public protocol OpenAIService {
    /// For more details, refer to [OpenAI's File Upload API documentation](https://platform.openai.com/docs/api-reference/files/create).
    func uploadFile(
       parameters: FileParameters)
-   async throws -> FileObject
+      async throws -> FileObject
    
    /// Deletes a file with the specified ID and returns its deletion status.
    ///
    /// - Parameter id: The identifier of the file to be deleted.
-   /// - Returns: A `FileObject.DeletionStatus` indicating the outcome of the deletion.
+   /// - Returns: A `DeletionStatus` indicating the outcome of the deletion.
    /// - Throws: An error if the deletion process fails.
    /// For more details, refer to [OpenAI's File Upload API documentation](https://platform.openai.com/docs/api-reference/files/delete).
    func deleteFileWith(
       id: String)
-   async throws -> FileObject.DeletionStatus
+      async throws -> DeletionStatus
    
    /// - Parameter id: The ID of the file to retrieve.
    /// - Returns: A [FileObject](https://platform.openai.com/docs/api-reference/files/object) containing the details of the retrieved file.
@@ -235,7 +235,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/retrieve).
    func retrieveFileWith(
       id: String)
-   async throws -> FileObject
+      async throws -> FileObject
    
    /// - Parameter id: The ID of the file whose content is to be retrieved.
    /// - Returns: An array of dictionaries containing the file content.
@@ -243,7 +243,7 @@ public protocol OpenAIService {
    ///  For more information, refer to [OpenAI's File API documentation](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
    func retrieveContentForFileWith(
       id: String)
-   async throws -> [[String: Any]]
+      async throws -> [[String: Any]]
    
    // MARK: Images
    
@@ -254,7 +254,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/create).
    func createImages(
       parameters: ImageCreateParameters)
-   async throws -> OpenAIResponse<ImageObject>
+      async throws -> OpenAIResponse<ImageObject>
    
    /// - Parameter parameters: Settings for the image edit request.
    /// - Returns: An `OpenAIResponse` containing a list of [ImageObject](https://platform.openai.com/docs/api-reference/images/object) instances that represent the edited images.
@@ -263,7 +263,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createEdit).
    func editImage(
       parameters: ImageEditParameters)
-   async throws -> OpenAIResponse<ImageObject>
+      async throws -> OpenAIResponse<ImageObject>
    
    /// - Parameter parameters: Settings for the image variation request.
    /// - Returns: An `OpenAIResponse` containing a list of [ImageObject](https://platform.openai.com/docs/api-reference/images/object) instances that represent the created image variations.
@@ -272,7 +272,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createVariation).
    func createImageVariations(
       parameters: ImageVariationParameters)
-   async throws -> OpenAIResponse<ImageObject>
+      async throws -> OpenAIResponse<ImageObject>
    
    // MARK: Models
    
@@ -281,7 +281,7 @@ public protocol OpenAIService {
    ///
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/list).
    func listModels()
-   async throws -> OpenAIResponse<ModelObject>
+      async throws -> OpenAIResponse<ModelObject>
    
    /// - Parameter id: The identifier of the model to be retrieved.
    /// - Returns: A [ModelObject](https://platform.openai.com/docs/api-reference/models/object) containing details of the model matching the specified ID.
@@ -290,18 +290,18 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/retrieve).
    func retrieveModelWith(
       id: String)
-   async throws -> ModelObject
+      async throws -> ModelObject
    
    /// Deletes a fine-tuned model from OpenAI's service by its ID.
    ///
    /// - Parameter id: The identifier of the fine-tuned model to be deleted.
-   /// - Returns: A `ModelObject.DeletionStatus` indicating the outcome of the deletion process.
+   /// - Returns: A `DeletionStatus` indicating the outcome of the deletion process.
    /// - Throws: An error if the deletion process fails.
    ///
    /// For more information, refer to [OpenAI's Models API documentation](https://platform.openai.com/docs/api-reference/models/delete).
    func deleteFineTuneModelWith(
       id: String)
-   async throws -> ModelObject.DeletionStatus
+      async throws -> DeletionStatus
    
    // MARK: Moderations
    
@@ -312,7 +312,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations/create).
    func createModerationFromText(
       parameters: ModerationParameter<String>)
-   async throws -> ModerationObject
+      async throws -> ModerationObject
    
    /// - Parameter parameters: The array of texts to be moderated according to the specified settings.
    /// - Returns: A [ModerationObject](https://platform.openai.com/docs/api-reference/moderations/object) detailing the results of the moderation process.
@@ -321,7 +321,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations/create).
    func createModerationFromTexts(
       parameters: ModerationParameter<[String]>)
-   async throws -> ModerationObject
+      async throws -> ModerationObject
    
    // MARK: Assistants [BETA]
    
@@ -334,7 +334,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistant).
    func createAssistant(
       parameters: AssistantParameters)
-   async throws -> AssistantObject
+      async throws -> AssistantObject
    
    /// Retrieves an assitant object by its ID.
    ///
@@ -345,7 +345,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Assistants API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistant).
    func retrieveAssistant(
       id: String)
-   async throws -> AssistantObject
+      async throws -> AssistantObject
    
    /// Modifies an assistant.
    ///
@@ -358,7 +358,7 @@ public protocol OpenAIService {
    func modifyAssistant(
       id: String,
       parameters: AssistantParameters)
-   async throws -> AssistantObject
+      async throws -> AssistantObject
    
    /// Delete an assistant.
    ///
@@ -369,7 +369,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Assistants documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistant).
    func deleteAssistant(
       id: String)
-   async throws -> AssistantObject.DeletionStatus
+      async throws -> DeletionStatus
    
    /// Returns a list of assistants.
    ///
@@ -386,68 +386,7 @@ public protocol OpenAIService {
       order: String?,
       after: String?,
       before: String?)
-   async throws -> OpenAIResponse<AssistantObject>
-   
-   
-   // MARK: AssistantsFileObject [BETA]
-   
-   /// Create an assistant file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to an [assistant](https://platform.openai.com/docs/api-reference/assistants).
-   ///
-   /// - Parameter parameters: The parameters needed to build an assistant file object
-   /// - Parameter assistantID: The ID of the assistant for which to create a File.
-   /// - Returns: A [AssistantFileObject](https://platform.openai.com/docs/api-reference/assistants/file-object)
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/createAssistantFile).
-   func createAssistantFile(
-      assistantID: String,
-      parameters: AssistantFileParamaters)
-   async throws -> AssistantFileObject
-   
-   /// Retrieves an AssistantFile.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter fileID: The ID of the file we're getting.
-   /// - Returns: The [assistant file object](https://platform.openai.com/docs/api-reference/assistants/file-object) matching the specified ID.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/getAssistantFile).
-   func retrieveAssistantFile(
-      assistantID: String,
-      fileID: String)
-   async throws -> AssistantFileObject
-   
-   /// Delete an assistant file.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter fileID: The ID of the file to delete.
-   /// - Returns: Deletion status.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/deleteAssistantFile).
-   func deleteAssistantFile(
-      assistantID: String,
-      fileID: String)
-   async throws -> AssistantFileObject.DeletionStatus
-   
-   /// Returns a list of assistant files.
-   ///
-   /// - Parameter assistantID: The ID of the assistant who the file belongs to.
-   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
-   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
-   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
-   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
-   /// - Returns: A list of [assistant file](https://platform.openai.com/docs/api-reference/assistants/file-object) objects.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Assistants File API documentation](https://platform.openai.com/docs/api-reference/assistants/listAssistantFiles).
-   func listAssistantFiles(
-      assistantID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
-   async throws -> OpenAIResponse<AssistantFileObject>
+      async throws -> OpenAIResponse<AssistantObject>
    
    // MARK: Thread [BETA]
    
@@ -460,7 +399,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/createThread).
    func createThread(
       parameters: CreateThreadParameters)
-   async throws -> ThreadObject
+      async throws -> ThreadObject
    
    /// Retrieves a thread.
    ///
@@ -471,7 +410,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/getThread).
    func retrieveThread(
       id: String)
-   async throws -> ThreadObject
+      async throws -> ThreadObject
    
    /// Modifies a thread.
    ///
@@ -484,7 +423,7 @@ public protocol OpenAIService {
    func modifyThread(
       id: String,
       parameters: ModifyThreadParameters)
-   async throws -> ThreadObject
+      async throws -> ThreadObject
    
    /// Delete a thread.
    ///
@@ -495,7 +434,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Thread API documentation](https://platform.openai.com/docs/api-reference/threads/deleteThread).
    func deleteThread(
       id: String)
-   async throws -> ThreadObject.DeletionStatus
+      async throws -> DeletionStatus
    
    // MARK: Message [BETA]
    
@@ -510,7 +449,7 @@ public protocol OpenAIService {
    func createMessage(
       threadID: String,
       parameters: MessageParameter)
-   async throws -> MessageObject
+      async throws -> MessageObject
    
    /// Retrieve a message.
    ///
@@ -523,7 +462,7 @@ public protocol OpenAIService {
    func retrieveMessage(
       threadID: String,
       messageID: String)
-   async throws -> MessageObject
+      async throws -> MessageObject
    
    /// Modifies a message.
    ///
@@ -538,7 +477,7 @@ public protocol OpenAIService {
       threadID: String,
       messageID: String,
       parameters: ModifyMessageParameters)
-   async throws -> MessageObject
+      async throws -> MessageObject
    
    /// Returns a list of messages for a given thread.
    ///
@@ -559,46 +498,8 @@ public protocol OpenAIService {
       after: String?,
       before: String?,
       runID: String?)
-   async throws -> OpenAIResponse<MessageObject>
-   
-   // MARK: Message File [BETA]
-   
-   /// Retrieves a message file.
-   ///
-   /// - Parameter threadID: The ID of the thread to which the message and File belong.
-   /// - Parameter messageID: The ID of the message the file belongs to.
-   /// - Parameter fileID: The ID of the file being retrieved.
-   /// - Returns: The [message](https://platform.openai.com/docs/api-reference/messages/file-object) file object.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/getMessageFile).
-   func retrieveMessageFile(
-      threadID: String,
-      messageID: String,
-      fileID: String)
-   async throws -> MessageFileObject
-   
-   /// Returns a list of message files.
-   ///
-   /// - Parameter threadID: The ID of the thread that the message and files belong to.
-   /// - Parameter messageID: The ID of the message that the files belongs to.
-   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
-   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order. Defaults to desc
-   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
-   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
-   /// - Returns: A list of message file objects.
-   /// - Throws: An error if the request fails
-   ///
-   /// For more information, refer to [OpenAI's Message File API documentation](https://platform.openai.com/docs/api-reference/messages/listMessageFiles).
-   func listMessageFiles(
-      threadID: String,
-      messageID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
-   async throws -> OpenAIResponse<MessageFileObject>
-   
+      async throws -> OpenAIResponse<MessageObject>
+ 
    // MARK: Run [BETA]
    
    /// Create a run.
@@ -612,7 +513,7 @@ public protocol OpenAIService {
    func createRun(
       threadID: String,
       parameters: RunParameter)
-   async throws -> RunObject
+      async throws -> RunObject
    
    /// Retrieves a run.
    ///
@@ -625,7 +526,7 @@ public protocol OpenAIService {
    func retrieveRun(
       threadID: String,
       runID: String)
-   async throws -> RunObject
+      async throws -> RunObject
    
    /// Modifies a run.
    ///
@@ -640,7 +541,7 @@ public protocol OpenAIService {
       threadID: String,
       runID: String,
       parameters: ModifyRunParameters)
-   async throws -> RunObject
+      async throws -> RunObject
    
    ///  Returns a list of runs belonging to a thread.
    ///
@@ -659,7 +560,7 @@ public protocol OpenAIService {
       order: String?,
       after: String?,
       before: String?)
-   async throws -> OpenAIResponse<RunObject>
+      async throws -> OpenAIResponse<RunObject>
    
    /// Cancels a run that is in_progress.
    ///
@@ -672,7 +573,7 @@ public protocol OpenAIService {
    func cancelRun(
       threadID: String,
       runID: String)
-   async throws -> RunObject
+      async throws -> RunObject
    
    /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request.
    ///
@@ -687,7 +588,7 @@ public protocol OpenAIService {
       threadID: String,
       runID: String,
       parameters: RunToolsOutputParameter)
-   async throws -> RunObject
+      async throws -> RunObject
    
    /// Create a thread and run it in one request.
    ///
@@ -697,7 +598,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
    func createThreadAndRun(
       parameters: CreateThreadAndRunParameter)
-   async throws -> RunObject
+      async throws -> RunObject
    
    // MARK: Run Step [BETA]
    
@@ -714,7 +615,7 @@ public protocol OpenAIService {
       threadID: String,
       runID: String,
       stepID: String)
-   async throws -> RunStepObject
+      async throws -> RunStepObject
    
    /// Returns a list of run steps belonging to a run.
    ///
@@ -735,7 +636,7 @@ public protocol OpenAIService {
       order: String?,
       after: String?,
       before: String?)
-   async throws -> OpenAIResponse<RunStepObject>
+      async throws -> OpenAIResponse<RunStepObject>
    
    /// Creates a thread and run with stream enabled.
    ///
@@ -746,7 +647,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's  Run API documentation](https://platform.openai.com/docs/api-reference/runs/createThreadAndRun).
    func createThreadAndRunStream(
       parameters: CreateThreadAndRunParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    
    /// Create a run with stream enabled.
    ///
@@ -759,7 +660,7 @@ public protocol OpenAIService {
    func createRunStream(
       threadID: String,
       parameters: RunParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    
    
    /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs, this endpoint can be used to submit the outputs from the tool calls once they're all completed. All outputs must be submitted in a single request. Stream enabled
@@ -775,7 +676,245 @@ public protocol OpenAIService {
       threadID: String,
       runID: String,
       parameters: RunToolsOutputParameter)
-   async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   
+   // MARK: Batch
+
+   /// Creates and executes a batch from an uploaded file of requests
+   ///
+   /// - Parameter parameters: The parameters needed to create a batch.
+   /// - Returns: A [batch](https://platform.openai.com/docs/api-reference/batch/object) object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Batch API documentation](https://platform.openai.com/docs/api-reference/batch/create).
+   func createBatch(
+      parameters: BatchParameter)
+      async throws -> BatchObject
+
+   /// Retrieves a batch.
+   ///
+   /// - Parameter id: The identifier of the batch to retrieve.
+   /// - Returns: A [BatchObject](https://platform.openai.com/docs/api-reference/batch/object) matching the specified ID..
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/batch/retrieve).
+   func retrieveBatch(
+      id: String)
+      async throws -> BatchObject
+   
+   /// Cancels an in-progress batch.
+   ///
+   /// - Parameter id: The identifier of the batch to cancel.
+   /// - Returns: A [BatchObject](https://platform.openai.com/docs/api-reference/batch/object) matching the specified ID..
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/batch/cancel)
+   func cancelBatch(
+      id: String)
+      async throws -> BatchObject
+
+   /// List your organization's batches.
+   ///
+   /// - Parameters:
+   ///   - after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   ///   - limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Returns: An `OpenAIResponse<BatchObject>` containing a list of paginated [Batch](https://platform.openai.com/docs/api-reference/batch/object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch API documentation](https://platform.openai.com/docs/api-reference/batch/list).
+   func listBatch(
+      after: String?,
+      limit: Int?)
+      async throws -> OpenAIResponse<BatchObject>
+   
+   // MARK: Vector Store
+   
+   /// Create a vector store.
+   ///
+   /// - Parameter parameters: The parameters needed to create a batc,.
+   /// - Returns: A [Vector store](https://platform.openai.com/docs/api-reference/vector-stores) object.
+   /// - Throws: An error if the request fails
+   ///
+   /// For more information, refer to [OpenAI's Vector store API documentation](https://platform.openai.com/docs/api-reference/vector-stores/create).
+   func createVectorStore(
+      parameters: VectorStoreParameter)
+      async throws -> VectorStoreObject
+   
+   /// Returns a list of vector stores.
+   ///
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Returns: A list of [VectorStoreObject](https://platform.openai.com/docs/api-reference/vector-stores) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores/list).
+   func listVectorStores(
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?)
+      async throws -> OpenAIResponse<VectorStoreObject>
+   
+   /// Retrieves a vector store.
+   ///
+   /// - Parameter id: The ID of the vector store to retrieve.
+   /// - Returns: A [Vector Store](https://platform.openai.com/docs/api-reference/vector-stores) matching the specified ID..
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/vector-stores/retrieve).
+   func retrieveVectorStore(
+      id: String)
+      async throws -> VectorStoreObject
+   
+   /// Modifies a vector store.
+   ///
+   /// - Parameter id: The ID of the vector store to modify.
+   /// - Returns: A [Vector Store](https://platform.openai.com/docs/api-reference/vector-stores) matching the specified ID..
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/vector-stores/modify).
+   func modifyVectorStore(
+      id: String)
+      async throws -> VectorStoreObject
+
+   /// Delete a vector store.
+   ///
+   /// - Parameter id: The ID of the vector store to delete.
+   /// - Returns: A Deletion status.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/vector-stores/modify).
+   func deleteVectorStore(
+      id: String)
+      async throws -> DeletionStatus
+   
+   // MARK: Vector Store Files
+   
+   /// Create a vector store file by attaching a [File](https://platform.openai.com/docs/api-reference/files) to a vector store.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store for which to create a File.
+   /// - Parameter parameters: The paramaters needed to create a vector store File.
+   /// - Returns: A [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Vectore store file documentation.](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile).
+   func createVectorStoreFile(
+      vectorStoreID: String,
+      parameters: VectorStoreFileParameter)
+      async throws -> VectorStoreFileObject
+   
+   /// Returns a list of vector store files.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the files belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Parameter filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
+   /// - Returns: A list of [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object) objects.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles).
+   func listVectorStoreFiles(
+      vectorStoreID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?,
+      filter: String?)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   /// Retrieves a vector store file.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file belongs to.
+   /// - Parameter fileID: The ID of the file being retrieved.
+   /// - Returns: A [vector store file object](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/getFile).
+   func retrieveVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> VectorStoreFileObject
+   
+   /// Delete a vector store file. This will remove the file from the vector store but the file itself will not be deleted. To delete the file, use the [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file belongs to.
+   /// - Parameter fileID: The ID of the file to delete.
+   /// - Returns: A deletion status.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores API documentation](https://platform.openai.com/docs/api-reference/vector-stores-files/deleteFile).
+   func deleteVectorStoreFile(
+      vectorStoreID: String,
+      fileID: String)
+      async throws -> DeletionStatus
+   
+   // MARK: Vector Store File Batch
+   
+   /// Create a vector store file batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store for which to create a File Batch.
+   /// - Parameter parameters: The paramaters needed to create a vector store File Batch.
+   /// - Returns: A [VectorStoreFileBatchObject](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Vectore store file batch documentation.](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch).
+   func createVectorStoreFileBatch(
+      vectorStoreID: String,
+      parameters: VectorStoreFileBatchParameter)
+      async throws -> VectorStoreFileBatchObject
+   
+   /// Retrieves a vector store file batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file batch belongs to.
+   /// - Parameter batchID: The ID of the file batch being retrieved.
+   /// - Returns: A [vector store file batch object](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/getBatch).
+   func retrieveVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
+   
+   /// Cancel a vector store file batch. This attempts to cancel the processing of files in this batch as soon as possible.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file batch belongs to.
+   /// - Parameter batchID: The ID of the file batch to cancel.
+   /// - Returns: The modified [vector store file batch object.](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/cancelBatch).
+   func cancelVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
+
+   /// Returns a list of vector store files in a batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the files belong to.
+   /// - Parameter batchID: The ID of the file batch that the files belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Parameter filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
+   /// - Returns: A list of [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object) objects in a batch.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/listBatchFiles).
+   func listVectorStoreFilesInABatch(
+      vectorStoreID: String,
+      batchID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?,
+      filter: String?)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
 }
 
 

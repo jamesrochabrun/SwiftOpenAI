@@ -852,7 +852,69 @@ public protocol OpenAIService {
       fileID: String)
       async throws -> DeletionStatus
    
+   // MARK: Vector Store File Batch
+   
+   /// Create a vector store file batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store for which to create a File Batch.
+   /// - Parameter parameters: The paramaters needed to create a vector store File Batch.
+   /// - Returns: A [VectorStoreFileBatchObject](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Vectore store file batch documentation.](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch).
+   func createVectorStoreFileBatch(
+      vectorStoreID: String,
+      parameters: VectorStoreFileBatchParameter)
+      async throws -> VectorStoreFileBatchObject
+   
+   /// Retrieves a vector store file batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file batch belongs to.
+   /// - Parameter batchID: The ID of the file batch being retrieved.
+   /// - Returns: A [vector store file batch object](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/getBatch).
+   func retrieveVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
+   
+   /// Cancel a vector store file batch. This attempts to cancel the processing of files in this batch as soon as possible.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the file batch belongs to.
+   /// - Parameter batchID: The ID of the file batch to cancel.
+   /// - Returns: The modified [vector store file batch object.](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/batch-object)
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/cancelBatch).
+   func cancelVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
 
+   /// Returns a list of vector store files in a batch.
+   ///
+   /// - Parameter vectorStoreID: The ID of the vector store that the files belong to.
+   /// - Parameter batchID: The ID of the file batch that the files belong to.
+   /// - Parameter limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+   /// - Parameter order: Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+   /// - Parameter after: A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+   /// - Parameter before: A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+   /// - Parameter filter: Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`.
+   /// - Returns: A list of [VectorStoreFileObject](https://platform.openai.com/docs/api-reference/vector-stores-files/file-object) objects in a batch.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's  Vector stores file batch API documentation](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/listBatchFiles).
+   func listVectorStoreFilesInABatch(
+      vectorStoreID: String,
+      batchID: String,
+      limit: Int?,
+      order: String?,
+      after: String?,
+      before: String?,
+      filter: String?)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
 }
 
 

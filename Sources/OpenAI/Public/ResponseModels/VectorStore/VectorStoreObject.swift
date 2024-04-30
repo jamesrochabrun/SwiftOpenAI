@@ -32,28 +32,6 @@ public struct VectorStoreObject: Decodable {
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
    let metadata: [String: String]
    
-   public struct FileCount: Decodable {
-      
-      /// The number of files that are currently being processed.
-      let inProgress: Int
-      /// The number of files that have been successfully processed.
-      let completed: Int
-      /// The number of files that have failed to process.
-      let failed: Int
-      /// The number of files that were cancelled.
-      let cancelled: Int
-      /// The total number of files.
-      let total: Int
-      
-      enum CodingKeys: String, CodingKey {
-         case inProgress = "in_progress"
-         case completed
-         case failed
-         case cancelled
-         case total
-      }
-   }
-   
    enum CodingKeys: String, CodingKey {
       case id
       case object

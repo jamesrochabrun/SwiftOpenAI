@@ -2837,6 +2837,65 @@ let fileID = "file-abc123"
 let deletionStatus = try await service.deleteVectorStoreFile(vectorStoreID: vectorStoreID, fileID: fileID)
 ```
 
+### Vector Store File Batch
+Parameters
+```swift
+public struct VectorStoreFileBatchParameter: Encodable {
+   
+   /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector store should use. Useful for tools like file_search that can access files.
+   let fileIDS: [String]
+}
+```
+Response
+```swift
+public struct VectorStoreFileBatchObject: Decodable {
+   
+   /// The identifier, which can be referenced in API endpoints.
+   let id: String
+   /// The object type, which is always vector_store.file_batch.
+   let object: String
+   /// The Unix timestamp (in seconds) for when the vector store files batch was created.
+   let createdAt: Int
+   /// The ID of the [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+   let vectorStoreID: String
+   /// The status of the vector store files batch, which can be either in_progress, completed, cancelled or failed.
+   let status: String
+   
+   let fileCounts: FileCount
+}
+```
+Usage
+
+[Create vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let fileIDS = ["file-abc123", "file-abc456"]
+let parameters = VectorStoreFileBatchParameter(fileIDS: fileIDS)
+let vectorStoreFileBatch = try await service.
+   createVectorStoreFileBatch(vectorStoreID: vectorStoreID, parameters: parameters)
+```
+
+[Retrieve vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/getBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFileBatch = try await service.retrieveVectorStoreFileBatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
+[Cancel vector store file batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/cancelBatch)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFileBatch = try await service.cancelVectorStoreFileBatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
+[List vector store files in a batch](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/listBatchFiles)
+```swift
+let vectorStoreID = "vs_abc123"
+let batchID = "vsfb_abc123"
+let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStoreID: vectorStoreID, batchID: batchID)
+```
+
 ## Azure OpenAI
 
 This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.

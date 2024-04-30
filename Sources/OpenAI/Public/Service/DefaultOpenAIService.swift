@@ -594,8 +594,8 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func listBatch(
-      after: String?,
-      limit: Int?)
+      after: String? = nil,
+      limit: Int? = nil)
       async throws-> OpenAIResponse<BatchObject>
    {
       var queryItems: [URLQueryItem] = []
@@ -620,10 +620,10 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func listVectorStores(
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil)
       async throws -> OpenAIResponse<VectorStoreObject>
    {
       var queryItems: [URLQueryItem] = []
@@ -680,11 +680,11 @@ struct DefaultOpenAIService: OpenAIService {
    
    func listVectorStoreFiles(
       vectorStoreID: String,
-      limit: Int?,
-      order: String?,
-      after: String?,
-      before: String?,
-      filter: String?)
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil,
+      filter: String? = nil)
       async throws -> OpenAIResponse<VectorStoreFileObject>
    {
       var queryItems: [URLQueryItem] = []
@@ -701,7 +701,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "before", value: before))
       }
       if let filter {
-         queryItems.append(.init(name: "filter", value: before))
+         queryItems.append(.init(name: "filter", value: filter))
       }
       let request = try OpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
@@ -723,6 +723,65 @@ struct DefaultOpenAIService: OpenAIService {
    {
       let request = try OpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: DeletionStatus.self, with: request)
+   }
+   
+   // MARK: Vector Store File Batch
+   
+   func createVectorStoreFileBatch(
+      vectorStoreID: String,
+      parameters: VectorStoreFileBatchParameter)
+      async throws -> VectorStoreFileBatchObject
+   {
+      let request = try OpenAIAPI.vectorStoreFileBatch(.create(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+   }
+   
+   func retrieveVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
+   {
+      let request = try OpenAIAPI.vectorStoreFileBatch(.retrieve(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+   }
+   
+   func cancelVectorStoreFileBatch(
+      vectorStoreID: String,
+      batchID: String)
+      async throws -> VectorStoreFileBatchObject
+   {
+      let request = try OpenAIAPI.vectorStoreFileBatch(.cancel(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+   }
+   
+   func listVectorStoreFilesInABatch(
+      vectorStoreID: String,
+      batchID: String,
+      limit: Int? = nil,
+      order: String? = nil,
+      after: String? = nil,
+      before: String? = nil,
+      filter: String? = nil)
+      async throws -> OpenAIResponse<VectorStoreFileObject>
+   {
+      var queryItems: [URLQueryItem] = []
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      if let filter {
+         queryItems.append(.init(name: "filter", value: filter))
+      }
+      let request = try OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
 }
 

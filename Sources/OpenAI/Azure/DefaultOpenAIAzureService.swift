@@ -8,7 +8,7 @@
 import Foundation
 
 final public class DefaultOpenAIAzureService: OpenAIService {
-   
+
    public init(
       azureConfiguration: AzureOpenAIConfiguration,
       urlSessionConfiguration: URLSessionConfiguration = .default,
@@ -336,6 +336,22 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
    
    public func deleteVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> DeletionStatus {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func createVectorStoreFileBatch(vectorStoreID: String, parameters: VectorStoreFileBatchParameter) async throws -> VectorStoreFileBatchObject {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func retrieveVectorStoreFileBatch(vectorStoreID: String, batchID: String) async throws -> VectorStoreFileBatchObject {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func cancelVectorStoreFileBatch(vectorStoreID: String, batchID: String) async throws -> VectorStoreFileBatchObject {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func listVectorStoreFilesInABatch(vectorStoreID: String, batchID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
 }

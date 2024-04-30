@@ -2896,6 +2896,8 @@ let batchID = "vsfb_abc123"
 let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStoreID: vectorStoreID, batchID: batchID)
 ```
 
+⚠️ We currently support Assistants Beta 2, if you need support for Assistants V1 you can acces it in `jroch-supported-branch-for-assistants-v1` branch. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
+
 ## Azure OpenAI
 
 This library provides support for both chat completions and chat stream completions through Azure OpenAI. Currently, `DefaultOpenAIAzureService` supports chat completions, including both streamed and non-streamed options.

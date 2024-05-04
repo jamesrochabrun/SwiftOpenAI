@@ -17,8 +17,9 @@ import SwiftOpenAI
    var thread: ThreadObject?
    var message: MessageObject?
    var runObject: RunObject?
-   var messageText: String = ""
-   var toolOuptutMessage: String = ""
+   var messageText = ""
+   var toolOuptutMessage = ""
+   var functionCallOutput = ""
    
    // MARK: - Initializer
    
@@ -74,7 +75,7 @@ import SwiftOpenAI
                   case .fileSearchToolCall(let toolCall):
                      print("PROVIDER: File search tool call \(toolCall)")
                   case .functionToolCall(let toolCall):
-                     print("PROVIDER: Function tool call \(toolCall)")
+                     functionCallOutput += toolCall.arguments
                   case nil:
                      print("PROVIDER: tool call nil")
                   }

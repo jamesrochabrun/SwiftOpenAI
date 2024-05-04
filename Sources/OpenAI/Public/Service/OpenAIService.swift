@@ -1189,6 +1189,9 @@ extension OpenAIService {
                            #endif
                         }
                      } catch let DecodingError.keyNotFound(key, context) {
+                     #if DEBUG
+                     print("DEBUG Decoding Object Failed = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     #endif
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"
                         let debugMessage = debug + codingPath

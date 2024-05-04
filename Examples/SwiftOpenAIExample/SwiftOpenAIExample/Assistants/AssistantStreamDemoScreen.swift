@@ -177,6 +177,15 @@ struct ChatStreamView: View {
                Text(provider.messageText)
                   .font(.body)
             }
+            if !provider.functionCallOutput.isEmpty {
+               Text("Function Call")
+                  .font(.title3)
+                  .foregroundColor(.pink)
+                  .fontDesign(.monospaced)
+                  .bold()
+               Text(provider.functionCallOutput)
+                  .font(.body)
+            }
          }
          .frame(maxWidth: .infinity, alignment: .leading)
       }

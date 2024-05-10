@@ -3002,4 +3002,4 @@ party's services are assumed at your own risk.
 
 
 ## Collaboration
-Open a PR for any proposed change pointing it to `main` branch.
+Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️

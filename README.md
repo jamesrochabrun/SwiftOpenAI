@@ -878,7 +878,7 @@ public struct ChatCompletionObject: Decodable {
 Usage
 ```swift
 let prompt = "Tell me a joke"
-let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt41106Preview)
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt4o)
 let chatCompletionObject = service.startChat(parameters: parameters)
 ```
 
@@ -966,7 +966,7 @@ public struct ChatCompletionChunkObject: Decodable {
 Usage
 ```swift
 let prompt = "Tell me a joke"
-let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt41106Preview)
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt4o)
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
 
@@ -1042,14 +1042,14 @@ For more details about how to also uploading base 64 encoded images in iOS check
 
 ### Vision
 
-[Vision](https://platform.openai.com/docs/guides/vision) API is available for use; developers must access it through the chat completions API, specifically using the gpt-4-vision-preview model. Using any other model will not provide an image description
+[Vision](https://platform.openai.com/docs/guides/vision) API is available for use; developers must access it through the chat completions API, specifically using the gpt-4-vision-preview model or gpt-4o model. Using any other model will not provide an image description
 
 Usage
 ```swift
 let imageURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
 let prompt = "What is this?"
 let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [.text(prompt), .imageUrl(imageURL)] // Users can add as many `.imageUrl` instances to the service.
-let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .contentArray(messageContent))], model: .gpt4VisionPreview)
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .contentArray(messageContent))], model: .gpt4o)
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
 

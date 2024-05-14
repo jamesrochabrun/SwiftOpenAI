@@ -12,6 +12,19 @@ import Foundation
 public enum Model {
    
    /// Chat completion
+
+   /// ### Omicron model
+   /// As of 2024-05-13, this is the latest and greatest from OpenAI.
+   /// From their [docs](https://platform.openai.com/docs/models/gpt-4o):
+   ///
+   ///   > GPT-4o (“o” for “omni”) is our most advanced model. It is multimodal (accepting text or image inputs
+   ///   > and outputting text), and it has the same high intelligence as GPT-4 Turbo but is much more efficient—
+   ///   > it generates text 2x faster and is 50% cheaper. Additionally, GPT-4o has the best vision and performance
+   ///   > across non-English languages of any of our models
+   ///
+   case gpt4o // Points to gpt-4o-2024-05-13
+   case gpt4o20240513 // 128k context window with training data up to Oct 2023
+
    case gpt35Turbo
    case gpt35Turbo1106 // Most updated - Supports parallel function calls
    /// The latest GPT-3.5 Turbo model with higher accuracy at responding in requested formats and a fix for a bug which caused a text encoding issue for non-English language function calls. Returns a maximum of 4,096 output tokens. [Learn more](https://openai.com/blog/new-embedding-models-and-api-updates#:~:text=Other%20new%20models%20and%20lower%20pricing).
@@ -45,6 +58,8 @@ public enum Model {
    
    public var value: String {
       switch self {
+      case .gpt4o: return "gpt-4o"
+      case .gpt4o20240513: return "gpt-4o-2024-05-13"
       case .gpt35Turbo: return "gpt-3.5-turbo"
       case .gpt35Turbo1106: return "gpt-3.5-turbo-1106"
       case .gpt35Turbo0125: return "gpt-3.5-turbo-0125"

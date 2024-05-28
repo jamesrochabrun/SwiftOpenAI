@@ -10,27 +10,27 @@ import Foundation
 public struct VectorStoreObject: Decodable {
    
    /// The identifier, which can be referenced in API endpoints.
-   let id: String
+   public let id: String
    /// The object type, which is always vector_store.
-   let object: String
+   public let object: String
    /// The Unix timestamp (in seconds) for when the vector store was created.
-   let createdAt: Int
+   public let createdAt: Int
    /// The name of the vector store.
-   let name: String
+   public let name: String
    /// The total number of bytes used by the files in the vector store.
-   let usageBytes: Int
+   public let usageBytes: Int
    
-   let fileCounts: FileCount
+   public let fileCounts: FileCount
    /// The status of the vector store, which can be either expired, in_progress, or completed. A status of completed indicates that the vector store is ready for use.
-   let status: String
+   public let status: String
    /// The expiration policy for a vector store.
-   let expiresAfter: ExpirationPolicy?
+   public let expiresAfter: ExpirationPolicy?
    /// The Unix timestamp (in seconds) for when the vector store will expire.
-   let expiresAt: Int?
+   public let expiresAt: Int?
    /// The Unix timestamp (in seconds) for when the vector store was last active.
-   let lastActiveAt: Int?
+   public let lastActiveAt: Int?
    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
-   let metadata: [String: String]
+   public let metadata: [String: String]
    
    enum CodingKeys: String, CodingKey {
       case id

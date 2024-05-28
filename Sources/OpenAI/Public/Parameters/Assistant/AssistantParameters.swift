@@ -75,14 +75,33 @@ public struct AssistantParameters: Encodable {
       topP: Double? = nil,
       responseFormat: ResponseFormat? = nil)
    {
-      self.model = action?.model ?? self.model 
-      self.name = name
-      self.description = description
-      self.instructions = instructions
+      if let action {
+         self.model = action.model ?? self.model
+      }
+      if let name {
+         self.name = name
+      }
+      if let description {
+         self.description = description
+      }
+      if let instructions {
+         self.instructions = instructions
+      }
       self.tools = tools
-      self.metadata = metadata
-      self.temperature = temperature
-      self.topP = topP
-      self.responseFormat = responseFormat
+      if let toolResources {
+         self.toolResources = toolResources
+      }
+      if let metadata {
+         self.metadata = metadata
+      }
+      if let temperature {
+         self.temperature = temperature
+      }
+      if let topP {
+         self.topP = topP
+      }
+      if let responseFormat {
+         self.responseFormat = responseFormat
+      }
    }
 }

@@ -16,4 +16,8 @@ public struct VectorStoreFileBatchParameter: Encodable {
    enum CodingKeys: String, CodingKey {
       case fileIDS = "file_ids"
    }
+   
+   public init(fileIDS: [String]) {
+      self.fileIDS = fileIDS
+   }
 }

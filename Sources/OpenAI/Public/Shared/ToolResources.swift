@@ -23,10 +23,10 @@ import Foundation
 /// The ID of the vector store attached to this assistant. There can be a maximum of 1 vector store attached to the assistant.
 public struct ToolResources: Codable {
    
-   let fileSearch: FileSearch?
-   let codeInterpreter: CodeInterpreter?
+   public let fileSearch: FileSearch?
+   public let codeInterpreter: CodeInterpreter?
    
-   struct FileSearch: Codable {
+   public struct FileSearch: Codable {
       
       let vectorStoreIds: [String]
       
@@ -35,7 +35,7 @@ public struct ToolResources: Codable {
       }
    }
    
-   struct CodeInterpreter: Codable {
+   public struct CodeInterpreter: Codable {
       
       let fileIds: [String]
       
@@ -47,6 +47,14 @@ public struct ToolResources: Codable {
    enum CodingKeys: String, CodingKey {
       case fileSearch = "file_search"
       case codeInterpreter = "code_interpreter"
+   }
+   
+   public init(
+      fileSearch: FileSearch? = nil,
+      codeInterpreter: CodeInterpreter? = nil)
+   {
+      self.fileSearch = fileSearch
+      self.codeInterpreter = codeInterpreter
    }
 }
 

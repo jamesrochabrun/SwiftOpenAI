@@ -64,7 +64,7 @@ public struct AssistantParameters: Encodable {
    }
    
    public init(
-      action: Action,
+      action: Action? = nil,
       name: String? = nil,
       description: String? = nil,
       instructions: String? = nil,
@@ -75,7 +75,7 @@ public struct AssistantParameters: Encodable {
       topP: Double? = nil,
       responseFormat: ResponseFormat? = nil)
    {
-      self.model = action.model
+      self.model = action?.model ?? self.model 
       self.name = name
       self.description = description
       self.instructions = instructions

@@ -28,19 +28,27 @@ public struct ToolResources: Codable {
    
    public struct FileSearch: Codable {
       
-      let vectorStoreIds: [String]
+      public let vectorStoreIds: [String]
       
       enum CodingKeys: String, CodingKey {
          case vectorStoreIds = "vector_store_ids"
+      }
+      
+      public init(vectorStoreIds: [String]) {
+         self.vectorStoreIds = vectorStoreIds
       }
    }
    
    public struct CodeInterpreter: Codable {
       
-      let fileIds: [String]
+      public let fileIds: [String]
       
       enum CodingKeys: String, CodingKey {
          case fileIds = "file_ids"
+      }
+      
+      public init(fileIds: [String]) {
+         self.fileIds = fileIds
       }
    }
    

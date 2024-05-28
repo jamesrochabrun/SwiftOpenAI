@@ -11,7 +11,7 @@ import Foundation
 public struct VectorStoreFileBatchParameter: Encodable {
    
    /// A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector store should use. Useful for tools like file_search that can access files.
-   let fileIDS: [String]
+   public let fileIDS: [String]
    
    enum CodingKeys: String, CodingKey {
       case fileIDS = "file_ids"

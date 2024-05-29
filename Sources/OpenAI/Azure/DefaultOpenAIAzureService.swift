@@ -19,12 +19,17 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       AzureOpenAIAPI.azureOpenAIResource = azureConfiguration.resourceName
       apiKey = azureConfiguration.openAIAPIKey
       apiVersion = azureConfiguration.apiVersion
+      extraHeaders = azureConfiguration.extraHeaders
    }
    
    public let session: URLSession
    public let decoder: JSONDecoder
    private let apiKey: Authorization
    private let apiVersion: String
+   
+   // Assistants API
+   private let extraHeaders: [String: String]?
+   private static let assistantsBetaV2 = "assistants=v2"
    
    public func createTranscription(parameters: AudioTranscriptionParameters) async throws -> AudioObject {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
@@ -142,23 +147,81 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
    
    public func createAssistant(parameters: AssistantParameters) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.assistant(.create).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders
+      )
+      return try await fetch(type: AssistantObject.self, with: request)
    }
    
    public func retrieveAssistant(id: String) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.assistant(.retrieve(assistantID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders
+      )
+      return try await fetch(type: AssistantObject.self, with: request)
    }
    
    public func modifyAssistant(id: String, parameters: AssistantParameters) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.assistant(.modify(assistantID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders
+      )
+      return try await fetch(type: AssistantObject.self, with: request)
    }
    
    public func deleteAssistant(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.assistant(.delete(assistantID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .delete,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders
+      )
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
    
    public func listAssistants(limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<AssistantObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      let request = try AzureOpenAIAPI.assistant(.list).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders
+      )
+      return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
    }
    
    public func createThread(parameters: CreateThreadParameters) async throws -> ThreadObject {

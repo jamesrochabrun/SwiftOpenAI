@@ -13,7 +13,20 @@ enum AzureOpenAIAPI {
    
    static var azureOpenAIResource: String = ""
    
-   case chat(deploymentID: String) // https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#chat-completions
+   // https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference?tabs=python
+   // https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/assistant
+   case assistant(AssistantCategory)
+
+   // https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#chat-completions
+   case chat(deploymentID: String)
+   
+   enum AssistantCategory {
+      case create
+      case list
+      case retrieve(assistantID: String)
+      case modify(assistantID: String)
+      case delete(assistantID: String)
+   }
 }
 
 // MARK: Endpoint
@@ -21,12 +34,17 @@ enum AzureOpenAIAPI {
 extension AzureOpenAIAPI: Endpoint {
    
    var base: String {
-      "https://\(Self.azureOpenAIResource).openai.azure.com"
+      "https://\(Self.azureOpenAIResource)/openai.azure.com"
    }
    
    var path: String {
       switch self {
-      case .chat(let deploymentID): "/openai/deployments/\(deploymentID)/chat/completions"
+      case .chat(let deploymentID): return "/openai/deployments/\(deploymentID)/chat/completions"
+      case .assistant(let category):
+         switch category {
+         case .create, .list: return "/openai/assistants"
+         case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/openai/assistants/\(assistantID)"
+         }
       }
    }
 }

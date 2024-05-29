@@ -45,7 +45,8 @@ extension Endpoint {
       method: HTTPMethod,
       params: Encodable? = nil,
       queryItems: [URLQueryItem] = [],
-      betaHeaderField: String? = nil)
+      betaHeaderField: String? = nil,
+      extraHeaders: [String: String]? = nil)
       throws -> URLRequest
    {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
@@ -56,6 +57,11 @@ extension Endpoint {
       }
       if let betaHeaderField {
          request.addValue(betaHeaderField, forHTTPHeaderField: "OpenAI-Beta")
+      }
+      if let extraHeaders {
+         for header in extraHeaders {
+            request.addValue(header.value, forHTTPHeaderField: header.key)
+         }
       }
       request.httpMethod = method.rawValue
       if let params {

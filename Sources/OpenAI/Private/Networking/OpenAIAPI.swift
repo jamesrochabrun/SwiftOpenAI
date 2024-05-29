@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  OpenAIAPI.swift
+//
 //
 //  Created by James Rochabrun on 10/10/23.
 //

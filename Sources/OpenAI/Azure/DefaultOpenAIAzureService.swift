@@ -179,6 +179,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          apiKey: apiKey,
          organizationID: nil,
          method: .post,
+         params: parameters,
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
@@ -255,6 +256,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          apiKey: apiKey,
          organizationID: nil,
          method: .post,
+         params: parameters,
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
@@ -274,47 +276,168 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
    
    public func createMessage(threadID: String, parameters: MessageParameter) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.message(.create(threadID: threadID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: MessageObject.self, with: request)
    }
    
    public func retrieveMessage(threadID: String, messageID: String) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: MessageObject.self, with: request)
    }
    
    public func modifyMessage(threadID: String, messageID: String, parameters: ModifyMessageParameters) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: MessageObject.self, with: request)
    }
    
    public func listMessages(threadID: String, limit: Int?, order: String?, after: String?, before: String?, runID: String?) async throws -> OpenAIResponse<MessageObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      if let runID {
+         queryItems.append(.init(name: "run_id", value: runID))
+      }
+      let request = try AzureOpenAIAPI.message(.list(threadID: threadID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
    }
    
    public func createRun(threadID: String, parameters: RunParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.create(threadID: threadID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func retrieveRun(threadID: String, runID: String) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func modifyRun(threadID: String, runID: String, parameters: ModifyRunParameters) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func listRuns(threadID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      let request = try AzureOpenAIAPI.run(.list(threadID: threadID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: OpenAIResponse<RunObject>.self, with: request)
    }
    
    public func cancelRun(threadID: String, runID: String) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func submitToolOutputsToRun(threadID: String, runID: String, parameters: RunToolsOutputParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func createThreadAndRun(parameters: CreateThreadAndRunParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.createThreadAndRun).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunObject.self, with: request)
    }
    
    public func retrieveRunstep(threadID: String, runID: String, stepID: String) async throws -> RunStepObject {

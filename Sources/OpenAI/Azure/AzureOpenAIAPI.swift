@@ -22,6 +22,8 @@ enum AzureOpenAIAPI {
    case message(MessageCategory)
    /// https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference-runs?tabs=python
    case run(RunCategory)
+   /// https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference-runs?tabs=python#list-run-steps
+   case runStep(RunStepCategory)
    /// https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference-threads?tabs=python#create-a-thread
    case thread(ThreadCategory)
    
@@ -48,6 +50,11 @@ enum AzureOpenAIAPI {
       case cancel(threadID: String, runID: String)
       case submitToolOutput(threadID: String, runID: String)
       case createThreadAndRun
+   }
+   
+   enum RunStepCategory {
+      case retrieve(threadID: String, runID: String, stepID: String)
+      case list(threadID: String, runID: String)
    }
    
    enum ThreadCategory {
@@ -86,6 +93,11 @@ extension AzureOpenAIAPI: Endpoint {
          case .cancel(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)/cancel"
          case .submitToolOutput(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)//submit_tool_outputs"
          case .createThreadAndRun: return "/openai/threads/runs"
+         }
+      case .runStep(let category):
+         switch category {
+         case .retrieve(let threadID, let runID, let stepID): return "/openai/threads/\(threadID)/runs/\(runID)/steps/\(stepID)"
+         case .list(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)/steps"
          }
       case .thread(let category):
          switch category {

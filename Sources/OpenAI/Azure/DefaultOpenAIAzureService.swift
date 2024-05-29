@@ -441,11 +441,39 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
    
    public func retrieveRunstep(threadID: String, runID: String, stepID: String) async throws -> RunStepObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: RunStepObject.self, with: request)
    }
    
    public func listRunSteps(threadID: String, runID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunStepObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      let request = try AzureOpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
    }
    
    public func createThreadAndRunStream(

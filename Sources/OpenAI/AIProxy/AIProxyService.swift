@@ -653,10 +653,11 @@ struct AIProxyService: OpenAIService {
    }
    
    func modifyVectorStore(
+      parameters: VectorStoreParameter,
       id: String)
       async throws -> VectorStoreObject
    {
-      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
+      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2, deviceCheckBypass: deviceCheckBypass)
       return try await fetch(type: VectorStoreObject.self, with: request)
    }
    

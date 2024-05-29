@@ -30,6 +30,23 @@ public struct VectorStoreParameter: Encodable {
       case metadata
    }
    
+   // Encoding only no nil parameters, this will avoid sending nil values when using this parameter in the "modifyVectorStore" request.
+   public func encode(to encoder: Encoder) throws {
+       var container = encoder.container(keyedBy: CodingKeys.self)
+       if let fileIDS = fileIDS {
+           try container.encode(fileIDS, forKey: .fileIDS)
+       }
+       if let name = name {
+           try container.encode(name, forKey: .name)
+       }
+       if let expiresAfter = expiresAfter {
+           try container.encode(expiresAfter, forKey: .expiresAfter)
+       }
+       if let metadata = metadata {
+           try container.encode(metadata, forKey: .metadata)
+       }
+   }
+   
    public init(
       fileIDS: [String]? = nil,
       name: String? = nil,

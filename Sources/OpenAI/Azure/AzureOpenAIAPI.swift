@@ -16,9 +16,10 @@ enum AzureOpenAIAPI {
    // https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference?tabs=python
    // https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/assistant
    case assistant(AssistantCategory)
-
    // https://learn.microsoft.com/en-us/azure/ai-services/openai/reference#chat-completions
    case chat(deploymentID: String)
+   // https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference-threads?tabs=python#create-a-thread
+   case thread(ThreadCategory)
    
    enum AssistantCategory {
       case create
@@ -26,6 +27,13 @@ enum AzureOpenAIAPI {
       case retrieve(assistantID: String)
       case modify(assistantID: String)
       case delete(assistantID: String)
+   }
+   
+   enum ThreadCategory {
+      case create
+      case retrieve(threadID: String)
+      case modify(threadID: String)
+      case delete(threadID: String)
    }
 }
 
@@ -44,6 +52,11 @@ extension AzureOpenAIAPI: Endpoint {
          switch category {
          case .create, .list: return "/openai/assistants"
          case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/openai/assistants/\(assistantID)"
+         }
+      case .thread(let category):
+         switch category {
+         case .create: return "/openai/threads"
+         case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/openai/threads/\(threadID)"
          }
       }
    }

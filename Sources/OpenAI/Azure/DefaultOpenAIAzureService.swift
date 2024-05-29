@@ -225,19 +225,52 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
    
    public func createThread(parameters: CreateThreadParameters) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.thread(.create).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post, 
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: ThreadObject.self, with: request)
    }
    
    public func retrieveThread(id: String) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.thread(.retrieve(threadID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: ThreadObject.self, with: request)
    }
    
    public func modifyThread(id: String, parameters: ModifyThreadParameters) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.thread(.modify(threadID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: ThreadObject.self, with: request)
    }
    
    public func deleteThread(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.thread(.delete(threadID: id)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .delete,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
    
    public func createMessage(threadID: String, parameters: MessageParameter) async throws -> MessageObject {

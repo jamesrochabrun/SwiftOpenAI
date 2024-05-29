@@ -652,10 +652,11 @@ struct DefaultOpenAIService: OpenAIService {
    }
    
    func modifyVectorStore(
+      parameters: VectorStoreParameter,
       id: String)
       async throws -> VectorStoreObject
    {
-      let request = try OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
+      let request = try OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(type: VectorStoreObject.self, with: request)
    }
    

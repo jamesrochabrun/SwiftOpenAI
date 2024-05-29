@@ -731,7 +731,7 @@ public protocol OpenAIService {
    
    /// Create a vector store.
    ///
-   /// - Parameter parameters: The parameters needed to create a batc,.
+   /// - Parameter parameters: The parameters needed to create a vector store.
    /// - Returns: A [Vector store](https://platform.openai.com/docs/api-reference/vector-stores) object.
    /// - Throws: An error if the request fails
    ///
@@ -771,11 +771,13 @@ public protocol OpenAIService {
    /// Modifies a vector store.
    ///
    /// - Parameter id: The ID of the vector store to modify.
+   /// - Parameter parameters: The parameters needed to modify a vector store.
    /// - Returns: A [Vector Store](https://platform.openai.com/docs/api-reference/vector-stores) matching the specified ID..
    /// - Throws: An error if the request fails.
    ///
    /// For more information, refer to [OpenAI's Batch documentation](https://platform.openai.com/docs/api-reference/vector-stores/modify).
    func modifyVectorStore(
+      parameters: VectorStoreParameter,
       id: String)
       async throws -> VectorStoreObject
 

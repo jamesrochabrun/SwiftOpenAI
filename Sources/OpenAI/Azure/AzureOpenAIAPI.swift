@@ -26,6 +26,10 @@ enum AzureOpenAIAPI {
    case runStep(RunStepCategory)
    /// https://learn.microsoft.com/en-us/azure/ai-services/openai/assistants-reference-threads?tabs=python#create-a-thread
    case thread(ThreadCategory)
+   /// https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/file-search?tabs=python#vector-stores
+   case vectorStore(VectorStoreCategory)
+   /// https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/file-search?tabs=python#vector-stores
+   case vectorStoreFile(VectorStoreFileCategory)
    
    enum AssistantCategory {
       case create
@@ -34,7 +38,7 @@ enum AzureOpenAIAPI {
       case modify(assistantID: String)
       case delete(assistantID: String)
    }
-   
+
    enum MessageCategory {
       case create(threadID: String)
       case retrieve(threadID: String, messageID: String)
@@ -62,6 +66,22 @@ enum AzureOpenAIAPI {
       case retrieve(threadID: String)
       case modify(threadID: String)
       case delete(threadID: String)
+   }
+   
+   enum VectorStoreCategory {
+      case create
+      case list
+      case retrieve(vectorStoreID: String)
+      case modify(vectorStoreID: String)
+      case delete(vectorStoreID: String)
+   }
+   
+   /// https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/file-search?tabs=python#file-search-support
+   enum VectorStoreFileCategory {
+      case create(vectorStoreID: String)
+      case list(vectorStoreID: String)
+      case retrieve(vectorStoreID: String, fileID: String)
+      case delete(vectorStoreID: String, fileID: String)
    }
 }
 
@@ -103,6 +123,16 @@ extension AzureOpenAIAPI: Endpoint {
          switch category {
          case .create: return "/openai/threads"
          case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/openai/threads/\(threadID)"
+         }
+      case .vectorStore(let category):
+         switch category {
+         case .create, .list: return "/openai/vector_stores"
+         case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/openai/vector_stores/\(vectorStoreID)"
+         }
+      case .vectorStoreFile(let category):
+         switch category {
+         case .create(let vectorStoreID), .list(let vectorStoreID): return "/openai/vector_stores/\(vectorStoreID)/files"
+         case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/openai/vector_stores/\(vectorStoreID)/files/\(fileID)"
          }
       }
    }

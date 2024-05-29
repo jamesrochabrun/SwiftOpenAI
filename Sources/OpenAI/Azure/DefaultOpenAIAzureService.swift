@@ -637,7 +637,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       let request = try AzureOpenAIAPI.vectorStoreFile(.create(vectorStoreID: vectorStoreID)).request(
          apiKey: apiKey,
          organizationID: nil,
-         method: .post, 
+         method: .post,
          params: parameters,
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,

@@ -610,6 +610,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          apiKey: apiKey,
          organizationID: nil,
          method: .post,
+         params: parameters,
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
@@ -636,7 +637,8 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       let request = try AzureOpenAIAPI.vectorStoreFile(.create(vectorStoreID: vectorStoreID)).request(
          apiKey: apiKey,
          organizationID: nil,
-         method: .post, params: parameters,
+         method: .post, 
+         params: parameters,
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
@@ -644,15 +646,52 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    }
 
    public func listVectorStoreFiles(vectorStoreID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var queryItems: [URLQueryItem] = initialQueryItems
+      if let limit {
+         queryItems.append(.init(name: "limit", value: "\(limit)"))
+      }
+      if let order {
+         queryItems.append(.init(name: "order", value: order))
+      }
+      if let after {
+         queryItems.append(.init(name: "after", value: after))
+      }
+      if let before {
+         queryItems.append(.init(name: "before", value: before))
+      }
+      if let filter {
+         queryItems.append(.init(name: "filter", value: filter))
+      }
+      let request = try AzureOpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
    
    public func retrieveVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> VectorStoreFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let request = try AzureOpenAIAPI.vectorStoreFile(.retrieve(vectorStoreID: vectorStoreID, fileID: fileID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .get,
+         queryItems: initialQueryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: VectorStoreFileObject.self, with: request)
    }
    
    public func deleteVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      let request = try AzureOpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .delete,
+         queryItems: initialQueryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(type: DeletionStatus.self, with: request)
    }
    
    public func createVectorStoreFileBatch(vectorStoreID: String, parameters: VectorStoreFileBatchParameter) async throws -> VectorStoreFileBatchObject {

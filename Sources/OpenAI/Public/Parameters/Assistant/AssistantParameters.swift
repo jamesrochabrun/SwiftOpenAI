@@ -51,6 +51,41 @@ public struct AssistantParameters: Encodable {
       case toolResources = "tool_resources"
    }
    
+   // Encoding only no nil or non empty parameters, this will avoid sending nil values when using this parameter in the "modifyAssistant" request.
+   public func encode(to encoder: Encoder) throws {
+       var container = encoder.container(keyedBy: CodingKeys.self)
+       if let model = model {
+           try container.encode(model, forKey: .model)
+       }
+       if let name = name {
+           try container.encode(name, forKey: .name)
+       }
+       if let description = description {
+           try container.encode(description, forKey: .description)
+       }
+       if let instructions = instructions {
+           try container.encode(instructions, forKey: .instructions)
+       }
+       if !tools.isEmpty {
+           try container.encode(tools, forKey: .tools)
+       }
+       if let toolResources = toolResources {
+           try container.encode(toolResources, forKey: .toolResources)
+       }
+       if let metadata = metadata {
+           try container.encode(metadata, forKey: .metadata)
+       }
+       if let temperature = temperature {
+           try container.encode(temperature, forKey: .temperature)
+       }
+       if let topP = topP {
+           try container.encode(topP, forKey: .topP)
+       }
+       if let responseFormat = responseFormat {
+           try container.encode(responseFormat, forKey: .responseFormat)
+       }
+   }
+   
    public enum Action {
       case create(model: String) // model is required on creation of assistant.
       case modify(model: String?) // model is optional on modification of assistant.
@@ -75,33 +110,15 @@ public struct AssistantParameters: Encodable {
       topP: Double? = nil,
       responseFormat: ResponseFormat? = nil)
    {
-      if let action {
-         self.model = action.model ?? self.model
-      }
-      if let name {
-         self.name = name
-      }
-      if let description {
-         self.description = description
-      }
-      if let instructions {
-         self.instructions = instructions
-      }
+      self.model = action?.model
+      self.name = name
+      self.description = description
+      self.instructions = instructions
       self.tools = tools
-      if let toolResources {
-         self.toolResources = toolResources
-      }
-      if let metadata {
-         self.metadata = metadata
-      }
-      if let temperature {
-         self.temperature = temperature
-      }
-      if let topP {
-         self.topP = topP
-      }
-      if let responseFormat {
-         self.responseFormat = responseFormat
-      }
+      self.toolResources = toolResources
+      self.metadata = metadata
+      self.temperature = temperature
+      self.topP = topP
+      self.responseFormat = responseFormat
    }
 }

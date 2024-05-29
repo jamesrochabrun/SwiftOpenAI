@@ -478,8 +478,20 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    
    public func createThreadAndRunStream(
       parameters: CreateThreadAndRunParameter)
-      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+   {
+      var runParameters = parameters
+      runParameters.stream = true
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.createThreadAndRun).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: runParameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetchAssistantStreamEvents(with: request)
    }
    
    public func createRunStream(
@@ -487,15 +499,38 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       parameters: RunParameter)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      var runParameters = parameters
+      runParameters.stream = true
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.create(threadID: threadID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: runParameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetchAssistantStreamEvents(with: request)
    }
    
    public func submitToolOutputsToRunStream(
       threadID: String,
       runID: String,
       parameters: RunToolsOutputParameter)
-      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> 
+   {
+      var runToolsOutputParameter = parameters
+      runToolsOutputParameter.stream = true
+      let queryItems: [URLQueryItem] = [.init(name: "api-version", value: apiVersion)]
+      let request = try AzureOpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .post,
+         params: parameters,
+         queryItems: queryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetchAssistantStreamEvents(with: request)
    }
    
    // MARK: Batch

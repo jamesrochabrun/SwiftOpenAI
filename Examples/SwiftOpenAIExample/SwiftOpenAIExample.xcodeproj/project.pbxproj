@@ -43,6 +43,10 @@
 		7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AA2AF6294C00646679 /* URLImageView.swift */; };
 		7B7239AE2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239AD2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift */; };
 		7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift */; };
+		7B99C2E72C0718DE00E701B3 /* FilesPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B99C2E62C0718DE00E701B3 /* FilesPicker.swift */; };
+		7B99C2E92C0718FF00E701B3 /* FileAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B99C2E82C0718FF00E701B3 /* FileAttachmentView.swift */; };
+		7B99C2EB2C07191200E701B3 /* AttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B99C2EA2C07191200E701B3 /* AttachmentView.swift */; };
+		7B99C2ED2C071B1600E701B3 /* FilesPickerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B99C2EC2C071B1600E701B3 /* FilesPickerProvider.swift */; };
 		7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */; };
 		7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */; };
 		7BA788D12AE23A49008825D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BA788D02AE23A49008825D5 /* Assets.xcassets */; };
@@ -115,6 +119,10 @@
 		7B7239AA2AF6294C00646679 /* URLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImageView.swift; sourceTree = "<group>"; };
 		7B7239AD2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCallStreamProvider.swift; sourceTree = "<group>"; };
 		7B7239B02AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionsCalllStreamDemoView.swift; sourceTree = "<group>"; };
+		7B99C2E62C0718DE00E701B3 /* FilesPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPicker.swift; sourceTree = "<group>"; };
+		7B99C2E82C0718FF00E701B3 /* FileAttachmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAttachmentView.swift; sourceTree = "<group>"; };
+		7B99C2EA2C07191200E701B3 /* AttachmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentView.swift; sourceTree = "<group>"; };
+		7B99C2EC2C071B1600E701B3 /* FilesPickerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesPickerProvider.swift; sourceTree = "<group>"; };
 		7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftOpenAIExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftOpenAIExampleApp.swift; sourceTree = "<group>"; };
 		7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeyIntroView.swift; sourceTree = "<group>"; };
@@ -297,6 +305,17 @@
 			path = SharedModels;
 			sourceTree = "<group>";
 		};
+		7B99C2E52C0718CD00E701B3 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				7B99C2E62C0718DE00E701B3 /* FilesPicker.swift */,
+				7B99C2E82C0718FF00E701B3 /* FileAttachmentView.swift */,
+				7B99C2EA2C07191200E701B3 /* AttachmentView.swift */,
+				7B99C2EC2C071B1600E701B3 /* FilesPickerProvider.swift */,
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
 		7BA788C02AE23A48008825D5 = {
 			isa = PBXGroup;
 			children = (
@@ -321,6 +340,7 @@
 			isa = PBXGroup;
 			children = (
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
+				7B99C2E52C0718CD00E701B3 /* Files */,
 				7B7239AF2AF9FF1D00646679 /* SharedModels */,
 				7B7239A92AF6294200646679 /* SharedUI */,
 				7B1268032B08241200400694 /* Assistants */,
@@ -564,6 +584,7 @@
 				7B7239AB2AF6294C00646679 /* URLImageView.swift in Sources */,
 				7B7239B12AF9FF3C00646679 /* ChatFunctionsCalllStreamDemoView.swift in Sources */,
 				7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */,
+				7B99C2E92C0718FF00E701B3 /* FileAttachmentView.swift in Sources */,
 				7BBE7EA52B02E8A70096A693 /* Sizes.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
 				0DF957862BB543F100DD2013 /* AIProxyIntroView.swift in Sources */,
@@ -572,6 +593,7 @@
 				7B436B962AE24A04003CE281 /* OptionsListView.swift in Sources */,
 				7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */,
 				7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */,
+				7B99C2ED2C071B1600E701B3 /* FilesPickerProvider.swift in Sources */,
 				7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
@@ -586,9 +608,11 @@
 				7B436BAD2AE788FB003CE281 /* FineTuningJobDemoView.swift in Sources */,
 				7B436BB02AE79369003CE281 /* FilesDemoView.swift in Sources */,
 				7BBE7E912AFCA52A0096A693 /* ChatVisionDemoView.swift in Sources */,
+				7B99C2EB2C07191200E701B3 /* AttachmentView.swift in Sources */,
 				7B436BAB2AE788F1003CE281 /* FineTuningJobProvider.swift in Sources */,
 				7B7239A42AF6289900646679 /* ChatStreamFluidConversationDemoView.swift in Sources */,
 				7BA788FC2AE23B42008825D5 /* AudioDemoView.swift in Sources */,
+				7B99C2E72C0718DE00E701B3 /* FilesPicker.swift in Sources */,
 				7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */,
 				7B436BBE2AE7ABDA003CE281 /* ModelsDemoView.swift in Sources */,
 				7B436BA32AE25962003CE281 /* ChatDemoView.swift in Sources */,

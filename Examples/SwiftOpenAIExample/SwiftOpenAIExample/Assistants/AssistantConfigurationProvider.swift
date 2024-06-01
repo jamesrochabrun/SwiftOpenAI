@@ -67,4 +67,9 @@ import SwiftOpenAI
          debugPrint("\(error)")
       }
    }
+   
+   // TODO: Create demo for this.
+   func createVStore ()async throws  {
+      let _ = try await service.createVectorStore(parameters: .init(name: "Personal Data"))
+   }
 }

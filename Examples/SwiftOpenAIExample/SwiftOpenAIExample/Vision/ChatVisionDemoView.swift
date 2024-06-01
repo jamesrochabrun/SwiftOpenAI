@@ -85,12 +85,12 @@ struct ChatVisionDemoView: View {
             /// Make the request
             let content: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
                .text(prompt)
-            ] + selectedImageURLS.map { .imageUrl($0) }
+            ] + selectedImageURLS.map { .imageUrl(.init(url: $0)) }
             resetInput()
             try await chatProvider.startStreamedChat(parameters: .init(
                messages: [.init(role: .user, content: .contentArray(content
                ))],
-               model: .gpt4VisionPreview, maxTokens: 300), content: content)
+               model: .gpt4o, maxTokens: 300), content: content)
          }
       } label: {
          Image(systemName: "paperplane")

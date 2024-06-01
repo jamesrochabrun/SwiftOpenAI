@@ -27,8 +27,8 @@ struct ChatDisplayMessageView: View {
                }.first ?? ""
                
                let urls = content.compactMap { contentItem -> URL? in
-                  if case .imageUrl(let url) = contentItem {
-                      return url
+                  if case .imageUrl(let imageDetail) = contentItem {
+                     return imageDetail.url
                   } else {
                       return nil
                   }

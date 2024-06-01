@@ -422,10 +422,32 @@ public struct ChatCompletionParameters: Encodable {
                try container.encode(contentArray)
             }
          }
-         
-         public enum MessageContent: Encodable {
+         public enum MessageContent: Encodable, Equatable, Hashable {
+            
             case text(String)
-            case imageUrl(URL)
+            case imageUrl(ImageDetail)
+            
+            public struct ImageDetail: Encodable, Equatable, Hashable {
+               
+               public let url: URL
+               public let detail: String?
+               
+               enum CodingKeys: String, CodingKey {
+                  case url
+                  case detail
+               }
+               
+               public func encode(to encoder: Encoder) throws {
+                  var container = encoder.container(keyedBy: CodingKeys.self)
+                  try container.encode(url, forKey: .url)
+                  try container.encode(detail, forKey: .detail)
+               }
+               
+               public init(url: URL, detail: String? = nil) {
+                  self.url = url
+                  self.detail = detail
+               }
+            }
             
             enum CodingKeys: String, CodingKey {
                case type
@@ -439,12 +461,32 @@ public struct ChatCompletionParameters: Encodable {
                case .text(let text):
                   try container.encode("text", forKey: .type)
                   try container.encode(text, forKey: .text)
-               case .imageUrl(let url):
+               case .imageUrl(let imageDetail):
                   try container.encode("image_url", forKey: .type)
-                  try container.encode(url, forKey: .imageUrl)
+                  try container.encode(imageDetail, forKey: .imageUrl)
                }
             }
-         }
+            
+            public func hash(into hasher: inout Hasher) {
+               switch self {
+               case .text(let string):
+                  hasher.combine(string)
+               case .imageUrl(let imageDetail):
+                  hasher.combine(imageDetail)
+               }
+            }
+            
+            public static func ==(lhs: MessageContent, rhs: MessageContent) -> Bool {
+               switch (lhs, rhs) {
+               case let (.text(a), .text(b)):
+                  return a == b
+               case let (.imageUrl(a), .imageUrl(b)):
+                  return a == b
+               default:
+                  return false
+               }
+            }
+         }         
       }
       
       public enum Role: String {
@@ -1048,7 +1090,7 @@ Usage
 ```swift
 let imageURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
 let prompt = "What is this?"
-let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [.text(prompt), .imageUrl(imageURL)] // Users can add as many `.imageUrl` instances to the service.
+let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [.text(prompt), .imageUrl(.init(url: imageURL)] // Users can add as many `.imageUrl` instances to the service.
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .contentArray(messageContent))], model: .gpt4o)
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```

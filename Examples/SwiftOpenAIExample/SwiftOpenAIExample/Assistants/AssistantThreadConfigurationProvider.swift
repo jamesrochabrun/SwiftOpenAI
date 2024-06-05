@@ -79,6 +79,8 @@ import SwiftOpenAI
                   case nil:
                      print("PROVIDER: tool call nil")
                   }
+            case .threadRunCompleted(let runObject):
+               print("PROVIDER: the run is completed - \(runObject)")
             default: break
             }
          }

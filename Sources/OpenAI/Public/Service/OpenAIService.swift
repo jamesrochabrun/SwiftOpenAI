@@ -1180,6 +1180,35 @@ extension OpenAIService {
                            case .threadRunStepDelta:
                               let decoded = try self.decoder.decode(RunStepDeltaObject.self, from: data)
                               continuation.yield(.threadRunStepDelta(decoded))
+                           case .threadRun:
+                              // We expect a object of type "thread.run.SOME_STATE" in the data object
+                              // However what we get is a `thread.run` object but we can check the status
+                              // of the decoded run to determine the stream event.
+                              // If we check the event line instead, this will contain the expected "event: thread.run.step.completed" for example.
+                              // Therefore the need to stream this event in the following way.
+                              let decoded = try self.decoder.decode(RunObject.self, from: data)
+                              switch RunObject.Status(rawValue: decoded.status) {
+                              case .queued:
+                                 continuation.yield(.threadRunQueued(decoded))
+                              case .inProgress:
+                                 continuation.yield(.threadRunInProgress(decoded))
+                              case .requiresAction:
+                                 continuation.yield(.threadRunRequiresAction(decoded))
+                              case .cancelling:
+                                 continuation.yield(.threadRunCancelling(decoded))
+                              case .cancelled:
+                                 continuation.yield(.threadRunCancelled(decoded))
+                              case .failed:
+                                 continuation.yield(.threadRunFailed(decoded))
+                              case .completed:
+                                 continuation.yield(.threadRunCompleted(decoded))
+                              case .expired:
+                                 continuation.yield(.threadRunExpired(decoded))
+                              default:
+                              #if DEBUG
+                              print("DEBUG threadRun status not found = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                              #endif
+                              }
                            default:
                            #if DEBUG
                            print("DEBUG EVENT \(eventObject.rawValue) IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
@@ -1187,7 +1216,7 @@ extension OpenAIService {
                            }
                         } else {
                            #if DEBUG
-                           print("DEBUG EVENT DECODE IGNORED= \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           print("DEBUG EVENT DECODE IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
                            #endif
                         }
                      } catch let DecodingError.keyNotFound(key, context) {

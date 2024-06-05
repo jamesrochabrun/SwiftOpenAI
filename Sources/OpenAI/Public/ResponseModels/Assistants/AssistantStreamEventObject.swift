@@ -15,6 +15,10 @@ public enum AssistantStreamEventObject: String {
    /// - data is a [thread](https://platform.openai.com/docs/api-reference/threads/object)
    case threadCreated = "thread.created"
    
+   /// Occurs during the life cycle of a run.
+   /// - data is a [run](https://platform.openai.com/docs/api-reference/runs/object)
+   case threadRun = "thread.run"
+   
    /// Occurs when a new run is created.
    /// - data is a [run](https://platform.openai.com/docs/api-reference/runs/object)
    case threadRunCreated =  "thread.run.created"

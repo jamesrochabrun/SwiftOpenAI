@@ -20,35 +20,35 @@ public enum AssistantStreamEvent {
    
    /// Occurs when a run moves to a queued status.
    /// - data is a run
-   case threadRunQueued
+   case threadRunQueued(RunObject)
    
    /// Occurs when a run moves to an in_progress status.
    /// - data is a run
-   case threadRunInProgress
+   case threadRunInProgress(RunObject)
    
    /// Occurs when a run moves to a requires_action status.
    /// - data is a run
-   case threadRunRequiresAction
+   case threadRunRequiresAction(RunObject)
    
    /// Occurs when a run is completed.
    /// - data is a run
-   case threadRunCompleted
+   case threadRunCompleted(RunObject)
    
    /// Occurs when a run fails.
    /// - data is a run
-   case threadRunFailed
+   case threadRunFailed(RunObject)
    
    /// Occurs when a run moves to a cancelling status.
    /// - data is a run
-   case threadRunCancelling
+   case threadRunCancelling(RunObject)
    
    /// Occurs when a run is cancelled.
    /// - data is a run
-   case threadRunCancelled
+   case threadRunCancelled(RunObject)
    
    /// Occurs when a run expires.
    /// - data is a run
-   case threadRunExpired
+   case threadRunExpired(RunObject)
    
    /// Occurs when a run step is created.
    /// - data is a run step

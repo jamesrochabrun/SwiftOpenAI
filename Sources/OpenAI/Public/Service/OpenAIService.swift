@@ -1165,16 +1165,6 @@ extension OpenAIService {
          let task = Task {
             do {
                for try await line in data.lines {
-                  
-                  print("OLIVIA \(line)")
-
-//                  if line.hasPrefix("event:"),
-//                     let data = line.dropFirst(7).data(using: .utf8)
-//                  {
-//                     let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? String
-//                     print("sasha \(String(describing: json))")
-//                  }
-                  
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      do {

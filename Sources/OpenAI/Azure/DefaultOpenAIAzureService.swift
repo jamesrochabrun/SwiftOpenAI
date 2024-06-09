@@ -58,6 +58,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    public func startStreamedChat(parameters: ChatCompletionParameters) async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error> {
       var chatParameters = parameters
       chatParameters.stream = true
+      chatParameters.streamOptions = .init(includeUsage: true)
       let request = try AzureOpenAIAPI.chat(deploymentID: parameters.model).request(
          apiKey: apiKey,
          organizationID: nil,

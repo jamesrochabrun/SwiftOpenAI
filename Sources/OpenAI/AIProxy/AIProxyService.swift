@@ -81,6 +81,7 @@ struct AIProxyService: OpenAIService {
    {
       var chatParameters = parameters
       chatParameters.stream = true
+      chatParameters.streamOptions = .init(includeUsage: true)
       let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, organizationID: organizationID, method: .post, params: chatParameters, deviceCheckBypass: deviceCheckBypass)
       return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
    }

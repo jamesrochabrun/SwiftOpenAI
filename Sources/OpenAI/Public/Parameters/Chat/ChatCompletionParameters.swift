@@ -56,6 +56,8 @@ public struct ChatCompletionParameters: Encodable {
    /// If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format) as they become available, with the stream terminated by a data: [DONE] message. [Example Python code](https://cookbook.openai.com/examples/how_to_stream_completions ).
    /// Defaults to false.
    var stream: Bool? = nil
+   /// Options for streaming response. Only set this when you set stream: true
+   var streamOptions: StreamOptions?
    /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
    /// We generally recommend altering this or `top_p` but not both. Defaults to 1.
    public var temperature: Double?
@@ -416,6 +418,18 @@ public struct ChatCompletionParameters: Encodable {
       }
    }
    
+   public struct StreamOptions: Encodable {
+      /// If set, an additional chunk will be streamed before the data: [DONE] message.
+      /// The usage field on this chunk shows the token usage statistics for the entire request,
+      /// and the choices field will always be an empty array. All other chunks will also include
+      /// a usage field, but with a null value.
+      let includeUsage: Bool
+
+      enum CodingKeys: String, CodingKey {
+          case includeUsage = "include_usage"
+      }
+   }
+
    enum CodingKeys: String, CodingKey {
       case messages
       case model
@@ -434,6 +448,7 @@ public struct ChatCompletionParameters: Encodable {
       case seed
       case stop
       case stream
+      case streamOptions = "stream_options"
       case temperature
       case topP = "top_p"
       case user

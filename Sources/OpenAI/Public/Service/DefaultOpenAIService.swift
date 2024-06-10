@@ -77,6 +77,7 @@ struct DefaultOpenAIService: OpenAIService {
    {
       var chatParameters = parameters
       chatParameters.stream = true
+      chatParameters.streamOptions = .init(includeUsage: true)
       let request = try OpenAIAPI.chat.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: chatParameters)
       return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
    }

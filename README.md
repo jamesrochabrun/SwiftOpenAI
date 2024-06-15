@@ -2659,7 +2659,7 @@ Usage
 The `createRunAndStreamMessage` streams [events](https://platform.openai.com/docs/api-reference/assistants-streaming/events), You can decide which one you need for your implementation. For example, this is how you can access message delta and run step delta objects
 
 ```swift
-let assistantID = "asst_abc123""
+let assistantID = "asst_abc123"
 let threadID = "thread_abc123"
 let messageParameter = MessageParameter(role: .user, content: "Tell me the square root of 1235")
 let message = try await service.createMessage(threadID: threadID, parameters: messageParameter)

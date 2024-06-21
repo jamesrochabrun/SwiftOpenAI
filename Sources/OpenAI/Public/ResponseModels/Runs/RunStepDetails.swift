@@ -141,7 +141,7 @@ public enum RunStepToolCall: Codable {
 
 public struct CodeInterpreterToolCall: Codable {
    public var input: String?
-   public let outputs: [CodeInterpreterOutput]?
+   public var outputs: [CodeInterpreterOutput]?
    
    enum CodingKeys: String, CodingKey {
       case input, outputs
@@ -150,7 +150,7 @@ public struct CodeInterpreterToolCall: Codable {
    public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       input = try container.decodeIfPresent(String.self, forKey: .input)
-      // This is neede as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"
+      // This is needed as the input is retrieved as ""input": "# Calculate the square root of 500900\nmath.sqrt(500900)"
       input = input?.replacingOccurrences(of: "\\n", with: "\n")
       outputs = try container.decodeIfPresent([CodeInterpreterOutput].self, forKey: .outputs)
    }
@@ -162,6 +162,11 @@ public struct CodeInterpreterToolCall: Codable {
       let encodedInput = input?.replacingOccurrences(of: "\n", with: "\\n")
       try container.encode(encodedInput, forKey: .input)
       try container.encode(outputs, forKey: .outputs)
+   }
+   
+   public init(input: String?, outputs: [CodeInterpreterOutput]?) {
+      self.input = input
+      self.outputs = outputs
    }
 }
 
@@ -210,23 +215,37 @@ public enum CodeInterpreterOutput: Codable {
 public struct CodeInterpreterLogOutput: Codable {
    
    /// Always logs.
-   public let type: String
+   public var type: String
    /// The text output from the Code Interpreter tool call.
-   public let logs: String
+   public var logs: String
+   
+   public init(type: String, logs: String) {
+      self.type = type
+      self.logs = logs
+   }
 }
 
 public struct CodeInterpreterImageOutput: Codable {
    
-   public let type: String
-   public let image: Image
+   public var type: String
+   public var image: Image
    
    public struct Image: Codable {
       /// The [file](https://platform.openai.com/docs/api-reference/files) ID of the image.
-      public let fileID: String
+      public var fileID: String
       
       enum CodingKeys: String, CodingKey {
          case fileID = "file_id"
       }
+      
+      public init(fileID: String) {
+         self.fileID = fileID
+      }
+   }
+   
+   public init(type: String, image: Image) {
+      self.type = type
+      self.image = image
    }
 }
 
@@ -247,9 +266,15 @@ public struct FileSearchToolCall: Codable {
 public struct FunctionToolCall: Codable {
    
    /// The name of the function.
-   public let name: String?
+   public var name: String?
    /// The arguments passed to the function.
-   public let arguments: String
+   public var arguments: String
    /// The output of the function. This will be null if the outputs have not been [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
-   public let output: String?
+   public var output: String?
+   
+   public init(name: String? = nil, arguments: String, output: String? = nil) {
+      self.name = name
+      self.arguments = arguments
+      self.output = output
+   }
 }

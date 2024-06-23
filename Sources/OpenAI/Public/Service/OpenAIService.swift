@@ -1087,8 +1087,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-          throw APIError.responseUnsuccessful(description: errorMessage,
-                                              statusCode: httpResponse.statusCode)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       return AsyncThrowingStream { continuation in
          let task = Task {
@@ -1163,8 +1163,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-          throw APIError.responseUnsuccessful(description: errorMessage,
-                                              statusCode: httpResponse.statusCode)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       return AsyncThrowingStream { continuation in
          let task = Task {

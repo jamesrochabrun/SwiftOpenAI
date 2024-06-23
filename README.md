@@ -118,8 +118,10 @@ That's all you need to begin accessing the full range of OpenAI endpoints.
 
 ### How to get the status code of network errors
 
-You may want to build UI around the type of error that the API returns. For example, a `429` means that your requests are being rate limited.
-The `APIError` type has a case `responseUnsuccessful` with two associated values: a `description` and `statusCode`. Here is an example of its usage:
+You may want to build UI around the type of error that the API returns.
+For example, a `429` means that your requests are being rate limited.
+The `APIError` type has a case `responseUnsuccessful` with two associated values: a `description` and `statusCode`.
+Here is a usage example using the chat completion API:
 
 ```
       let service = OpenAIServiceFactory.service(apiKey: apiKey)

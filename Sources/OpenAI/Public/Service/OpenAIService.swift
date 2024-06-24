@@ -12,7 +12,7 @@ import Foundation
 public enum APIError: Error {
    
    case requestFailed(description: String)
-   case responseUnsuccessful(description: String)
+   case responseUnsuccessful(description: String, statusCode: Int)
    case invalidData
    case jsonDecodingFailure(description: String)
    case dataCouldNotBeReadMissingData(description: String)
@@ -22,7 +22,7 @@ public enum APIError: Error {
    public var displayDescription: String {
       switch self {
       case .requestFailed(let description): return description
-      case .responseUnsuccessful(let description): return description
+      case .responseUnsuccessful(let description, _): return description
       case .invalidData: return "Invalid data"
       case .jsonDecodingFailure(let description): return description
       case .dataCouldNotBeReadMissingData(let description): return description
@@ -948,7 +948,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-         throw APIError.responseUnsuccessful(description: errorMessage)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       var content: [[String: Any]] = []
       if let jsonString = String(data: data, encoding: .utf8) {
@@ -996,7 +997,8 @@ extension OpenAIService {
                errorMessage += " - No error message provided"
             }
          }
-         throw APIError.responseUnsuccessful(description: errorMessage)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       return data
    }
@@ -1028,7 +1030,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-         throw APIError.responseUnsuccessful(description: errorMessage)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       #if DEBUG
       print("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
@@ -1084,7 +1087,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-         throw APIError.responseUnsuccessful(description: errorMessage)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       return AsyncThrowingStream { continuation in
          let task = Task {
@@ -1159,7 +1163,8 @@ extension OpenAIService {
             // If decoding fails, proceed with a general error message
             errorMessage = "status code \(httpResponse.statusCode)"
          }
-         throw APIError.responseUnsuccessful(description: errorMessage)
+         throw APIError.responseUnsuccessful(description: errorMessage,
+                                             statusCode: httpResponse.statusCode)
       }
       return AsyncThrowingStream { continuation in
          let task = Task {

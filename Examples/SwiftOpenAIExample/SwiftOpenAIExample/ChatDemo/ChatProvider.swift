@@ -29,8 +29,10 @@ import SwiftOpenAI
          let logprobs = choices.compactMap(\.logprobs)
          dump(logprobs)
          self.messages = choices.compactMap(\.message.content)
+      } catch APIError.responseUnsuccessful(let description, let statusCode) {
+         self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
       } catch {
-         self.errorMessage = "\(error)"
+         self.errorMessage = error.localizedDescription
       }
    }
    
@@ -44,8 +46,10 @@ import SwiftOpenAI
                    let content = result.choices.first?.delta.content ?? ""
                     self.message += content
                 }
+            } catch APIError.responseUnsuccessful(let description, let statusCode) {
+                self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
             } catch {
-               self.errorMessage = "\(error)"
+                self.errorMessage = error.localizedDescription
             }
         }
    }

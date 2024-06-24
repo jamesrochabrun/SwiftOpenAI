@@ -115,6 +115,29 @@ let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: ogani
 
 That's all you need to begin accessing the full range of OpenAI endpoints.
 
+
+### How to get the status code of network errors
+
+You may want to build UI around the type of error that the API returns.
+For example, a `429` means that your requests are being rate limited.
+The `APIError` type has a case `responseUnsuccessful` with two associated values: a `description` and `statusCode`.
+Here is a usage example using the chat completion API:
+
+```
+      let service = OpenAIServiceFactory.service(apiKey: apiKey)
+      let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text("hello world"))],
+                                                model: .gpt4o)
+      do {
+         let choices = try await service.startChat(parameters: parameters).choices
+         // Work with choices
+      } catch APIError.responseUnsuccessful(let description, let statusCode) {
+         print("Network error with status code: \(statusCode) and description: \(description)")
+      } catch {
+         print(error.localizedDescription)
+      }
+```
+
+
 ### Audio
 
 ### Audio Transcriptions

@@ -1069,8 +1069,11 @@ extension OpenAIService {
       async throws -> AsyncThrowingStream<T, Error>
    {
       printCurlCommand(request)
-      
-      let (data, response) = try await session.bytes(for: request)
+
+      let (data, response) = try await session.bytes(
+         for: request,
+         delegate: session.delegate as? URLSessionTaskDelegate
+      )
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
@@ -1146,7 +1149,10 @@ extension OpenAIService {
    {
       printCurlCommand(request)
       
-      let (data, response) = try await session.bytes(for: request)
+      let (data, response) = try await session.bytes(
+         for: request,
+         delegate: session.delegate as? URLSessionTaskDelegate
+      )
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }

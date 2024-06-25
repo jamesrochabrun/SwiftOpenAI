@@ -9,6 +9,8 @@ import Foundation
 
 public class OpenAIServiceFactory {
    
+   // MARK: OpenAI
+   
    /// Creates and returns an instance of `OpenAIService`.
    ///
    /// - Parameters:
@@ -32,6 +34,8 @@ public class OpenAIServiceFactory {
          decoder: decoder)
    }
    
+   // MARK: Azure
+
    /// Creates and returns an instance of `OpenAIService`.
    ///
    /// - Parameters:
@@ -51,6 +55,8 @@ public class OpenAIServiceFactory {
          urlSessionConfiguration: urlSessionConfiguration,
          decoder: decoder)
    }
+   
+   // MARK: AIProxy
 
    /// Creates and returns an instance of `OpenAIService` for use with aiproxy.pro
    /// Use this service to protect your OpenAI API key before going to production.
@@ -99,5 +105,25 @@ public class OpenAIServiceFactory {
       service.deviceCheckBypass = aiproxyDeviceCheckBypass
       #endif
       return service
+   }
+   
+   // MARK: Ollama
+
+   /// Creates and returns an instance of `OpenAIService`.
+   ///
+   /// This service runs local models with OpenAI endpoints compatibility.
+   /// Check [Ollama blog post](https://ollama.com/blog/openai-compatibility) for more.
+   ///
+   /// - Parameters:
+   ///   - baseURL: The local host URL. e.g "http://localhost:11434"
+   ///
+   /// - Returns: A fully configured object conforming to `OpenAIService`.
+   public static func ollama(
+      baseURL: String)
+      -> some OpenAIService
+   {
+      DefaultOpenAIService(
+         apiKey: "",
+         baseURL: baseURL)
    }
 }

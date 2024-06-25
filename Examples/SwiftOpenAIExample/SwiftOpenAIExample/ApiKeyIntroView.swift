@@ -29,7 +29,7 @@ struct ApiKeyIntroView: View {
             }
             .padding()
             .textFieldStyle(.roundedBorder)
-            NavigationLink(destination: OptionsListView(openAIService: OpenAIServiceFactory.service(apiKey: apiKey, organizationID: localOrganizationID))) {
+            NavigationLink(destination: OptionsListView(openAIService: OpenAIServiceFactory.service(apiKey: apiKey, organizationID: localOrganizationID), options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
                Text("Continue")
                   .padding()
                   .padding(.horizontal, 48)

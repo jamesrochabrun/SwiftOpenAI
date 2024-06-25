@@ -1,14 +1,38 @@
 //
-//  ChatDemoView.swift
+//  LocalChatDemoView.swift
 //  SwiftOpenAIExample
 //
-//  Created by James Rochabrun on 10/19/23.
+//  Created by James Rochabrun on 6/24/24.
 //
 
 import SwiftUI
 import SwiftOpenAI
 
-struct ChatDemoView: View {
+/// For more visit https://github.com/ollama/ollama/blob/main/docs/openai.md
+
+/// Important:
+/// Before using a model, pull it locally ollama pull:
+
+/// `ollama pull llama3`
+/// Default model names
+/// For tooling that relies on default OpenAI model names such as gpt-3.5-turbo, use ollama cp to copy an existing model name to a temporary name:
+
+/// `ollama cp llama3 gpt-3.5-turbo`
+/// Afterwards, this new model name can be specified the model field:
+
+/// ```curl http://localhost:11434/v1/chat/completions \
+///    -H "Content-Type: application/json" \
+///    -d '{
+///        "model": "gpt-3.5-turbo",
+///        "messages": [
+///           {
+///               "role": "user",
+///                "content": "Hello!"
+///            }
+///        ]
+///    }'```
+
+struct LocalChatDemoView: View {
    
    @State private var chatProvider: ChatProvider
    @State private var isLoading = false
@@ -75,9 +99,8 @@ struct ChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  model: .gpt41106Preview,
-                  logProbs: true,
-                  topLogprobs: 1)
+                  // Make sure you run `ollama pull llama3` in your terminal to download this model.
+                  model: .custom("llama3"))
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

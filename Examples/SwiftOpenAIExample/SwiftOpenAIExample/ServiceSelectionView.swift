@@ -36,6 +36,18 @@ struct ServiceSelectionView: View {
                      .fontWeight(.light)
                   }
                }
+               
+               NavigationLink(destination: LocalHostEntryView()) {
+                  VStack(alignment: .leading) {
+                     Text("Ollama")
+                        .padding(.bottom, 10)
+                     Group {
+                        Text("Use this service to test SwiftOpenAI functionality by providing your own local host.")
+                     }
+                     .font(.caption)
+                     .fontWeight(.light)
+                  }
+               }
             }
          }
       }

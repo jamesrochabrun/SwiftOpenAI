@@ -24,7 +24,7 @@ struct AIProxyIntroView: View {
             .padding()
             .textFieldStyle(.roundedBorder)
 
-            NavigationLink(destination: OptionsListView(openAIService: aiproxyService)) {
+            NavigationLink(destination: OptionsListView(openAIService: aiproxyService, options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
                Text("Continue")
                   .padding()
                   .padding(.horizontal, 48)

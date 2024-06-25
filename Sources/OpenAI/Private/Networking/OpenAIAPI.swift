@@ -11,6 +11,8 @@ import Foundation
 
 enum OpenAIAPI {
    
+   static var overrideBaseURL: String? = nil
+   
    case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
    case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
    case chat /// https://platform.openai.com/docs/api-reference/chat
@@ -136,7 +138,7 @@ enum OpenAIAPI {
 extension OpenAIAPI: Endpoint {
    
    var base: String {
-      "https://api.openai.com"
+      Self.overrideBaseURL ?? "https://api.openai.com"
    }
    
    var path: String {

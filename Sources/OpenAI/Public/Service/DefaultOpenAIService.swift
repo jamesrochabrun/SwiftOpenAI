@@ -23,6 +23,7 @@ struct DefaultOpenAIService: OpenAIService {
    init(
       apiKey: String,
       organizationID: String? = nil,
+      baseURL: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())
    {
@@ -30,6 +31,7 @@ struct DefaultOpenAIService: OpenAIService {
       self.decoder = decoder
       self.apiKey = .bearer(apiKey)
       self.organizationID = organizationID
+      OpenAIAPI.overrideBaseURL = baseURL
    }
    
    // MARK: Audio

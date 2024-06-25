@@ -17,6 +17,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Usage](#usage)
 - [Azure OpenAI](#azure-openai)
 - [AIProxy](#aiproxy)
+- [Ollama](#ollama)
 - [Collaboration](#collaboration)
 
 ## Description
@@ -3066,5 +3067,46 @@ Contributors of this library provide third party integrations as a convenience. 
 party's services are assumed at your own risk.
 
 
+## Ollama
+
+Ollama now has built-in compatibility with the OpenAI [Chat Completions API](https://github.com/ollama/ollama/blob/main/docs/openai.md), making it possible to use more tooling and applications with Ollama locally.
+
+<img width="783" alt="Screenshot 2024-06-24 at 11 52 35 PM" src="https://github.com/jamesrochabrun/SwiftOpenAI/assets/5378604/db2264cb-408c-471d-b65b-912795c082ed">
+
+### ⚠️ Important
+
+Remember that these models run locally, so you need to download them. If you want to use llama3, you can open the terminal and run the following command:
+
+```python
+ollama pull llama3
+```
+
+you can follow [Ollama documentation](https://github.com/ollama/ollama/blob/main/docs/openai.md) for more.
+
+### How to use this models locally using SwiftOpenAI?
+
+To use local models with an `OpenAIService` in your application, you need to provide a URL. 
+
+```swift
+let service = OpenAIServiceFactory.ollama(baseURL: "http://localhost:11434")
+```
+
+Then you can use the completions API as follows:
+
+```swift
+let prompt = "Tell me a joke"
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("llama3"))
+let chatCompletionObject = service.startStreamedChat(parameters: parameters)
+```
+
+### Resources:
+
+[Ollama OpenAI compatibility docs.](https://github.com/ollama/ollama/blob/main/docs/openai.md)
+[Ollama OpenAI compatibility blog post.](https://ollama.com/blog/openai-compatibility)
+
+
+
 ## Collaboration
 Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️
+
+

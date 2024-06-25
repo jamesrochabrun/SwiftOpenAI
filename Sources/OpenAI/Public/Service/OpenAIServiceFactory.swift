@@ -74,6 +74,9 @@ public class OpenAIServiceFactory {
    /// - Parameters:
    ///   - aiproxyPartialKey: The partial key provided in the 'API Keys' section of the AIProxy dashboard.
    ///                        Please see the integration guide for acquiring your key, at https://www.aiproxy.pro/docs
+   ///   - aiproxyClientID: If your app already has client or user IDs that you want to annotate AIProxy requests
+   ///                      with, you can pass a clientID here. If you do not have existing client or user IDs, leave
+   ///                      the `clientID` argument out, and IDs will be generated automatically for you.
    ///   - aiproxyDeviceCheckBypass: The bypass token that is provided in the 'API Keys' section of the AIProxy dashboard.
    ///                               Please see the integration guide for acquiring your key, at https://www.aiproxy.pro/docs
    ///   - configuration: The URL session configuration to be used for network calls (default is `.default`).
@@ -82,12 +85,16 @@ public class OpenAIServiceFactory {
    /// - Returns: A conformer of OpenAIService that proxies all requests through api.aiproxy.pro
    public static func service(
       aiproxyPartialKey: String,
+      aiproxyClientID: String? = nil,
       aiproxyDeviceCheckBypass: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init())
    -> some OpenAIService
    {
-      var service = AIProxyService(partialKey: aiproxyPartialKey)
+      var service = AIProxyService(
+        partialKey: aiproxyPartialKey,
+        clientID: aiproxyClientID
+      )
       #if DEBUG && targetEnvironment(simulator)
       service.deviceCheckBypass = aiproxyDeviceCheckBypass
       #endif

@@ -40,6 +40,7 @@ extension Endpoint {
 
    func request(
       aiproxyPartialKey: String,
+      clientID: String?,
       organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
@@ -57,7 +58,7 @@ extension Endpoint {
       if let betaHeaderField {
          request.addValue(betaHeaderField, forHTTPHeaderField: "OpenAI-Beta")
       }
-      if let clientID = getClientID() {
+      if let clientID = clientID ?? getClientID() {
           request.addValue(clientID, forHTTPHeaderField: "aiproxy-client-id")
       }
       if let deviceCheckToken = await getDeviceCheckToken() {
@@ -77,6 +78,7 @@ extension Endpoint {
 
    func multiPartRequest(
       aiproxyPartialKey: String,
+      clientID: String?,
       organizationID: String?,
       method: HTTPMethod,
       params: MultipartFormDataParameters,
@@ -90,7 +92,7 @@ extension Endpoint {
       if let organizationID {
          request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
       }
-      if let clientID = getClientID() {
+      if let clientID = clientID ?? getClientID() {
           request.addValue(clientID, forHTTPHeaderField: "aiproxy-client-id")
       }
       if let deviceCheckToken = await getDeviceCheckToken() {

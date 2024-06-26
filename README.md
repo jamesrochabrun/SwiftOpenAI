@@ -3012,33 +3012,35 @@ We offer AIProxy support so that developers can build **and** distribute apps us
 
 ### How does my SwiftOpenAI code change?
 
-SwiftOpenAI supports proxying requests through AIProxy with a small change to your integration code.
+SwiftOpenAI supports proxying requests through AIProxy with two changes to your Xcode project:
 
-Instead of initializing `service` with:
+1. Instead of initializing `service` with:
 
         let apiKey = "your_openai_api_key_here"
         let service = OpenAIServiceFactory.service(apiKey: apiKey)
 
 Use:
 
-        #if DEBUG && targetEnvironment(simulator)
         let service = OpenAIServiceFactory.service(
             aiproxyPartialKey: "hardcode_partial_key_here",
-            aiproxyDeviceCheckBypass: "hardcode_device_check_bypass_here"
         )
-        #else
-        let service = OpenAIServiceFactory.service(
-            aiproxyPartialKey: "hardcode_partial_key_here"
-        )
-        #endif
 
-The `aiproxyPartialKey` and `aiproxyDeviceCheckBypass` values are provided to you on the [AIProxy developer dashboard](https://developer.aiproxy.pro).
+The `aiproxyPartialKey` value is provided to you on the [AIProxy developer dashboard](https://developer.aiproxy.pro)
 
-⚠️  It is important that you do not let the `aiproxyDeviceCheckBypass` token leak into a distribution
-build of your app (including TestFlight distributions). Please retain the conditional compilation
-checks that are present in the sample code above.
+2. Add an `AIPROXY_DEVICE_CHECK_BYPASS' env variable to Xcode. This token is provided to you in the AIProxy
+   developer dashboard, and is necessary for the iOS simulator to communicate with the AIProxy backend.
+    - Type `cmd shift ,` to open up the "Edit Schemes" menu in Xcode
+    - Select `Run` in the sidebar
+    - Select `Arguments` from the top nav
+    - Add to the "Environment Variables" section (not the "Arguments Passed on Launch" section) an env
+      variable with name `AIPROXY_DEVICE_CHECK_BYPASS` and value that we provided you in the AIProxy dashboard
 
-#### What is the `aiproxyDeviceCheckBypass` constant?
+
+⚠️  The `AIPROXY_DEVICE_CHECK_BYPASS` is intended for the simulator only. Do not let it leak into
+a distribution build of your app (including a TestFlight distribution). If you follow the steps above,
+then the constant won't leak because env variables are not packaged into the app bundle.
+
+#### What is the `AIPROXY_DEVICE_CHECK_BYPASS` constant?
 
 AIProxy uses Apple's [DeviceCheck](https://developer.apple.com/documentation/devicecheck) to ensure
 that requests received by the backend originated from your app on a legitimate Apple device.

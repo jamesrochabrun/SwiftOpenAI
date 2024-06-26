@@ -21,6 +21,14 @@ import WatchKit
 private let aiproxyLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "UnknownApp",
                                    category: "SwiftOpenAI+AIProxy")
 
+private let deviceCheckWarning = """
+    AIProxy warning: DeviceCheck is not available on this device.
+
+    To use AIProxy on an iOS simulator, set an AIPROXY_DEVICE_CHECK_BYPASS environment variable.
+
+    See the AIProxy section of the README at https://github.com/jamesrochabrun/SwiftOpenAI for instructions.
+    """
+
 
 // MARK: Endpoint+AIProxy
 
@@ -45,8 +53,7 @@ extension Endpoint {
       method: HTTPMethod,
       params: Encodable? = nil,
       queryItems: [URLQueryItem] = [],
-      betaHeaderField: String? = nil,
-      deviceCheckBypass: String? = nil)
+      betaHeaderField: String? = nil)
       async throws -> URLRequest
    {
       var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
@@ -65,7 +72,7 @@ extension Endpoint {
           request.addValue(deviceCheckToken, forHTTPHeaderField: "aiproxy-devicecheck")
       }
 #if DEBUG && targetEnvironment(simulator)
-      if let deviceCheckBypass = deviceCheckBypass {
+      if let deviceCheckBypass = ProcessInfo.processInfo.environment["AIPROXY_DEVICE_CHECK_BYPASS"] {
          request.addValue(deviceCheckBypass, forHTTPHeaderField: "aiproxy-devicecheck-bypass")
       }
 #endif
@@ -115,11 +122,11 @@ extension Endpoint {
 
 /// Gets a device check token for use in your calls to aiproxy.
 /// The device token may be nil when targeting the iOS simulator.
-/// Ensure that you are conditionally compiling the `deviceCheckBypass` token for iOS simulation only.
-/// Do not let the `deviceCheckBypass` token slip into your production codebase, or an attacker can easily use it themselves.
 private func getDeviceCheckToken() async -> String? {
     guard DCDevice.current.isSupported else {
-        aiproxyLogger.error("DeviceCheck is not available on this device. Are you on the simulator?")
+        if ProcessInfo.processInfo.environment["AIPROXY_DEVICE_CHECK_BYPASS"] == nil {
+            aiproxyLogger.warning("\(deviceCheckWarning, privacy: .public)")
+        }
         return nil
     }
 

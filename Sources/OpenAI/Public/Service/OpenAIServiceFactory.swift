@@ -92,9 +92,8 @@ public class OpenAIServiceFactory {
    public static func service(
       aiproxyPartialKey: String,
       aiproxyClientID: String? = nil,
-      aiproxyDeviceCheckBypass: String? = nil,
-      configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      aiproxyDeviceCheckBypass: String? = nil
+   )
    -> some OpenAIService
    {
       var service = AIProxyService(

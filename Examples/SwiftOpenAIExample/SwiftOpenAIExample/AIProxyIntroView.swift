@@ -11,7 +11,6 @@ import SwiftOpenAI
 struct AIProxyIntroView: View {
 
    @State private var partialKey = ""
-   @State private var deviceCheckBypass = ""
 
    var body: some View {
       NavigationStack {
@@ -19,10 +18,12 @@ struct AIProxyIntroView: View {
             Spacer()
             VStack(spacing: 24) {
                TextField("Enter partial key", text: $partialKey)
-               TextField("Enter DeviceCheck bypass", text: $deviceCheckBypass)
             }
             .padding()
             .textFieldStyle(.roundedBorder)
+
+            Text("You receive a partial key when you configure an app in the AIProxy dashboard")
+               .font(.caption)
 
             NavigationLink(destination: OptionsListView(openAIService: aiproxyService, options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
                Text("Continue")
@@ -46,28 +47,7 @@ struct AIProxyIntroView: View {
    }
 
    private var aiproxyService: some OpenAIService {
-      // Attention AIProxy customers!
-      //
-      // Please do not let a `deviceCheckBypass` slip into an archived version of your app that you distribute (including through TestFlight).
-      // Doing so would allow an attacker to use the bypass themselves.
-      // The bypass is intended to only be used by developers during development in the iOS simulator (where DeviceCheck does not exist).
-      //
-      // Please retain these conditional checks if you copy this example into your own code.
-      // Your integration code should look like this:
-      //
-      //     #if DEBUG && targetEnvironment(simulator)
-      //           OpenAIServiceFactory.service(
-      //              aiproxyPartialKey: "hardcode-partial-key-here",
-      //              aiproxyDeviceCheckBypass: "hardcode-device-check-bypass-here"
-      //           )
-      //     #else
-      //           OpenAIServiceFactory.service(aiproxyPartialKey: "hardcode-partial-key-here")
-      //     #endif
-      #if DEBUG && targetEnvironment(simulator)
-      OpenAIServiceFactory.service(aiproxyPartialKey: partialKey, aiproxyDeviceCheckBypass: deviceCheckBypass)
-      #else
       OpenAIServiceFactory.service(aiproxyPartialKey: partialKey)
-      #endif
    }
 }
 

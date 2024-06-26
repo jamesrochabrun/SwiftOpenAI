@@ -7,6 +7,9 @@
 
 import Foundation
 
+private let aiproxySecureDelegate = AIProxyCertificatePinningDelegate()
+
+
 struct AIProxyService: OpenAIService {
 
    let session: URLSession
@@ -27,12 +30,14 @@ struct AIProxyService: OpenAIService {
    init(
       partialKey: String,
       clientID: String? = nil,
-      organizationID: String? = nil,
-      configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      organizationID: String? = nil)
    {
-      self.session = URLSession(configuration: configuration)
-      self.decoder = decoder
+      self.session = URLSession(
+         configuration: .default,
+         delegate: aiproxySecureDelegate,
+         delegateQueue: nil
+      )
+      self.decoder = JSONDecoder()
       self.partialKey = partialKey
       self.clientID = clientID
       self.organizationID = organizationID

@@ -3090,7 +3090,7 @@ you can follow [Ollama documentation](https://github.com/ollama/ollama/blob/main
 To use local models with an `OpenAIService` in your application, you need to provide a URL. 
 
 ```swift
-let service = OpenAIServiceFactory.ollama(baseURL: "http://localhost:11434")
+let service = OpenAIServiceFactory.service(baseURL: "http://localhost:11434")
 ```
 
 Then you can use the completions API as follows:
@@ -3106,6 +3106,13 @@ let chatCompletionObject = service.startStreamedChat(parameters: parameters)
 [Ollama OpenAI compatibility docs.](https://github.com/ollama/ollama/blob/main/docs/openai.md)
 [Ollama OpenAI compatibility blog post.](https://ollama.com/blog/openai-compatibility)
 
+### Notes
+
+You can also use this service constructor to provide any URL or apiKey if you need.
+
+```swift
+let service = OpenAIServiceFactory.service(apiKey: "YOUR_API_KEY", baseURL: "http://localhost:11434")
+```
 
 
 ## Collaboration

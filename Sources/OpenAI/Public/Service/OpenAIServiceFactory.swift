@@ -80,23 +80,25 @@ public class OpenAIServiceFactory {
       )
    }
    
-   // MARK: Ollama
+   // MARK: Custom URL
 
    /// Creates and returns an instance of `OpenAIService`.
    ///
-   /// This service runs local models with OpenAI endpoints compatibility.
+   /// Use this service if you need to provide a custom URL, for example to run local models with OpenAI endpoints compatibility using Ollama.
    /// Check [Ollama blog post](https://ollama.com/blog/openai-compatibility) for more.
    ///
    /// - Parameters:
+   ///   - apiKey: The optional API key required for authentication.
    ///   - baseURL: The local host URL. e.g "http://localhost:11434"
    ///
    /// - Returns: A fully configured object conforming to `OpenAIService`.
-   public static func ollama(
+   public static func service(
+      apiKey: String? = nil,
       baseURL: String)
       -> some OpenAIService
    {
       DefaultOpenAIService(
-         apiKey: "",
+         apiKey: apiKey ?? "",
          baseURL: baseURL)
    }
 }

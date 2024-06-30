@@ -89,16 +89,16 @@ public class OpenAIServiceFactory {
    ///
    /// - Parameters:
    ///   - apiKey: The optional API key required for authentication.
-   ///   - baseURL: The local host URL. e.g "http://localhost:11434"
+   ///   - baseURL: The local host URL. defaults to  "http://localhost:11434"
    ///
    /// - Returns: A fully configured object conforming to `OpenAIService`.
    public static func service(
-      apiKey: String? = nil,
+      apiKey: Authorization = .apiKey(""),
       baseURL: String)
       -> some OpenAIService
    {
-      DefaultOpenAIService(
-         apiKey: apiKey ?? "",
+      LocalModelService(
+         apiKey: apiKey,
          baseURL: baseURL)
    }
 }

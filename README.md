@@ -2500,7 +2500,7 @@ Usage
 Create a Run
 ```swift
 let assistantID = "asst_abc123"
-ler parameters = RunParameter(assistantID: assistantID)
+let parameters = RunParameter(assistantID: assistantID)
 let run = try await service.createRun(threadID: threadID, parameters: parameters)
 ```
 Retrieve a Run

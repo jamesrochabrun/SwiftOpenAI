@@ -187,7 +187,7 @@ extension OpenAIAPI: Endpoint {
          case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/runs"
          case .retrieve(let threadID, let runID), .modify(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)"
          case .cancel(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/cancel"
-         case .submitToolOutput(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)//submit_tool_outputs"
+         case .submitToolOutput(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/submit_tool_outputs"
          case .createThreadAndRun: return "/v1/threads/runs"
          }
       case .runStep(let category):

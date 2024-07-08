@@ -111,7 +111,7 @@ extension AzureOpenAIAPI: Endpoint {
          case .create(let threadID), .list(let threadID): return "/openai/threads/\(threadID)/runs"
          case .retrieve(let threadID, let runID), .modify(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)"
          case .cancel(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)/cancel"
-         case .submitToolOutput(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)//submit_tool_outputs"
+         case .submitToolOutput(let threadID, let runID): return "/openai/threads/\(threadID)/runs/\(runID)/submit_tool_outputs"
          case .createThreadAndRun: return "/openai/threads/runs"
          }
       case .runStep(let category):

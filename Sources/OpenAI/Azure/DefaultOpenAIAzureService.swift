@@ -504,7 +504,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          apiKey: apiKey,
          organizationID: nil,
          method: .post,
-         params: parameters,
+         params: runToolsOutputParameter,
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)

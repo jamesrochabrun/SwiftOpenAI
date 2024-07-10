@@ -572,7 +572,7 @@ struct AIProxyService: OpenAIService {
    {
       var runToolsOutputParameter = parameters
       runToolsOutputParameter.stream = true
-      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, method: .post, params: runToolsOutputParameter, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request)
    }
 

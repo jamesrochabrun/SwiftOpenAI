@@ -1006,21 +1006,27 @@ extension OpenAIService {
    /// Asynchronously fetches a decodable data type from OpenAI's API.
    ///
    /// - Parameters:
+   ///   - debugEnabled: If true the service will print events on DEBUG builds.
    ///   - type: The `Decodable` type that the response should be decoded to.
    ///   - request: The `URLRequest` describing the API request.
    /// - Throws: An error if the request fails or if decoding fails.
    /// - Returns: A value of the specified decodable type.
    public func fetch<T: Decodable>(
+      debugEnabled: Bool,
       type: T.Type,
       with request: URLRequest)
       async throws -> T
    {
-      printCurlCommand(request)
+      if debugEnabled {
+         printCurlCommand(request)
+      }
       let (data, response) = try await session.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
-      printHTTPURLResponse(httpResponse)
+      if debugEnabled {
+         printHTTPURLResponse(httpResponse)
+      }
       guard httpResponse.statusCode == 200 else {
          var errorMessage = "status code \(httpResponse.statusCode)"
          do {
@@ -1034,7 +1040,9 @@ extension OpenAIService {
                                              statusCode: httpResponse.statusCode)
       }
       #if DEBUG
-      print("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      if debugEnabled {
+         print("DEBUG JSON FETCH API = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+      }
       #endif
       do {
          return try decoder.decode(type, from: data)
@@ -1043,12 +1051,16 @@ extension OpenAIService {
          let codingPath = "codingPath: \(context.codingPath)"
          let debugMessage = debug + codingPath
       #if DEBUG
-         print(debugMessage)
+         if debugEnabled {
+            print(debugMessage)
+         }
       #endif
          throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
       } catch {
       #if DEBUG
-         print("\(error)")
+         if debugEnabled {
+            print("\(error)")
+         }
       #endif
          throw APIError.jsonDecodingFailure(description: error.localizedDescription)
       }
@@ -1059,16 +1071,20 @@ extension OpenAIService {
    /// This method is primarily used for streaming chat completions.
    ///
    /// - Parameters:
+   ///   - debugEnabled: If true the service will print events on DEBUG builds.
    ///   - type: The `Decodable` type that each streamed response should be decoded to.
    ///   - request: The `URLRequest` describing the API request.
    /// - Throws: An error if the request fails or if decoding fails.
    /// - Returns: An asynchronous throwing stream of the specified decodable type.
    public func fetchStream<T: Decodable>(
+      debugEnabled: Bool,
       type: T.Type,
       with request: URLRequest)
       async throws -> AsyncThrowingStream<T, Error>
    {
-      printCurlCommand(request)
+      if debugEnabled {
+         printCurlCommand(request)
+      }
 
       let (data, response) = try await session.bytes(
          for: request,
@@ -1077,7 +1093,9 @@ extension OpenAIService {
       guard let httpResponse = response as? HTTPURLResponse else {
          throw APIError.requestFailed(description: "invalid response unable to get a valid HTTPURLResponse")
       }
-      printHTTPURLResponse(httpResponse)
+      if debugEnabled {
+         printHTTPURLResponse(httpResponse)
+      }
       guard httpResponse.statusCode == 200 else {
          var errorMessage = "status code \(httpResponse.statusCode)"
          do {
@@ -1100,7 +1118,9 @@ extension OpenAIService {
                   if line.hasPrefix("data:") && line != "data: [DONE]",
                      let data = line.dropFirst(5).data(using: .utf8) {
                      #if DEBUG
-                     print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     if debugEnabled {
+                        print("DEBUG JSON STREAM LINE = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                     }
                      #endif
                      do {
                         let decoded = try self.decoder.decode(T.self, from: data)
@@ -1110,12 +1130,16 @@ extension OpenAIService {
                         let codingPath = "codingPath: \(context.codingPath)"
                         let debugMessage = debug + codingPath
                      #if DEBUG
-                        print(debugMessage)
+                        if debugEnabled {
+                           print(debugMessage)
+                        }
                      #endif
                         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
                      } catch {
                      #if DEBUG
-                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                        if debugEnabled {
+                           debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                        }
                      #endif
                         continuation.finish(throwing: error)
                      }
@@ -1127,12 +1151,16 @@ extension OpenAIService {
                let codingPath = "codingPath: \(context.codingPath)"
                let debugMessage = debug + codingPath
                #if DEBUG
-               print(debugMessage)
+               if debugEnabled {
+                  print(debugMessage)
+               }
                #endif
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
             } catch {
                #if DEBUG
-               print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               if debugEnabled {
+                  print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               }
                #endif
                continuation.finish(throwing: error)
             }
@@ -1144,7 +1172,8 @@ extension OpenAIService {
    }
    
    public func fetchAssistantStreamEvents(
-      with request: URLRequest)
+      with request: URLRequest,
+      debugEnabled: Bool)
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
    {
       printCurlCommand(request)
@@ -1217,33 +1246,45 @@ extension OpenAIService {
                                  continuation.yield(.threadRunExpired(decoded))
                               default:
                               #if DEBUG
-                              print("DEBUG threadRun status not found = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                                 if debugEnabled {
+                                    print("DEBUG threadRun status not found = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                                 }
                               #endif
                               }
                            default:
                            #if DEBUG
-                           print("DEBUG EVENT \(eventObject.rawValue) IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                              if debugEnabled {
+                                 print("DEBUG EVENT \(eventObject.rawValue) IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                              }
                            #endif
                            }
                         } else {
                            #if DEBUG
-                           print("DEBUG EVENT DECODE IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           if debugEnabled {
+                              print("DEBUG EVENT DECODE IGNORED = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                           }
                            #endif
                         }
                      } catch let DecodingError.keyNotFound(key, context) {
                      #if DEBUG
-                     print("DEBUG Decoding Object Failed = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        if debugEnabled {
+                           print("DEBUG Decoding Object Failed = \(try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+                        }
                      #endif
                         let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
                         let codingPath = "codingPath: \(context.codingPath)"
                         let debugMessage = debug + codingPath
                      #if DEBUG
-                        print(debugMessage)
+                        if debugEnabled {
+                           print(debugMessage)
+                        }
                      #endif
                         throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
                      } catch {
                      #if DEBUG
-                        debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                        if debugEnabled {
+                           debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+                        }
                      #endif
                         continuation.finish(throwing: error)
                      }
@@ -1255,12 +1296,16 @@ extension OpenAIService {
                let codingPath = "codingPath: \(context.codingPath)"
                let debugMessage = debug + codingPath
                #if DEBUG
-               print(debugMessage)
+               if debugEnabled {
+                  print(debugMessage)
+               }
                #endif
                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
             } catch {
                #if DEBUG
-               print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               if debugEnabled {
+                  print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
+               }
                #endif
                continuation.finish(throwing: error)
             }

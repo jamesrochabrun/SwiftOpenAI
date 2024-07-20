@@ -18,20 +18,23 @@ public class OpenAIServiceFactory {
    ///   - organizationID: The optional organization ID for multi-tenancy (default is `nil`).
    ///   - configuration: The URL session configuration to be used for network calls (default is `.default`).
    ///   - decoder: The JSON decoder to be used for parsing API responses (default is `JSONDecoder.init()`).
-   ///
+   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
+
    /// - Returns: A fully configured object conforming to `OpenAIService`.
    public static func service(
       apiKey: String,
       organizationID: String? = nil,
       configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      decoder: JSONDecoder = .init(),
+      debugEnabled: Bool = false)
       -> some OpenAIService
    {
       DefaultOpenAIService(
          apiKey: apiKey,
          organizationID: organizationID,
          configuration: configuration,
-         decoder: decoder)
+         decoder: decoder,
+         debugEnabled: debugEnabled)
    }
    
    // MARK: Azure
@@ -42,18 +45,21 @@ public class OpenAIServiceFactory {
    ///   - azureConfiguration: The AzureOpenAIConfiguration.
    ///   - urlSessionConfiguration: The URL session configuration to be used for network calls (default is `.default`).
    ///   - decoder: The JSON decoder to be used for parsing API responses (default is `JSONDecoder.init()`).
+   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
    ///
    /// - Returns: A fully configured object conforming to `OpenAIService`.
    public static func service(
       azureConfiguration: AzureOpenAIConfiguration,
       urlSessionConfiguration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      decoder: JSONDecoder = .init(),
+      debugEnabled: Bool = false)
    -> some OpenAIService
    {
       DefaultOpenAIAzureService(
          azureConfiguration: azureConfiguration,
          urlSessionConfiguration: urlSessionConfiguration,
-         decoder: decoder)
+         decoder: decoder,
+         debugEnabled: debugEnabled)
    }
    
    // MARK: AIProxy
@@ -67,16 +73,18 @@ public class OpenAIServiceFactory {
    ///   - aiproxyClientID: If your app already has client or user IDs that you want to annotate AIProxy requests
    ///                      with, you can pass a clientID here. If you do not have existing client or user IDs, leave
    ///                      the `clientID` argument out, and IDs will be generated automatically for you.
+   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
    ///
    /// - Returns: A conformer of OpenAIService that proxies all requests through api.aiproxy.pro
    public static func service(
       aiproxyPartialKey: String,
-      aiproxyClientID: String? = nil)
+      aiproxyClientID: String? = nil, debugEnabled: Bool = false)
    -> some OpenAIService
    {
       AIProxyService(
         partialKey: aiproxyPartialKey,
-        clientID: aiproxyClientID
+        clientID: aiproxyClientID,
+        debugEnabled: debugEnabled
       )
    }
    
@@ -90,15 +98,18 @@ public class OpenAIServiceFactory {
    /// - Parameters:
    ///   - apiKey: The optional API key required for authentication.
    ///   - baseURL: The local host URL. defaults to  "http://localhost:11434"
+   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
    ///
    /// - Returns: A fully configured object conforming to `OpenAIService`.
    public static func service(
       apiKey: Authorization = .apiKey(""),
-      baseURL: String)
+      baseURL: String,
+      debugEnabled: Bool = false)
       -> some OpenAIService
    {
       LocalModelService(
          apiKey: apiKey,
-         baseURL: baseURL)
+         baseURL: baseURL,
+         debugEnabled: debugEnabled)
    }
 }

@@ -13,17 +13,21 @@ struct LocalModelService: OpenAIService {
    let decoder: JSONDecoder
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
    private let apiKey: Authorization
-
+   /// Set this flag to TRUE if you need to print request events in DEBUG builds.
+   private let debugEnabled: Bool
+   
    public init(
       apiKey: Authorization = .apiKey(""),
       baseURL: String,
       configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      decoder: JSONDecoder = .init(),
+      debugEnabled: Bool)
    {
       self.session = URLSession(configuration: configuration)
       self.decoder = decoder
       self.apiKey = apiKey
       LocalModelAPI.overrideBaseURL = baseURL
+      self.debugEnabled = debugEnabled
    }
    
    func createTranscription(parameters: AudioTranscriptionParameters) async throws -> AudioObject {
@@ -45,7 +49,7 @@ struct LocalModelService: OpenAIService {
       var chatParameters = parameters
       chatParameters.stream = false
       let request = try LocalModelAPI.chat.request(apiKey: apiKey, organizationID: nil, method: .post, params: chatParameters)
-      return try await fetch(type: ChatCompletionObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
    }
    
    func startStreamedChat(
@@ -56,7 +60,7 @@ struct LocalModelService: OpenAIService {
       chatParameters.stream = true
       chatParameters.streamOptions = .init(includeUsage: true)
       let request = try LocalModelAPI.chat.request(apiKey: apiKey, organizationID: nil, method: .post, params: chatParameters)
-      return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
+      return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }
    
    func createEmbeddings(parameters: EmbeddingParameter) async throws -> OpenAIResponse<EmbeddingObject> {

@@ -17,6 +17,8 @@ struct DefaultOpenAIService: OpenAIService {
    private let apiKey: Authorization
    /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
    private let organizationID: String?
+   /// Set this flag to TRUE if you need to print request events in DEBUG builds.
+   private let debugEnabled: Bool
    
    private static let assistantsBetaV2 = "assistants=v2"
    
@@ -25,13 +27,15 @@ struct DefaultOpenAIService: OpenAIService {
       organizationID: String? = nil,
       baseURL: String? = nil,
       configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      decoder: JSONDecoder = .init(),
+      debugEnabled: Bool)
    {
       self.session = URLSession(configuration: configuration)
       self.decoder = decoder
       self.apiKey = .bearer(apiKey)
       self.organizationID = organizationID
       OpenAIAPI.overrideBaseURL = baseURL
+      self.debugEnabled = debugEnabled
    }
    
    // MARK: Audio
@@ -41,7 +45,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AudioObject
    {
       let request = try OpenAIAPI.audio(.transcriptions).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post,  params: parameters)
-      return try await fetch(type: AudioObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AudioObject.self, with: request)
    }
    
    func createTranslation(
@@ -49,7 +53,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AudioObject
    {
       let request = try OpenAIAPI.audio(.translations).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: AudioObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AudioObject.self, with: request)
    }
    
    func createSpeech(
@@ -70,7 +74,7 @@ struct DefaultOpenAIService: OpenAIService {
       var chatParameters = parameters
       chatParameters.stream = false
       let request = try OpenAIAPI.chat.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: chatParameters)
-      return try await fetch(type: ChatCompletionObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
    }
    
    func startStreamedChat(
@@ -81,7 +85,7 @@ struct DefaultOpenAIService: OpenAIService {
       chatParameters.stream = true
       chatParameters.streamOptions = .init(includeUsage: true)
       let request = try OpenAIAPI.chat.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: chatParameters)
-      return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
+      return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }
    
    // MARK: Embeddings
@@ -91,7 +95,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<EmbeddingObject>
    {
       let request = try OpenAIAPI.embeddings.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: OpenAIResponse<EmbeddingObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<EmbeddingObject>.self, with: request)
    }
    
    // MARK: Fine-tuning
@@ -101,7 +105,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> FineTuningJobObject
    {
       let request = try OpenAIAPI.fineTuning(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: FineTuningJobObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
    
    func listFineTuningJobs(
@@ -119,7 +123,7 @@ struct DefaultOpenAIService: OpenAIService {
       }
       
       let request = try OpenAIAPI.fineTuning(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
-      return try await fetch(type: OpenAIResponse<FineTuningJobObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FineTuningJobObject>.self, with: request)
    }
    
    func retrieveFineTuningJob(
@@ -127,7 +131,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> FineTuningJobObject
    {
       let request = try OpenAIAPI.fineTuning(.retrieve(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: FineTuningJobObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
    
    func cancelFineTuningJobWith(
@@ -135,7 +139,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> FineTuningJobObject
    {
       let request = try OpenAIAPI.fineTuning(.cancel(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post)
-      return try await fetch(type: FineTuningJobObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
    
    func listFineTuningEventsForJobWith(
@@ -153,7 +157,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems = [.init(name: "limit", value: "\(limit)")]
       }
       let request = try OpenAIAPI.fineTuning(.events(jobID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
-      return try await fetch(type: OpenAIResponse<FineTuningJobEventObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FineTuningJobEventObject>.self, with: request)
    }
    
    // MARK: Files
@@ -162,7 +166,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<FileObject>
    {
       let request = try OpenAIAPI.file(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: OpenAIResponse<FileObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FileObject>.self, with: request)
    }
    
    func uploadFile(
@@ -170,7 +174,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> FileObject
    {
       let request = try OpenAIAPI.file(.upload).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: FileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: FileObject.self, with: request)
    }
    
    func deleteFileWith(
@@ -178,7 +182,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.file(.delete(fileID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    func retrieveFileWith(
@@ -186,7 +190,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> FileObject
    {
       let request = try OpenAIAPI.file(.retrieve(fileID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: FileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: FileObject.self, with: request)
    }
    
    func retrieveContentForFileWith(
@@ -204,7 +208,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<ImageObject>
    {
       let request = try OpenAIAPI.images(.generations).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: OpenAIResponse<ImageObject>.self,  with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self,  with: request)
    }
    
    func editImage(
@@ -212,7 +216,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<ImageObject>
    {
       let request = try OpenAIAPI.images(.edits).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: OpenAIResponse<ImageObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
    
    func createImageVariations(
@@ -220,7 +224,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<ImageObject>
    {
       let request = try OpenAIAPI.images(.variations).multiPartRequest(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: OpenAIResponse<ImageObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
    
    // MARK: Models
@@ -229,7 +233,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> OpenAIResponse<ModelObject>
    {
       let request = try OpenAIAPI.model(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: OpenAIResponse<ModelObject>.self,  with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ModelObject>.self,  with: request)
    }
    
    func retrieveModelWith(
@@ -237,7 +241,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> ModelObject
    {
       let request = try OpenAIAPI.model(.retrieve(modelID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: ModelObject.self,  with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ModelObject.self,  with: request)
    }
    
    func deleteFineTuneModelWith(
@@ -245,7 +249,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete)
-      return try await fetch(type: DeletionStatus.self,  with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self,  with: request)
    }
    
    // MARK: Moderations
@@ -255,7 +259,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> ModerationObject
    {
       let request = try OpenAIAPI.moderations.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: ModerationObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ModerationObject.self, with: request)
    }
    
    func createModerationFromTexts(
@@ -263,7 +267,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> ModerationObject
    {
       let request = try OpenAIAPI.moderations.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: ModerationObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ModerationObject.self, with: request)
    }
    
    // MARK: Assistants [BETA]
@@ -273,7 +277,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AssistantObject
    {
       let request = try OpenAIAPI.assistant(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    func retrieveAssistant(
@@ -281,7 +285,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AssistantObject
    {
       let request = try OpenAIAPI.assistant(.retrieve(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    func modifyAssistant(
@@ -290,7 +294,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> AssistantObject
    {
       let request = try OpenAIAPI.assistant(.modify(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    func deleteAssistant(
@@ -298,7 +302,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.assistant(.delete(assistantID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    func listAssistants(
@@ -322,7 +326,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.assistant(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<AssistantObject>.self, with: request)
    }
    
    // MARK: Thread [BETA]
@@ -332,14 +336,14 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> ThreadObject
    {
       let request = try OpenAIAPI.thread(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    func retrieveThread(id: String)
       async throws -> ThreadObject
    {
       let request = try OpenAIAPI.thread(.retrieve(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    func modifyThread(
@@ -348,7 +352,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> ThreadObject
    {
       let request = try OpenAIAPI.thread(.modify(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    func deleteThread(
@@ -356,7 +360,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.thread(.delete(threadID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    // MARK: Message [BETA]
@@ -367,7 +371,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> MessageObject
    {
       let request = try OpenAIAPI.message(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    func retrieveMessage(
@@ -376,7 +380,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> MessageObject
    {
       let request = try OpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    func modifyMessage(
@@ -386,7 +390,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> MessageObject
    {
       let request = try OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    func listMessages(
@@ -415,7 +419,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "run_id", value: runID))
       }
       let request = try OpenAIAPI.message(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<MessageObject>.self, with: request)
    }
    
    // MARK: Run [BETA]
@@ -426,7 +430,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    func retrieveRun(
@@ -435,7 +439,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    func modifyRun(
@@ -445,7 +449,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    func listRuns(
@@ -470,7 +474,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.run(.list(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<RunObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunObject>.self, with: request)
    }
    
    func cancelRun(
@@ -479,7 +483,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    func submitToolOutputsToRun(
@@ -489,7 +493,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    func createThreadAndRun(
@@ -497,7 +501,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunObject
    {
       let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    // MARK: Run Step [BETA]
@@ -509,7 +513,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> RunStepObject
    {
       let request = try OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: RunStepObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunStepObject.self, with: request)
    }
    
    func listRunSteps(
@@ -535,7 +539,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunStepObject>.self, with: request)
    }
    
    func createRunStream(
@@ -546,7 +550,7 @@ struct DefaultOpenAIService: OpenAIService {
       var runParameters = parameters
       runParameters.stream = true
       let request = try OpenAIAPI.run(.create(threadID: threadID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    func createThreadAndRunStream(
@@ -555,7 +559,7 @@ struct DefaultOpenAIService: OpenAIService {
       var runParameters = parameters
       runParameters.stream = true
       let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    func submitToolOutputsToRunStream(
@@ -567,7 +571,7 @@ struct DefaultOpenAIService: OpenAIService {
       var runToolsOutputParameter = parameters
       runToolsOutputParameter.stream = true
       let request = try OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: runToolsOutputParameter, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    // MARK: Batch
@@ -577,7 +581,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> BatchObject
    {
       let request = try OpenAIAPI.batch(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(type: BatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
    
    func retrieveBatch(
@@ -585,7 +589,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> BatchObject
    {
       let request = try OpenAIAPI.batch(.retrieve(batchID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get)
-      return try await fetch(type: BatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
    
    func cancelBatch(
@@ -593,7 +597,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> BatchObject
    {
       let request = try OpenAIAPI.batch(.cancel(batchID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post)
-      return try await fetch(type: BatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
    
    func listBatch(
@@ -609,7 +613,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "after", value: after))
       }
       let request = try OpenAIAPI.batch(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems)
-      return try await fetch(type: OpenAIResponse<BatchObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<BatchObject>.self, with: request)
    }
    
    // MARK: Vector Store
@@ -619,7 +623,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreObject
    {
       let request = try OpenAIAPI.vectorStore(.create).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    func listVectorStores(
@@ -643,7 +647,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "before", value: before))
       }
       let request = try OpenAIAPI.vectorStore(.list).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<VectorStoreObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreObject>.self, with: request)
    }
    
    func retrieveVectorStore(
@@ -651,7 +655,7 @@ struct DefaultOpenAIService: OpenAIService {
       -> VectorStoreObject
    {
       let request = try OpenAIAPI.vectorStore(.retrieve(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    func modifyVectorStore(
@@ -660,7 +664,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreObject
    {
       let request = try OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    func deleteVectorStore(
@@ -668,7 +672,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    // MARK: Vector Store Files
@@ -679,7 +683,7 @@ struct DefaultOpenAIService: OpenAIService {
    async throws -> VectorStoreFileObject 
    {
       let request = try OpenAIAPI.vectorStoreFile(.create(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreFileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
    
    func listVectorStoreFiles(
@@ -708,7 +712,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "filter", value: filter))
       }
       let request = try OpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
    
    func retrieveVectorStoreFile(
@@ -717,7 +721,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreFileObject
    {
       let request = try OpenAIAPI.vectorStoreFile(.retrieve(vectorStoreID: vectorStoreID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreFileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
    
    func deleteVectorStoreFile(
@@ -726,7 +730,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> DeletionStatus
    {
       let request = try OpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    // MARK: Vector Store File Batch
@@ -737,7 +741,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreFileBatchObject
    {
       let request = try OpenAIAPI.vectorStoreFileBatch(.create(vectorStoreID: vectorStoreID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
    
    func retrieveVectorStoreFileBatch(
@@ -746,7 +750,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreFileBatchObject
    {
       let request = try OpenAIAPI.vectorStoreFileBatch(.retrieve(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
    
    func cancelVectorStoreFileBatch(
@@ -755,7 +759,7 @@ struct DefaultOpenAIService: OpenAIService {
       async throws -> VectorStoreFileBatchObject
    {
       let request = try OpenAIAPI.vectorStoreFileBatch(.cancel(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: VectorStoreFileBatchObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
    
    func listVectorStoreFilesInABatch(
@@ -785,7 +789,7 @@ struct DefaultOpenAIService: OpenAIService {
          queryItems.append(.init(name: "filter", value: filter))
       }
       let request = try OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
-      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
 }
 

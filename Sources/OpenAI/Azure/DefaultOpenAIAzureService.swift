@@ -12,7 +12,8 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    public init(
       azureConfiguration: AzureOpenAIConfiguration,
       urlSessionConfiguration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init())
+      decoder: JSONDecoder = .init(),
+      debugEnabled: Bool)
    {
       session = URLSession(configuration: urlSessionConfiguration)
       self.decoder = decoder
@@ -20,12 +21,15 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       apiKey = azureConfiguration.openAIAPIKey
       extraHeaders = azureConfiguration.extraHeaders
       initialQueryItems = [.init(name: "api-version", value: azureConfiguration.apiVersion)]
+      self.debugEnabled = debugEnabled
    }
    
    public let session: URLSession
    public let decoder: JSONDecoder
    private let apiKey: Authorization
    private let initialQueryItems: [URLQueryItem]
+   /// Set this flag to TRUE if you need to print request events in DEBUG builds.
+   private let debugEnabled: Bool
    
    // Assistants API
    private let extraHeaders: [String: String]?
@@ -52,7 +56,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          method: .post,
          params: chatParameters,
          queryItems: initialQueryItems)
-      return try await fetch(type: ChatCompletionObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
    }
    
    public func startStreamedChat(parameters: ChatCompletionParameters) async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error> {
@@ -66,7 +70,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          params: chatParameters,
          queryItems: initialQueryItems
       )
-      return try await fetchStream(type: ChatCompletionChunkObject.self, with: request)
+      return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }
    
    public func createEmbeddings(parameters: EmbeddingParameter) async throws -> OpenAIResponse<EmbeddingObject> {
@@ -155,7 +159,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
       )
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    public func retrieveAssistant(id: String) async throws -> AssistantObject {
@@ -167,7 +171,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
       )
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    public func modifyAssistant(id: String, parameters: AssistantParameters) async throws -> AssistantObject {
@@ -180,7 +184,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
       )
-      return try await fetch(type: AssistantObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
    
    public func deleteAssistant(id: String) async throws -> DeletionStatus {
@@ -192,7 +196,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
       )
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    public func listAssistants(limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<AssistantObject> {
@@ -217,7 +221,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders
       )
-      return try await fetch(type: OpenAIResponse<AssistantObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<AssistantObject>.self, with: request)
    }
    
    public func createThread(parameters: CreateThreadParameters) async throws -> ThreadObject {
@@ -229,7 +233,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    public func retrieveThread(id: String) async throws -> ThreadObject {
@@ -240,7 +244,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    public func modifyThread(id: String, parameters: ModifyThreadParameters) async throws -> ThreadObject {
@@ -252,7 +256,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: ThreadObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
    
    public func deleteThread(id: String) async throws -> DeletionStatus {
@@ -263,7 +267,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    public func createMessage(threadID: String, parameters: MessageParameter) async throws -> MessageObject {
@@ -275,7 +279,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    public func retrieveMessage(threadID: String, messageID: String) async throws -> MessageObject {
@@ -286,7 +290,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    public func modifyMessage(threadID: String, messageID: String, parameters: ModifyMessageParameters) async throws -> MessageObject {
@@ -298,7 +302,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: MessageObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
    public func listMessages(threadID: String, limit: Int?, order: String?, after: String?, before: String?, runID: String?) async throws -> OpenAIResponse<MessageObject> {
@@ -325,7 +329,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: OpenAIResponse<MessageObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<MessageObject>.self, with: request)
    }
    
    public func createRun(threadID: String, parameters: RunParameter) async throws -> RunObject {
@@ -337,7 +341,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func retrieveRun(threadID: String, runID: String) async throws -> RunObject {
@@ -348,7 +352,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func modifyRun(threadID: String, runID: String, parameters: ModifyRunParameters) async throws -> RunObject {
@@ -360,7 +364,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func listRuns(threadID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunObject> {
@@ -384,7 +388,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: OpenAIResponse<RunObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunObject>.self, with: request)
    }
    
    public func cancelRun(threadID: String, runID: String) async throws -> RunObject {
@@ -395,7 +399,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func submitToolOutputsToRun(threadID: String, runID: String, parameters: RunToolsOutputParameter) async throws -> RunObject {
@@ -407,7 +411,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func createThreadAndRun(parameters: CreateThreadAndRunParameter) async throws -> RunObject {
@@ -419,7 +423,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
    public func retrieveRunstep(threadID: String, runID: String, stepID: String) async throws -> RunStepObject {
@@ -430,7 +434,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: RunStepObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: RunStepObject.self, with: request)
    }
    
    public func listRunSteps(threadID: String, runID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunStepObject> {
@@ -454,7 +458,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: OpenAIResponse<RunStepObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunStepObject>.self, with: request)
    }
    
    public func createThreadAndRunStream(
@@ -471,7 +475,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    public func createRunStream(
@@ -489,7 +493,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    public func submitToolOutputsToRunStream(
@@ -508,7 +512,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetchAssistantStreamEvents(with: request)
+      return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    
    // MARK: Batch
@@ -555,7 +559,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    public func listVectorStores(
@@ -585,7 +589,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: OpenAIResponse<VectorStoreObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreObject>.self, with: request)
    }
    
    public func retrieveVectorStore(
@@ -599,7 +603,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    public func modifyVectorStore(
@@ -615,7 +619,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: VectorStoreObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
    
    public func deleteVectorStore(
@@ -629,7 +633,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    // MARK: Vector Store Files
@@ -643,7 +647,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: VectorStoreFileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
 
    public func listVectorStoreFiles(vectorStoreID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
@@ -670,7 +674,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: queryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
    
    public func retrieveVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> VectorStoreFileObject {
@@ -681,7 +685,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: VectorStoreFileObject.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
    
    public func deleteVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> DeletionStatus {
@@ -692,7 +696,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
          queryItems: initialQueryItems,
          betaHeaderField: Self.assistantsBetaV2,
          extraHeaders: extraHeaders)
-      return try await fetch(type: DeletionStatus.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
    
    public func createVectorStoreFileBatch(vectorStoreID: String, parameters: VectorStoreFileBatchParameter) async throws -> VectorStoreFileBatchObject {

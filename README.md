@@ -88,8 +88,14 @@ To configure AIProxy, see the instructions [here](#aiproxy).
 1. Open your Swift project in Xcode.
 2. Go to `File` ->  `Add Package Dependency`.
 3. In the search bar, enter [this URL](https://github.com/jamesrochabrun/SwiftOpenAI).
-4. Choose the version you'd like to install.
+4. Choose the version you'd like to install (see the note below).
 5. Click `Add Package`.
+
+Note: Xcode has a quirk where it defaults an SPM package's upper limit to 2.0.0. This package is beyond that
+limit, so you should not accept the defaults that Xcode proposes. Instead, enter the lower bound of the
+[release version](https://github.com/jamesrochabrun/SwiftOpenAI/releases) that you'd like to support, and then
+tab out of the input box for Xcode to adjust the upper bound. Alternatively, you may select `branch` -> `main`
+to stay on the bleeding edge.
 
 ## Usage
 
@@ -3022,10 +3028,11 @@ SwiftOpenAI supports proxying requests through AIProxy with two changes to your 
 Use:
 
         let service = OpenAIServiceFactory.service(
-            aiproxyPartialKey: "hardcode_partial_key_here",
+            aiproxyPartialKey: "your_partial_key_goes_here",
+            aiproxyServiceURL: "your_service_url_goes_here"
         )
 
-The `aiproxyPartialKey` value is provided to you on the [AIProxy developer dashboard](https://developer.aiproxy.pro)
+The `aiproxyPartialKey` and `aiproxyServiceURL` values are provided to you on the [AIProxy developer dashboard](https://developer.aiproxy.pro)
 
 2. Add an `AIPROXY_DEVICE_CHECK_BYPASS' env variable to Xcode. This token is provided to you in the AIProxy
    developer dashboard, and is necessary for the iOS simulator to communicate with the AIProxy backend.

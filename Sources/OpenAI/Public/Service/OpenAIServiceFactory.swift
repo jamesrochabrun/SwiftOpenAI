@@ -70,6 +70,12 @@ public class OpenAIServiceFactory {
    /// - Parameters:
    ///   - aiproxyPartialKey: The partial key provided in the 'API Keys' section of the AIProxy dashboard.
    ///                        Please see the integration guide for acquiring your key, at https://www.aiproxy.pro/docs
+   ///
+   ///   - aiproxyServiceURL: The service URL is displayed in the AIProxy dashboard when you submit your OpenAI key.
+   ///                        This argument is required for keys that you submitted after July 22nd, 2024. If you are an
+   ///                        existing customer that configured your AIProxy project before July 22nd, you may continue
+   ///                        to leave this blank.
+   ///
    ///   - aiproxyClientID: If your app already has client or user IDs that you want to annotate AIProxy requests
    ///                      with, you can pass a clientID here. If you do not have existing client or user IDs, leave
    ///                      the `clientID` argument out, and IDs will be generated automatically for you.
@@ -78,11 +84,14 @@ public class OpenAIServiceFactory {
    /// - Returns: A conformer of OpenAIService that proxies all requests through api.aiproxy.pro
    public static func service(
       aiproxyPartialKey: String,
-      aiproxyClientID: String? = nil, debugEnabled: Bool = false)
+      aiproxyServiceURL: String? = nil,
+      aiproxyClientID: String? = nil,
+      debugEnabled: Bool = false)
    -> some OpenAIService
    {
       AIProxyService(
         partialKey: aiproxyPartialKey,
+        serviceURL: aiproxyServiceURL,
         clientID: aiproxyClientID,
         debugEnabled: debugEnabled
       )

@@ -11,6 +11,7 @@ import SwiftOpenAI
 struct AIProxyIntroView: View {
 
    @State private var partialKey = ""
+   @State private var serviceURL = ""
 
    var body: some View {
       NavigationStack {
@@ -18,11 +19,12 @@ struct AIProxyIntroView: View {
             Spacer()
             VStack(spacing: 24) {
                TextField("Enter partial key", text: $partialKey)
+               TextField("Enter your service's URL", text: $serviceURL)
             }
             .padding()
             .textFieldStyle(.roundedBorder)
 
-            Text("You receive a partial key when you configure an app in the AIProxy dashboard")
+            Text("You receive a partial key and service URL when you configure an app in the AIProxy dashboard")
                .font(.caption)
 
             NavigationLink(destination: OptionsListView(openAIService: aiproxyService, options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
@@ -47,7 +49,10 @@ struct AIProxyIntroView: View {
    }
 
    private var aiproxyService: some OpenAIService {
-      OpenAIServiceFactory.service(aiproxyPartialKey: partialKey)
+      OpenAIServiceFactory.service(
+         aiproxyPartialKey: partialKey,
+         aiproxyServiceURL: serviceURL != "" ? serviceURL : nil
+      )
    }
 }
 

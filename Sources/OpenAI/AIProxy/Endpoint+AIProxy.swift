@@ -39,8 +39,7 @@ extension Endpoint {
       queryItems: [URLQueryItem])
        -> URLComponents
     {
-       // var components = URLComponents(string: serviceURL ?? "https://api.aiproxy.pro")!
-       var components = URLComponents(string: serviceURL ?? "http://Lous-MacBook-Air-3.local:4000")!
+       var components = URLComponents(string: serviceURL ?? "https://api.aiproxy.pro")!
        components.path = components.path.appending(path)
        if !queryItems.isEmpty {
           components.queryItems = queryItems

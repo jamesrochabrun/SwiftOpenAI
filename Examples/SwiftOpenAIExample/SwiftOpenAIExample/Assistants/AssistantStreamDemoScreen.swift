@@ -35,6 +35,8 @@ public struct AssistantStartThreadScreen: View {
          VStack {
             Text(assistant.name ?? "No name")
                .font(.largeTitle).bold()
+            Text("For function call demo type: Create an image of a cow.")
+               .font(.caption)
             switch tutorialStage {
             case .crateThread:
                createThreadView

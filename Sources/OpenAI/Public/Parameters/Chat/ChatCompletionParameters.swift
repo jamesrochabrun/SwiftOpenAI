@@ -8,6 +8,7 @@
 import Foundation
 
 /// [Create chat completion](https://platform.openai.com/docs/api-reference/chat/create)
+/// For Azure available parameters make sure to visit [Azure API reeference](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference)
 public struct ChatCompletionParameters: Encodable {
    
    /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)

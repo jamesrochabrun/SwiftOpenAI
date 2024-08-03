@@ -513,7 +513,7 @@ struct AIProxyService: OpenAIService {
       parameters: CreateThreadAndRunParameter)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -571,7 +571,7 @@ struct AIProxyService: OpenAIService {
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       var runParameters = parameters
       runParameters.stream = true
-      let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+         let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
          return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
 

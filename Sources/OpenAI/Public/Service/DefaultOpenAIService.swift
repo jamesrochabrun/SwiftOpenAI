@@ -500,7 +500,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: CreateThreadAndRunParameter)
       async throws -> RunObject
    {
-      let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
    
@@ -558,7 +558,7 @@ struct DefaultOpenAIService: OpenAIService {
    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       var runParameters = parameters
       runParameters.stream = true
-      let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters)
+      let request = try OpenAIAPI.run(.createThreadAndRun).request(apiKey: apiKey, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
    

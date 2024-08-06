@@ -3012,13 +3012,14 @@ let completionObject = try await service.startChat(parameters: parameters)
 
 ### What is it?
 
-[AIProxy](https://www.aiproxy.pro) is a backend for AI apps that proxies requests from your app to OpenAI.
-You can use this service to avoid exposing your OpenAI key in your app.
-We offer AIProxy support so that developers can build **and** distribute apps using SwiftOpenAI.  
+[AIProxy](https://www.aiproxy.pro) is a backend for iOS apps that proxies requests from your app to OpenAI.
+Using a proxy keeps your OpenAI key secret, protecting you from unexpectedly high bills due to key theft.
+Requests are only proxied if they pass your defined rate limits and Apple's [DeviceCheck](https://developer.apple.com/documentation/devicecheck) verification.
+We offer AIProxy support so you can safely distribute apps built with SwiftOpenAI.
 
 ### How does my SwiftOpenAI code change?
 
-SwiftOpenAI supports proxying requests through AIProxy with two changes to your Xcode project:
+Proxy requests through AIProxy with two changes to your Xcode project:
 
 1. Instead of initializing `service` with:
 
@@ -3059,10 +3060,10 @@ thus remove one level of protection.
 
 #### What is the `aiproxyPartialKey` constant?
 
-This constant is intended to be **included** in the distributed version of your app. As the name implies, it is a
-partial representation of your OpenAI key. Specifically, it is one half of an encrypted version of your key.
-The other half resides on AIProxy's backend. As your app makes requests to AIProxy, the two encrypted parts
-are paired, decrypted, and used to fulfill the request to OpenAI.
+This constant is safe to include in distributed version of your app. It is one part of an
+encrypted representation of your real secret key. The other part resides on AIProxy's backend.
+As your app makes requests to AIProxy, the two encrypted parts are paired, decrypted, and used
+to fulfill the request to OpenAI.
 
 #### How to setup my project on AIProxy?
 

@@ -15,8 +15,6 @@ struct AIProxyService: OpenAIService {
    let session: URLSession
    let decoder: JSONDecoder
 
-   private let sessionID = UUID().uuidString
-
    /// Your partial key is provided during the integration process at dashboard.aiproxy.pro
    /// Please see the [integration guide](https://www.aiproxy.pro/docs/integration-guide.html) for acquiring your partial key
    private let partialKey: String

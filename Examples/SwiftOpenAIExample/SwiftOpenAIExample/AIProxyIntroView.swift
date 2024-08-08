@@ -13,6 +13,10 @@ struct AIProxyIntroView: View {
    @State private var partialKey = ""
    @State private var serviceURL = ""
 
+   private var canProceed: Bool {
+      return !(self.partialKey.isEmpty || self.serviceURL.isEmpty)
+   }
+
    var body: some View {
       NavigationStack {
          VStack {
@@ -34,12 +38,12 @@ struct AIProxyIntroView: View {
                   .foregroundColor(.white)
                   .background(
                      Capsule()
-                        .foregroundColor(partialKey.isEmpty ? .gray.opacity(0.2) : Color(red: 64/255, green: 195/255, blue: 125/255)))
+                        .foregroundColor(canProceed ? Color(red: 64/255, green: 195/255, blue: 125/255) : .gray.opacity(0.2)))
             }
-            .disabled(partialKey.isEmpty)
+            .disabled(!canProceed)
             Spacer()
             Group {
-               Text("You can now use SwiftOpenAI for development and production! AIProxy keeps your OpenAI API key secure. To configure AIProxy for your project, or to learn more about how it works, please see the docs at ") + Text("[this link](https://www.aiproxy.pro/docs).")
+               Text("AIProxy keeps your OpenAI API key secure. To configure AIProxy for your project, or to learn more about how it works, please see the docs at ") + Text("[this link](https://www.aiproxy.pro/docs).")
             }
             .font(.caption)
          }

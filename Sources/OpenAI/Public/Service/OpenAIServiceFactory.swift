@@ -27,7 +27,7 @@ public class OpenAIServiceFactory {
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool = false)
-      -> some OpenAIService
+      -> OpenAIService
    {
       DefaultOpenAIService(
          apiKey: apiKey,
@@ -53,7 +53,7 @@ public class OpenAIServiceFactory {
       urlSessionConfiguration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool = false)
-   -> some OpenAIService
+   -> OpenAIService
    {
       DefaultOpenAIAzureService(
          azureConfiguration: azureConfiguration,
@@ -87,7 +87,7 @@ public class OpenAIServiceFactory {
       aiproxyServiceURL: String? = nil,
       aiproxyClientID: String? = nil,
       debugEnabled: Bool = false)
-   -> some OpenAIService
+   -> OpenAIService
    {
       AIProxyService(
         partialKey: aiproxyPartialKey,
@@ -114,7 +114,7 @@ public class OpenAIServiceFactory {
       apiKey: Authorization = .apiKey(""),
       baseURL: String,
       debugEnabled: Bool = false)
-      -> some OpenAIService
+      -> OpenAIService
    {
       LocalModelService(
          apiKey: apiKey,

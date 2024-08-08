@@ -52,7 +52,7 @@ struct AIProxyIntroView: View {
       }
    }
 
-   private var aiproxyService: some OpenAIService {
+   private var aiproxyService: OpenAIService {
       OpenAIServiceFactory.service(
          aiproxyPartialKey: partialKey,
          aiproxyServiceURL: serviceURL != "" ? serviceURL : nil

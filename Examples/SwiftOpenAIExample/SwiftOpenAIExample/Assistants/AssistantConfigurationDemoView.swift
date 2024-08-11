@@ -17,7 +17,8 @@ enum AssistantFunctionCallDefinition: String, CaseIterable {
       switch self {
       case .createImage:
          return .init(type: .function, function: .init(
-            name: self.rawValue,
+            name: self.rawValue, 
+            strict: nil,
             description: "call this function if the request asks to generate an image",
             parameters: .init(
                type: .object,

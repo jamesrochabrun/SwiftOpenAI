@@ -27,8 +27,8 @@ struct ChatDisplayMessageView: View {
                }.first ?? ""
                
                let urls = content.compactMap { contentItem -> URL? in
-                  if case .imageUrl(let url) = contentItem {
-                      return url
+                  if case .imageUrl(let imageDetail) = contentItem {
+                     return imageDetail.url
                   } else {
                       return nil
                   }
@@ -61,7 +61,8 @@ struct ChatDisplayMessageView: View {
    -> some View
    {
       if text.isEmpty {
-         LoadingView()
+         ChatMessageLoadingView(animationDuration: 0.5)
+            .frame(width: 10, height: 10)
       } else {
          Text(text)
             .font(.body)

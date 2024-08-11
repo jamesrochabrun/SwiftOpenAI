@@ -18,6 +18,7 @@ enum FunctionCallDefinition: String, CaseIterable {
       case .createImage:
          return .init(function: .init(
             name: self.rawValue,
+            strict: nil,
             description: "call this function if the request asks to generate an image",
             parameters: .init(
                type: .object,
@@ -96,7 +97,7 @@ enum FunctionCallDefinition: String, CaseIterable {
       let parameters = ChatCompletionParameters(
          messages: chatMessageParameters,
          model: .gpt41106Preview,
-         toolChoice: ChatCompletionParameters.ToolChoice.auto,
+         toolChoice: ToolChoice.auto,
          tools: tools)
       
       do {

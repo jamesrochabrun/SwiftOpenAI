@@ -35,6 +35,8 @@ public struct AssistantStartThreadScreen: View {
          VStack {
             Text(assistant.name ?? "No name")
                .font(.largeTitle).bold()
+            Text("For function call demo type: Create an image of a cow.")
+               .font(.caption)
             switch tutorialStage {
             case .crateThread:
                createThreadView
@@ -175,6 +177,15 @@ struct ChatStreamView: View {
                   .fontDesign(.monospaced)
                   .bold()
                Text(provider.messageText)
+                  .font(.body)
+            }
+            if !provider.functionCallOutput.isEmpty {
+               Text("Function Call")
+                  .font(.title3)
+                  .foregroundColor(.pink)
+                  .fontDesign(.monospaced)
+                  .bold()
+               Text(provider.functionCallOutput)
                   .font(.body)
             }
          }

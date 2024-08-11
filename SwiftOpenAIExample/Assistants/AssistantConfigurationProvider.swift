@@ -15,7 +15,7 @@ import SwiftOpenAI
    var assistant: AssistantObject?
    var assistants: [AssistantObject] = []
    var avatarURL: URL?
-   var assistantDeletionStatus: AssistantObject.DeletionStatus?
+   var assistantDeletionStatus: DeletionStatus?
    
    // MARK: - Initializer
    
@@ -66,5 +66,10 @@ import SwiftOpenAI
       } catch {
          debugPrint("\(error)")
       }
+   }
+   
+   // TODO: Create demo for this.
+   func createVStore ()async throws  {
+      let _ = try await service.createVectorStore(parameters: .init(name: "Personal Data"))
    }
 }

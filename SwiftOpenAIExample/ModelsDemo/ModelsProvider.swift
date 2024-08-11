@@ -14,7 +14,7 @@ import SwiftOpenAI
    
    var models: [ModelObject] = []
    var retrievedModel: ModelObject? = nil
-   var deletionStatus: ModelObject.DeletionStatus? = nil
+   var deletionStatus: DeletionStatus? = nil
    
    init(service: OpenAIService) {
       self.service = service

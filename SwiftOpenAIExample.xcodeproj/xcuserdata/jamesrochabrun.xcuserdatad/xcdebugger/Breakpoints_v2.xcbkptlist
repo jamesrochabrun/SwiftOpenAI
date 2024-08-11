@@ -3,4 +3,85 @@
    uuid = "37097AAE-639C-4908-80AF-6C73D4D2FF51"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2166A608-9A1A-4AA2-A103-F94D117226A1"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../Sources/OpenAI/Public/Service/OpenAIService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1271"
+            endingLineNumber = "1271"
+            landmarkName = "OpenAIService"
+            landmarkType = "21">
+            <Locations>
+               <Location
+                  uuid = "2166A608-9A1A-4AA2-A103-F94D117226A1 - de493fe7575166cb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 (Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;.Continuation) -&gt; () in SwiftOpenAI.OpenAIService.fetchAssistantStreamEvents(with: Foundation.URLRequest) async throws -&gt; Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;"
+                  moduleName = "SwiftOpenAIExample"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jamesrochabrun/Desktop/git/SwiftOpenAI/Sources/OpenAI/Public/Service/OpenAIService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1271"
+                  endingLineNumber = "1271"
+                  offsetFromSymbolStart = "15424">
+               </Location>
+               <Location
+                  uuid = "2166A608-9A1A-4AA2-A103-F94D117226A1 - 7a37a0847245d8ca"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 (Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;.Continuation) -&gt; () in SwiftOpenAI.OpenAIService.fetchAssistantStreamEvents(with: Foundation.URLRequest) async throws -&gt; Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;"
+                  moduleName = "SwiftOpenAIExample"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jamesrochabrun/Desktop/git/SwiftOpenAI/Sources/OpenAI/Public/Service/OpenAIService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1271"
+                  endingLineNumber = "1271"
+                  offsetFromSymbolStart = "3064">
+               </Location>
+               <Location
+                  uuid = "2166A608-9A1A-4AA2-A103-F94D117226A1 - f2c76c6a52fac9e4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 (Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;.Continuation) -&gt; () in SwiftOpenAI.OpenAIService.fetchAssistantStreamEvents(with: Foundation.URLRequest, debugEnabled: Swift.Bool) async throws -&gt; Swift.AsyncThrowingStream&lt;SwiftOpenAI.AssistantStreamEvent, Swift.Error&gt;"
+                  moduleName = "SwiftOpenAIExample"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jamesrochabrun/Desktop/git/SwiftOpenAI/Sources/OpenAI/Public/Service/OpenAIService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1271"
+                  endingLineNumber = "1271"
+                  offsetFromSymbolStart = "19736">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F2AABB54-931C-4B85-BD9E-0947DCE0F023"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftOpenAIExample/ChatFunctionsCall/Stream/ChatFunctionsCallStreamProvider.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "generateImage(arguments:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

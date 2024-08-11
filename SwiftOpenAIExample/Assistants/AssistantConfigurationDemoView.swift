@@ -17,7 +17,8 @@ enum AssistantFunctionCallDefinition: String, CaseIterable {
       switch self {
       case .createImage:
          return .init(type: .function, function: .init(
-            name: self.rawValue,
+            name: self.rawValue, 
+            strict: nil,
             description: "call this function if the request asks to generate an image",
             parameters: .init(
                type: .object,
@@ -37,7 +38,10 @@ struct AssistantConfigurationDemoView: View {
    @State private var isAvatarLoading = false
    @State private var showAvatarFlow = false
    private let service: OpenAIService
-
+   @State private var fileIDS: [String] = []
+   /// Used mostly to display already uploaded files if any.
+   @State private var filePickerInitialActions: [FilePickerAction] = []
+   
    var isCodeInterpreterOn: Binding<Bool> {
        Binding(
            get: {
@@ -72,6 +76,23 @@ struct AssistantConfigurationDemoView: View {
        )
    }
    
+   var isFileSearchOn: Binding<Bool> {
+       Binding(
+           get: {
+              let contains =
+              self.parameters.tools.contains { $0.displayToolType == .fileSearch } == true
+              return contains
+           },
+           set: { newValue in
+               if newValue {
+                  self.parameters.tools.append(AssistantObject.Tool(type: .fileSearch))
+               } else {
+                  self.parameters.tools.removeAll { $0.displayToolType == .fileSearch }
+               }
+           }
+       )
+   }
+   
    init(service: OpenAIService) {
       self.service = service
       _provider = State(initialValue: AssistantConfigurationProvider(service: service))
@@ -84,6 +105,7 @@ struct AssistantConfigurationDemoView: View {
             inputViews
             capabilities
             footerActions
+            knowledge
          }
          .padding()
       }.sheet(isPresented: $showAvatarFlow) {
@@ -186,10 +208,21 @@ struct AssistantConfigurationDemoView: View {
       InputView(title: "Capabilities") {
          VStack(spacing: 16) {
             CheckboxRow(title: "Code interpreter", isChecked: isCodeInterpreterOn)
+            CheckboxRow(title: "File Search", isChecked: isFileSearchOn)
             CheckboxRow(title: "DALL·E Image Generation", isChecked: isDalleToolOn)
          }
       }
       .inputViewStyle(.init(verticalPadding: 16.0))
+   }
+   
+   // TODO: Add a demo to create a vector store and add files in to it.
+   var knowledge: some View {
+      FilesPicker(
+         service: service,
+         sectionTitle: "Knowledge",
+         actionTitle: "Upload files",
+         fileIDS: $fileIDS,
+         actions: $filePickerInitialActions)
    }
 }
 

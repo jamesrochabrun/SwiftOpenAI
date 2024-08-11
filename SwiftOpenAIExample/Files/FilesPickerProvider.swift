@@ -1,14 +1,14 @@
 //
-//  FilesProvider.swift
+//  FilesPickerProvider.swift
 //  SwiftOpenAIExample
 //
-//  Created by James Rochabrun on 10/23/23.
+//  Created by James Rochabrun on 5/29/24.
 //
 
 import SwiftOpenAI
 import SwiftUI
 
-@Observable class FilesProvider {
+final class FilesPickerProvider {
    
    private let service: OpenAIService
    
@@ -28,23 +28,23 @@ import SwiftUI
    
    func uploadFile(
       parameters: FileParameters)
-      async throws
+      async throws -> FileObject?
    {
-      uploadedFile = try await service.uploadFile(parameters: parameters)
+      try await service.uploadFile(parameters: parameters)
    }
    
    func deleteFileWith(
       id: String)
-      async throws
+      async throws -> DeletionStatus?
    {
-      deletedStatus = try await service.deleteFileWith(id: id)
+      try await service.deleteFileWith(id: id)
    }
    
    func retrieveFileWith(
       id: String)
-      async throws
+      async throws -> FileObject?
    {
-      retrievedFile = try await service.retrieveFileWith(id: id)
+      try await service.retrieveFileWith(id: id)
    }
    
    func retrieveContentForFileWith(

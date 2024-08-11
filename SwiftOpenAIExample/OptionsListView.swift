@@ -12,12 +12,15 @@ struct OptionsListView: View {
    
    var openAIService: OpenAIService
    
+   var options: [APIOption]
+   
    @State private var selection: APIOption? = nil
    
    /// https://platform.openai.com/docs/api-reference
    enum APIOption: String, CaseIterable, Identifiable {
       case audio = "Audio"
       case chat = "Chat"
+      case localChat = "Local Chat" // Ollama
       case vision = "Vision"
       case embeddings = "Embeddings"
       case fineTuning = "Fine Tuning"
@@ -34,7 +37,7 @@ struct OptionsListView: View {
    }
    
    var body: some View {
-      List(APIOption.allCases, id: \.self, selection: $selection) { option in
+      List(options, id: \.self, selection: $selection) { option in
          Text(option.rawValue)
             .sheet(item: $selection) { selection in
                VStack {
@@ -56,6 +59,8 @@ struct OptionsListView: View {
                      FilesDemoView(service: openAIService)
                   case .images:
                      ImagesDemoView(service: openAIService)
+                  case .localChat:
+                     LocalChatDemoView(service: openAIService)
                   case .models:
                      ModelsDemoView(service: openAIService)
                   case .moderations:

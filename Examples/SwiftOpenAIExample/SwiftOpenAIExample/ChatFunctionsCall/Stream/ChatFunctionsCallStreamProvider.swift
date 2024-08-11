@@ -100,24 +100,25 @@ struct FunctionCallStreamedResponse {
          let stream = try await service.startStreamedChat(parameters: parameters)
          for try await result in stream {
             // Extract the first choice from the stream results, if none exist, exit the loop.
-            guard let choice = result.choices.first else { return }
-            /// Because we are using the stream API we need to wait to populate
-            /// the needed values that comes from the streamed API to construct a valid tool call response.
-            /// This is not needed if the stream is set to false in the API completion request.
-            /// # Step 2: check if the model wanted to call a function
-            if let toolCalls = choice.delta.toolCalls {
+            if let choice = result.choices.first {
+               /// Because we are using the stream API we need to wait to populate
+               /// the needed values that comes from the streamed API to construct a valid tool call response.
+               /// This is not needed if the stream is set to false in the API completion request.
+               /// # Step 2: check if the model wanted to call a function
+               if let toolCalls = choice.delta.toolCalls {
+                  
+                  /// # Step 3: Define the available functions to be called
+                  availableFunctions = [.createImage: generateImage(arguments:)]
+                  
+                  mapStreamedToolCallsResponse(toolCalls)
+               }
                
-               /// # Step 3: Define the available functions to be called
-               availableFunctions = [.createImage: generateImage(arguments:)]
-
-               mapStreamedToolCallsResponse(toolCalls)
-            }
-            
-            /// The streamed content to display
-            if let newContent = choice.delta.content {
-               await updateLastAssistantMessage(.init(
-                  content: .content(.init(text: newContent)),
-                  origin: .received(.gpt)))
+               /// The streamed content to display
+               if let newContent = choice.delta.content {
+                  await updateLastAssistantMessage(.init(
+                     content: .content(.init(text: newContent)),
+                     origin: .received(.gpt)))
+               }
             }
          }
          // # extend conversation with assistant's reply

@@ -1118,8 +1118,8 @@ For more details about how to also uploading base 64 encoded images in iOS check
 #### Documentation:
 
 - [Structured Outputs Guides](https://platform.openai.com/docs/guides/structured-outputs/structured-outputs)
-- [Examples](https://platform.openai.com/docs/guides/structured-outputs/examples))
-- [How to use](https://platform.openai.com/docs/guides/structured-outputs/how-to-use))
+- [Examples](https://platform.openai.com/docs/guides/structured-outputs/examples)
+- [How to use](https://platform.openai.com/docs/guides/structured-outputs/how-to-use)
 - [Supported schemas](https://platform.openai.com/docs/guides/structured-outputs/supported-schemas)
 
 Must knowns:
@@ -1216,7 +1216,7 @@ let tool = ChatCompletionParameters.Tool(
 
 let prompt = "solve 8x + 31 = 2"
 let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
-let userMessage = ChatCompletionParameters.Message(role: .user, content: .text("prompt"))
+let userMessage = ChatCompletionParameters.Message(role: .user, content: .text(prompt))
 let parameters = ChatCompletionParameters(
    messages: [systemMessage, userMessage],
    model: .gpt4o20240806,
@@ -1269,7 +1269,7 @@ let responseFormatSchema = JSONSchemaResponseFormat(
 
 let prompt = "solve 8x + 31 = 2"
 let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
-let userMessage = ChatCompletionParameters.Message(role: .user, content: .text("prompt"))
+let userMessage = ChatCompletionParameters.Message(role: .user, content: .text(prompt))
 let parameters = ChatCompletionParameters(
    messages: [systemMessage, userMessage],
    model: .gpt4o20240806,

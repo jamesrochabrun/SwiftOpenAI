@@ -1211,7 +1211,7 @@ let tool = ChatCompletionParameters.Tool(
             function: .init(
                name: "math_response,
                strict: true,
-               parameters: mathResponseSchema)
+               parameters: mathResponseSchema))
 )
 
 let prompt = "solve 8x + 31 = 2"
@@ -1278,11 +1278,11 @@ let parameters = ChatCompletionParameters(
 
 SwiftOpenAI Structred outputs supports:
 
-[x] Tools Structured output.
-[x] Response format Structure output.
-[x] Recursive Schema.
-[x] Optional values Schema.
-[ ] Pydantic models.
+- [x] Tools Structured output.
+- [x] Response format Structure output.
+- [x] Recursive Schema.
+- [x] Optional values Schema.
+- [ ] Pydantic models.
 
 We don't support Pydantic models, users need tos manually create Schemas using `JSONSchema` or `JSONSchemaResponseFormat` objects.
 

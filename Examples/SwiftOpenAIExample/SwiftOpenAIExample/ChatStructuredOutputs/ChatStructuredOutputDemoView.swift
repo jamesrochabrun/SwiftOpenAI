@@ -86,6 +86,36 @@ let responseFormatSchema = JSONSchemaResponseFormat(
    )
 )
 
+/*
+ We can also handle optional values.
+ 
+ let weatherSchema = JSONSchemaResponseFormat(
+ name: "get_weather",
+ description: "Fetches the weather in the given location",
+ strict: true,
+ schema: JSONSchema(
+ type: .object,
+ properties: [
+ "location": JSONSchema(
+ type: .string,
+ description: "The location to get the weather for"
+ ),
+ "unit": JSONSchema(
+ type: .optional(.string),
+ description: "The unit to return the temperature in",
+ enum: ["F", "C"]
+ ),
+ "thinking": .init(
+ type: .object,
+ description: "your thinking", 
+ properties: ["step": .init(type: .string)],
+ required: ["step"])
+ ],
+ required: ["location", "unit", "thinking"]
+ )
+ )
+ */
+
 struct ChatStructuredOutputDemoView: View {
    
    @State private var chatProvider: ChatStructuredOutputProvider

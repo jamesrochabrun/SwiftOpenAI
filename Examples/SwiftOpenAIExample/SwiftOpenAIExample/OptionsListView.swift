@@ -32,6 +32,7 @@ struct OptionsListView: View {
       case chatFunctionCall = "Chat Functions call"
       case chatFunctionsCallStream = "Chat Functions call (Stream)"
       case chatStructuredOutput = "Chat Structured Output"
+      case chatStructuredOutputTool = "Chat Structured Output Tools"
       case configureAssistant = "Configure Assistant"
 
       var id: String { rawValue }
@@ -74,6 +75,8 @@ struct OptionsListView: View {
                      ChatFunctionsCalllStreamDemoView(service: openAIService)
                   case .chatStructuredOutput:
                      ChatStructuredOutputDemoView(service: openAIService)
+                  case .chatStructuredOutputTool:
+                     ChatStructureOutputToolDemoView(service: openAIService)
                   case .configureAssistant:
                      AssistantConfigurationDemoView(service: openAIService)
                   }

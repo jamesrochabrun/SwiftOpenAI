@@ -32,6 +32,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Speech](#audio-Speech)
 - [Chat](#chat)
    - [Function Calling](#function-calling)
+   - [Structured Outputs](#structured-outputs)
    - [Vision](#vision)
 - [Embeddings](#embeddings)
 - [Fine-tuning](#fine-tuning)
@@ -1111,6 +1112,178 @@ let parameters = ChatCompletionParameters(messages: [.init(role: .user, content:
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
 For more details about how to also uploading base 64 encoded images in iOS check the [ChatFunctionsCalllDemo](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatFunctionsCall) demo on the Examples section of this package.
+
+### Structured Ouputs
+
+#### Documentation:
+
+- [Structured Outputs Guides](https://platform.openai.com/docs/guides/structured-outputs/structured-outputs)
+- [Examples](https://platform.openai.com/docs/guides/structured-outputs/examples))
+- [How to use](https://platform.openai.com/docs/guides/structured-outputs/how-to-use))
+- [Supported schemas](https://platform.openai.com/docs/guides/structured-outputs/supported-schemas)
+
+Must knowns:
+
+- [All fields must be required](https://platform.openai.com/docs/guides/structured-outputs/all-fields-must-be-required) , To use Structured Outputs, all fields or function parameters must be specified as required.
+- Although all fields must be required (and the model will return a value for each parameter), it is possible to emulate an optional parameter by using a union type with null.
+- [Objects have limitations on nesting depth and size](https://platform.openai.com/docs/guides/structured-outputs/objects-have-limitations-on-nesting-depth-and-size), A schema may have up to 100 object properties total, with up to 5 levels of nesting.
+
+- [additionalProperties](https://platform.openai.com/docs/guides/structured-outputs/additionalproperties-false-must-always-be-set-in-objects)): false must always be set in objects
+additionalProperties controls whether it is allowable for an object to contain additional keys / values that were not defined in the JSON Schema.
+Structured Outputs only supports generating specified keys / values, so we require developers to set additionalProperties: false to opt into Structured Outputs.
+- [Key ordering](https://platform.openai.com/docs/guides/structured-outputs/key-ordering), When using Structured Outputs, outputs will be produced in the same order as the ordering of keys in the schema.
+- [Recursive schemas are supported](https://platform.openai.com/docs/guides/structured-outputs/recursive-schemas-are-supported)
+
+#### How to use Structured Outputs
+
+1. Function calling: Structured Outputs via tools is available by setting strict: true within your function definition. This feature works with all models that support tools, including all models gpt-4-0613 and gpt-3.5-turbo-0613 and later. When Structured Outputs are enabled, model outputs will match the supplied tool definition.
+
+Using this schema:
+
+```json
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "explanation": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string"
+            }
+          },
+          "required": ["explanation", "output"],
+          "additionalProperties": false
+        }
+      },
+      "final_answer": {
+        "type": "string"
+      }
+    },
+    "required": ["steps", "final_answer"],
+    "additionalProperties": false
+  }
+}
+```
+
+You can use the convenient `JSONSchema` object like this:
+
+```swift
+// 1: Define the Step schema object
+
+let stepSchema = JSONSchema(
+   type: .object,
+   properties: [
+      "explanation": JSONSchema(type: .string),
+      "output": JSONSchema(
+         type: .string)
+   ],
+   required: ["explanation", "output"],
+   additionalProperties: false
+)
+
+// 2. Define the steps Array schema.
+
+let stepsArraySchema = JSONSchema(type: .array, items: stepSchema)
+
+// 3. Define the final Answer schema.
+
+let finalAnswerSchema = JSONSchema(type: .string)
+
+// 4. Define math reponse JSON schema.
+
+let mathResponseSchema = JSONSchema(
+      type: .object,
+      properties: [
+         "steps": stepsArraySchema,
+         "final_answer": finalAnswerSchema
+      ],
+      required: ["steps", "final_answer"],
+      additionalProperties: false
+)
+
+let tool = ChatCompletionParameters.Tool(
+            function: .init(
+               name: "math_response,
+               strict: true,
+               parameters: mathResponseSchema)
+)
+
+let prompt = "solve 8x + 31 = 2"
+let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
+let userMessage = ChatCompletionParameters.Message(role: .user, content: .text("prompt"))
+let parameters = ChatCompletionParameters(
+   messages: [systemMessage, userMessage],
+   model: .gpt4o20240806,
+   tools: [tool])
+
+let chat = try await service.startChat(parameters: parameters)
+```
+
+2. A new option for the `response_format` parameter: developers can now supply a JSON Schema via `json_schema`, a new option for the response_format parameter. This is useful when the model is not calling a tool, but rather, responding to the user in a structured way. This feature works with our newest GPT-4o models: `gpt-4o-2024-08-06`, released today, and `gpt-4o-mini-2024-07-18`. When a response_format is supplied with strict: true, model outputs will match the supplied schema.
+
+Using the previous schema, this is how you can implement it as json schema using the convenient `JSONSchemaResponseFormat` object:
+
+```swift
+// 1: Define the Step schema object
+
+let stepSchema = JSONSchema(
+   type: .object,
+   properties: [
+      "explanation": JSONSchema(type: .string),
+      "output": JSONSchema(
+         type: .string)
+   ],
+   required: ["explanation", "output"],
+   additionalProperties: false
+)
+
+// 2. Define the steps Array schema.
+
+let stepsArraySchema = JSONSchema(type: .array, items: stepSchema)
+
+// 3. Define the final Answer schema.
+
+let finalAnswerSchema = JSONSchema(type: .string)
+
+// 4. Define the response format JSON schema.
+
+let responseFormatSchema = JSONSchemaResponseFormat(
+   name: "math_response",
+   strict: true,
+   schema: JSONSchema(
+      type: .object,
+      properties: [
+         "steps": stepsArraySchema,
+         "final_answer": finalAnswerSchema
+      ],
+      required: ["steps", "final_answer"],
+      additionalProperties: false
+   )
+)
+
+let prompt = "solve 8x + 31 = 2"
+let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
+let userMessage = ChatCompletionParameters.Message(role: .user, content: .text("prompt"))
+let parameters = ChatCompletionParameters(
+   messages: [systemMessage, userMessage],
+   model: .gpt4o20240806,
+   responseFormat: .jsonSchema(responseFormatSchema))
+```
+
+SwiftOpenAI Structred outputs supports:
+
+[x] Tools Structured output.
+[x] Response format Structure output.
+[x] Recursive Schema.
+[x] Optional values Schema.
+
+For more details visit the Demo project for [tools](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatStructureOutputTool) and [response format](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatStructuredOutputs).
 
 ### Vision
 

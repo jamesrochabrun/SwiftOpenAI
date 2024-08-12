@@ -1286,6 +1286,8 @@ SwiftOpenAI Structred outputs supports:
 
 We don't support Pydantic models, users need tos manually create Schemas using `JSONSchema` or `JSONSchemaResponseFormat` objects.
 
+Pro tip 🔥 Use [iosAICodeAssistant GPT](https://chatgpt.com/g/g-qj7RuW7PY-iosai-code-assistant) to construct SwifOpenAI schemas. Just paste your JSON schema and as the GPT to create SwiftOpenAI schemas for tools and response format.
+
 For more details visit the Demo project for [tools](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatStructureOutputTool) and [response format](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatStructuredOutputs).
 
 ### Vision

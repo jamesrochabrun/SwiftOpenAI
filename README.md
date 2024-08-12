@@ -1113,7 +1113,7 @@ let chatCompletionObject = try await service.startStreamedChat(parameters: param
 ```
 For more details about how to also uploading base 64 encoded images in iOS check the [ChatFunctionsCalllDemo](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/ChatFunctionsCall) demo on the Examples section of this package.
 
-### Structured Ouputs
+### Structured Outputs
 
 #### Documentation:
 
@@ -1134,7 +1134,7 @@ Structured Outputs only supports generating specified keys / values, so we requi
 - [Key ordering](https://platform.openai.com/docs/guides/structured-outputs/key-ordering), When using Structured Outputs, outputs will be produced in the same order as the ordering of keys in the schema.
 - [Recursive schemas are supported](https://platform.openai.com/docs/guides/structured-outputs/recursive-schemas-are-supported)
 
-#### How to use Structured Outputs
+#### How to use Structured Outputs in SwiftOpenAI
 
 1. Function calling: Structured Outputs via tools is available by setting strict: true within your function definition. This feature works with all models that support tools, including all models gpt-4-0613 and gpt-3.5-turbo-0613 and later. When Structured Outputs are enabled, model outputs will match the supplied tool definition.
 
@@ -1209,7 +1209,7 @@ let mathResponseSchema = JSONSchema(
 
 let tool = ChatCompletionParameters.Tool(
             function: .init(
-               name: "math_response,
+               name: "math_response",
                strict: true,
                parameters: mathResponseSchema))
 )

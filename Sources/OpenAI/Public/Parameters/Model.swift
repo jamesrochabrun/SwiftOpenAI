@@ -11,6 +11,13 @@ import Foundation
 /// [Models](https://platform.openai.com/docs/models)
 public enum Model {
    
+   /// O1 models
+   
+   /// an early preview of the o1 model, designed to reason about hard problems using broad general knowledge about the world.
+   case o1Preview
+   /// a faster and cheaper version of o1, particularly adept at coding, math, and science tasks where extensive general knowledge isn't required.
+   case o1Mini
+   
    /// Chat completion
 
    /// ### Omicron model
@@ -22,7 +29,7 @@ public enum Model {
    ///   > it generates text 2x faster and is 50% cheaper. Additionally, GPT-4o has the best vision and performance
    ///   > across non-English languages of any of our models
    ///
-   case gpt4o // Points to gpt-4o-2024-05-13
+   case gpt4o // Points to gpt-4o-2024-05-13 until October 2, 2024, after will point to gpt-4o-2024-08-06.
    case gpt4o20240513 // 128k context window with training data up to Oct 2023
    /// The most affordable and intelligent small model for fast, lightweight tasks. GPT-4o mini is cheaper and more capable than GPT-3.5 Turbo. Currently points to gpt-4o-mini-2024-07-18.
    case gpt4omini
@@ -57,11 +64,15 @@ public enum Model {
    case dalle2
    case dalle3
    
+   
+   
    // custom
    case custom(String)
    
    public var value: String {
       switch self {
+      case .o1Preview: return "o1-preview"
+      case .o1Mini: return "o1-mini"
       case .gpt4o: return "gpt-4o"
       case .gpt4o20240513: return "gpt-4o-2024-05-13"
       case .gpt4o20240806: return "gpt-4o-2024-08-06"

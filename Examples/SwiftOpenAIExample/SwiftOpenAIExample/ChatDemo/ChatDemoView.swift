@@ -75,7 +75,7 @@ struct ChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  model: .gpt41106Preview,
+                  model: .o1Preview,
                   logProbs: true,
                   topLogprobs: 1)
                switch selectedSegment {

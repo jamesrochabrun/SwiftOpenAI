@@ -115,7 +115,7 @@ public class JSONSchema: Codable, Equatable {
    /// Although all fields must be required (and the model will return a value for each parameter), it is possible to emulate an optional parameter by using a union type with null.
    public let required: [String]?
    /// Structured Outputs only supports generating specified keys / values, so we require developers to set additionalProperties: false to opt into Structured Outputs.
-   public let additionalProperties: Bool
+   public let additionalProperties: Bool?
    public let `enum`: [String]?
    public var ref: String?
    
@@ -187,7 +187,7 @@ public class JSONSchema: Codable, Equatable {
       properties = try container.decodeIfPresent([String: JSONSchema].self, forKey: .properties)
       items = try container.decodeIfPresent(JSONSchema.self, forKey: .items)
       required = try container.decodeIfPresent([String].self, forKey: .required)
-      additionalProperties = try container.decode(Bool.self, forKey: .additionalProperties)
+      additionalProperties = try container.decodeIfPresent(Bool.self, forKey: .additionalProperties)
       `enum` = try container.decodeIfPresent([String].self, forKey: .enum)
       ref = nil
    }

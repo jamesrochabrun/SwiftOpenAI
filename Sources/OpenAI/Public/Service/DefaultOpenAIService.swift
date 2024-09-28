@@ -393,6 +393,15 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
+   func deleteMessage(
+      threadID: String,
+      messageID: String)
+      async throws -> DeletionStatus
+   {
+      let request = try OpenAIAPI.message(.delete(threadID: threadID, messageID: messageID)).request(apiKey: apiKey, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
+   }
+   
    func listMessages(
       threadID: String,
       limit: Int? = nil,

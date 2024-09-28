@@ -406,6 +406,15 @@ struct AIProxyService: OpenAIService {
       let request = try await OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
+   
+   func deleteMessage(
+      threadID: String,
+      messageID: String)
+      async throws -> DeletionStatus
+   {
+      let request = try await OpenAIAPI.message(.delete(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
+   }
 
    func listMessages(
       threadID: String,

@@ -71,6 +71,7 @@ enum OpenAIAPI {
       case create(threadID: String)
       case retrieve(threadID: String, messageID: String)
       case modify(threadID: String, messageID: String)
+      case delete(threadID: String, messageID: String)
       case list(threadID: String)
    }
    
@@ -174,7 +175,7 @@ extension OpenAIAPI: Endpoint {
       case .message(let category):
          switch category {
          case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/messages"
-         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
+         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID), .delete(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
          }
       case .model(let category):
          switch category {

@@ -43,6 +43,7 @@ enum AzureOpenAIAPI {
       case create(threadID: String)
       case retrieve(threadID: String, messageID: String)
       case modify(threadID: String, messageID: String)
+      case delete(threadID: String, messageID: String)
       case list(threadID: String)
    }
    
@@ -104,7 +105,7 @@ extension AzureOpenAIAPI: Endpoint {
       case .message(let category):
          switch category {
          case .create(let threadID), .list(let threadID): return "/openai/threads/\(threadID)/messages"
-         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID): return "/openai/threads/\(threadID)/messages/\(messageID)"
+         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID), .delete(let threadID, let messageID): return "/openai/threads/\(threadID)/messages/\(messageID)"
          }
       case .run(let category):
          switch category {

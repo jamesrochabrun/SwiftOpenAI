@@ -18,4 +18,9 @@ public struct MessageAttachment: Codable {
       case fileID = "file_id"
       case tools
    }
+   
+   public init(fileID: String, tools: [AssistantObject.Tool]) {
+       self.fileID = fileID
+       self.tools = tools
+   }
 }

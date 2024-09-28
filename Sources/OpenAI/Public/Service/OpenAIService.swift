@@ -479,6 +479,18 @@ public protocol OpenAIService {
       parameters: ModifyMessageParameters)
       async throws -> MessageObject
    
+   /// Deletes a message.
+   ///
+   /// - Parameter threadID: The ID of the thread to which this message belongs.
+   /// - Parameter messageID: The ID of the message to modify.
+   /// - Throws: An error if the request fails.
+   ///
+   /// For more information, refer to [OpenAI's Message API documentation](https://platform.openai.com/docs/api-reference/messages/deleteMessage).
+   func deleteMessage(
+      threadID: String,
+      messageID: String)
+      async throws -> DeletionStatus
+
    /// Returns a list of messages for a given thread.
    ///
    /// - Parameter threadID: The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) the messages belong to.

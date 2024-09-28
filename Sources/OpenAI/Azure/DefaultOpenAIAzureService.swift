@@ -304,6 +304,21 @@ final public class DefaultOpenAIAzureService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
+   public func deleteMessage(
+      threadID: String,
+      messageID: String)
+      async throws -> DeletionStatus
+   {
+      let request = try AzureOpenAIAPI.message(.delete(threadID: threadID, messageID: messageID)).request(
+         apiKey: apiKey,
+         organizationID: nil,
+         method: .delete,
+         queryItems: initialQueryItems,
+         betaHeaderField: Self.assistantsBetaV2,
+         extraHeaders: extraHeaders)
+      return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
+   }
+   
    public func listMessages(threadID: String, limit: Int?, order: String?, after: String?, before: String?, runID: String?) async throws -> OpenAIResponse<MessageObject> {
       var queryItems: [URLQueryItem] = initialQueryItems
       if let limit {

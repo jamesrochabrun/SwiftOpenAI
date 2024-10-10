@@ -148,13 +148,13 @@ public enum Annotation: Codable {
 /// A citation within the message that points to a specific quote from a specific File associated with the assistant or the message. Generated when the assistant uses the "retrieval" tool to search files.
 public struct FileCitation: Codable {
    
-   /// Always file_citation.
-   public let type: String
-   /// The text in the message content that needs to be replaced.
-   public let text: String
-   public let fileCitation: FileCitationDetails
-   public let startIndex: Int
-   public let endIndex: Int
+   /// Always file_citation, except when using Assistants API Beta, e.g. when using file_store search
+   public let type: String?
+   /// The text in the message content that needs to be replaced. Not always present with Assistants API Beta, e.g. when using file_store search
+   public let text: String?
+   public let fileCitation: FileCitationDetails?
+   public let startIndex: Int?
+   public let endIndex: Int?
    
    public struct FileCitationDetails: Codable {
       

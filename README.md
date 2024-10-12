@@ -18,6 +18,8 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Azure OpenAI](#azure-openai)
 - [AIProxy](#aiproxy)
 - [Ollama](#ollama)
+- [Groq](#groq)
+
 - [Collaboration](#collaboration)
 
 ## Description
@@ -3286,6 +3288,22 @@ let prompt = "Tell me a joke"
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("llama3"))
 let chatCompletionObject = service.startStreamedChat(parameters: parameters)
 ```
+
+## Groq
+
+<img width="792" alt="Screenshot 2024-10-11 at 11 49 04 PM" src="https://github.com/user-attachments/assets/7afb36a2-b2d8-4f89-9592-f4cece20d469">
+
+Groq API is mostly compatible with OpenAI's client libraries like `SwiftOpenAI` to use Groq using this library you just need to create an instance of `OpenAIService` like this:
+
+```swift
+let apiKey = "your_api_key"
+let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "https://api.groq.com/", proxyPath: "openai")
+
+```
+
+For Supported API's using Groq visit its [documentation](https://console.groq.com/docs/openai).
+
+⚠️ Note: You can probably use the `OpenAIServiceFactory.service(apiKey:overrideBaseURL:proxyPath)` for any OpenAI compatible service.
 
 ### Resources:
 

@@ -121,4 +121,31 @@ public class OpenAIServiceFactory {
          baseURL: baseURL,
          debugEnabled: debugEnabled)
    }
+   
+   // MARK: Proxy Path
+
+   /// Creates and returns an instance of `OpenAIService`.
+   ///
+   /// Use this service if you need to provide a custom URL with a proxy path, for example to run Groq.
+   ///
+   /// - Parameters:
+   ///   - apiKey: The optional API key required for authentication.
+   ///   - baseURL: The local host URL. defaults to  "https://api.groq.com"
+   ///   - proxyPath: The proxy path e.g `openai`
+   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
+   ///
+   /// - Returns: A fully configured object conforming to `OpenAIService`.
+   public static func service(
+      apiKey: String,
+      overrideBaseURL: String,
+      proxyPath: String? = nil,
+      debugEnabled: Bool = false)
+      -> OpenAIService
+   {
+      DefaultOpenAIService(
+         apiKey: apiKey,
+         baseURL: overrideBaseURL,
+         proxyPath: proxyPath,
+         debugEnabled: debugEnabled)
+   }
 }

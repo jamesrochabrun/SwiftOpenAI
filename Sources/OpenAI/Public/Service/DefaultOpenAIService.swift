@@ -26,6 +26,7 @@ struct DefaultOpenAIService: OpenAIService {
       apiKey: String,
       organizationID: String? = nil,
       baseURL: String? = nil,
+      proxyPath: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool)
@@ -35,6 +36,7 @@ struct DefaultOpenAIService: OpenAIService {
       self.apiKey = .bearer(apiKey)
       self.organizationID = organizationID
       OpenAIAPI.overrideBaseURL = baseURL
+      OpenAIAPI.proxyPath = proxyPath
       self.debugEnabled = debugEnabled
    }
    

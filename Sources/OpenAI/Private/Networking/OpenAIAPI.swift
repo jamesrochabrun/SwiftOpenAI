@@ -12,7 +12,8 @@ import Foundation
 enum OpenAIAPI {
    
    static var overrideBaseURL: String? = nil
-   
+   static var proxyPath: String? = nil
+
    case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
    case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
    case chat /// https://platform.openai.com/docs/api-reference/chat
@@ -143,6 +144,15 @@ extension OpenAIAPI: Endpoint {
    }
    
    var path: String {
+      guard
+         let proxyPath = Self.proxyPath
+      else {
+         return openAIPath
+      }
+      return "/\(proxyPath)\(openAIPath)"
+   }
+   
+   var openAIPath: String {
       switch self {
       case .assistant(let category):
          switch category {

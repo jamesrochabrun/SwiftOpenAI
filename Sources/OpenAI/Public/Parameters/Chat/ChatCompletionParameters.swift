@@ -15,6 +15,9 @@ public struct ChatCompletionParameters: Encodable {
    public var messages: [Message]
    /// ID of the model to use. See the [model endpoint compatibility](https://platform.openai.com/docs/models/how-we-use-your-data) table for details on which models work with the Chat API.
    public var model: String
+   /// Whether or not to store the output of this chat completion request for use in our [model distillation](https://platform.openai.com/docs/guides/distillation) or [evals](https://platform.openai.com/docs/guides/evals) products.
+   /// Defaults to false
+   public var store: Bool?
    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim. Defaults to 0
    /// [See more information about frequency and presence penalties.](https://platform.openai.com/docs/guides/gpt/parameter-details)
    public var frequencyPenalty: Double?
@@ -39,11 +42,20 @@ public struct ChatCompletionParameters: Encodable {
    public var logprobs: Bool?
    /// An integer between 0 and 5 specifying the number of most likely tokens to return at each token position, each with an associated log probability. logprobs must be set to true if this parameter is used.
    public var topLogprobs: Int?
-   /// The maximum number of [tokens](https://platform.openai.com/tokenizer) to generate in the chat completion.
-   /// The total length of input tokens and generated tokens is limited by the model's context length. Example [Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken) for counting tokens.
+   /// The maximum number of [tokens](https://platform.openai.com/tokenizer) that can be generated in the chat completion. This value can be used to control [costs](https://openai.com/api/pricing/) for text generated via API.
+   /// This value is now deprecated in favor of max_completion_tokens, and is not compatible with [o1 series models](https://platform.openai.com/docs/guides/reasoning)
    public var maxTokens: Int?
+   /// An upper bound for the number of tokens that can be generated for a completion, including visible output tokens and [reasoning tokens](https://platform.openai.com/docs/guides/reasoning)
+   public var maCompletionTokens: Int?
    /// How many chat completion choices to generate for each input message. Defaults to 1.
    public var n: Int?
+   /// Output types that you would like the model to generate for this request. Most models are capable of generating text, which is the default:
+   /// ["text"]
+   ///The gpt-4o-audio-preview model can also be used to [generate audio](https://platform.openai.com/docs/guides/audio). To request that this model generate both text and audio responses, you can use:
+   /// ["text", "audio"]
+   public var modalities: [String]?
+   /// Parameters for audio output. Required when audio output is requested with modalities: ["audio"]. [Learn more.](https://platform.openai.com/docs/guides/audio)
+   public var audio: Audio?
    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics. Defaults to 0
    /// [See more information about frequency and presence penalties.](https://platform.openai.com/docs/guides/gpt/parameter-details)
    public var presencePenalty: Double?
@@ -111,9 +123,9 @@ public struct ChatCompletionParameters: Encodable {
             
             case text(String)
             case imageUrl(ImageDetail)
+            case inputAudio(AudioDetail)
             
             public struct ImageDetail: Encodable, Equatable, Hashable {
-               
                public let url: URL
                public let detail: String?
                
@@ -134,10 +146,32 @@ public struct ChatCompletionParameters: Encodable {
                }
             }
             
+            public struct AudioDetail: Encodable, Equatable, Hashable {
+               public let data: String
+               public let format: String
+               
+               enum CodingKeys: String, CodingKey {
+                  case data
+                  case format
+               }
+               
+               public func encode(to encoder: Encoder) throws {
+                  var container = encoder.container(keyedBy: CodingKeys.self)
+                  try container.encode(data, forKey: .data)
+                  try container.encode(format, forKey: .format)
+               }
+               
+               public init(data: String, format: String) {
+                  self.data = data
+                  self.format = format
+               }
+            }
+            
             enum CodingKeys: String, CodingKey {
                case type
                case text
                case imageUrl = "image_url"
+               case inputAudio = "input_audio"
             }
             
             public func encode(to encoder: Encoder) throws {
@@ -149,6 +183,9 @@ public struct ChatCompletionParameters: Encodable {
                case .imageUrl(let imageDetail):
                   try container.encode("image_url", forKey: .type)
                   try container.encode(imageDetail, forKey: .imageUrl)
+               case .inputAudio(let audioDetail):
+                  try container.encode("input_audio", forKey: .type)
+                  try container.encode(audioDetail, forKey: .inputAudio)
                }
             }
             
@@ -158,6 +195,8 @@ public struct ChatCompletionParameters: Encodable {
                   hasher.combine(string)
                case .imageUrl(let imageDetail):
                   hasher.combine(imageDetail)
+               case .inputAudio(let audioDetail):
+                  hasher.combine(audioDetail)
                }
             }
             
@@ -167,13 +206,15 @@ public struct ChatCompletionParameters: Encodable {
                   return a == b
                case let (.imageUrl(a), .imageUrl(b)):
                   return a == b
+               case let (.inputAudio(a), .inputAudio(b)):
+                  return a == b
                default:
                   return false
                }
             }
          }
       }
-      
+
       public enum Role: String {
          case system // content, role
          case user // content, role
@@ -296,10 +337,28 @@ public struct ChatCompletionParameters: Encodable {
           case includeUsage = "include_usage"
       }
    }
+   
+   /// Parameters for audio output. Required when audio output is requested with modalities: ["audio"]
+   /// [Learn more.](https://platform.openai.com/docs/guides/audio)
+   public struct Audio: Encodable {
+      /// Specifies the voice type. Supported voices are alloy, echo, fable, onyx, nova, and shimmer.
+      public let voice: String
+      /// Specifies the output audio format. Must be one of wav, mp3, flac, opus, or pcm16.
+      public let format: String
+      
+      public init(
+         voice: String,
+         format: String)
+      {
+         self.voice = voice
+         self.format = format
+      }
+   }
 
    enum CodingKeys: String, CodingKey {
       case messages
       case model
+      case store
       case frequencyPenalty = "frequency_penalty"
       case toolChoice = "tool_choice"
       case functionCall = "function_call"
@@ -310,7 +369,10 @@ public struct ChatCompletionParameters: Encodable {
       case logprobs
       case topLogprobs = "top_logprobs"
       case maxTokens = "max_tokens"
+      case maCompletionTokens = "max_completion_tokens"
       case n
+      case modalities
+      case audio
       case responseFormat = "response_format"
       case presencePenalty = "presence_penalty"
       case seed
@@ -326,6 +388,7 @@ public struct ChatCompletionParameters: Encodable {
    public init(
       messages: [Message],
       model: Model,
+      store: Bool? = nil,
       frequencyPenalty: Double? = nil,
       functionCall: FunctionCall? = nil,
       toolChoice: ToolChoice? = nil,
@@ -337,6 +400,8 @@ public struct ChatCompletionParameters: Encodable {
       topLogprobs: Int? = nil,
       maxTokens: Int? = nil,
       n: Int? = nil,
+      modalities: [String]? = nil,
+      audio: Audio? = nil,
       responseFormat: ResponseFormat? = nil,
       presencePenalty: Double? = nil,
       serviceTier: ServiceTier? = nil,
@@ -348,6 +413,7 @@ public struct ChatCompletionParameters: Encodable {
    {
       self.messages = messages
       self.model = model.value
+      self.store = store
       self.frequencyPenalty = frequencyPenalty
       self.functionCall = functionCall
       self.toolChoice = toolChoice
@@ -359,6 +425,8 @@ public struct ChatCompletionParameters: Encodable {
       self.topLogprobs = topLogprobs
       self.maxTokens = maxTokens
       self.n = n
+      self.modalities = modalities
+      self.audio = audio
       self.responseFormat = responseFormat
       self.presencePenalty = presencePenalty
       self.serviceTier = serviceTier?.rawValue

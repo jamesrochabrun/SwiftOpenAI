@@ -11,6 +11,8 @@ import Foundation
 /// [Models](https://platform.openai.com/docs/models)
 public enum Model {
    
+   case gpt4oAudioPreview
+   
    /// O1 models
    
    /// an early preview of the o1 model, designed to reason about hard problems using broad general knowledge about the world.
@@ -71,6 +73,7 @@ public enum Model {
    
    public var value: String {
       switch self {
+      case .gpt4oAudioPreview: return "gpt-4o-audio-preview"
       case .o1Preview: return "o1-preview"
       case .o1Mini: return "o1-mini"
       case .gpt4o: return "gpt-4o"

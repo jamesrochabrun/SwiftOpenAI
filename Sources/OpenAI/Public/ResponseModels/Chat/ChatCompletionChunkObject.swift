@@ -18,6 +18,8 @@ public struct ChatCompletionChunkObject: Decodable {
    public let created: Int
    /// The model to generate the completion.
    public let model: String
+   /// The service tier used for processing the request. This field is only included if the service_tier parameter is specified in the request.
+   public let serviceTier: String?
    /// This fingerprint represents the backend configuration that the model runs with.
    /// Can be used in conjunction with the seed request parameter to understand when backend changes have been made that might impact determinism.
    public let systemFingerprint: String?
@@ -109,6 +111,7 @@ public struct ChatCompletionChunkObject: Decodable {
       case choices
       case created
       case model
+      case serviceTier = "service_tier"
       case systemFingerprint = "system_fingerprint"
       case object
    }

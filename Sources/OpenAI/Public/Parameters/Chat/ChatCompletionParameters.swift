@@ -279,9 +279,9 @@ public struct ChatCompletionParameters: Encodable {
    public struct Tool: Encodable {
       
       /// The type of the tool. Currently, only `function` is supported.
-      let type: String
+      public let type: String
       /// object
-      let function: ChatFunction
+      public let function: ChatFunction
       
       public init(
          type: String = "function",
@@ -295,14 +295,14 @@ public struct ChatCompletionParameters: Encodable {
    public struct ChatFunction: Codable, Equatable {
       
       /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
-      let name: String
+      public let name: String
       /// A description of what the function does, used by the model to choose when and how to call the function.
-      let description: String?
+      public let description: String?
       /// The parameters the functions accepts, described as a JSON Schema object. See the [guide](https://platform.openai.com/docs/guides/gpt/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema) for documentation about the format.
       /// Omitting parameters defines a function with an empty parameter list.
-      let parameters: JSONSchema?
+      public let parameters: JSONSchema?
       /// Defaults to false, Whether to enable strict schema adherence when generating the function call. If set to true, the model will follow the exact schema defined in the parameters field. Only a subset of JSON Schema is supported when strict is true. Learn more about Structured Outputs in the [function calling guide].(https://platform.openai.com/docs/api-reference/chat/docs/guides/function-calling)
-      let strict: Bool?
+      public let strict: Bool?
       
       public init(
          name: String,

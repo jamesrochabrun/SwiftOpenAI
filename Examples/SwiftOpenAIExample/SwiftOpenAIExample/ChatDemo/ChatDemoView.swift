@@ -14,8 +14,6 @@ struct ChatDemoView: View {
    @State private var isLoading = false
    @State private var prompt = ""
    @State private var selectedSegment: ChatConfig = .chatCompeltionStream
-   @State private var model: String = ""
-   @FocusState private var focus
    
    enum ChatConfig {
       case chatCompletion
@@ -29,13 +27,6 @@ struct ChatDemoView: View {
    var body: some View {
       ScrollView {
          VStack {
-            VStack {
-               Text("Add a model name.")
-                  .bold()
-               TextField("Enter Model e.g: llama3-8b-8192", text: $model)
-                  .focused($focus)
-            }
-            .padding()
             picker
             textArea
             Text(chatProvider.errorMessage)
@@ -47,9 +38,6 @@ struct ChatDemoView: View {
                chatCompletionResultView
             }
          }
-      }
-      .onAppear {
-         focus = true
       }
       .overlay(
          Group {
@@ -87,7 +75,9 @@ struct ChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  model: .custom(model))
+                  model: .gpt41106Preview,
+                  logProbs: true,
+                  topLogprobs: 1)
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

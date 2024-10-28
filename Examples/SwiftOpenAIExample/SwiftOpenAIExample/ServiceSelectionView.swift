@@ -48,18 +48,6 @@ struct ServiceSelectionView: View {
                      .fontWeight(.light)
                   }
                }
-               
-               NavigationLink(destination: OverridableURLProxyPathIntroView()) {
-                  VStack(alignment: .leading) {
-                     Text("Overridable URL and proxy path e.g: Groq")
-                        .padding(.bottom, 10)
-                     Group {
-                        Text("Use this service to test SwiftOpenAI functionality by providing your own url and proxy path.")
-                     }
-                     .font(.caption)
-                     .fontWeight(.light)
-                  }
-               }
             }
          }
       }

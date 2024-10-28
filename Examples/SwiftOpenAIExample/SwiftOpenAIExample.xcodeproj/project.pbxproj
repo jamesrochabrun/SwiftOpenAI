@@ -41,7 +41,6 @@
 		7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */; };
 		7B50DD282C2A9A390070A64D /* LocalHostEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B50DD272C2A9A390070A64D /* LocalHostEntryView.swift */; };
 		7B50DD2B2C2A9D2F0070A64D /* LocalChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B50DD2A2C2A9D2F0070A64D /* LocalChatDemoView.swift */; };
-		7B6B1C132CBA4DE300B1A290 /* OverridableURLProxyPathIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6B1C122CBA4DE300B1A290 /* OverridableURLProxyPathIntroView.swift */; };
 		7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */; };
 		7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */; };
 		7B7239A42AF6289900646679 /* ChatStreamFluidConversationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */; };
@@ -124,7 +123,6 @@
 		7B436BC22AE7B027003CE281 /* ModerationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationDemoView.swift; sourceTree = "<group>"; };
 		7B50DD272C2A9A390070A64D /* LocalHostEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalHostEntryView.swift; sourceTree = "<group>"; };
 		7B50DD2A2C2A9D2F0070A64D /* LocalChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalChatDemoView.swift; sourceTree = "<group>"; };
-		7B6B1C122CBA4DE300B1A290 /* OverridableURLProxyPathIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverridableURLProxyPathIntroView.swift; sourceTree = "<group>"; };
 		7B72399F2AF625F200646679 /* ChatFluidConversationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFluidConversationProvider.swift; sourceTree = "<group>"; };
 		7B7239A12AF6260D00646679 /* ChatDisplayMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDisplayMessage.swift; sourceTree = "<group>"; };
 		7B7239A32AF6289900646679 /* ChatStreamFluidConversationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStreamFluidConversationDemoView.swift; sourceTree = "<group>"; };
@@ -401,7 +399,6 @@
 				7B436B972AE25045003CE281 /* Utilities */,
 				7BBE7E922AFCC9300096A693 /* Vision */,
 				7BA788CE2AE23A48008825D5 /* ApiKeyIntroView.swift */,
-				7B6B1C122CBA4DE300B1A290 /* OverridableURLProxyPathIntroView.swift */,
 				7B50DD272C2A9A390070A64D /* LocalHostEntryView.swift */,
 				0DF957852BB543F100DD2013 /* AIProxyIntroView.swift */,
 				7B436B952AE24A04003CE281 /* OptionsListView.swift */,
@@ -633,7 +630,6 @@
 				7B99C2E92C0718FF00E701B3 /* FileAttachmentView.swift in Sources */,
 				7BBE7EA52B02E8A70096A693 /* Sizes.swift in Sources */,
 				7B7239A22AF6260D00646679 /* ChatDisplayMessage.swift in Sources */,
-				7B6B1C132CBA4DE300B1A290 /* OverridableURLProxyPathIntroView.swift in Sources */,
 				0DF957862BB543F100DD2013 /* AIProxyIntroView.swift in Sources */,
 				7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */,
 				7B436BB72AE7A2EA003CE281 /* ImagesProvider.swift in Sources */,

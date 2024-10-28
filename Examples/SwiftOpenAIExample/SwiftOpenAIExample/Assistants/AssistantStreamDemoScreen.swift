@@ -81,7 +81,7 @@ public struct AssistantStartThreadScreen: View {
                .padding()
             Button {
                Task {
-                  try await threadProvider.createMessage(threadID: threadID, parameters: .init(role: .user, content: .stringContent(prompt)))
+                  try await threadProvider.createMessage(threadID: threadID, parameters: .init(role: .user, content: prompt))
                   if let message = threadProvider.message {
                      tutorialStage = .createRunAndStream(message: message)
                   }
@@ -125,7 +125,7 @@ public struct AssistantStartThreadScreen: View {
             .padding()
          Button {
             Task {
-               try await threadProvider.createMessage(threadID: threadID, parameters: .init(role: .user, content: .arrayContent([.text(.init(text: prompt))])))
+               try await threadProvider.createMessage(threadID: threadID, parameters: .init(role: .user, content: prompt))
                threadProvider.messageText = ""
                threadProvider.toolOuptutMessage = ""
                try await threadProvider.createRunAndStreamMessage(

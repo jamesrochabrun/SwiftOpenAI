@@ -22,7 +22,7 @@ extension FileParameters: Equatable, Identifiable {
    }
    
    public var id: String {
-      fileName
+      fileName ?? ""
    }
 }
 

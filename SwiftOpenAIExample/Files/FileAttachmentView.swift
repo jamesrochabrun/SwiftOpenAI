@@ -26,7 +26,7 @@ struct FileAttachmentView: View {
       parameters: FileParameters)
       -> some View
    {
-      AttachmentView(fileName: fileObject?.filename ?? parameters.fileName, actionTrigger: $deleted, isLoading: fileObject == nil || deleted)
+      AttachmentView(fileName: (fileObject?.filename ?? parameters.fileName) ?? "", actionTrigger: $deleted, isLoading: fileObject == nil || deleted)
          .disabled(fileObject == nil)
          .opacity(fileObject == nil ? 0.3 : 1)
          .onFirstAppear {
@@ -111,7 +111,7 @@ extension View {
     }
 }
 
-extension DeletionStatus: Equatable {
+extension DeletionStatus: @retroactive Equatable {
    public static func == (lhs: DeletionStatus, rhs: DeletionStatus) -> Bool {
       lhs.id == rhs.id
    }

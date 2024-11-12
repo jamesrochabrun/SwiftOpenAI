@@ -75,9 +75,7 @@ struct ChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  model: .gpt41106Preview,
-                  logProbs: true,
-                  topLogprobs: 1)
+                  model: .gpt4o)
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

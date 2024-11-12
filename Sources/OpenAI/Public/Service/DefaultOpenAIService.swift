@@ -27,6 +27,7 @@ struct DefaultOpenAIService: OpenAIService {
       organizationID: String? = nil,
       baseURL: String? = nil,
       proxyPath: String? = nil,
+      overrideVersion: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool)
@@ -37,6 +38,7 @@ struct DefaultOpenAIService: OpenAIService {
       self.organizationID = organizationID
       OpenAIAPI.overrideBaseURL = baseURL
       OpenAIAPI.proxyPath = proxyPath
+      OpenAIAPI.overrideVersion = overrideVersion
       self.debugEnabled = debugEnabled
    }
    
@@ -85,7 +87,6 @@ struct DefaultOpenAIService: OpenAIService {
    {
       var chatParameters = parameters
       chatParameters.stream = true
-      chatParameters.streamOptions = .init(includeUsage: true)
       let request = try OpenAIAPI.chat.request(apiKey: apiKey, organizationID: organizationID, method: .post, params: chatParameters)
       return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }

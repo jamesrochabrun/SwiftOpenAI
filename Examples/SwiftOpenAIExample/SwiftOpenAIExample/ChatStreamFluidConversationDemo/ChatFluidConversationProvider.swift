@@ -63,12 +63,12 @@ import SwiftOpenAI
             // This information is essential for maintaining context in the conversation and for updating
             // the chat UI with proper role attributions for each message.
             var newDelta = ChatDisplayMessage.Delta(role: "", content: "")
-            if let firstDelta = firstChatMessageResponseDelta[result.id] {
+            if let firstDelta = firstChatMessageResponseDelta[result.id ?? ""] {
                // If we have already stored the first delta for this result ID, reuse its role.
                newDelta.role = firstDelta.role!
             } else {
                // Otherwise, store the first delta received for future reference.
-               firstChatMessageResponseDelta[result.id] = choice.delta
+               firstChatMessageResponseDelta[result.id ?? ""] = choice.delta
             }
             // Assign the content received in the current message to the newDelta.
             newDelta.content = temporalReceivedMessageContent

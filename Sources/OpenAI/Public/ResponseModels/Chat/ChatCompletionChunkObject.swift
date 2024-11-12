@@ -11,7 +11,7 @@ import Foundation
 public struct ChatCompletionChunkObject: Decodable {
    
    /// A unique identifier for the chat completion chunk.
-   public let id: String
+   public let id: String?
    /// A list of chat completion choices. Can be more than one if n is greater than 1.
    public let choices: [ChatChoice]
    /// The Unix timestamp (in seconds) of when the chat completion chunk was created.

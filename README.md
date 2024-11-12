@@ -14,6 +14,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Description](#description)
 - [Getting an API Key](#getting-an-api-key)
 - [Installation](#installation)
+- [Compatibility](#compatibility)
 - [Usage](#usage)
 - [Azure OpenAI](#azure-openai)
 - [AIProxy](#aiproxy)
@@ -99,6 +100,16 @@ limit, so you should not accept the defaults that Xcode proposes. Instead, enter
 [release version](https://github.com/jamesrochabrun/SwiftOpenAI/releases) that you'd like to support, and then
 tab out of the input box for Xcode to adjust the upper bound. Alternatively, you may select `branch` -> `main`
 to stay on the bleeding edge.
+
+## Compatibility
+
+SwiftOpenAI supports various providers that are OpenAI-compatible, including but not limited to:
+
+- [Ollama](#ollama)
+- [Groq](#groq)
+- [Gemini](#gemini)
+
+Check OpenAIServiceFactory for convenience initializers that you can use to provide custom URLs.
 
 ## Usage
 
@@ -3217,20 +3228,6 @@ let parameters = ChatCompletionParameters(messages: [.init(role: .user, content:
 let chatCompletionObject = service.startStreamedChat(parameters: parameters)
 ```
 
-## Groq
-
-<img width="792" alt="Screenshot 2024-10-11 at 11 49 04 PM" src="https://github.com/user-attachments/assets/7afb36a2-b2d8-4f89-9592-f4cece20d469">
-
-Groq API is mostly compatible with OpenAI's client libraries like `SwiftOpenAI` to use Groq using this library you just need to create an instance of `OpenAIService` like this:
-
-```swift
-let apiKey = "your_api_key"
-let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "https://api.groq.com/", proxyPath: "openai")
-
-```
-
-For Supported API's using Groq visit its [documentation](https://console.groq.com/docs/openai).
-
 ⚠️ Note: You can probably use the `OpenAIServiceFactory.service(apiKey:overrideBaseURL:proxyPath)` for any OpenAI compatible service.
 
 ### Resources:
@@ -3246,8 +3243,56 @@ You can also use this service constructor to provide any URL or apiKey if you ne
 let service = OpenAIServiceFactory.service(apiKey: "YOUR_API_KEY", baseURL: "http://localhost:11434")
 ```
 
+## Groq
+
+<img width="792" alt="Screenshot 2024-10-11 at 11 49 04 PM" src="https://github.com/user-attachments/assets/7afb36a2-b2d8-4f89-9592-f4cece20d469">
+
+Groq API is mostly compatible with OpenAI's client libraries like `SwiftOpenAI` to use Groq using this library you just need to create an instance of `OpenAIService` like this:
+
+```swift
+let apiKey = "your_api_key"
+let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "https://api.groq.com/", proxyPath: "openai")
+
+```
+
+For Supported API's using Groq visit its [documentation](https://console.groq.com/docs/openai).
+
+## Gemini
+
+<img width="982" alt="Screenshot 2024-11-12 at 10 53 43 AM" src="https://github.com/user-attachments/assets/cebc18fe-b96d-4ffe-912e-77d625249cf2">
+
+Gemini is now accessible from the OpenAI Library. Announcement .
+`SwiftOpenAI` support all OpenAI endpoints, however Please refer to Gemini documentation to understand which API's are currently compatible' 
+
+Gemini is now accessible through the OpenAI Library. See the announcement [here](https://developers.googleblog.com/en/gemini-is-now-accessible-from-the-openai-library/).
+SwiftOpenAI supports all OpenAI endpoints. However, please refer to the [Gemini documentation](https://ai.google.dev/gemini-api/docs/openai) to understand which APIs are currently compatible."
+
+
+You can instantiate a `OpenAIService` using your Gemini token like this...
+
+```swift
+let geminiAPIKey = "your_api_key"
+let baseURL = "https://generativelanguage.googleapis.com"
+let version = "v1beta"
+
+let service = OpenAIServiceFactory.service(
+   apiKey: apiKey, 
+   overrideBaseURL: baseURL, 
+   overrideVersion: version)
+```
+
+You can now create a chat request using the .custom model parameter and pass the model name as a string.
+
+```swift
+let parameters = ChatCompletionParameters(
+      messages: [.init(
+      role: .user,
+      content: content)],
+      model: .custom("gemini-1.5-flash"))
+
+let stream = try await service.startStreamedChat(parameters: parameters)
+```
 
 ## Collaboration
 Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️
-
 

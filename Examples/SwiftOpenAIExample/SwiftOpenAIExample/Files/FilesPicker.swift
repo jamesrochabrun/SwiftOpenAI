@@ -8,13 +8,13 @@
 import SwiftUI
 import SwiftOpenAI
 
-extension FileObject: Equatable {
+extension FileObject: @retroactive Equatable {
    public static func == (lhs: FileObject, rhs: FileObject) -> Bool {
       lhs.id == rhs.id
    }
 }
 
-extension FileParameters: Equatable, Identifiable {
+extension FileParameters: @retroactive Equatable, @retroactive Identifiable {
    public static func == (lhs: FileParameters, rhs: FileParameters) -> Bool {
       lhs.file == rhs.file &&
       lhs.fileName == rhs.fileName &&

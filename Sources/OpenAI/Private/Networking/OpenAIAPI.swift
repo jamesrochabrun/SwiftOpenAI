@@ -13,6 +13,7 @@ enum OpenAIAPI {
    
    static var overrideBaseURL: String? = nil
    static var proxyPath: String? = nil
+   static var overrideVersion: String? = nil
 
    case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
    case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
@@ -152,81 +153,85 @@ extension OpenAIAPI: Endpoint {
       return "/\(proxyPath)\(openAIPath)"
    }
    
+   var version: String {
+      Self.overrideVersion ?? "v1"
+   }
+   
    var openAIPath: String {
       switch self {
       case .assistant(let category):
          switch category {
-         case .create, .list: return "/v1/assistants"
-         case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/v1/assistants/\(assistantID)"
+         case .create, .list: return "/\(version)/assistants"
+         case .retrieve(let assistantID), .modify(let assistantID), .delete(let assistantID): return "/\(version)/assistants/\(assistantID)"
          }
-      case .audio(let category): return "/v1/audio/\(category.rawValue)"
+      case .audio(let category): return "/\(version)/audio/\(category.rawValue)"
       case .batch(let category):
          switch category {
-         case .create, .list: return "v1/batches"
-         case .retrieve(let batchID): return "v1/batches/\(batchID)"
-         case .cancel(let batchID): return "v1/batches/\(batchID)/cancel"
+         case .create, .list: return "\(version)/batches"
+         case .retrieve(let batchID): return "\(version)/batches/\(batchID)"
+         case .cancel(let batchID): return "\(version)/batches/\(batchID)/cancel"
          }
-      case .chat: return "/v1/chat/completions"
-      case .embeddings: return "/v1/embeddings"
+      case .chat: return "/\(version)/chat/completions"
+      case .embeddings: return "/\(version)/embeddings"
       case .file(let category):
          switch category {
-         case .list, .upload: return "/v1/files"
-         case .delete(let fileID), .retrieve(let fileID): return "/v1/files/\(fileID)"
-         case .retrieveFileContent(let fileID): return "/v1/files/\(fileID)/content"
+         case .list, .upload: return "/\(version)/files"
+         case .delete(let fileID), .retrieve(let fileID): return "/\(version)/files/\(fileID)"
+         case .retrieveFileContent(let fileID): return "/\(version)/files/\(fileID)/content"
          }
       case .fineTuning(let category):
          switch category {
-         case .create, .list: return "/v1/fine_tuning/jobs"
-         case .retrieve(let jobID): return "/v1/fine_tuning/jobs/\(jobID)"
-         case .cancel(let jobID): return "/v1/fine_tuning/jobs/\(jobID)/cancel"
-         case .events(let jobID): return "/v1/fine_tuning/jobs/\(jobID)/events"
+         case .create, .list: return "/\(version)/fine_tuning/jobs"
+         case .retrieve(let jobID): return "/\(version)/fine_tuning/jobs/\(jobID)"
+         case .cancel(let jobID): return "/\(version)/fine_tuning/jobs/\(jobID)/cancel"
+         case .events(let jobID): return "/\(version)/fine_tuning/jobs/\(jobID)/events"
          }
-      case .images(let category): return "/v1/images/\(category.rawValue)"
+      case .images(let category): return "/\(version)/images/\(category.rawValue)"
       case .message(let category):
          switch category {
-         case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/messages"
-         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID), .delete(let threadID, let messageID): return "/v1/threads/\(threadID)/messages/\(messageID)"
+         case .create(let threadID), .list(let threadID): return "/\(version)/threads/\(threadID)/messages"
+         case .retrieve(let threadID, let messageID), .modify(let threadID, let messageID), .delete(let threadID, let messageID): return "/\(version)/threads/\(threadID)/messages/\(messageID)"
          }
       case .model(let category):
          switch category {
-         case .list: return "/v1/models"
-         case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/v1/models/\(modelID)"
+         case .list: return "/\(version)/models"
+         case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/\(version)/models/\(modelID)"
          }
-      case .moderations: return "/v1/moderations"
+      case .moderations: return "/\(version)/moderations"
       case .run(let category):
          switch category {
-         case .create(let threadID), .list(let threadID): return "/v1/threads/\(threadID)/runs"
-         case .retrieve(let threadID, let runID), .modify(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)"
-         case .cancel(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/cancel"
-         case .submitToolOutput(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/submit_tool_outputs"
-         case .createThreadAndRun: return "/v1/threads/runs"
+         case .create(let threadID), .list(let threadID): return "/\(version)/threads/\(threadID)/runs"
+         case .retrieve(let threadID, let runID), .modify(let threadID, let runID): return "/\(version)/threads/\(threadID)/runs/\(runID)"
+         case .cancel(let threadID, let runID): return "/\(version)/threads/\(threadID)/runs/\(runID)/cancel"
+         case .submitToolOutput(let threadID, let runID): return "/\(version)/threads/\(threadID)/runs/\(runID)/submit_tool_outputs"
+         case .createThreadAndRun: return "/\(version)/threads/runs"
          }
       case .runStep(let category):
          switch category {
-         case .retrieve(let threadID, let runID, let stepID): return "/v1/threads/\(threadID)/runs/\(runID)/steps/\(stepID)"
-         case .list(let threadID, let runID): return "/v1/threads/\(threadID)/runs/\(runID)/steps"
+         case .retrieve(let threadID, let runID, let stepID): return "/\(version)/threads/\(threadID)/runs/\(runID)/steps/\(stepID)"
+         case .list(let threadID, let runID): return "/\(version)/threads/\(threadID)/runs/\(runID)/steps"
          }
       case .thread(let category):
          switch category {
-         case .create: return "/v1/threads"
-         case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/v1/threads/\(threadID)"
+         case .create: return "/\(version)/threads"
+         case .retrieve(let threadID), .modify(let threadID), .delete(let threadID): return "/\(version)/threads/\(threadID)"
          }
       case .vectorStore(let category):
          switch category {
-         case .create, .list: return "/v1/vector_stores"
-         case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)"
+         case .create, .list: return "/\(version)/vector_stores"
+         case .retrieve(let vectorStoreID), .modify(let vectorStoreID), .delete(let vectorStoreID): return "/\(version)/vector_stores/\(vectorStoreID)"
          }
       case .vectorStoreFile(let category):
          switch category {
-         case .create(let vectorStoreID), .list(let vectorStoreID): return "/v1/vector_stores/\(vectorStoreID)/files"
-         case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/v1/vector_stores/\(vectorStoreID)/files/\(fileID)"
+         case .create(let vectorStoreID), .list(let vectorStoreID): return "/\(version)/vector_stores/\(vectorStoreID)/files"
+         case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/\(version)/vector_stores/\(vectorStoreID)/files/\(fileID)"
          }
       case .vectorStoreFileBatch(let category):
          switch category {
-         case .create(let vectorStoreID): return"/v1/vector_stores/\(vectorStoreID)/file_batches"
-         case .retrieve(let vectorStoreID, let batchID): return "v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)"
-         case .cancel(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/cancel"
-         case .list(let vectorStoreID, let batchID): return "/v1/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/files"
+         case .create(let vectorStoreID): return"/\(version)/vector_stores/\(vectorStoreID)/file_batches"
+         case .retrieve(let vectorStoreID, let batchID): return "\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)"
+         case .cancel(let vectorStoreID, let batchID): return "/\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/cancel"
+         case .list(let vectorStoreID, let batchID): return "/\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/files"
          }
       }
    }

@@ -16,11 +16,6 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Installation](#installation)
 - [Compatibility](#compatibility)
 - [Usage](#usage)
-- [Azure OpenAI](#azure-openai)
-- [AIProxy](#aiproxy)
-- [Ollama](#ollama)
-- [Groq](#groq)
-
 - [Collaboration](#collaboration)
 
 ## Description
@@ -105,9 +100,11 @@ to stay on the bleeding edge.
 
 SwiftOpenAI supports various providers that are OpenAI-compatible, including but not limited to:
 
+- [Azure OpenAI](#azure-openai)
+- [Gemini](#gemini)
 - [Ollama](#ollama)
 - [Groq](#groq)
-- [Gemini](#gemini)
+- [AIProxy](#aiproxy)
 
 Check OpenAIServiceFactory for convenience initializers that you can use to provide custom URLs.
 

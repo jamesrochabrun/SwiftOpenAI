@@ -10,11 +10,13 @@ import Foundation
 public enum MessageContent: Codable {
    
    case imageFile(ImageFile)
+   case imageUrl(ImageURL)
    case text(Text)
    
    enum CodingKeys: String, CodingKey {
       case type
       case imageFile = "image_file"
+      case imageUrl = "image_url"
       case text
    }
    
@@ -28,6 +30,9 @@ public enum MessageContent: Codable {
       case .imageFile(let imageFile):
          try container.encode("image_file", forKey: .type)
          try container.encode(imageFile, forKey: .imageFile)
+      case .imageUrl(let imageUrl):
+         try container.encode("image_url", forKey: .type)
+         try container.encode(imageUrl, forKey: .imageUrl)
       case .text(let text):
          try container.encode("text", forKey: .type)
          try container.encode(text, forKey: .text)
@@ -40,8 +45,11 @@ public enum MessageContent: Codable {
       
       switch type {
       case "image_file":
-       let imageFile = try ImageFile(from: decoder)
+         let imageFile = try ImageFile(from: decoder)
          self = .imageFile(imageFile)
+      case "image_url":
+          let imageUrl = try ImageURL(from: decoder)
+          self = .imageUrl(imageUrl)
       case "text":
          let text = try Text(from: decoder)
          self = .text(text)
@@ -72,6 +80,31 @@ public struct ImageFile: Codable {
    
    enum CodingKeys: String, CodingKey {
       case imageFile = "image_file"
+      case type
+   }
+}
+
+// MARK: Image URl
+
+public struct ImageURL: Codable {
+   /// Always image_url.
+   public let type: String
+   
+   /// References an image [File](https://platform.openai.com/docs/api-reference/files) in the content of a message.
+   public let imageUrl: ImageUrlContent
+   
+   public struct ImageUrlContent: Codable {
+      
+      /// The [File](https://platform.openai.com/docs/api-reference/files) URL  of the image in the message content.
+      public let url: String
+      
+      enum CodingKeys: String, CodingKey {
+         case url
+      }
+   }
+   
+   enum CodingKeys: String, CodingKey {
+      case imageUrl = "image_url"
       case type
    }
 }

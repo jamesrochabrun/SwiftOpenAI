@@ -62,7 +62,7 @@ import SwiftOpenAI
             case .threadMessageDelta(let messageDelta):
                   let content = messageDelta.delta.content.first
                   switch content {
-                  case .imageFile, nil:
+                  case .imageFile, .imageUrl, nil:
                      break
                   case .text(let textContent):
                      messageText += textContent.text.value

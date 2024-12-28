@@ -2429,7 +2429,7 @@ Create Message.
 ```swift
 let threadID = "thread_abc123"
 let prompt = "Give me some ideas for a birthday party."
-let parameters = MessageParameter(role: "user", content: .stringContent(prompt)")
+let parameters = MessageParameter(role: .user, content: prompt)
 let message = try await service.createMessage(threadID: threadID, parameters: parameters)
 ```
 

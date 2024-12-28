@@ -37,6 +37,8 @@ public enum Model {
    case gpt4omini
    /// Latest snapshot that supports [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)/
    case gpt4o20240806
+   /// input 128,000 tokens, output 16,384 tokens
+   case gpt4o20241120
 
    case gpt35Turbo
    case gpt35Turbo1106 // Most updated - Supports parallel function calls
@@ -79,6 +81,7 @@ public enum Model {
       case .gpt4o: return "gpt-4o"
       case .gpt4o20240513: return "gpt-4o-2024-05-13"
       case .gpt4o20240806: return "gpt-4o-2024-08-06"
+      case .gpt4o20241120: return "gpt-4o-2024-11-20"
       case .gpt4omini: return "gpt-4o-mini"
       case .gpt35Turbo: return "gpt-3.5-turbo"
       case .gpt35Turbo1106: return "gpt-3.5-turbo-1106"

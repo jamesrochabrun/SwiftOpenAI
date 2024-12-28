@@ -18,6 +18,11 @@ public struct ChatCompletionParameters: Encodable {
    /// Whether or not to store the output of this chat completion request for use in our [model distillation](https://platform.openai.com/docs/guides/distillation) or [evals](https://platform.openai.com/docs/guides/evals) products.
    /// Defaults to false
    public var store: Bool?
+   /// Constrains effort on reasoning for [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values are low, medium, and high. Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.
+   /// Defaults to medium o1 models only
+   public var reasoningEffort: String?
+   /// Developer-defined tags and values used for filtering completions in the [dashboard](https://platform.openai.com/chat-completions).
+   public var metadata: [String: String]?
    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim. Defaults to 0
    /// [See more information about frequency and presence penalties.](https://platform.openai.com/docs/guides/gpt/parameter-details)
    public var frequencyPenalty: Double?
@@ -374,11 +379,19 @@ public struct ChatCompletionParameters: Encodable {
          self.format = format
       }
    }
+   
+   public enum ReasoningEffort: String, Encodable {
+      case low
+      case medium
+      case high
+   }
 
    enum CodingKeys: String, CodingKey {
       case messages
       case model
       case store
+      case reasoningEffort = "reasoning_effort"
+      case metadata
       case frequencyPenalty = "frequency_penalty"
       case toolChoice = "tool_choice"
       case functionCall = "function_call"
@@ -409,6 +422,8 @@ public struct ChatCompletionParameters: Encodable {
       messages: [Message],
       model: Model,
       store: Bool? = nil,
+      reasoningEffort: ReasoningEffort? = nil,
+      metadata: [String: String]? = nil,
       frequencyPenalty: Double? = nil,
       functionCall: FunctionCall? = nil,
       toolChoice: ToolChoice? = nil,
@@ -435,6 +450,8 @@ public struct ChatCompletionParameters: Encodable {
       self.messages = messages
       self.model = model.value
       self.store = store
+      self.reasoningEffort = reasoningEffort?.rawValue
+      self.metadata = metadata
       self.frequencyPenalty = frequencyPenalty
       self.functionCall = functionCall
       self.toolChoice = toolChoice

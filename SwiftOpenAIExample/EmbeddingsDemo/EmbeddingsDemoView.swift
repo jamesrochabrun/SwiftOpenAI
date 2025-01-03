@@ -29,7 +29,7 @@ struct EmbeddingsDemoView: View {
                isLoading = true
                defer { isLoading = false }  // ensure isLoading is set to false when the
                do {
-                  try await embeddingsProvider.createEmbeddings(parameters: .init(input: prompt, encodingFormat: nil, dimensions: nil))
+                   try await embeddingsProvider.createEmbeddings(parameters: .init(input: prompt, model: .textEmbedding3Large, encodingFormat: nil, dimensions: nil))
                } catch {
                   errorMessage = "\(error)"
                }

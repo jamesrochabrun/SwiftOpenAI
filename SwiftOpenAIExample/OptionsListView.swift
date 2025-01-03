@@ -20,6 +20,7 @@ struct OptionsListView: View {
    enum APIOption: String, CaseIterable, Identifiable {
       case audio = "Audio"
       case chat = "Chat"
+      case chatPredictedOutput = "Chat Predicted Output"
       case localChat = "Local Chat" // Ollama
       case vision = "Vision"
       case embeddings = "Embeddings"
@@ -51,6 +52,8 @@ struct OptionsListView: View {
                      AudioDemoView(service: openAIService)
                   case .chat:
                      ChatDemoView(service: openAIService)
+                  case .chatPredictedOutput:
+                     ChatPredictedOutputDemoView(service: openAIService)
                   case .vision:
                      ChatVisionDemoView(service: openAIService)
                   case .embeddings:

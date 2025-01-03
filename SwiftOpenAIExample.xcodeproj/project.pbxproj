@@ -69,6 +69,7 @@
 		7BBE7EAB2B02E8FC0096A693 /* ChatMessageDisplayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */; };
 		7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */; };
 		7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */; };
+		7BE802592D2878170080E06A /* ChatPredictedOutputDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE802582D2878170080E06A /* ChatPredictedOutputDemoView.swift */; };
 		7BE9A5AF2B0B33E600CE8103 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -156,6 +157,7 @@
 		7BBE7EAA2B02E8FC0096A693 /* ChatMessageDisplayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageDisplayModel.swift; sourceTree = "<group>"; };
 		7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallProvider.swift; sourceTree = "<group>"; };
 		7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallDemoView.swift; sourceTree = "<group>"; };
+		7BE802582D2878170080E06A /* ChatPredictedOutputDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPredictedOutputDemoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
+				7BE802572D2877D30080E06A /* PredictedOutputsDemo */,
 				7B50DD292C2A9D1D0070A64D /* LocalChatDemo */,
 				7B99C2E52C0718CD00E701B3 /* Files */,
 				7B7239AF2AF9FF1D00646679 /* SharedModels */,
@@ -478,6 +481,14 @@
 				7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */,
 			);
 			path = Completion;
+			sourceTree = "<group>";
+		};
+		7BE802572D2877D30080E06A /* PredictedOutputsDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7BE802582D2878170080E06A /* ChatPredictedOutputDemoView.swift */,
+			);
+			path = PredictedOutputsDemo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -620,6 +631,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BBE7EA92B02E8E50096A693 /* ChatMessageView.swift in Sources */,
+				7BE802592D2878170080E06A /* ChatPredictedOutputDemoView.swift in Sources */,
 				7B7239AE2AF9FF0000646679 /* ChatFunctionsCallStreamProvider.swift in Sources */,
 				7B436BA12AE25958003CE281 /* ChatProvider.swift in Sources */,
 				7B436BC32AE7B027003CE281 /* ModerationDemoView.swift in Sources */,

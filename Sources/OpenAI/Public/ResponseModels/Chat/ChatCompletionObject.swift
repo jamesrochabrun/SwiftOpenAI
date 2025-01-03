@@ -26,7 +26,7 @@ public struct ChatCompletionObject: Decodable {
    /// The object type, which is always chat.completion.
    public let object: String
    /// Usage statistics for the completion request.
-   public let usage: ChatUsage
+   public let usage: ChatUsage?
    
    public struct ChatChoice: Decodable {
       
@@ -138,21 +138,5 @@ public struct ChatCompletionObject: Decodable {
       case systemFingerprint = "system_fingerprint"
       case object
       case usage
-   }
-   
-   public struct ChatUsage: Decodable {
-      
-      /// Number of tokens in the generated completion.
-      public let completionTokens: Int
-      /// Number of tokens in the prompt.
-      public let promptTokens: Int
-      /// Total number of tokens used in the request (prompt + completion).
-      public let totalTokens: Int
-      
-      enum CodingKeys: String, CodingKey {
-         case completionTokens = "completion_tokens"
-         case promptTokens = "prompt_tokens"
-         case totalTokens = "total_tokens"
-      }
    }
 }

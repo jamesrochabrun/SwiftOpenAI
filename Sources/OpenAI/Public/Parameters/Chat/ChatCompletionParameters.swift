@@ -59,6 +59,8 @@ public struct ChatCompletionParameters: Encodable {
    ///The gpt-4o-audio-preview model can also be used to [generate audio](https://platform.openai.com/docs/guides/audio). To request that this model generate both text and audio responses, you can use:
    /// ["text", "audio"]
    public var modalities: [String]?
+   /// Configuration for a [Predicted Output](https://platform.openai.com/docs/guides/predicted-outputs), which can greatly improve response times when large parts of the model response are known ahead of time. This is most common when you are regenerating a file with only minor changes to most of the content.
+   public var prediction: Prediction?
    /// Parameters for audio output. Required when audio output is requested with modalities: ["audio"]. [Learn more.](https://platform.openai.com/docs/guides/audio)
    public var audio: Audio?
    /// Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics. Defaults to 0
@@ -380,6 +382,41 @@ public struct ChatCompletionParameters: Encodable {
       }
    }
    
+   public struct Prediction: Encodable {
+      public let type: String
+      public let content: PredictionContent
+      
+      public enum PredictionContent: Encodable {
+         case text(String)
+         case contentArray([ContentPart])
+         
+         public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .text(let text):
+               try container.encode(text)
+            case .contentArray(let parts):
+               try container.encode(parts)
+            }
+         }
+      }
+      
+      public struct ContentPart: Encodable {
+         public let type: String
+         public let text: String
+         
+         public init(type: String, text: String) {
+            self.type = type
+            self.text = text
+         }
+      }
+      
+      public init(content: PredictionContent, type: String = "content") {
+         self.type = type
+         self.content = content
+      }
+   }
+   
    public enum ReasoningEffort: String, Encodable {
       case low
       case medium
@@ -405,6 +442,7 @@ public struct ChatCompletionParameters: Encodable {
       case maCompletionTokens = "max_completion_tokens"
       case n
       case modalities
+      case prediction
       case audio
       case responseFormat = "response_format"
       case presencePenalty = "presence_penalty"
@@ -436,6 +474,7 @@ public struct ChatCompletionParameters: Encodable {
       maxTokens: Int? = nil,
       n: Int? = nil,
       modalities: [String]? = nil,
+      prediction: Prediction? = nil,
       audio: Audio? = nil,
       responseFormat: ResponseFormat? = nil,
       presencePenalty: Double? = nil,
@@ -464,6 +503,7 @@ public struct ChatCompletionParameters: Encodable {
       self.maxTokens = maxTokens
       self.n = n
       self.modalities = modalities
+      self.prediction = prediction
       self.audio = audio
       self.responseFormat = responseFormat
       self.presencePenalty = presencePenalty

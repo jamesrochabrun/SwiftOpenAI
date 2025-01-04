@@ -32,6 +32,7 @@ enum OpenAIAPI {
    case vectorStore(VectorStoreCategory) // https://platform.openai.com/docs/api-reference/vector-stores
    case vectorStoreFile(VectorStoreFileCategory) // https://platform.openai.com/docs/api-reference/vector-stores-files
    case vectorStoreFileBatch(VectorStoreFileBatch) // https://platform.openai.com/docs/api-reference/vector-stores-file-batches
+   case realTime // https://platform.openai.com/docs/api-reference/realtime-sessions/create
    
    enum AssistantCategory {
       case create
@@ -198,6 +199,7 @@ extension OpenAIAPI: Endpoint {
          case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "/\(version)/models/\(modelID)"
          }
       case .moderations: return "/\(version)/moderations"
+      case .realTime: return "/\(version)/realtime/sessions"
       case .run(let category):
          switch category {
          case .create(let threadID), .list(let threadID): return "/\(version)/threads/\(threadID)/runs"

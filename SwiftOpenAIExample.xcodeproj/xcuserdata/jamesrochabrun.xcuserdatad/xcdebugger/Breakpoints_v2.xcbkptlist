@@ -14,8 +14,8 @@
             filePath = "../../Sources/OpenAI/Public/Service/OpenAIService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1271"
-            endingLineNumber = "1271"
+            startingLineNumber = "1275"
+            endingLineNumber = "1275"
             landmarkName = "OpenAIService"
             landmarkType = "21">
          </BreakpointContent>

@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol RealTimeEvent {
-   var eventId: String { get }
+   var eventId: String? { get }
    var type: String { get }
 }
 

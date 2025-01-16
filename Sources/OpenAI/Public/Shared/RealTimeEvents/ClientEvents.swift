@@ -27,7 +27,7 @@ public enum ClientEventType: String {
 public struct SessionUpdateEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String // TODO: check if this can be optional
+   public let eventId: String? // TODO: check if this can be optional
    // The event type, must be session.update.
    public let type: String = ClientEventType.sessionUpdate.rawValue
    public let session: RealTimeSessionParameters
@@ -47,7 +47,7 @@ public struct SessionUpdateEvent: RealTimeEvent, Encodable {
 public struct InputAudioBufferAppendEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be input_audio_buffer.append.
    public let type: String = ClientEventType.inputAudioBufferAppend.rawValue
    /// Base64-encoded audio bytes. This must be in the format specified by the input_audio_format field in the session configuration.
@@ -68,7 +68,7 @@ public struct InputAudioBufferAppendEvent: RealTimeEvent, Encodable {
 public struct InputAudioBufferCommitEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    //// The event type, must be input_audio_buffer.commit.
    public let type: String = ClientEventType.inputAudioBufferCommit.rawValue
    
@@ -84,7 +84,7 @@ public struct InputAudioBufferCommitEvent: RealTimeEvent, Encodable {
 public struct InputAudioBufferClearEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be input_audio_buffer.clear.
    public let type: String = ClientEventType.inputAudioBufferClear.rawValue
    
@@ -102,7 +102,7 @@ public struct InputAudioBufferClearEvent: RealTimeEvent, Encodable {
 public struct ConversationItemCreateEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be conversation.item.create.
    public let type: String = ClientEventType.conversationItemCreate.rawValue
    /// The ID of the preceding item after which the new item will be inserted. If not set, the new item will be appended to the end of the conversation. If set, it allows an item to be inserted mid-conversation. If the ID cannot be found, an error will be returned and the item will not be added.
@@ -127,7 +127,7 @@ public struct ConversationItemCreateEvent: RealTimeEvent, Encodable {
 public struct ConversationItemTruncateEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be conversation.item.truncate.
    public let type: String = ClientEventType.conversationItemTruncate.rawValue
    /// The ID of the assistant message item to truncate. Only assistant message items can be truncated.
@@ -152,7 +152,7 @@ public struct ConversationItemTruncateEvent: RealTimeEvent, Encodable {
 public struct ConversationItemDeleteEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be conversation.item.delete.
    public let type: String = ClientEventType.conversationItemDelete.rawValue
    /// The ID of the item to delete.
@@ -177,7 +177,7 @@ public struct ConversationItemDeleteEvent: RealTimeEvent, Encodable {
 public struct ResponseCreateEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be response.create.
    public let type: String = ClientEventType.responseCreate.rawValue
    /// Create a new Realtime response with these parameters
@@ -196,7 +196,7 @@ public struct ResponseCreateEvent: RealTimeEvent, Encodable {
 public struct ResponseCancelEvent: RealTimeEvent, Encodable {
    
    /// Optional client-generated ID used to identify this event.
-   public let eventId: String
+   public let eventId: String?
    /// The event type, must be response.cancel.
    public let type: String = ClientEventType.responseCancel.rawValue
    /// A specific response ID to cancel - if not provided, will cancel an in-progress response in the default conversation.

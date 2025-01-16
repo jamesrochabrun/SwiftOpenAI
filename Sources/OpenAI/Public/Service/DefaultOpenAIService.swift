@@ -807,6 +807,21 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2, extraHeaders: extraHeaders)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
+   
+   // MARK: Realtime API
+   
+   func createRealtimeSession(
+      parameters: RealTimeSessionParameters)
+      async throws -> RealTimeSessionObject
+   {
+      let request = try OpenAIAPI.realTime.request(
+         apiKey: apiKey,
+         organizationID: organizationID,
+         method: .post,
+         params: parameters)
+      return try await fetch(debugEnabled: debugEnabled, type: RealTimeSessionObject.self, with: request)
+   }
+   
 }
 
 

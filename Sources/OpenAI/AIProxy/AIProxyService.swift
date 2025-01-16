@@ -811,6 +811,13 @@ struct AIProxyService: OpenAIService {
       let request = try await OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
+   
+   public func createRealtimeSession(
+      parameters: RealTimeSessionParameters)
+      async throws -> RealTimeSessionObject
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
 }
 
 

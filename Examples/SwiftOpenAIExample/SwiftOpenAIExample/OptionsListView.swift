@@ -35,6 +35,7 @@ struct OptionsListView: View {
       case chatStructuredOutput = "Chat Structured Output"
       case chatStructuredOutputTool = "Chat Structured Output Tools"
       case configureAssistant = "Configure Assistant"
+      case realTimeAPI = "Real time API"
 
       var id: String { rawValue }
    }
@@ -82,10 +83,11 @@ struct OptionsListView: View {
                      ChatStructureOutputToolDemoView(service: openAIService)
                   case .configureAssistant:
                      AssistantConfigurationDemoView(service: openAIService)
+                  case .realTimeAPI:
+                     Text("WIP")
                   }
                }
             }
       }
    }
 }
-

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: Error
 
-public enum APIError: Error {
+public enum APIError: Error, Decodable {
    
    case requestFailed(description: String)
    case responseUnsuccessful(description: String, statusCode: Int)
@@ -929,6 +929,10 @@ public protocol OpenAIService {
       before: String?,
       filter: String?)
       async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   func createRealtimeSession(
+      parameters: RealTimeSessionParameters)
+      async throws -> RealTimeSessionObject
 }
 
 

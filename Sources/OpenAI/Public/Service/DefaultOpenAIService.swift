@@ -814,7 +814,7 @@ struct DefaultOpenAIService: OpenAIService {
       parameters: RealTimeSessionParameters)
       async throws -> RealTimeSessionObject
    {
-      let request = try OpenAIAPI.realTime.request(
+      let request = try OpenAIAPI.realTime(.sessions).request(
          apiKey: apiKey,
          organizationID: organizationID,
          method: .post,
@@ -822,6 +822,19 @@ struct DefaultOpenAIService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: RealTimeSessionObject.self, with: request)
    }
    
+   func realTimeSession(
+      parameters: RealTimeSessionParameters)
+      async throws -> OpenAIRealtimeSession
+   {
+      let request = try OpenAIAPI.realTime(.realtime).request(
+         apiKey: apiKey,
+         organizationID: organizationID,
+         method: .get,
+         queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],
+         betaHeaderField: "realtime=v1")
+      
+      return await OpenAIRealtimeSession(webSocketTask: session.webSocketTask(with: request), sessionConfiguration: parameters)
+   }
 }
 
 

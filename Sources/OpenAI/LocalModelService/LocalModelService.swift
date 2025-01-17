@@ -317,4 +317,11 @@ struct LocalModelService: OpenAIService {
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
+   
+   func realTimeSession(
+      parameters: RealTimeSessionParameters)
+      async throws -> OpenAIRealtimeSession
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
 }

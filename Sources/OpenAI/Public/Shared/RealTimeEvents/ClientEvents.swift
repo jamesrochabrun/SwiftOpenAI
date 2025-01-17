@@ -37,6 +37,14 @@ public struct SessionUpdateEvent: RealTimeEvent, Encodable {
       case type
       case session
    }
+   
+   public init(
+      eventId: String? = nil,
+      session: RealTimeSessionParameters)
+   {
+      self.eventId = eventId
+      self.session = session
+   }
 }
 
 /// [input_audio_buffer.append](https://platform.openai.com/docs/api-reference/realtime-client-events/input_audio_buffer)
@@ -57,6 +65,11 @@ public struct InputAudioBufferAppendEvent: RealTimeEvent, Encodable {
       case eventId = "event_id"
       case type
       case audio
+   }
+   
+   public init(eventId: String? = nil, audio: String) {
+      self.eventId = eventId
+      self.audio = audio
    }
 }
 
@@ -181,12 +194,17 @@ public struct ResponseCreateEvent: RealTimeEvent, Encodable {
    /// The event type, must be response.create.
    public let type: String = ClientEventType.responseCreate.rawValue
    /// Create a new Realtime response with these parameters
-   public let response: RealTimeResponse
+   public let response: RealTimeResponse?
    
    enum CodingKeys: String, CodingKey {
       case eventId = "event_id"
       case type
       case response
+   }
+   
+   public init(eventId: String? = nil, response: RealTimeResponse? = nil) {
+      self.eventId = eventId
+      self.response = response
    }
 }
 

@@ -950,6 +950,11 @@ public protocol OpenAIService {
       before: String?,
       filter: String?)
       async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   
+   func realTimeSession(
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+      async throws -> OpenAIRealtimeSession
 }
 
 

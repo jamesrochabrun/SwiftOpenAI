@@ -810,6 +810,20 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2, extraHeaders: extraHeaders)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
+   
+   func realTimeSession(
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+      async throws -> OpenAIRealtimeSession
+   {
+      let request = try OpenAIAPI.realTime(.realtime).request(
+         apiKey: apiKey,
+         organizationID: organizationID,
+         method: .get,
+         queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],
+         betaHeaderField: "realtime=v1")
+
+      return await OpenAIRealtimeSession(webSocketTask: session.webSocketTask(with: request), sessionConfiguration: sessionConfiguration)
+   }
 }
 
 

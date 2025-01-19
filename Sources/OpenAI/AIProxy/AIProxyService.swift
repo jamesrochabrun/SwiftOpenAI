@@ -823,6 +823,25 @@ struct AIProxyService: OpenAIService {
       let request = try await OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
+   
+   func realTimeSession(
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+      async throws -> OpenAIRealtimeSession
+   {
+
+      let request = try await OpenAIAPI.realTime(.realtime).request(
+         aiproxyPartialKey: partialKey,
+         serviceURL: serviceURL,
+         clientID: clientID,
+         organizationID: organizationID,
+         method: .get,
+         queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],
+         betaHeaderField: "realtime=v1")
+      return await OpenAIRealtimeSession(
+         webSocketTask: self.session.webSocketTask(with: request),
+         sessionConfiguration: sessionConfiguration
+      )
+   }
 }
 
 

@@ -7,6 +7,7 @@
 
 import AVFoundation
 import Foundation
+import SwiftOpenAI
 
 @Observable
 final class RealTimeAPIViewModel {
@@ -58,7 +59,7 @@ final class RealTimeAPIViewModel {
       var isOpenAIReadyForAudio = true
       Task {
          for await buffer in audioStream {
-            if isOpenAIReadyForAudio, let base64Audio = Helper.base64EncodeAudioPCMBuffer(from: buffer) {
+            if isOpenAIReadyForAudio, let base64Audio = AudioUtils.base64EncodeAudioPCMBuffer(from: buffer) {
                try await realtimeSession.sendMessage(
                   OpenAIRealtimeInputAudioBufferAppend(audio: base64Audio)
                )

@@ -8,7 +8,7 @@
 import AVFoundation
 import Foundation
 
-struct AudioUtils {
+public struct AudioUtils {
    
    static func base64EncodedPCMData(from sampleBuffer: CMSampleBuffer) -> String? {
       let bytesPerSample = sampleBuffer.sampleSize(at: 0)

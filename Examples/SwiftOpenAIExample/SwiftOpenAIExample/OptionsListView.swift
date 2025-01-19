@@ -88,4 +88,3 @@ struct OptionsListView: View {
       }
    }
 }
-

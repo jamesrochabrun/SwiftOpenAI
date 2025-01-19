@@ -11,36 +11,36 @@ import SwiftOpenAI
 
 @Observable
 final class RealTimeAPIViewModel {
-
+   
    let service: OpenAIService
-
+   
    init(service: OpenAIService) {
       self.service = service
    }
-
+   
    var kMicrophoneSampleVendor: MicrophonePCMSampleVendor?
    var kRealtimeSession: OpenAIRealtimeSession?
-
+   
    @RealtimeActor
    func disconnect() {
       kRealtimeSession?.disconnect()
    }
-
+   
    @RealtimeActor
    func testOpenAIRealtime() async {
-
+      
       let sessionConfiguration = OpenAIRealtimeSessionUpdate.SessionConfiguration(
-          inputAudioFormat: "pcm16",
-          inputAudioTranscription: .init(model: "whisper-1"),
-          instructions: "You are tour guide for Monument Valley, Utah",
-          maxResponseOutputTokens: .int(4096),
-          modalities: ["audio", "text"],
-          outputAudioFormat: "pcm16",
-          temperature: 0.7,
-          turnDetection: .init(prefixPaddingMs: 200, silenceDurationMs: 500, threshold: 0.5),
-          voice: "shimmer"
+         inputAudioFormat: "pcm16",
+         inputAudioTranscription: .init(model: "whisper-1"),
+         instructions: "You are tour guide for Monument Valley, Utah",
+         maxResponseOutputTokens: .int(4096),
+         modalities: ["audio", "text"],
+         outputAudioFormat: "pcm16",
+         temperature: 0.7,
+         turnDetection: .init(prefixPaddingMs: 200, silenceDurationMs: 500, threshold: 0.5),
+         voice: "shimmer"
       )
-
+      
       let microphoneSampleVendor = MicrophonePCMSampleVendor()
       let audioStream: AsyncStream<AVAudioPCMBuffer>
       do {
@@ -48,14 +48,14 @@ final class RealTimeAPIViewModel {
       } catch {
          fatalError("Could not start audio stream: \(error.localizedDescription)")
       }
-
+      
       let realtimeSession: OpenAIRealtimeSession
       do {
          realtimeSession = try await service.realTimeSession(sessionConfiguration: sessionConfiguration)
       } catch {
          fatalError("Could not create an OpenAI realtime session")
       }
-
+      
       var isOpenAIReadyForAudio = true
       Task {
          for await buffer in audioStream {
@@ -67,7 +67,7 @@ final class RealTimeAPIViewModel {
          }
          print("zizou Done streaming microphone audio")
       }
-
+      
       Task {
          do {
             print("zizou Sending response create")
@@ -76,7 +76,7 @@ final class RealTimeAPIViewModel {
             print("zizou Could not send the session configuration instructions")
          }
       }
-
+      
       Task {
          for await message in realtimeSession.receiver {
             switch message {
@@ -90,10 +90,10 @@ final class RealTimeAPIViewModel {
          }
          print("zizou Done listening for messages from OpenAI")
       }
-
+      
       // Some time later
       // microphoneSampleVendor.stop()
-
+      
       kMicrophoneSampleVendor = microphoneSampleVendor
       kRealtimeSession = realtimeSession
    }

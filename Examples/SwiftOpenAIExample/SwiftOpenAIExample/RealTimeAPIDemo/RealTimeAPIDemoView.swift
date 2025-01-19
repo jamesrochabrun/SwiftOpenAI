@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import SwiftOpenAI
 
 struct RealTimeAPIDemoView: View {
    
@@ -15,6 +16,7 @@ struct RealTimeAPIDemoView: View {
    
    init(service: OpenAIService) {
       realTimeAPIViewModel = .init(service: service)
+      // TODO: Update this with latest API.
       _microphonePermission = State(initialValue: AVAudioSession.sharedInstance().recordPermission)
    }
    

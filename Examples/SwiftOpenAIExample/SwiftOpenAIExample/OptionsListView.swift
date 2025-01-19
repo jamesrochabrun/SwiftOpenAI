@@ -135,7 +135,7 @@ struct RealTimeAPIDemoView: View {
                 await realTimeAPIViewModel.testOpenAIRealtime()
             }
         } label: {
-            Label("Stop session", systemImage: "microphone")
+            Label("Start session", systemImage: "microphone")
         }
     }
    
@@ -145,7 +145,7 @@ struct RealTimeAPIDemoView: View {
              await realTimeAPIViewModel.disconnect()
           }
       } label: {
-          Label("Start session", systemImage: "stop")
+          Label("Stop session", systemImage: "stop")
       }
    }
     
@@ -197,7 +197,7 @@ final class RealTimeAPIViewModel {
    let service: OpenAIService
    
    init(service: OpenAIService) {
-      self.service = service
+      self.service = OpenAIServiceFactory.service(aiproxyPartialKey: "v2|fb95ad14|31VKBMnxTslxldTs", aiproxyServiceURL: "https://api.aiproxy.pro/84e28a54/4488ddf3")
    }
    
    var kMicrophoneSampleVendor: MicrophonePCMSampleVendor?
@@ -211,17 +211,29 @@ final class RealTimeAPIViewModel {
    @RealtimeActor
    func testOpenAIRealtime() async {
       
-      let sessionConfiguration = RealTimeSessionParameters(
-         modalities: ["audio", "text"],
-         model: .custom("gpt-4o-mini-realtime-preview-2024-12-17"),
-         instructions: "You are tour guide for Monument Valley, Utah",
-         voice: .shimmer,
-         inputAudioFormat: .pcm16,
-         outputAudioFormat: .pcm16,
-         inputAudioTranscription: .init(model: "whisper-1"),
-         turnDetection: .init(threshold: 0.5, prefixPaddingMs: 200, silenceDurationMs: 500),
-         temperature: 0.7,
-         maxResponseOutputTokens: .finite(4096))
+      let sessionConfiguration = OpenAIRealtimeSessionUpdate.SessionConfiguration(
+          inputAudioFormat: "pcm16",
+          inputAudioTranscription: .init(model: "whisper-1"),
+          instructions: "You are tour guide for Monument Valley, Utah",
+          maxResponseOutputTokens: .int(4096),
+          modalities: ["audio", "text"],
+          outputAudioFormat: "pcm16",
+          temperature: 0.7,
+          turnDetection: nil,//.init(prefixPaddingMs: 200, silenceDurationMs: 500, threshold: 0.5),
+          voice: "shimmer"
+      )
+      
+//      let sessionConfiguration = RealTimeSessionParameters(
+//         modalities: ["audio", "text"],
+//         model: .custom("gpt-4o-mini-realtime-preview-2024-12-17"),
+//         instructions: "You are tour guide for Monument Valley, Utah",
+//         voice: .shimmer,
+//         inputAudioFormat: .pcm16,
+//         outputAudioFormat: .pcm16,
+//         inputAudioTranscription: .init(model: "whisper-1"),
+//         turnDetection: .init(threshold: 0.5, prefixPaddingMs: 200, silenceDurationMs: 500),
+//         temperature: 0.7,
+//         maxResponseOutputTokens: .finite(4096))
       
       let microphoneSampleVendor = MicrophonePCMSampleVendor()
       let audioStream: AsyncStream<AVAudioPCMBuffer>
@@ -233,29 +245,29 @@ final class RealTimeAPIViewModel {
       
       let realtimeSession: OpenAIRealtimeSession
       do {
-         realtimeSession = try await service.realTimeSession(parameters: sessionConfiguration)
+         realtimeSession = try await service.realTimeSession(sessionConfiguration: sessionConfiguration)
       } catch {
          fatalError("Could not create an OpenAI realtime session")
       }
       
-      var isOpenAIReadyForAudio = false
+      var isOpenAIReadyForAudio = true
       Task {
          for await buffer in audioStream {
             if isOpenAIReadyForAudio, let base64Audio = Helper.base64EncodeAudioPCMBuffer(from: buffer) {
                try await realtimeSession.sendMessage(
-                  InputAudioBufferAppendEvent(audio: base64Audio)
+                  OpenAIRealtimeInputAudioBufferAppend(audio: base64Audio)
                )
             }
          }
-         print("Done streaming microphone audio")
+         print("zizou Done streaming microphone audio")
       }
       
       Task {
          do {
-            print("Sending response create")
-            try await realtimeSession.sendMessage(ResponseCreateEvent())
+            print("zizou Sending response create")
+            try await realtimeSession.sendMessage(OpenAIRealtimeResponseCreate(response: .init(instructions: "Can you describe Monument Valley?", modalities: ["audio", "text"])))
          } catch {
-            print("Could not send the session configuration instructions")
+            print("zizou Could not send the session configuration instructions")
          }
       }
       
@@ -270,7 +282,7 @@ final class RealTimeAPIViewModel {
                break
             }
          }
-         print("Done listening for messages from OpenAI")
+         print("zizou Done listening for messages from OpenAI")
       }
       
       // Some time later

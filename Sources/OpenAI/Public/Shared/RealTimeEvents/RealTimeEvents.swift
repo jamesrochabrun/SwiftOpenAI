@@ -308,6 +308,20 @@ public struct RealTimeResponse: Encodable {
       case metadata
       case input
    }
+   
+   public init(modalities: [String]?, instructions: String?, voice: String?, outputAudioFormat: String?, tools: [Tool]?, toolChoice: ToolChoice?, temperature: Double?, maxResponseOutputTokens: TokenLimit?, conversation: ConversationType?, metadata: [String : String]?, input: [ConversationItem]?) {
+      self.modalities = modalities
+      self.instructions = instructions
+      self.voice = voice
+      self.outputAudioFormat = outputAudioFormat
+      self.tools = tools
+      self.toolChoice = toolChoice
+      self.temperature = temperature
+      self.maxResponseOutputTokens = maxResponseOutputTokens
+      self.conversation = conversation
+      self.metadata = metadata
+      self.input = input
+   }
 }
 
 public enum ConversationType: String, Codable {

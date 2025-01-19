@@ -934,7 +934,10 @@ public protocol OpenAIService {
       parameters: RealTimeSessionParameters)
       async throws -> RealTimeSessionObject
    
-   func realTimeSession(parameters: RealTimeSessionParameters) async throws -> OpenAIRealtimeSession
+   func realTimeSession(
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+      async throws -> OpenAIRealtimeSession
+//   func realTimeSession(parameters: RealTimeSessionParameters) async throws -> OpenAIRealtimeSession
 }
 
 extension OpenAIService {

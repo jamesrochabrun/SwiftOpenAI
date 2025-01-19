@@ -226,3 +226,35 @@ public struct ResponseCancelEvent: RealTimeEvent, Encodable {
       case responseId = "response_id"
    }
 }
+
+
+public struct OpenAIRealtimeResponseCreate: Encodable {
+    public let type = "response.create"
+    public let response: Response?
+    public init(response: Response? = nil) {
+        self.response = response
+    }
+}
+// MARK: - ResponseCreate.Response
+extension OpenAIRealtimeResponseCreate {
+    public struct Response: Encodable {
+        public let instructions: String?
+        public let modalities: [String]?
+        public init(
+            instructions: String? = nil,
+            modalities: [String]? = nil
+        ) {
+            self.modalities = modalities
+            self.instructions = instructions
+        }
+    }
+}
+
+public struct OpenAIRealtimeInputAudioBufferAppend: Encodable {
+    public let type = "input_audio_buffer.append"
+    /// base64 encoded PCM16 data
+    public let audio: String
+    public init(audio: String) {
+        self.audio = audio
+    }
+}

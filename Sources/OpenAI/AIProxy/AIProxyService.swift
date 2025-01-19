@@ -820,11 +820,30 @@ struct AIProxyService: OpenAIService {
    }
    
    func realTimeSession(
-      parameters: RealTimeSessionParameters)
-      async throws -> OpenAIRealtimeSession
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+   async throws -> OpenAIRealtimeSession
    {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+      
+      let request = try await OpenAIAPI.realTime(.realtime).request(
+         aiproxyPartialKey: partialKey,
+         serviceURL: serviceURL,
+         clientID: clientID,
+         organizationID: organizationID,
+         method: .get,
+         queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],
+         betaHeaderField: "realtime=v1")
+      return await OpenAIRealtimeSession(
+         webSocketTask: self.session.webSocketTask(with: request),
+         sessionConfiguration: sessionConfiguration
+      )
    }
+   
+//   func realTimeSession(
+//      parameters: RealTimeSessionParameters)
+//      async throws -> OpenAIRealtimeSession
+//   {
+//      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+//   }
 }
 
 

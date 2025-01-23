@@ -39,11 +39,17 @@ open class OpenAIRealtimeSession {
       self.webSocketTask = webSocketTask
       self.sessionConfiguration = sessionConfiguration
       
-      Task {
-         try await self.sendMessage(OpenAIRealtimeSessionUpdate(session: self.sessionConfiguration))
-      }
-      self.webSocketTask.resume()
-      self.receiveMessage()
+       // Add logging here
+       if let url = webSocketTask.currentRequest?.url {
+          print("🔌 WebSocket connecting to: \(url)")
+          print("📝 Session configuration: \(String(describing: sessionConfiguration))")
+       }
+       
+       Task {
+          try await self.sendMessage(OpenAIRealtimeSessionUpdate(session: self.sessionConfiguration))
+       }
+       self.webSocketTask.resume()
+       self.receiveMessage()
    }
    
    public var receiver: AsyncStream<OpenAIRealtimeMessage> {
@@ -51,6 +57,7 @@ open class OpenAIRealtimeSession {
          self.continuation = continuation
       }
    }
+
    
    /// Close the ws connection
    public func disconnect() {
@@ -63,11 +70,28 @@ open class OpenAIRealtimeSession {
    
    
    /// Sends a message through the websocket connection
+//   public func sendMessage(_ encodable: Encodable) async throws {
+//      guard self.connectionState != .disconnected else {
+//         debugPrint("Can't send a websocket message. WS disconnected.")
+//         return
+//      }
+//      let wsMessage = URLSessionWebSocketTask.Message.data(try encodable.serialize())
+//      try await self.webSocketTask.send(wsMessage)
+//   }
+//   
    public func sendMessage(_ encodable: Encodable) async throws {
       guard self.connectionState != .disconnected else {
          debugPrint("Can't send a websocket message. WS disconnected.")
          return
       }
+      
+      // Add logging here
+      print("📤 Sending message: \(String(describing: encodable))")
+      if let data: Data = try? encodable.serialize(),
+         let jsonString = String(data: data, encoding: .utf8) {
+         print("📦 Raw message data: \(jsonString)")
+      }
+      
       let wsMessage = URLSessionWebSocketTask.Message.data(try encodable.serialize())
       try await self.webSocketTask.send(wsMessage)
    }
@@ -109,6 +133,11 @@ open class OpenAIRealtimeSession {
    }
    
    private func didReceiveWebSocketData(_ data: Data) {
+
+      if let jsonString = String(data: data, encoding: .utf8) {
+         print("📥 Received WebSocket data: \(jsonString)")
+      }
+
       guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
             let messageType = json["type"] as? String else {
          debugPrint("Received websocket data that we don't understand")

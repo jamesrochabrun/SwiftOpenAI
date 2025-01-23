@@ -15,7 +15,7 @@ final class RealTimeAPIViewModel {
    let service: OpenAIService
    
    init(service: OpenAIService) {
-      self.service = service
+      self.service = OpenAIServiceFactory.service(aiproxyPartialKey: "v2|fb95ad14|31VKBMnxTslxldTs", aiproxyServiceURL: "https://api.aiproxy.pro/84e28a54/4488ddf3")
    }
    
    var kMicrophoneSampleVendor: MicrophonePCMSampleVendor?
@@ -28,7 +28,6 @@ final class RealTimeAPIViewModel {
    
    @RealtimeActor
    func testOpenAIRealtime() async {
-      
       let sessionConfiguration = OpenAIRealtimeSessionUpdate.SessionConfiguration(
          inputAudioFormat: "pcm16",
          inputAudioTranscription: .init(model: "whisper-1"),
@@ -51,12 +50,14 @@ final class RealTimeAPIViewModel {
       
       let realtimeSession: OpenAIRealtimeSession
       do {
-         realtimeSession = try await service.realTimeSession(sessionConfiguration: sessionConfiguration)
+         realtimeSession = try await service.realTimeSession(
+            sessionConfiguration: sessionConfiguration
+         )
       } catch {
          fatalError("Could not create an OpenAI realtime session")
       }
       
-      var isOpenAIReadyForAudio = true
+      var isOpenAIReadyForAudio = false
       Task {
          for await buffer in audioStream {
             if isOpenAIReadyForAudio, let base64Audio = AudioUtils.base64EncodeAudioPCMBuffer(from: buffer) {
@@ -65,15 +66,15 @@ final class RealTimeAPIViewModel {
                )
             }
          }
-         print("zizou Done streaming microphone audio")
+         print("Done streaming microphone audio")
       }
       
       Task {
          do {
-            print("zizou Sending response create")
-            try await realtimeSession.sendMessage(OpenAIRealtimeResponseCreate(response: .init(instructions: "Can you describe Monument Valley?", modalities: ["audio", "text"])))
+            print("Sending response create")
+            try await realtimeSession.sendMessage(OpenAIRealtimeResponseCreate())
          } catch {
-            print("zizou Could not send the session configuration instructions")
+            print("Could not send the session configuration instructions")
          }
       }
       
@@ -88,7 +89,7 @@ final class RealTimeAPIViewModel {
                break
             }
          }
-         print("zizou Done listening for messages from OpenAI")
+         print("Done listening for messages from OpenAI")
       }
       
       // Some time later

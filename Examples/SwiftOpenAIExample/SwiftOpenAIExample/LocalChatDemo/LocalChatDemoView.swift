@@ -99,8 +99,8 @@ struct LocalChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  // Make sure you run `ollama pull llama3` in your terminal to download this model.
-                  model: .custom("llama3"))
+                  // Make sure you run `ollama pull llama3.1` in your terminal to download this model.
+                  model: .custom("llama3.1"))
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

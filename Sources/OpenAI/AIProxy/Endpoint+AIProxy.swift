@@ -35,11 +35,12 @@ private let deviceCheckWarning = """
 extension Endpoint {
 
     private func urlComponents(
-      serviceURL: String?,
+      serviceURL: String,
+      path: String,
       queryItems: [URLQueryItem])
        -> URLComponents
     {
-       var components = URLComponents(string: serviceURL ?? "https://api.aiproxy.pro")!
+       var components = URLComponents(string: serviceURL)!
        components.path = components.path.appending(path)
        if !queryItems.isEmpty {
           components.queryItems = queryItems
@@ -49,16 +50,17 @@ extension Endpoint {
 
    func request(
       aiproxyPartialKey: String,
-      serviceURL: String?,
       clientID: String?,
       organizationID: String?,
+      openAIEnvironment: OpenAIEnvironment,
       method: HTTPMethod,
       params: Encodable? = nil,
       queryItems: [URLQueryItem] = [],
       betaHeaderField: String? = nil)
       async throws -> URLRequest
    {
-      var request = URLRequest(url: urlComponents(serviceURL: serviceURL, queryItems: queryItems).url!)
+      let finalPath = path(in: openAIEnvironment)
+      var request = URLRequest(url: urlComponents(serviceURL: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
       request.addValue(aiproxyPartialKey, forHTTPHeaderField: "aiproxy-partial-key")
       if let organizationID {
@@ -87,7 +89,7 @@ extension Endpoint {
 
    func multiPartRequest(
       aiproxyPartialKey: String,
-      serviceURL: String?,
+      openAIEnvironment: OpenAIEnvironment,
       clientID: String?,
       organizationID: String?,
       method: HTTPMethod,
@@ -96,7 +98,8 @@ extension Endpoint {
    )
       async throws -> URLRequest
    {
-      var request = URLRequest(url: urlComponents(serviceURL: serviceURL, queryItems: queryItems).url!)
+      let finalPath = path(in: openAIEnvironment)
+      var request = URLRequest(url: urlComponents(serviceURL: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
       request.httpMethod = method.rawValue
       request.addValue(aiproxyPartialKey, forHTTPHeaderField: "aiproxy-partial-key")
       if let organizationID {

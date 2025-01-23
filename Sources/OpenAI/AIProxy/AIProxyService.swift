@@ -14,13 +14,11 @@ struct AIProxyService: OpenAIService {
 
    let session: URLSession
    let decoder: JSONDecoder
+   let openAIEnvironment: OpenAIEnvironment
 
    /// Your partial key is provided during the integration process at dashboard.aiproxy.pro
    /// Please see the [integration guide](https://www.aiproxy.pro/docs/integration-guide.html) for acquiring your partial key
    private let partialKey: String
-   /// Your service URL is also provided during the integration process. If you integrated before
-   /// July 22nd, 2024, you can continue to leave this blank.
-   private let serviceURL: String?
    /// Optionally supply your own client IDs to annotate requests with in the AIProxy developer dashboard.
    /// It is safe to leave this blank (most people do). If you leave it blank, AIProxy generates client IDs for you.
    private let clientID: String?
@@ -32,6 +30,8 @@ struct AIProxyService: OpenAIService {
 
    private static let assistantsBetaV2 = "assistants=v2"
 
+   /// Your service URL is also provided during the integration process. If you integrated before
+   /// July 22nd, 2024, you can continue to leave `serviceURL` blank.
    init(
       partialKey: String,
       serviceURL: String? = nil,
@@ -46,10 +46,10 @@ struct AIProxyService: OpenAIService {
       )
       self.decoder = JSONDecoder()
       self.partialKey = partialKey
-      self.serviceURL = serviceURL
       self.clientID = clientID
       self.organizationID = organizationID
       self.debugEnabled = debugEnabled
+      self.openAIEnvironment = .init(baseURL: serviceURL ?? "https://api.aiproxy.pro", proxyPath: nil, version: "v1")
    }
 
    // MARK: Audio
@@ -58,7 +58,7 @@ struct AIProxyService: OpenAIService {
       parameters: AudioTranscriptionParameters)
       async throws -> AudioObject
    {
-      let request = try await OpenAIAPI.audio(.transcriptions).multiPartRequest(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post,  params: parameters)
+      let request = try await OpenAIAPI.audio(.transcriptions).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post,  params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: AudioObject.self, with: request)
    }
 
@@ -66,7 +66,7 @@ struct AIProxyService: OpenAIService {
       parameters: AudioTranslationParameters)
       async throws -> AudioObject
    {
-      let request = try await OpenAIAPI.audio(.translations).multiPartRequest(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.audio(.translations).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: AudioObject.self, with: request)
    }
 
@@ -74,7 +74,7 @@ struct AIProxyService: OpenAIService {
       parameters: AudioSpeechParameters)
       async throws -> AudioSpeechObject
    {
-      let request = try await OpenAIAPI.audio(.speech).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.audio(.speech).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       let data = try await fetchAudio(with: request)
       return AudioSpeechObject(output: data)
    }
@@ -87,7 +87,7 @@ struct AIProxyService: OpenAIService {
    {
       var chatParameters = parameters
       chatParameters.stream = false
-      let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: chatParameters)
+      let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: chatParameters)
       return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
    }
 
@@ -98,7 +98,7 @@ struct AIProxyService: OpenAIService {
       var chatParameters = parameters
       chatParameters.stream = true
       chatParameters.streamOptions = .init(includeUsage: true)
-      let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: chatParameters)
+      let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: chatParameters)
       return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }
 
@@ -108,7 +108,7 @@ struct AIProxyService: OpenAIService {
       parameters: EmbeddingParameter)
       async throws -> OpenAIResponse<EmbeddingObject>
    {
-      let request = try await OpenAIAPI.embeddings.request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.embeddings.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<EmbeddingObject>.self, with: request)
    }
 
@@ -118,7 +118,7 @@ struct AIProxyService: OpenAIService {
       parameters: FineTuningJobParameters)
       async throws -> FineTuningJobObject
    {
-      let request = try await OpenAIAPI.fineTuning(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.fineTuning(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
 
@@ -136,7 +136,7 @@ struct AIProxyService: OpenAIService {
          queryItems = [.init(name: "limit", value: "\(limit)")]
       }
 
-      let request = try await OpenAIAPI.fineTuning(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems)
+      let request = try await OpenAIAPI.fineTuning(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FineTuningJobObject>.self, with: request)
    }
 
@@ -144,7 +144,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> FineTuningJobObject
    {
-      let request = try await OpenAIAPI.fineTuning(.retrieve(jobID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.fineTuning(.retrieve(jobID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
 
@@ -152,7 +152,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> FineTuningJobObject
    {
-      let request = try await OpenAIAPI.fineTuning(.cancel(jobID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post)
+      let request = try await OpenAIAPI.fineTuning(.cancel(jobID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post)
       return try await fetch(debugEnabled: debugEnabled, type: FineTuningJobObject.self, with: request)
    }
 
@@ -170,7 +170,7 @@ struct AIProxyService: OpenAIService {
       } else if let limit {
          queryItems = [.init(name: "limit", value: "\(limit)")]
       }
-      let request = try await OpenAIAPI.fineTuning(.events(jobID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems)
+      let request = try await OpenAIAPI.fineTuning(.events(jobID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FineTuningJobEventObject>.self, with: request)
    }
 
@@ -179,7 +179,7 @@ struct AIProxyService: OpenAIService {
    func listFiles()
       async throws -> OpenAIResponse<FileObject>
    {
-      let request = try await OpenAIAPI.file(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.file(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<FileObject>.self, with: request)
    }
 
@@ -187,7 +187,7 @@ struct AIProxyService: OpenAIService {
       parameters: FileParameters)
       async throws -> FileObject
    {
-      let request = try await OpenAIAPI.file(.upload).multiPartRequest(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.file(.upload).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: FileObject.self, with: request)
    }
 
@@ -195,7 +195,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.file(.delete(fileID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete)
+      let request = try await OpenAIAPI.file(.delete(fileID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -203,7 +203,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> FileObject
    {
-      let request = try await OpenAIAPI.file(.retrieve(fileID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.file(.retrieve(fileID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: FileObject.self, with: request)
    }
 
@@ -211,7 +211,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> [[String: Any]]
    {
-      let request = try await OpenAIAPI.file(.retrieveFileContent(fileID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.file(.retrieveFileContent(fileID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetchContentsOfFile(request: request)
    }
 
@@ -221,7 +221,7 @@ struct AIProxyService: OpenAIService {
       parameters: ImageCreateParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
-      let request = try await OpenAIAPI.images(.generations).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.images(.generations).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self,  with: request)
    }
 
@@ -229,7 +229,7 @@ struct AIProxyService: OpenAIService {
       parameters: ImageEditParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
-      let request = try await OpenAIAPI.images(.edits).multiPartRequest(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.images(.edits).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
 
@@ -237,7 +237,7 @@ struct AIProxyService: OpenAIService {
       parameters: ImageVariationParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
-      let request = try await OpenAIAPI.images(.variations).multiPartRequest(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.images(.variations).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
 
@@ -246,7 +246,7 @@ struct AIProxyService: OpenAIService {
    func listModels()
       async throws -> OpenAIResponse<ModelObject>
    {
-      let request = try await OpenAIAPI.model(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.model(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ModelObject>.self,  with: request)
    }
 
@@ -254,7 +254,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> ModelObject
    {
-      let request = try await OpenAIAPI.model(.retrieve(modelID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.model(.retrieve(modelID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: ModelObject.self,  with: request)
    }
 
@@ -262,7 +262,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete)
+      let request = try await OpenAIAPI.model(.deleteFineTuneModel(modelID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self,  with: request)
    }
 
@@ -272,7 +272,7 @@ struct AIProxyService: OpenAIService {
       parameters: ModerationParameter<String>)
       async throws -> ModerationObject
    {
-      let request = try await OpenAIAPI.moderations.request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.moderations.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: ModerationObject.self, with: request)
    }
 
@@ -280,7 +280,7 @@ struct AIProxyService: OpenAIService {
       parameters: ModerationParameter<[String]>)
       async throws -> ModerationObject
    {
-      let request = try await OpenAIAPI.moderations.request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.moderations.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: ModerationObject.self, with: request)
    }
 
@@ -290,7 +290,7 @@ struct AIProxyService: OpenAIService {
       parameters: AssistantParameters)
       async throws -> AssistantObject
    {
-      let request = try await OpenAIAPI.assistant(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.assistant(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
 
@@ -298,7 +298,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> AssistantObject
    {
-      let request = try await OpenAIAPI.assistant(.retrieve(assistantID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.assistant(.retrieve(assistantID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
 
@@ -307,7 +307,7 @@ struct AIProxyService: OpenAIService {
       parameters: AssistantParameters)
       async throws -> AssistantObject
    {
-      let request = try await OpenAIAPI.assistant(.modify(assistantID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.assistant(.modify(assistantID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: AssistantObject.self, with: request)
    }
 
@@ -315,7 +315,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.assistant(.delete(assistantID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.assistant(.delete(assistantID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -339,7 +339,7 @@ struct AIProxyService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try await OpenAIAPI.assistant(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.assistant(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<AssistantObject>.self, with: request)
    }
 
@@ -349,14 +349,14 @@ struct AIProxyService: OpenAIService {
       parameters: CreateThreadParameters)
       async throws -> ThreadObject
    {
-      let request = try await OpenAIAPI.thread(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.thread(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
 
    func retrieveThread(id: String)
       async throws -> ThreadObject
    {
-      let request = try await OpenAIAPI.thread(.retrieve(threadID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.thread(.retrieve(threadID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
 
@@ -365,7 +365,7 @@ struct AIProxyService: OpenAIService {
       parameters: ModifyThreadParameters)
       async throws -> ThreadObject
    {
-      let request = try await OpenAIAPI.thread(.modify(threadID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.thread(.modify(threadID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: ThreadObject.self, with: request)
    }
 
@@ -373,7 +373,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.thread(.delete(threadID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.thread(.delete(threadID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -384,7 +384,7 @@ struct AIProxyService: OpenAIService {
       parameters: MessageParameter)
       async throws -> MessageObject
    {
-      let request = try await OpenAIAPI.message(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.message(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
 
@@ -393,7 +393,7 @@ struct AIProxyService: OpenAIService {
       messageID: String)
       async throws -> MessageObject
    {
-      let request = try await OpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.message(.retrieve(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
 
@@ -403,7 +403,7 @@ struct AIProxyService: OpenAIService {
       parameters: ModifyMessageParameters)
       async throws -> MessageObject
    {
-      let request = try await OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.message(.modify(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: MessageObject.self, with: request)
    }
    
@@ -412,7 +412,7 @@ struct AIProxyService: OpenAIService {
       messageID: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.message(.delete(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.message(.delete(threadID: threadID, messageID: messageID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -438,7 +438,7 @@ struct AIProxyService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try await OpenAIAPI.message(.list(threadID: threadID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.message(.list(threadID: threadID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<MessageObject>.self, with: request)
    }
 
@@ -449,7 +449,7 @@ struct AIProxyService: OpenAIService {
       parameters: RunParameter)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -458,7 +458,7 @@ struct AIProxyService: OpenAIService {
       runID: String)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.retrieve(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -468,7 +468,7 @@ struct AIProxyService: OpenAIService {
       parameters: ModifyRunParameters)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.modify(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -493,7 +493,7 @@ struct AIProxyService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try await OpenAIAPI.run(.list(threadID: threadID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.list(threadID: threadID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunObject>.self, with: request)
    }
 
@@ -502,7 +502,7 @@ struct AIProxyService: OpenAIService {
       runID: String)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.cancel(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -512,7 +512,7 @@ struct AIProxyService: OpenAIService {
       parameters: RunToolsOutputParameter)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -520,7 +520,7 @@ struct AIProxyService: OpenAIService {
       parameters: CreateThreadAndRunParameter)
       async throws -> RunObject
    {
-      let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunObject.self, with: request)
    }
 
@@ -532,7 +532,7 @@ struct AIProxyService: OpenAIService {
       stepID: String)
       async throws -> RunStepObject
    {
-      let request = try await OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.runStep(.retrieve(threadID: threadID, runID: runID, stepID: stepID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: RunStepObject.self, with: request)
    }
 
@@ -558,7 +558,7 @@ struct AIProxyService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try await OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.runStep(.list(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<RunStepObject>.self, with: request)
    }
 
@@ -569,7 +569,7 @@ struct AIProxyService: OpenAIService {
    {
       var runParameters = parameters
       runParameters.stream = true
-      let request = try await OpenAIAPI.run(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: runParameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.create(threadID: threadID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: runParameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
 
@@ -578,7 +578,7 @@ struct AIProxyService: OpenAIService {
       async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
       var runParameters = parameters
       runParameters.stream = true
-         let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+         let request = try await OpenAIAPI.run(.createThreadAndRun).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
          return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
 
@@ -590,7 +590,7 @@ struct AIProxyService: OpenAIService {
    {
       var runToolsOutputParameter = parameters
       runToolsOutputParameter.stream = true
-      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: runToolsOutputParameter, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.run(.submitToolOutput(threadID: threadID, runID: runID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: runToolsOutputParameter, betaHeaderField: Self.assistantsBetaV2)
       return try await fetchAssistantStreamEvents(with: request, debugEnabled: debugEnabled)
    }
 
@@ -600,7 +600,7 @@ struct AIProxyService: OpenAIService {
       parameters: BatchParameter)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      let request = try await OpenAIAPI.batch(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
       return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
 
@@ -608,7 +608,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.retrieve(batchID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get)
+      let request = try await OpenAIAPI.batch(.retrieve(batchID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get)
       return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
 
@@ -616,7 +616,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> BatchObject
    {
-      let request = try await OpenAIAPI.batch(.cancel(batchID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post)
+      let request = try await OpenAIAPI.batch(.cancel(batchID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post)
       return try await fetch(debugEnabled: debugEnabled, type: BatchObject.self, with: request)
    }
 
@@ -632,7 +632,7 @@ struct AIProxyService: OpenAIService {
       if let after {
          queryItems.append(.init(name: "after", value: after))
       }
-      let request = try await OpenAIAPI.batch(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems)
+      let request = try await OpenAIAPI.batch(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<BatchObject>.self, with: request)
    }
 
@@ -642,7 +642,7 @@ struct AIProxyService: OpenAIService {
       parameters: VectorStoreParameter)
       async throws -> VectorStoreObject
    {
-      let request = try await OpenAIAPI.vectorStore(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
 
@@ -666,7 +666,7 @@ struct AIProxyService: OpenAIService {
       if let before {
          queryItems.append(.init(name: "before", value: before))
       }
-      let request = try await OpenAIAPI.vectorStore(.list).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.list).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreObject>.self, with: request)
    }
 
@@ -674,7 +674,7 @@ struct AIProxyService: OpenAIService {
       id: String) async throws
       -> VectorStoreObject
    {
-      let request = try await OpenAIAPI.vectorStore(.retrieve(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.retrieve(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
 
@@ -683,7 +683,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> VectorStoreObject
    {
-      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreObject.self, with: request)
    }
 
@@ -691,7 +691,7 @@ struct AIProxyService: OpenAIService {
       id: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.modify(vectorStoreID: id)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -702,7 +702,7 @@ struct AIProxyService: OpenAIService {
       parameters: VectorStoreFileParameter)
       async throws -> VectorStoreFileObject
    {
-      let request = try await OpenAIAPI.vectorStore(.create).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStore(.create).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
 
@@ -731,7 +731,7 @@ struct AIProxyService: OpenAIService {
       if let filter {
          queryItems.append(.init(name: "filter", value: filter))
       }
-      let request = try await OpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFile(.list(vectorStoreID: vectorStoreID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
 
@@ -740,7 +740,7 @@ struct AIProxyService: OpenAIService {
       fileID: String)
       async throws -> VectorStoreFileObject
    {
-      let request = try await OpenAIAPI.vectorStoreFile(.retrieve(vectorStoreID: vectorStoreID, fileID: fileID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFile(.retrieve(vectorStoreID: vectorStoreID, fileID: fileID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileObject.self, with: request)
    }
 
@@ -749,7 +749,7 @@ struct AIProxyService: OpenAIService {
       fileID: String)
       async throws -> DeletionStatus
    {
-      let request = try await OpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .delete, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFile(.delete(vectorStoreID: vectorStoreID, fileID: fileID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .delete, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
    }
 
@@ -760,7 +760,7 @@ struct AIProxyService: OpenAIService {
       parameters: VectorStoreFileBatchParameter)
       async throws -> VectorStoreFileBatchObject
    {
-      let request = try await OpenAIAPI.vectorStoreFileBatch(.create(vectorStoreID: vectorStoreID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFileBatch(.create(vectorStoreID: vectorStoreID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
 
@@ -769,7 +769,7 @@ struct AIProxyService: OpenAIService {
       batchID: String)
       async throws -> VectorStoreFileBatchObject
    {
-      let request = try await OpenAIAPI.vectorStoreFileBatch(.retrieve(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFileBatch(.retrieve(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
 
@@ -778,7 +778,7 @@ struct AIProxyService: OpenAIService {
       batchID: String)
       async throws -> VectorStoreFileBatchObject
    {
-      let request = try await OpenAIAPI.vectorStoreFileBatch(.cancel(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .post, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFileBatch(.cancel(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: VectorStoreFileBatchObject.self, with: request)
    }
 
@@ -808,7 +808,7 @@ struct AIProxyService: OpenAIService {
       if let filter {
          queryItems.append(.init(name: "filter", value: filter))
       }
-      let request = try await OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, serviceURL: serviceURL, clientID: clientID, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
+      let request = try await OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
 }

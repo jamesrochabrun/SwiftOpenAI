@@ -817,6 +817,7 @@ struct DefaultOpenAIService: OpenAIService {
    {
       let request = try OpenAIAPI.realTime(.realtime).request(
          apiKey: apiKey,
+         openAIEnvironment: openAIEnvironment,
          organizationID: organizationID,
          method: .get,
          queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],

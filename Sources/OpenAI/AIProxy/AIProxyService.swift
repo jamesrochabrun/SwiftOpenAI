@@ -831,9 +831,9 @@ struct AIProxyService: OpenAIService {
 
       let request = try await OpenAIAPI.realTime(.realtime).request(
          aiproxyPartialKey: partialKey,
-         serviceURL: serviceURL,
          clientID: clientID,
          organizationID: organizationID,
+         openAIEnvironment: openAIEnvironment,
          method: .get,
          queryItems: [.init(name: "model", value: "gpt-4o-mini-realtime-preview-2024-12-17")],
          betaHeaderField: "realtime=v1")

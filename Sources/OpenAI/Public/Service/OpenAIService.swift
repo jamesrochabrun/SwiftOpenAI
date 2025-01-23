@@ -57,6 +57,22 @@ public enum Authorization {
     }
 }
 
+/// Represents the configuration for interacting with the OpenAI API.
+public struct OpenAIEnvironment {
+    
+    /// The base URL for the OpenAI API.
+    /// Example: "https://api.openai.com"
+    let baseURL: String
+    
+    /// An optional path for proxying requests.
+    /// Example: "/proxy-path"
+    let proxyPath: String?
+    
+    /// An optional version of the OpenAI API to use.
+    /// Example: "v1"
+    let version: String?
+}
+
 // MARK: Service
 
 /// A protocol defining the required services for interacting with OpenAI's API.
@@ -75,6 +91,9 @@ public protocol OpenAIService {
    /// This decoder is used to parse the JSON responses returned by the API
    /// into model objects that conform to the `Decodable` protocol.
    var decoder: JSONDecoder { get }
+   
+   /// A computed property representing the current OpenAI environment configuration.
+   var openAIEnvironment: OpenAIEnvironment { get }
    
    // MARK: Audio
    

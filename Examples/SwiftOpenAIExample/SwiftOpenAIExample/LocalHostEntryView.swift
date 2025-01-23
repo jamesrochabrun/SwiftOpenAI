@@ -19,7 +19,7 @@ struct LocalHostEntryView: View {
             TextField("Enter URL", text: $url)
             .padding()
             .textFieldStyle(.roundedBorder)
-            NavigationLink(destination: OptionsListView(openAIService: OpenAIServiceFactory.service(baseURL: url), options: [.localChat])) {
+            NavigationLink(destination: OptionsListView(openAIService: OpenAIServiceFactory.service(baseURL: url, debugEnabled: true), options: [.localChat])) {
                Text("Continue")
                   .padding()
                   .padding(.horizontal, 48)

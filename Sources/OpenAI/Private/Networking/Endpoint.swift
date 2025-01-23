@@ -18,9 +18,9 @@ enum HTTPMethod: String {
 // MARK: Endpoint
 
 protocol Endpoint {
-   
-   var base: String { get }
-   var path: String { get }
+   func path(
+      in openAIEnvironment: OpenAIEnvironment)
+      -> String
 }
 
 // MARK: Endpoint+Requests
@@ -28,6 +28,8 @@ protocol Endpoint {
 extension Endpoint {
 
    private func urlComponents(
+      base: String,
+      path: String,
       queryItems: [URLQueryItem])
       -> URLComponents
    {
@@ -41,6 +43,7 @@ extension Endpoint {
    
    func request(
       apiKey: Authorization,
+      openAIEnvironment: OpenAIEnvironment,
       organizationID: String?,
       method: HTTPMethod,
       params: Encodable? = nil,
@@ -49,7 +52,8 @@ extension Endpoint {
       extraHeaders: [String: String]? = nil)
       throws -> URLRequest
    {
-      var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
+      let finalPath = path(in: openAIEnvironment)
+      var request = URLRequest(url: urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
       request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
       if let organizationID {
@@ -72,13 +76,15 @@ extension Endpoint {
    
    func multiPartRequest(
       apiKey: Authorization,
+      openAIEnvironment: OpenAIEnvironment,
       organizationID: String?,
       method: HTTPMethod,
       params: MultipartFormDataParameters,
       queryItems: [URLQueryItem] = [])
       throws -> URLRequest
    {
-      var request = URLRequest(url: urlComponents(queryItems: queryItems).url!)
+      let finalPath = path(in: openAIEnvironment)
+      var request = URLRequest(url: urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
       request.httpMethod = method.rawValue
       let boundary = UUID().uuidString
       request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)

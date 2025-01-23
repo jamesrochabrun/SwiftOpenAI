@@ -11,6 +11,8 @@ struct LocalModelService: OpenAIService {
    
    let session: URLSession
    let decoder: JSONDecoder
+   let openAIEnvironment: OpenAIEnvironment
+
    /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
    private let apiKey: Authorization
    /// Set this flag to TRUE if you need to print request events in DEBUG builds.
@@ -19,6 +21,8 @@ struct LocalModelService: OpenAIService {
    public init(
       apiKey: Authorization = .apiKey(""),
       baseURL: String,
+      proxyPath: String? = nil,
+      overrideVersion: String? = nil,
       configuration: URLSessionConfiguration = .default,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool)
@@ -26,7 +30,7 @@ struct LocalModelService: OpenAIService {
       self.session = URLSession(configuration: configuration)
       self.decoder = decoder
       self.apiKey = apiKey
-      LocalModelAPI.overrideBaseURL = baseURL
+      self.openAIEnvironment = OpenAIEnvironment(baseURL: baseURL, proxyPath: proxyPath, version: overrideVersion ?? "v1")
       self.debugEnabled = debugEnabled
    }
    
@@ -48,7 +52,7 @@ struct LocalModelService: OpenAIService {
    {
       var chatParameters = parameters
       chatParameters.stream = false
-      let request = try LocalModelAPI.chat.request(apiKey: apiKey, organizationID: nil, method: .post, params: chatParameters)
+      let request = try LocalModelAPI.chat.request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: nil, method: .post, params: chatParameters)
       return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
    }
    
@@ -59,7 +63,7 @@ struct LocalModelService: OpenAIService {
       var chatParameters = parameters
       chatParameters.stream = true
       chatParameters.streamOptions = .init(includeUsage: true)
-      let request = try LocalModelAPI.chat.request(apiKey: apiKey, organizationID: nil, method: .post, params: chatParameters)
+      let request = try LocalModelAPI.chat.request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: nil, method: .post, params: chatParameters)
       return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
    }
    

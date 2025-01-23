@@ -8,21 +8,38 @@
 import Foundation
 
 enum LocalModelAPI {
-   
-   static var overrideBaseURL: String? = nil
-   
+      
    case chat
 }
 
 extension LocalModelAPI: Endpoint {
    
-   var base: String {
-      Self.overrideBaseURL ?? "http://localhost:11434"
+   /// Builds the final path that includes:
+   ///   - optional proxy path (e.g. "/my-proxy")
+   ///   - version if non-nil (e.g. "/v1")
+   ///   - then the specific endpoint path (e.g. "/assistants")
+   func path(in openAIEnvironment: OpenAIEnvironment) -> String {
+      // 1) Potentially prepend proxy path if `proxyPath` is non-empty
+      let proxyPart: String
+      if let envProxyPart = openAIEnvironment.proxyPath, !envProxyPart.isEmpty {
+         proxyPart = "/\(envProxyPart)"
+      } else {
+         proxyPart = ""
+      }
+      let mainPart = openAIPath(in: openAIEnvironment)
+      
+      return proxyPart + mainPart // e.g. "/my-proxy/v1/assistants"
    }
    
-   var path: String {
+   func openAIPath(in openAIEnvironment: OpenAIEnvironment) -> String {
+      let version: String
+      if let envOverrideVersion = openAIEnvironment.version, !envOverrideVersion.isEmpty {
+         version = "/\(envOverrideVersion)"
+      } else {
+         version = ""
+      }
       switch self {
-      case .chat: "/v1/chat/completions"
+      case .chat: return "\(version)/chat/completions"
       }
    }
 }

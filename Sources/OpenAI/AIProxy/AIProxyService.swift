@@ -30,8 +30,20 @@ struct AIProxyService: OpenAIService {
 
    private static let assistantsBetaV2 = "assistants=v2"
 
-   /// Your service URL is also provided during the integration process. If you integrated before
-   /// July 22nd, 2024, you can continue to leave `serviceURL` blank.
+   /// Initializes an instance of the OpenAI service with the required configurations.
+   ///
+   /// - Parameters:
+   ///   - partialKey: Your partial key provided during the integration process at `dashboard.aiproxy.pro`.
+   ///                 Refer to the [integration guide](https://www.aiproxy.pro/docs/integration-guide.html)
+   ///                 for details on acquiring your partial key. This is required.
+   ///   - serviceURL: Your service URL, also provided during the integration process. If you integrated before
+   ///                 July 22nd, 2024, you can leave this parameter blank, and it will default to
+   ///                 `"https://api.aiproxy.pro"`. This is optional.
+   ///   - clientID: An optional client ID to annotate requests in the AIProxy developer dashboard.
+   ///               If left blank, AIProxy generates client IDs for you. Most users can safely leave this blank.
+   ///   - organizationID: An optional OpenAI organization ID. Refer to the [organization documentation](https://platform.openai.com/docs/api-reference/organization-optional)
+   ///                     for details on its usage. Defaults to `nil`.
+   ///   - debugEnabled: A flag to enable printing request events during DEBUG builds. Set this to `true` for debugging.
    init(
       partialKey: String,
       serviceURL: String? = nil,

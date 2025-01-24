@@ -111,7 +111,7 @@ open class OpenAIRealtimeSession {
    /// We disconnect on all errors
    private func didReceiveWebSocketError(_ error: NSError) {
       if (error.code == 57) {
-         debugPrint("Received ws disconnect.")
+         debugPrint("Received ws disconnect. \(error.localizedDescription)")
       } else {
          debugPrint("Received ws error: \(error.localizedDescription)")
       }

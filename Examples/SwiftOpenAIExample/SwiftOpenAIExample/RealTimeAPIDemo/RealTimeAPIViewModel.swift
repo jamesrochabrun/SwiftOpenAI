@@ -15,7 +15,7 @@ final class RealTimeAPIViewModel {
    let service: OpenAIService
    
    init(service: OpenAIService) {
-      self.service = OpenAIServiceFactory.service(aiproxyPartialKey: "v2|fb95ad14|31VKBMnxTslxldTs", aiproxyServiceURL: "https://api.aiproxy.pro/84e28a54/4488ddf3")
+      self.service = service
    }
    
    var kMicrophoneSampleVendor: MicrophonePCMSampleVendor?

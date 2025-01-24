@@ -8,7 +8,6 @@
 import AVFoundation
 import Foundation
 
-
 public struct InternalAudioPlayer {
    static var audioPlayer: AVAudioPlayer? = nil
    static var isAudioEngineStarted = false
@@ -89,6 +88,7 @@ public struct InternalAudioPlayer {
             playerNode = AVAudioPlayerNode()
             audioEngine!.attach(playerNode!)
             audioEngine!.connect(playerNode!, to: audioEngine!.outputNode, format: audioBuffer.format)
+
          }
          
          guard let audioEngine = audioEngine else {

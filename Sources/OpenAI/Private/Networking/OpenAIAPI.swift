@@ -207,11 +207,11 @@ extension OpenAIAPI: Endpoint {
          case .list: return "\(version)/models"
          case .retrieve(let modelID), .deleteFineTuneModel(let modelID): return "\(version)/models/\(modelID)"
          }
-      case .moderations: return "/\(version)/moderations"
+      case .moderations: return "\(version)/moderations"
       case .realTime(let category):
           switch category {
-          case .realtime: return "/\(version)/realtime"
-          case .sessions: return "/\(version)/realtime/sessions"
+          case .realtime: return "\(version)/realtime"
+          case .sessions: return "\(version)/realtime/sessions"
           }
       case .run(let category):
          switch category {

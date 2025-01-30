@@ -92,7 +92,7 @@ open class OpenAIRealtimeSession {
          print("📦 Raw message data: \(jsonString)")
       }
       
-      let wsMessage = URLSessionWebSocketTask.Message.data(try encodable.serialize())
+      let wsMessage = URLSessionWebSocketTask.Message.string(try encodable.serialize())
       try await self.webSocketTask.send(wsMessage)
    }
    

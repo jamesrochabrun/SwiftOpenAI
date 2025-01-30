@@ -16,6 +16,7 @@ public enum APIError: Error {
    case invalidData
    case jsonDecodingFailure(description: String)
    case dataCouldNotBeReadMissingData(description: String)
+   case assertion(description: String)
    case bothDecodingStrategiesFailed
    case timeOutError
    
@@ -28,6 +29,7 @@ public enum APIError: Error {
       case .dataCouldNotBeReadMissingData(let description): return description
       case .bothDecodingStrategiesFailed: return "Decoding strategies failed."
       case .timeOutError: return "Time Out Error."
+      case .assertion(description: let description): return description
       }
    }
 }
@@ -948,6 +950,11 @@ public protocol OpenAIService {
       before: String?,
       filter: String?)
       async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   
+   func realTimeSession(
+      sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration)
+      async throws -> OpenAIRealtimeSession
 }
 
 

@@ -772,4 +772,8 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    public func listVectorStoreFilesInABatch(vectorStoreID: String, batchID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
+   
+   public func realTimeSession(sessionConfiguration: OpenAIRealtimeSessionUpdate.SessionConfiguration) async throws -> OpenAIRealtimeSession {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
 }

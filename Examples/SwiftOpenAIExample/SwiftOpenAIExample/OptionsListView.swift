@@ -42,49 +42,49 @@ struct OptionsListView: View {
    var body: some View {
       List(options, id: \.self, selection: $selection) { option in
          Text(option.rawValue)
-            .sheet(item: $selection) { selection in
-               VStack {
-                  Text(selection.rawValue)
-                     .font(.largeTitle)
-                     .padding()
-                  switch selection {
-                  case .audio:
-                     AudioDemoView(service: openAIService)
-                  case .chat:
-                     ChatDemoView(service: openAIService)
-                  case .chatPredictedOutput:
-                     ChatPredictedOutputDemoView(service: openAIService)
-                  case .vision:
-                     ChatVisionDemoView(service: openAIService)
-                  case .embeddings:
-                     EmbeddingsDemoView(service: openAIService)
-                  case .fineTuning:
-                     FineTuningJobDemoView(service: openAIService)
-                  case .files:
-                     FilesDemoView(service: openAIService)
-                  case .images:
-                     ImagesDemoView(service: openAIService)
-                  case .localChat:
-                     LocalChatDemoView(service: openAIService)
-                  case .models:
-                     ModelsDemoView(service: openAIService)
-                  case .moderations:
-                     ModerationDemoView(service: openAIService)
-                  case .chatHistoryConversation:
-                     ChatStreamFluidConversationDemoView(service: openAIService)
-                  case .chatFunctionCall:
-                     ChatFunctionCallDemoView(service: openAIService)
-                  case .chatFunctionsCallStream:
-                     ChatFunctionsCalllStreamDemoView(service: openAIService)
-                  case .chatStructuredOutput:
-                     ChatStructuredOutputDemoView(service: openAIService)
-                  case .chatStructuredOutputTool:
-                     ChatStructureOutputToolDemoView(service: openAIService)
-                  case .configureAssistant:
-                     AssistantConfigurationDemoView(service: openAIService)
-                  }
-               }
+      }
+      .sheet(item: $selection) { selection in
+         VStack {
+            Text(selection.rawValue)
+               .font(.largeTitle)
+               .padding()
+            switch selection {
+            case .audio:
+               AudioDemoView(service: openAIService)
+            case .chat:
+               ChatDemoView(service: openAIService)
+            case .chatPredictedOutput:
+               ChatPredictedOutputDemoView(service: openAIService)
+            case .vision:
+               ChatVisionDemoView(service: openAIService)
+            case .embeddings:
+               EmbeddingsDemoView(service: openAIService)
+            case .fineTuning:
+               FineTuningJobDemoView(service: openAIService)
+            case .files:
+               FilesDemoView(service: openAIService)
+            case .images:
+               ImagesDemoView(service: openAIService)
+            case .localChat:
+               LocalChatDemoView(service: openAIService)
+            case .models:
+               ModelsDemoView(service: openAIService)
+            case .moderations:
+               ModerationDemoView(service: openAIService)
+            case .chatHistoryConversation:
+               ChatStreamFluidConversationDemoView(service: openAIService)
+            case .chatFunctionCall:
+               ChatFunctionCallDemoView(service: openAIService)
+            case .chatFunctionsCallStream:
+               ChatFunctionsCalllStreamDemoView(service: openAIService)
+            case .chatStructuredOutput:
+               ChatStructuredOutputDemoView(service: openAIService)
+            case .chatStructuredOutputTool:
+               ChatStructureOutputToolDemoView(service: openAIService)
+            case .configureAssistant:
+               AssistantConfigurationDemoView(service: openAIService)
             }
+         }
       }
    }
 }

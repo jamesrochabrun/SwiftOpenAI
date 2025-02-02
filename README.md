@@ -3289,6 +3289,7 @@ For more inofrmation about the `OpenRouter` api visit its [documentation](https:
 
 The [DeepSeek](https://api-docs.deepseek.com/) API uses an API format compatible with OpenAI. By modifying the configuration, you can use SwiftOpenAI to access the DeepSeek API.
 
+```swift
 // Creating the service
 
 let apiKey = "your_api_key"
@@ -3301,6 +3302,7 @@ let service = OpenAIServiceFactory.service(
 let prompt = "What is the Manhattan project?"
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("deepseek-reasoner"))
 let stream = service.startStreamedChat(parameters: parameters)
+```
 
 For more inofrmation about the `DeepSeek` api visit its [documentation](https://api-docs.deepseek.com).
 

@@ -56,7 +56,6 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Vector store File](#vector-store-file)
    - [Vector store File Batch](#vector-store-file-batch)
 
-
 ## Getting an API Key
 
 ⚠️ **Important**
@@ -105,6 +104,7 @@ SwiftOpenAI supports various providers that are OpenAI-compatible, including but
 - [Ollama](#ollama)
 - [Groq](#groq)
 - [OpenRouter](#openRouter)
+- [DeepSeek](#deepseek)
 - [AIProxy](#aiproxy)
 
 Check OpenAIServiceFactory for convenience initializers that you can use to provide custom URLs.
@@ -3257,9 +3257,9 @@ For Supported API's using Groq visit its [documentation](https://console.groq.co
 
 ## OpenRouter
 
-[OpenRouter](https://openrouter.ai/docs/quick-start) provides an OpenAI-compatible completion API to 314 models & providers that you can call directly, or using the OpenAI SDK. Additionally, some third-party SDKs are available.
-
 <img width="734" alt="Image" src="https://github.com/user-attachments/assets/2d658d07-0b41-4b5f-a094-ec7856f6fe98" />
+
+[OpenRouter](https://openrouter.ai/docs/quick-start) provides an OpenAI-compatible completion API to 314 models & providers that you can call directly, or using the OpenAI SDK. Additionally, some third-party SDKs are available.
 
 ```swift
 
@@ -3274,11 +3274,37 @@ let servcie = OpenAIServiceFactory.service(apiKey: apiKey,
          "X-Title": "<YOUR_SITE_NAME>"  // Optional. Site title for rankings on openrouter.ai.
    ])
 
-// Making a 
+// Making a request
+
 let prompt = "What is the Manhattan project?"
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("deepseek/deepseek-r1:free"))
 let stream = service.startStreamedChat(parameters: parameters)
 ```
+
+For more inofrmation about the `OpenRouter` api visit its [documentation](https://openrouter.ai/docs/quick-start).
+
+## DeepSeek
+
+![Image](https://github.com/user-attachments/assets/7733f011-691a-4de7-b715-c090e3647304)
+
+The [DeepSeek](https://api-docs.deepseek.com/) API uses an API format compatible with OpenAI. By modifying the configuration, you can use SwiftOpenAI to access the DeepSeek API.
+
+```swift
+// Creating the service
+
+let apiKey = "your_api_key"
+let service = OpenAIServiceFactory.service(
+   apiKey: apiKey,
+   overrideBaseURL: "https://api.deepseek.com")
+
+// Making a request
+
+let prompt = "What is the Manhattan project?"
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("deepseek-reasoner"))
+let stream = service.startStreamedChat(parameters: parameters)
+```
+
+For more inofrmation about the `DeepSeek` api visit its [documentation](https://api-docs.deepseek.com).
 
 ## Gemini
 

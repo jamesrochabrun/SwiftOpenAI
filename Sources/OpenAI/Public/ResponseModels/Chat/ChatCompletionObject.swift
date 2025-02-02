@@ -88,7 +88,7 @@ public struct ChatCompletionObject: Decodable {
             case functionCall = "function_call"
             case role
             case finishDetails = "finish_details"
-            case reasoningContent = "reasoning_content"  
+            case reasoningContent = "reasoning_content"
             case refusal
             case audio
          }

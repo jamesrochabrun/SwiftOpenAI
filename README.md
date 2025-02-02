@@ -134,7 +134,6 @@ let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: ogani
 
 That's all you need to begin accessing the full range of OpenAI endpoints.
 
-
 ### How to get the status code of network errors
 
 You may want to build UI around the type of error that the API returns.
@@ -3289,19 +3288,76 @@ For more inofrmation about the `OpenRouter` api visit its [documentation](https:
 
 The [DeepSeek](https://api-docs.deepseek.com/) API uses an API format compatible with OpenAI. By modifying the configuration, you can use SwiftOpenAI to access the DeepSeek API.
 
+Creating the service
+
 ```swift
-// Creating the service
 
 let apiKey = "your_api_key"
 let service = OpenAIServiceFactory.service(
    apiKey: apiKey,
    overrideBaseURL: "https://api.deepseek.com")
+```
 
-// Making a request
+Non-Streaming Example
 
+```swift
 let prompt = "What is the Manhattan project?"
-let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("deepseek-reasoner"))
-let stream = service.startStreamedChat(parameters: parameters)
+let parameters = ChatCompletionParameters(
+    messages: [.init(role: .user, content: .text(prompt))],
+    model: .custom("deepseek-reasoner")
+)
+
+do {
+    let result = try await service.chat(parameters: parameters)
+    
+    // Access the response content
+    if let content = result.choices.first?.message.content {
+        print("Response: \(content)")
+    }
+    
+    // Access reasoning content if available
+    if let reasoning = result.choices.first?.message.reasoningContent {
+        print("Reasoning: \(reasoning)")
+    }
+} catch {
+    print("Error: \(error)")
+}
+```
+
+Streaming Example
+
+```swift
+let prompt = "What is the Manhattan project?"
+let parameters = ChatCompletionParameters(
+    messages: [.init(role: .user, content: .text(prompt))],
+    model: .custom("deepseek-reasoner")
+)
+
+// Start the stream
+do {
+    let stream = try await service.startStreamedChat(parameters: parameters)
+    for try await result in stream {
+        let content = result.choices.first?.delta.content ?? ""
+        self.message += content
+        
+        // Optional: Handle reasoning content if available
+        if let reasoning = result.choices.first?.delta.reasoningContent {
+            self.reasoningMessage += reasoning
+        }
+    }
+} catch APIError.responseUnsuccessful(let description, let statusCode) {
+    self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+} catch {
+    self.errorMessage = error.localizedDescription
+}
+```
+
+Notes
+
+- The DeepSeek API is compatible with OpenAI's format but uses different model names
+- Use .custom("deepseek-reasoner") to specify the DeepSeek model
+- The `reasoningContent` field is optional and specific to DeepSeek's API
+- Error handling follows the same pattern as standard OpenAI requests.
 ```
 
 For more inofrmation about the `DeepSeek` api visit its [documentation](https://api-docs.deepseek.com).

@@ -104,6 +104,7 @@ SwiftOpenAI supports various providers that are OpenAI-compatible, including but
 - [Gemini](#gemini)
 - [Ollama](#ollama)
 - [Groq](#groq)
+- [OpenRouter](#openRouter)
 - [AIProxy](#aiproxy)
 
 Check OpenAIServiceFactory for convenience initializers that you can use to provide custom URLs.
@@ -3253,6 +3254,31 @@ let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "htt
 ```
 
 For Supported API's using Groq visit its [documentation](https://console.groq.com/docs/openai).
+
+## OpenRouter
+
+[OpenRouter](https://openrouter.ai/docs/quick-start) provides an OpenAI-compatible completion API to 314 models & providers that you can call directly, or using the OpenAI SDK. Additionally, some third-party SDKs are available.
+
+<img width="734" alt="Image" src="https://github.com/user-attachments/assets/2d658d07-0b41-4b5f-a094-ec7856f6fe98" />
+
+```swift
+
+// Creating the service
+
+let apiKey = "your_api_key"
+let servcie = OpenAIServiceFactory.service(apiKey: apiKey, 
+   overrideBaseURL: "https://openrouter.ai", 
+   proxyPath: "api",
+   extraHeaders: [
+      "HTTP-Referer": "<YOUR_SITE_URL>", // Optional. Site URL for rankings on openrouter.ai.
+         "X-Title": "<YOUR_SITE_NAME>"  // Optional. Site title for rankings on openrouter.ai.
+   ])
+
+// Making a 
+let prompt = "What is the Manhattan project?"
+let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .custom("deepseek/deepseek-r1:free"))
+let stream = service.startStreamedChat(parameters: parameters)
+```
 
 ## Gemini
 

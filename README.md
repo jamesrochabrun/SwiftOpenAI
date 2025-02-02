@@ -3358,7 +3358,6 @@ Notes
 - Use .custom("deepseek-reasoner") to specify the DeepSeek model
 - The `reasoningContent` field is optional and specific to DeepSeek's API
 - Error handling follows the same pattern as standard OpenAI requests.
-```
 
 For more inofrmation about the `DeepSeek` api visit its [documentation](https://api-docs.deepseek.com).
 

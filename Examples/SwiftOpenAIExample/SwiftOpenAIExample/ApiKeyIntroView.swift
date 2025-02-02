@@ -10,7 +10,9 @@ import SwiftOpenAI
 
 struct ApiKeyIntroView: View {
    
-   @State private var apiKey = ""
+   let service = OpenAIServiceFactory.service(apiKey: "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", overrideBaseURL: "https://api.deepseek.com", debugEnabled: true)
+   
+   @State private var apiKey = "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"
    @State private var organizationIdentifier = ""
    @State private var localOrganizationID: String? = nil
    
@@ -29,7 +31,7 @@ struct ApiKeyIntroView: View {
             }
             .padding()
             .textFieldStyle(.roundedBorder)
-            NavigationLink(destination: OptionsListView(openAIService: OpenAIServiceFactory.service(apiKey: apiKey, organizationID: localOrganizationID, debugEnabled: true), options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
+            NavigationLink(destination: OptionsListView(openAIService: service, options: OptionsListView.APIOption.allCases.filter({ $0 != .localChat }))) {
                Text("Continue")
                   .padding()
                   .padding(.horizontal, 48)

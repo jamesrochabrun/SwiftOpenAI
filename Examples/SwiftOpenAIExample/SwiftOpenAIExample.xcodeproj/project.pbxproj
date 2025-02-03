@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0DEE5DC12BB40643004894AD /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0DEE5DC02BB40643004894AD /* SwiftOpenAI */; };
 		0DF957842BB53BEF00DD2013 /* ServiceSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF957832BB53BEF00DD2013 /* ServiceSelectionView.swift */; };
 		0DF957862BB543F100DD2013 /* AIProxyIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF957852BB543F100DD2013 /* AIProxyIntroView.swift */; };
 		7B029E372C6893FD0025681A /* ChatStructuredOutputProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B029E362C6893FD0025681A /* ChatStructuredOutputProvider.swift */; };
@@ -71,6 +70,7 @@
 		7BBE7EE02B0372550096A693 /* ChatFunctionCallDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */; };
 		7BE802592D2878170080E06A /* ChatPredictedOutputDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE802582D2878170080E06A /* ChatPredictedOutputDemoView.swift */; };
 		7BE9A5AF2B0B33E600CE8103 /* SwiftOpenAIExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA788DE2AE23A49008825D5 /* SwiftOpenAIExampleTests.swift */; };
+		CE218B7E2D50F80F00FEE2BA /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = CE218B7D2D50F80F00FEE2BA /* SwiftOpenAI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +158,8 @@
 		7BBE7EDD2B03718E0096A693 /* ChatFunctionCallProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallProvider.swift; sourceTree = "<group>"; };
 		7BBE7EDF2B0372550096A693 /* ChatFunctionCallDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFunctionCallDemoView.swift; sourceTree = "<group>"; };
 		7BE802582D2878170080E06A /* ChatPredictedOutputDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPredictedOutputDemoView.swift; sourceTree = "<group>"; };
+		CE218B752D50F71400FEE2BA /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = ../../Package.swift; sourceTree = "<group>"; };
+		CE218B772D50F72A00FEE2BA /* SwiftOpenAI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftOpenAI; path = ../..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,7 +167,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DEE5DC12BB40643004894AD /* SwiftOpenAI in Frameworks */,
+				CE218B7E2D50F80F00FEE2BA /* SwiftOpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +364,7 @@
 				7BA788CB2AE23A48008825D5 /* SwiftOpenAIExample */,
 				7BA788DD2AE23A49008825D5 /* SwiftOpenAIExampleTests */,
 				7BA788E72AE23A49008825D5 /* SwiftOpenAIExampleUITests */,
+				CE218B742D50F71400FEE2BA /* Frameworks */,
 				7BA788CA2AE23A48008825D5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -491,6 +494,15 @@
 			path = PredictedOutputsDemo;
 			sourceTree = "<group>";
 		};
+		CE218B742D50F71400FEE2BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE218B772D50F72A00FEE2BA /* SwiftOpenAI */,
+				CE218B752D50F71400FEE2BA /* Package.swift */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -509,6 +521,7 @@
 			name = SwiftOpenAIExample;
 			packageProductDependencies = (
 				0DEE5DC02BB40643004894AD /* SwiftOpenAI */,
+				CE218B7D2D50F80F00FEE2BA /* SwiftOpenAI */,
 			);
 			productName = SwiftOpenAIExample;
 			productReference = 7BA788C92AE23A48008825D5 /* SwiftOpenAIExample.app */;
@@ -583,7 +596,7 @@
 			);
 			mainGroup = 7BA788C02AE23A48008825D5;
 			packageReferences = (
-				0DEE5DBF2BB40643004894AD /* XCLocalSwiftPackageReference "../.." */,
+				CE218B7C2D50F80F00FEE2BA /* XCLocalSwiftPackageReference "../../../SwiftOpenAI" */,
 			);
 			productRefGroup = 7BA788CA2AE23A48008825D5 /* Products */;
 			projectDirPath = "";
@@ -1043,14 +1056,18 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		0DEE5DBF2BB40643004894AD /* XCLocalSwiftPackageReference "../.." */ = {
+		CE218B7C2D50F80F00FEE2BA /* XCLocalSwiftPackageReference "../../../SwiftOpenAI" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../..;
+			relativePath = ../../../SwiftOpenAI;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		0DEE5DC02BB40643004894AD /* SwiftOpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftOpenAI;
+		};
+		CE218B7D2D50F80F00FEE2BA /* SwiftOpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SwiftOpenAI;
 		};

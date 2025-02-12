@@ -47,10 +47,10 @@ final class ChatStructuredOutputProvider {
          do {
             let stream = try await service.startStreamedChat(parameters: parameters)
             for try await result in stream {
-               let firstChoiceDelta = result.choices.first?.delta
+               let firstChoiceDelta = result.choices?.first?.delta
                let content = firstChoiceDelta?.refusal ?? firstChoiceDelta?.content ?? ""
                self.message += content
-               if result.choices.first?.finishReason != nil {
+               if result.choices?.first?.finishReason != nil {
                   self.message = self.message.asJsonFormatted()
                }
             }

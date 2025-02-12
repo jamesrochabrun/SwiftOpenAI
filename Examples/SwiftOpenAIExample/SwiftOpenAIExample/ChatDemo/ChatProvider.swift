@@ -48,7 +48,7 @@ import SwiftOpenAI
             do {
                 let stream = try await service.startStreamedChat(parameters: parameters)
                 for try await result in stream {
-                   let content = result.choices.first?.delta.content ?? ""
+                   let content = result.choices?.first?.delta?.content ?? ""
                     self.message += content
                 }
             } catch APIError.responseUnsuccessful(let description, let statusCode) {

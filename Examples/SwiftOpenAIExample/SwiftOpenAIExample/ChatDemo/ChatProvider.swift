@@ -29,9 +29,9 @@ import SwiftOpenAI
          let response = try await service.startChat(parameters: parameters)
          let choices = response.choices
          let chatUsage = response.usage
-         let logprobs = choices.compactMap(\.logprobs)
+         let logprobs = choices?.compactMap(\.logprobs)
          dump(logprobs)
-         self.messages = choices.compactMap(\.message.content)
+         self.messages = choices?.compactMap(\.message?.content) ?? []
          dump(chatUsage)
          self.usage = chatUsage
       } catch APIError.responseUnsuccessful(let description, let statusCode) {
@@ -48,7 +48,7 @@ import SwiftOpenAI
             do {
                 let stream = try await service.startStreamedChat(parameters: parameters)
                 for try await result in stream {
-                   let content = result.choices.first?.delta.content ?? ""
+                   let content = result.choices?.first?.delta?.content ?? ""
                     self.message += content
                 }
             } catch APIError.responseUnsuccessful(let description, let statusCode) {

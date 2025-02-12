@@ -107,7 +107,7 @@ final class ChatStructuredOutputToolProvider {
       do {
          
          let chat = try await service.startChat(parameters: parameters)
-         guard let assistantMessage = chat.choices.first?.message else { return }
+         guard let assistantMessage = chat.choices?.first?.message else { return }
          let content = assistantMessage.content ?? ""
          await updateLastAssistantMessage(.init(content: .content(.init(text: content)), origin: .received(.gpt)))
          if let toolCalls = assistantMessage.toolCalls {
@@ -241,7 +241,7 @@ extension ChatStructuredOutputToolProvider {
          model: .gpt4o)
       do {
          let chat = try await service.startChat(parameters: paramsForChat)
-         guard let assistantMessage = chat.choices.first?.message else { return }
+         guard let assistantMessage = chat.choices?.first?.message else { return }
          await updateLastAssistantMessage(.init(content: .content(.init(text: assistantMessage.content)), origin: .received(.gpt)))
       } catch {
          // If an error occurs, update the UI to display the error message.

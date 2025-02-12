@@ -29,9 +29,9 @@ import SwiftOpenAI
          let response = try await service.startChat(parameters: parameters)
          let choices = response.choices
          let chatUsage = response.usage
-         let logprobs = choices.compactMap(\.logprobs)
+         let logprobs = choices?.compactMap(\.logprobs)
          dump(logprobs)
-         self.messages = choices.compactMap(\.message.content)
+         self.messages = choices?.compactMap(\.message?.content) ?? []
          dump(chatUsage)
          self.usage = chatUsage
       } catch APIError.responseUnsuccessful(let description, let statusCode) {

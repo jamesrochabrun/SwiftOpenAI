@@ -30,9 +30,9 @@ final class ChatStructuredOutputProvider {
    {
       do {
          let choices = try await service.startChat(parameters: parameters).choices
-         self.messages = choices.compactMap(\.message.content).map { $0.asJsonFormatted() }
+         self.messages = choices?.compactMap(\.message?.content).map { $0.asJsonFormatted() } ?? []
          assert(messages.count == 1)
-         self.errorMessage = choices.first?.message.refusal ?? ""
+         self.errorMessage = choices?.first?.message?.refusal ?? ""
       } catch APIError.responseUnsuccessful(let description, let statusCode) {
          self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
       } catch {

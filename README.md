@@ -133,6 +133,20 @@ let oganizationID = "your_organixation_id"
 let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: oganizationID)
 ```
 
+https://developer.apple.com/documentation/foundation/nsurlsessionconfiguration/1408259-timeoutintervalforrequest
+
+For reasoning models, ensure that you extend the timeoutIntervalForRequest in the URL session configuration to a higher value. The default is 60 seconds, which may be insufficient, as requests to reasoning models can take longer to process and respond.
+
+To configure it:
+
+```swift
+let apiKey = "your_openai_api_key_here"
+let organizationID = "your_organization_id"
+let configuration = URLSessionConfiguration.default
+configuration.timeoutIntervalForRequest = 360 // e.g., 360 seconds or more.
+let service = OpenAIServiceFactory.service(apiKey: apiKey, organizationID: organizationID, configuration: configuration)
+```
+
 That's all you need to begin accessing the full range of OpenAI endpoints.
 
 ### How to get the status code of network errors

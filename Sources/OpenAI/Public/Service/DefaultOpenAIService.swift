@@ -32,7 +32,7 @@ struct DefaultOpenAIService: OpenAIService {
       proxyPath: String? = nil,
       overrideVersion: String? = nil,
       extraHeaders: [String: String]? = nil,
-      configuration: URLSessionConfiguration = .default,
+      configuration: URLSessionConfiguration,
       decoder: JSONDecoder = .init(),
       debugEnabled: Bool)
    {

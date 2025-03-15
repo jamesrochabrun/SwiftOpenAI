@@ -33,6 +33,9 @@ public struct AudioSpeechParameters: Encodable {
       case onyx
       case nova
       case shimmer
+      case ash
+      case coral
+      case sage      
    }
    
    public enum ResponseFormat: String {

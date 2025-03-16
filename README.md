@@ -1267,7 +1267,7 @@ OpenAI's most advanced interface for generating model responses. Supports text a
 
 Related guides:
 
-- [Quickstart](https://platform.openai.com/docs/quickstart?api-mode=responses))
+- [Quickstart](https://platform.openai.com/docs/quickstart?api-mode=responses)
 - [Text inputs and outputs](https://platform.openai.com/docs/guides/text?api-mode=responses)
 - [Image inputs](https://platform.openai.com/docs/guides/images?api-mode=responses)
 - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs?api-mode=responses)

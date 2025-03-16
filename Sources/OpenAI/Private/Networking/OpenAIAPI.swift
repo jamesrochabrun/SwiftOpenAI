@@ -29,6 +29,9 @@ enum OpenAIAPI {
    case vectorStoreFile(VectorStoreFileCategory) // https://platform.openai.com/docs/api-reference/vector-stores-files
    case vectorStoreFileBatch(VectorStoreFileBatch) // https://platform.openai.com/docs/api-reference/vector-stores-file-batches
    
+   /// OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
+   case response(ResponseCategory) // https://platform.openai.com/docs/api-reference/responses
+   
    enum AssistantCategory {
       case create
       case list
@@ -129,6 +132,11 @@ enum OpenAIAPI {
       case cancel(vectorStoreID: String, batchID: String)
       case list(vectorStoreID: String, batchID: String)
       
+   }
+   
+   enum ResponseCategory {
+      case create
+      case retrieve(responseID: String)
    }
 }
 
@@ -236,6 +244,11 @@ extension OpenAIAPI: Endpoint {
          case .retrieve(let vectorStoreID, let batchID): return "\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)"
          case .cancel(let vectorStoreID, let batchID): return "\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/cancel"
          case .list(let vectorStoreID, let batchID): return "\(version)/vector_stores/\(vectorStoreID)/file_batches/\(batchID)/files"
+         }
+      case .response(let category):
+         switch category {
+         case .create: return "\(version)/responses"
+         case .retrieve(let responseID): return "\(version)/responses/\(responseID)"
          }
       }
    }

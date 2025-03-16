@@ -29,6 +29,9 @@ enum AzureOpenAIAPI {
    /// https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/file-search?tabs=python#vector-stores
    case vectorStoreFile(VectorStoreFileCategory)
    
+   /// OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
+   case response(ResponseCategory) // https://platform.openai.com/docs/api-reference/responses
+   
    enum AssistantCategory {
       case create
       case list
@@ -82,6 +85,11 @@ enum AzureOpenAIAPI {
       case retrieve(vectorStoreID: String, fileID: String)
       case delete(vectorStoreID: String, fileID: String)
    }
+   
+   enum ResponseCategory {
+      case create(deploymentID: String)
+      case retrieve(responseID: String)
+   }
 }
 
 // MARK: Endpoint
@@ -128,6 +136,11 @@ extension AzureOpenAIAPI: Endpoint {
          switch category {
          case .create(let vectorStoreID), .list(let vectorStoreID): return "/openai/vector_stores/\(vectorStoreID)/files"
          case .retrieve(let vectorStoreID, let fileID), .delete(let vectorStoreID, let fileID): return "/openai/vector_stores/\(vectorStoreID)/files/\(fileID)"
+         }
+      case .response(let category):
+         switch category {
+         case .create(let deploymentID): return "/openai/deployments/\(deploymentID)/responses"
+         case .retrieve(let responseID): return "/openai/responses/\(responseID)"
          }
       }
    }

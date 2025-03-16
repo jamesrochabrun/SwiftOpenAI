@@ -948,6 +948,15 @@ public protocol OpenAIService {
       before: String?,
       filter: String?)
       async throws -> OpenAIResponse<VectorStoreFileObject>
+   
+   // MARK: Response
+   
+   /// Returns a [Response](https://platform.openai.com/docs/api-reference/responses/object) object.
+   ///
+   /// - Parameter ModelResponseParameter: The response model parameters
+   func responseCreate(
+      _ parameters: ModelResponseParameter)
+      async throws -> ResponseModel
 }
 
 

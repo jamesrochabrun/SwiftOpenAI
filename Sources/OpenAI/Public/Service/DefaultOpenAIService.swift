@@ -810,6 +810,18 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.vectorStoreFileBatch(.list(vectorStoreID: vectorStoreID, batchID: batchID)).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .get, queryItems: queryItems, betaHeaderField: Self.assistantsBetaV2, extraHeaders: extraHeaders)
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<VectorStoreFileObject>.self, with: request)
    }
+   
+   // MARK: Response
+   
+   func responseCreate(
+      _ parameters: ModelResponseParameter)
+      async throws -> ResponseModel
+   {
+      var responseParameters = parameters
+      responseParameters.stream = false
+      let request = try OpenAIAPI.response(.create).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, params: responseParameters, extraHeaders: extraHeaders)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
 }
 
 

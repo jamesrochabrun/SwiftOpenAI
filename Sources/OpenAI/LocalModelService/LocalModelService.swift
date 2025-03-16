@@ -315,4 +315,16 @@ struct LocalModelService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
+   // MARK: Response
+   
+   func responseCreate(
+      _ parameters: ModelResponseParameter)
+      async throws -> ResponseModel
+   {
+      var responseParameters = parameters
+      responseParameters.stream = false
+      let request = try LocalModelAPI.chat.request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: nil, method: .post, params: responseParameters)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
+   
 }

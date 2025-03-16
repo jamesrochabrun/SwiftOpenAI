@@ -772,4 +772,22 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    public func listVectorStoreFilesInABatch(vectorStoreID: String, batchID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
+   
+   // MARK: Response
+   
+   public func responseCreate(
+      _ parameters: ModelResponseParameter)
+      async throws -> ResponseModel
+   {
+      var responseParameters = parameters
+      responseParameters.stream = false
+      let request = try AzureOpenAIAPI.chat(deploymentID: parameters.model).request(
+         apiKey: apiKey,
+         openAIEnvironment: openAIEnvironment,
+         organizationID: nil,
+         method: .post,
+         params: responseParameters,
+         queryItems: initialQueryItems)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
 }

@@ -835,6 +835,14 @@ struct AIProxyService: OpenAIService {
       let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: responseParameters)
       return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
    }
+   
+   func responseModel(
+      id: String)
+      async throws -> ResponseModel
+   {
+      let request = try await OpenAIAPI.chat.request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
 }
 
 

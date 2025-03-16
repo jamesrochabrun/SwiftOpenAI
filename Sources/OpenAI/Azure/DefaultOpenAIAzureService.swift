@@ -781,12 +781,25 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    {
       var responseParameters = parameters
       responseParameters.stream = false
-      let request = try AzureOpenAIAPI.chat(deploymentID: parameters.model).request(
+      let request = try AzureOpenAIAPI.response(.create(deploymentID: parameters.model)).request(
          apiKey: apiKey,
          openAIEnvironment: openAIEnvironment,
          organizationID: nil,
          method: .post,
          params: responseParameters,
+         queryItems: initialQueryItems)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
+   
+   public func responseModel(
+      id: String)
+      async throws -> ResponseModel
+   {
+      let request = try AzureOpenAIAPI.response(.retrieve(responseID: id)).request(
+         apiKey: apiKey,
+         openAIEnvironment: openAIEnvironment,
+         organizationID: nil,
+         method: .post,
          queryItems: initialQueryItems)
       return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
    }

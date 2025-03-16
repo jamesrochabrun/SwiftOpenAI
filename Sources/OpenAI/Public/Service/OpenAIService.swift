@@ -957,6 +957,13 @@ public protocol OpenAIService {
    func responseCreate(
       _ parameters: ModelResponseParameter)
       async throws -> ResponseModel
+   
+   /// [The Response object matching the specified ID.](https://platform.openai.com/docs/api-reference/responses/get)
+   ///
+   /// - Parameter id: The ID of the ResponseModel
+   func responseModel(
+      id: String)
+      async throws -> ResponseModel
 }
 
 

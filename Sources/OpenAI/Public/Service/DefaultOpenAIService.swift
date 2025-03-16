@@ -822,6 +822,14 @@ struct DefaultOpenAIService: OpenAIService {
       let request = try OpenAIAPI.response(.create).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, params: responseParameters, extraHeaders: extraHeaders)
       return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
    }
+   
+   func responseModel(
+      id: String)
+      async throws -> ResponseModel
+   {
+      let request = try OpenAIAPI.response(.retrieve(responseID: id)).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, extraHeaders: extraHeaders)
+      return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+   }
 }
 
 

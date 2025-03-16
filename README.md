@@ -33,6 +33,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Function Calling](#function-calling)
    - [Structured Outputs](#structured-outputs)
    - [Vision](#vision)
+- [Response](#response)
 - [Embeddings](#embeddings)
 - [Fine-tuning](#fine-tuning)
 - [Batch](#batch)
@@ -1259,6 +1260,296 @@ let chatCompletionObject = try await service.startStreamedChat(parameters: param
 ![Simulator Screen Recording - iPhone 15 - 2023-11-09 at 17 12 06](https://github.com/jamesrochabrun/SwiftOpenAI/assets/5378604/db2cbb3b-0c80-4ac8-8fe5-dbb782b270da)
 
 For more details about how to also uploading base 64 encoded images in iOS check the [ChatVision](https://github.com/jamesrochabrun/SwiftOpenAI/tree/main/Examples/SwiftOpenAIExample/SwiftOpenAIExample/Vision) demo on the Examples section of this package.
+
+### Response
+
+OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
+
+Related guides:
+
+- [Quickstart](https://platform.openai.com/docs/quickstart?api-mode=responses))
+- [Text inputs and outputs](https://platform.openai.com/docs/guides/text?api-mode=responses)
+- [Image inputs](https://platform.openai.com/docs/guides/images?api-mode=responses)
+- [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs?api-mode=responses)
+- [Function calling](https://platform.openai.com/docs/guides/function-calling?api-mode=responses)
+- [Conversation state](https://platform.openai.com/docs/guides/conversation-state?api-mode=responses)
+- [Extend the models with tools](https://platform.openai.com/docs/guides/tools?api-mode=responses)
+
+Parameters
+```swift
+/// [Creates a model response.](https://platform.openai.com/docs/api-reference/responses/create)
+public struct ModelResponseParameter: Codable {
+
+   /// Text, image, or file inputs to the model, used to generate a response.
+   /// A text input to the model, equivalent to a text input with the user role.
+   /// A list of one or many input items to the model, containing different content types.
+   public var input: InputType
+
+   /// Model ID used to generate the response, like gpt-4o or o1. OpenAI offers a wide range of models with
+   /// different capabilities, performance characteristics, and price points.
+   /// Refer to the model guide to browse and compare available models.
+   public var model: String
+
+   /// Specify additional output data to include in the model response. Currently supported values are:
+   /// file_search_call.results : Include the search results of the file search tool call.
+   /// message.input_image.image_url : Include image urls from the input message.
+   /// computer_call_output.output.image_url : Include image urls from the computer call output.
+   public var include: [String]?
+
+   /// Inserts a system (or developer) message as the first item in the model's context.
+   /// When using along with previous_response_id, the instructions from a previous response will be not be
+   /// carried over to the next response. This makes it simple to swap out system (or developer) messages in new responses.
+   public var instructions: String?
+
+   /// An upper bound for the number of tokens that can be generated for a response, including visible output tokens
+   /// and reasoning tokens.
+   public var maxOutputTokens: Int?
+
+   /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information
+   /// about the object in a structured format, and querying for objects via API or the dashboard.
+   /// Keys are strings with a maximum length of 64 characters. Values are strings with a maximum length of 512 characters.
+   public var metadata: [String: String]?
+
+   /// Whether to allow the model to run tool calls in parallel.
+   /// Defaults to true
+   public var parallelToolCalls: Bool?
+
+   /// The unique ID of the previous response to the model. Use this to create multi-turn conversations.
+   /// Learn more about conversation state.
+   public var previousResponseId: String?
+
+   /// o-series models only
+   /// Configuration options for reasoning models.
+   public var reasoning: Reasoning?
+
+   /// Whether to store the generated model response for later retrieval via API.
+   /// Defaults to true
+   public var store: Bool?
+
+   /// If set to true, the model response data will be streamed to the client as it is generated using server-sent events.
+   public var stream: Bool?
+
+   /// What sampling temperature to use, between 0 and 2.
+   /// Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+   /// We generally recommend altering this or top_p but not both.
+   /// Defaults to 1
+   public var temperature: Double?
+
+   /// Configuration options for a text response from the model. Can be plain text or structured JSON data.
+   public var text: TextConfiguration?
+
+   /// How the model should select which tool (or tools) to use when generating a response.
+   /// See the tools parameter to see how to specify which tools the model can call.
+   public var toolChoice: ToolChoiceMode?
+
+   /// An array of tools the model may call while generating a response. You can specify which tool to use by setting the tool_choice parameter.
+   public var tools: [Tool]?
+
+   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass.
+   /// So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+   /// We generally recommend altering this or temperature but not both.
+   /// Defaults to 1
+   public var topP: Double?
+
+   /// The truncation strategy to use for the model response.
+   /// Defaults to disabled
+   public var truncation: String?
+
+   /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+   public var user: String?
+}
+```
+
+[The Response object](https://platform.openai.com/docs/api-reference/responses/object)
+
+```swift
+/// The Response object returned when retrieving a model response
+public struct ResponseModel: Decodable {
+
+   /// Unix timestamp (in seconds) of when this Response was created.
+   public let createdAt: Int
+
+   /// An error object returned when the model fails to generate a Response.
+   public let error: ErrorObject?
+
+   /// Unique identifier for this Response.
+   public let id: String
+
+   /// Details about why the response is incomplete.
+   public let incompleteDetails: IncompleteDetails?
+
+   /// Inserts a system (or developer) message as the first item in the model's context.
+   public let instructions: String?
+
+   /// An upper bound for the number of tokens that can be generated for a response, including visible output tokens
+   /// and reasoning tokens.
+   public let maxOutputTokens: Int?
+
+   /// Set of 16 key-value pairs that can be attached to an object.
+   public let metadata: [String: String]
+
+   /// Model ID used to generate the response, like gpt-4o or o1.
+   public let model: String
+
+   /// The object type of this resource - always set to response.
+   public let object: String
+
+   /// An array of content items generated by the model.
+   public let output: [OutputItem]
+
+   /// Whether to allow the model to run tool calls in parallel.
+   public let parallelToolCalls: Bool
+
+   /// The unique ID of the previous response to the model. Use this to create multi-turn conversations.
+   public let previousResponseId: String?
+
+   /// Configuration options for reasoning models.
+   public let reasoning: Reasoning?
+
+   /// The status of the response generation. One of completed, failed, in_progress, or incomplete.
+   public let status: String
+
+   /// What sampling temperature to use, between 0 and 2.
+   public let temperature: Double?
+
+   /// Configuration options for a text response from the model.
+   public let text: TextConfiguration
+
+   /// How the model should select which tool (or tools) to use when generating a response.
+   public let toolChoice: ToolChoiceMode
+
+   /// An array of tools the model may call while generating a response.
+   public let tools: [Tool]
+
+   /// An alternative to sampling with temperature, called nucleus sampling.
+   public let topP: Double?
+
+   /// The truncation strategy to use for the model response.
+   public let truncation: String?
+
+   /// Represents token usage details.
+   public let usage: Usage?
+
+   /// A unique identifier representing your end-user.
+   public let user: String?
+}
+```
+
+Usage
+
+Simple text input
+```swift
+let prompt = "What is the capital of France?"
+let parameters = ModelResponseParameter(input: .string(prompt), model: .gpt4o)
+let response = try await service.responseCreate(parameters)
+```
+
+Text input with reasoning
+```swift
+let prompt = "How much wood would a woodchuck chuck?"
+let parameters = ModelResponseParameter(
+    input: .string(prompt),
+    model: .o3Mini,
+    reasoning: Reasoning(effort: "high")
+)
+let response = try await service.responseCreate(parameters)
+```
+
+Image input
+```swift
+let textPrompt = "What is in this image?"
+let imageUrl = "https://example.com/path/to/image.jpg"
+let imageContent = ContentItem.imageUrl(ImageUrlContent(imageUrl: imageUrl))
+let textContent = ContentItem.text(TextContent(text: textPrompt))
+let message = InputItem(role: "user", content: [textContent, imageContent])
+let parameters = ModelResponseParameter(input: .array([message]), model: .gpt4o)
+let response = try await service.responseCreate(parameters)
+```
+
+Using tools (web search)
+```swift
+let prompt = "What was a positive news story from today?"
+let parameters = ModelResponseParameter(
+    input: .string(prompt),
+    model: .gpt4o,
+    tools: [Tool(type: "web_search_preview", function: nil)]
+)
+let response = try await service.responseCreate(parameters)
+```
+
+Using tools (file search)
+```swift
+let prompt = "What are the key points in the document?"
+let parameters = ModelResponseParameter(
+    input: .string(prompt),
+    model: .gpt4o,
+    tools: [
+        Tool(
+            type: "file_search",
+            function: ChatCompletionParameters.ChatFunction(
+                name: "file_search",
+                strict: false,
+                description: "Search through files",
+                parameters: JSONSchema(
+                    type: .object,
+                    properties: [
+                        "vector_store_ids": JSONSchema(
+                            type: .array,
+                            items: JSONSchema(type: .string)
+                        ),
+                        "max_num_results": JSONSchema(type: .integer)
+                    ],
+                    required: ["vector_store_ids"],
+                    additionalProperties: false
+                )
+            )
+        )
+    ]
+)
+let response = try await service.responseCreate(parameters)
+```
+
+Function calling
+```swift
+let prompt = "What is the weather like in Boston today?"
+let parameters = ModelResponseParameter(
+    input: .string(prompt),
+    model: .gpt4o,
+    tools: [
+        Tool(
+            type: "function",
+            function: ChatCompletionParameters.ChatFunction(
+                name: "get_current_weather",
+                strict: false,
+                description: "Get the current weather in a given location",
+                parameters: JSONSchema(
+                    type: .object,
+                    properties: [
+                        "location": JSONSchema(
+                            type: .string,
+                            description: "The city and state, e.g. San Francisco, CA"
+                        ),
+                        "unit": JSONSchema(
+                            type: .string,
+                            enum: ["celsius", "fahrenheit"]
+                        )
+                    ],
+                    required: ["location", "unit"],
+                    additionalProperties: false
+                )
+            )
+        )
+    ],
+    toolChoice: .auto
+)
+let response = try await service.responseCreate(parameters)
+```
+
+Retrieving a response
+```swift
+let responseId = "resp_abc123"
+let response = try await service.responseModel(id: responseId)
+```
 
 ### Embeddings
 Parameters

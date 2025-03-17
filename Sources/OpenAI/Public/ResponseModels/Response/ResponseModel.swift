@@ -93,6 +93,26 @@ public struct ResponseModel: Decodable {
    /// A unique identifier representing your end-user.
    public let user: String?
    
+   /// Convenience property that aggregates all text output from output_text items in the output array.
+   /// Similar to the outputText property in Python and JavaScript SDKs.
+   public var outputText: String? {
+      let outputTextItems = output.compactMap { outputItem -> String? in
+         switch outputItem {
+         case .message(let message):
+            return message.content.compactMap { contentItem -> String? in
+               switch contentItem {
+               case .outputText(let outputText):
+                  return outputText.text
+               }
+            }.joined()
+         default:
+            return nil
+         }
+      }
+      
+      return outputTextItems.isEmpty ? nil : outputTextItems.joined()
+   }
+   
    public struct ErrorObject: Decodable {
       
       /// The error code for the response.

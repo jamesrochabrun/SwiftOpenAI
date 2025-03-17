@@ -1432,6 +1432,10 @@ public struct ResponseModel: Decodable {
 
    /// A unique identifier representing your end-user.
    public let user: String?
+   
+   /// Convenience property that aggregates all text output from output_text items in the output array.
+   /// Similar to the outputText property in Python and JavaScript SDKs.
+   public var outputText: String? 
 }
 ```
 

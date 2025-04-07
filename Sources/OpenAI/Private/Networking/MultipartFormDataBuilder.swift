@@ -35,7 +35,7 @@ struct MultipartFormDataBuilder {
 
 enum MultipartFormDataEntry {
    
-   case file(paramName: String, fileName: String?, fileData: Data, contentType: String)
+   case file(paramName: String, fileName: String?, fileData: Data?, contentType: String)
    case string(paramName: String, value: Any?)
 }
 
@@ -47,15 +47,17 @@ extension MultipartFormDataEntry {
       var body = Data()
       switch self {
       case .file(let paramName, let fileName, let fileData, let contentType):
-         body.append("--\(boundary)\r\n")
-         if let fileName = fileName {
-             body.append("Content-Disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n")
-         } else {
-             body.append("Content-Disposition: form-data; name=\"\(paramName)\"\r\n")
+         if let fileData {
+            body.append("--\(boundary)\r\n")
+            if let fileName = fileName {
+               body.append("Content-Disposition: form-data; name=\"\(paramName)\"; filename=\"\(fileName)\"\r\n")
+            } else {
+               body.append("Content-Disposition: form-data; name=\"\(paramName)\"\r\n")
+            }
+            body.append("Content-Type: \(contentType)\r\n\r\n")
+            body.append(fileData)
+            body.append("\r\n")
          }
-         body.append("Content-Type: \(contentType)\r\n\r\n")
-         body.append(fileData)
-         body.append("\r\n")
       case .string(let paramName, let value):
          if let value {
             body.append("--\(boundary)\r\n")

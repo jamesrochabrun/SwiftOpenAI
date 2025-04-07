@@ -71,7 +71,7 @@ public struct ImageEditParameters: Encodable {
       if imageData == nil {
          assertionFailure("Failed to get image data")
       }
-      if maskData == nil {
+      if mask != nil, maskData == nil {
          assertionFailure("Failed to get mask data")
       }
       
@@ -94,7 +94,7 @@ extension ImageEditParameters: MultipartFormDataParameters {
       MultipartFormDataBuilder(boundary: boundary, entries: [
          .file(paramName: Self.CodingKeys.image.rawValue, fileName: "", fileData: image, contentType: "image/png"),
          .string(paramName: Self.CodingKeys.prompt.rawValue, value: prompt),
-         .string(paramName: Self.CodingKeys.mask.rawValue, value: mask),
+         .file(paramName: Self.CodingKeys.mask.rawValue, fileName: "mask.png", fileData: mask, contentType: "image/png"),
          .string(paramName: Self.CodingKeys.model.rawValue, value: model),
          .string(paramName: Self.CodingKeys.n.rawValue, value: n),
          .string(paramName: Self.CodingKeys.size.rawValue, value: size),

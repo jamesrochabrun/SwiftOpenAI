@@ -59,7 +59,7 @@ public struct ResponseModel: Decodable {
    public let reasoning: Reasoning?
    
    /// The status of the response generation. One of completed, failed, in_progress, or incomplete.
-   public let status: String
+   public let status: String?
    
    /// What sampling temperature to use, between 0 and 2.
    /// Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.

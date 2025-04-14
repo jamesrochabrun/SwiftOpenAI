@@ -148,9 +148,7 @@ public struct ChatCompletionParameters: Encodable {
                public func encode(to encoder: Encoder) throws {
                   var container = encoder.container(keyedBy: CodingKeys.self)
                   try container.encode(url, forKey: .url)
-                  if let detail, !detail.isEmpty {
-                     try container.encode(detail, forKey: .detail)
-                  }
+                  try container.encodeIfPresent(detail, forKey: .detail)
                }
                
                public init(url: URL, detail: String? = nil) {

@@ -28,8 +28,17 @@ public struct AudioTranscriptionParameters: Encodable {
    /// The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
    let timestampGranularities: [String]?
    
-   public enum Model: String {
-      case whisperOne = "whisper-1"
+   public enum Model {
+      case whisperOne
+      case custom(model: String)
+      var value: String {
+         switch self {
+         case .whisperOne:
+            "whisper-1"
+         case .custom(let model):
+            model
+         }
+      }
    }
    
    enum CodingKeys: String, CodingKey {
@@ -54,7 +63,7 @@ public struct AudioTranscriptionParameters: Encodable {
    {
       self.fileName = fileName
       self.file = file
-      self.model = model.rawValue
+      self.model = model.value
       self.prompt = prompt
       self.responseFormat = responseFormat
       self.temperature = temperature

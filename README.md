@@ -194,8 +194,9 @@ public struct AudioTranscriptionParameters: Encodable {
    /// The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit. Defaults to 0
    let temperature: Double?
    
-   public enum Model: String {
-      case whisperOne = "whisper-1"
+   public enum Model {
+      case whisperOne 
+      case custom(model: String)
    }
    
    public init(
@@ -252,8 +253,9 @@ public struct AudioTranslationParameters: Encodable {
    /// The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit. Defaults to 0
    let temperature: Double?
    
-   public enum Model: String {
-      case whisperOne = "whisper-1"
+   public enum Model {
+      case whisperOne 
+      case custom(model: String)
    }
    
    public init(

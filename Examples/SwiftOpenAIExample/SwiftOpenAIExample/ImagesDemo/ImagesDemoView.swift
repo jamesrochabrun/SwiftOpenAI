@@ -290,7 +290,7 @@ struct ImagesDemoView: View {
             prompt: prompt,
             model: selectedModel.model,
             n: imageCount,
-            //  quality: selectedQuality.quality,
+            quality: selectedQuality.quality,
             size: selectedSize
          )
          

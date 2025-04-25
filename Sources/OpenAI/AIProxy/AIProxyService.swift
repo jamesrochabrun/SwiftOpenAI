@@ -229,7 +229,7 @@ struct AIProxyService: OpenAIService {
 
    // MARK: Images
 
-   func createImages(
+   func legacyCreateImages(
       parameters: ImageCreateParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -237,7 +237,7 @@ struct AIProxyService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self,  with: request)
    }
 
-   func editImage(
+   func legacyEditImage(
       parameters: ImageEditParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -245,7 +245,7 @@ struct AIProxyService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
 
-   func createImageVariations(
+   func legacyCreateImageVariations(
       parameters: ImageVariationParameters)
       async throws -> OpenAIResponse<ImageObject>
    {
@@ -253,6 +253,30 @@ struct AIProxyService: OpenAIService {
       return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<ImageObject>.self, with: request)
    }
 
+   func createImages(
+      parameters: CreateImageParameters)
+      async throws -> OpenAIResponse<CreateImageResponse>
+   {
+      let request = try await OpenAIAPI.images(.generations).request(aiproxyPartialKey: partialKey, clientID: clientID, organizationID: organizationID, openAIEnvironment: openAIEnvironment, method: .post, params: parameters)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self,  with: request)
+   }
+
+   func editImage(
+      parameters: CreateImageEditParameters)
+      async throws -> OpenAIResponse<CreateImageResponse>
+   {
+      let request = try await OpenAIAPI.images(.edits).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self, with: request)
+   }
+
+   func createImageVariations(
+      parameters: CreateImageVariationParameters)
+      async throws -> OpenAIResponse<CreateImageResponse>
+   {
+      let request = try await OpenAIAPI.images(.variations).multiPartRequest(aiproxyPartialKey: partialKey, openAIEnvironment: openAIEnvironment, clientID: clientID, organizationID: organizationID, method: .post, params: parameters)
+      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self, with: request)
+   }
+   
    // MARK: Models
 
    func listModels()

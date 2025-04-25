@@ -42,7 +42,7 @@ struct FunctionCallStreamedResponse {
          origin: .received(.gpt))
       updateLastAssistantMessage(assistantMessage)
       
-      let urls = try await service.createImages(
+      let urls = try await service.legacyCreateImages(
          parameters: .init(prompt: prompt, model: .dalle2(.small), numberOfImages: count)).data.compactMap(\.url)
       
       let dalleAssistantMessage = ChatMessageDisplayModel(

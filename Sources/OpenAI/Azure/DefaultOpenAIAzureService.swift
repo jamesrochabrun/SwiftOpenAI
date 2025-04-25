@@ -139,21 +139,21 @@ final public class DefaultOpenAIAzureService: OpenAIService {
    
    public func createImages(
       parameters: CreateImageParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
    public func editImage(
       parameters: CreateImageEditParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
    public func createImageVariations(
       parameters: CreateImageVariationParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }

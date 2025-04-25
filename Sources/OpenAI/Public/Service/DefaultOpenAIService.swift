@@ -239,26 +239,26 @@ struct DefaultOpenAIService: OpenAIService {
    
    func createImages(
       parameters: CreateImageParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       let request = try OpenAIAPI.images(.generations).request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, params: parameters, extraHeaders: extraHeaders)
-      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self,  with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: CreateImageResponse.self,  with: request)
    }
    
    func editImage(
       parameters: CreateImageEditParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       let request = try OpenAIAPI.images(.edits).multiPartRequest(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: CreateImageResponse.self, with: request)
    }
    
    func createImageVariations(
       parameters: CreateImageVariationParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    {
       let request = try OpenAIAPI.images(.variations).multiPartRequest(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: organizationID, method: .post, params: parameters)
-      return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<CreateImageResponse>.self, with: request)
+      return try await fetch(debugEnabled: debugEnabled, type: CreateImageResponse.self, with: request)
    }
       
    // MARK: Models

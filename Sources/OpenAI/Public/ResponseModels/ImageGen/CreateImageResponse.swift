@@ -16,7 +16,7 @@ public struct CreateImageResponse: Decodable {
    public let created: TimeInterval?
    
    /// The list of generated images
-   public let data: [ImageData]
+   public let data: [ImageData]?
    
    /// Token usage info (only for gpt-image-1)
    public let usage: Usage?

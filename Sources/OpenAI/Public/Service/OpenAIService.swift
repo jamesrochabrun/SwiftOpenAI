@@ -300,7 +300,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/create).
    func createImages(
       parameters: CreateImageParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    
    /// - Parameter parameters: Settings for the image edit request.
    /// - Returns: An `OpenAIResponse` containing edited image results.
@@ -309,7 +309,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createEdit).
    func editImage(
       parameters: CreateImageEditParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
 
    /// - Parameter parameters: Settings for the image variation request.
    /// - Returns: An `OpenAIResponse` containing image variation results.
@@ -318,7 +318,7 @@ public protocol OpenAIService {
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createVariation).
    func createImageVariations(
       parameters: CreateImageVariationParameters)
-      async throws -> OpenAIResponse<CreateImageResponse>
+      async throws -> CreateImageResponse
    
    // MARK: Models
    

@@ -21,10 +21,22 @@ public struct AudioSpeechParameters: Encodable {
    /// Defaults to 1,  The speed of the generated audio. Select a value from 0.25 to 4.0. 1.0 is the default.
    let speed: Double?
    
-   public enum TTSModel: String {
-      case tts1 = "tts-1"
-      case tts1HD = "tts-1-hd"
-   }
+    public enum TTSModel {
+        case tts1
+        case tts1HD
+        case custom(model: String)
+        
+        var rawValue: String {
+            switch self {
+            case .tts1:
+                return "tts-1"
+            case .tts1HD:
+                return "tts-1-hd"
+            case .custom(let model):
+                return model
+            }
+        }
+    }
    
    public enum Voice: String {
       case alloy

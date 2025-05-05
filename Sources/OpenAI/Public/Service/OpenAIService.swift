@@ -271,7 +271,7 @@ public protocol OpenAIService {
    /// - Throws: An error if the image creation process fails.
    ///
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/create).
-   func createImages(
+   func legacyCreateImages(
       parameters: ImageCreateParameters)
       async throws -> OpenAIResponse<ImageObject>
    
@@ -280,7 +280,7 @@ public protocol OpenAIService {
    /// - Throws: An error if the image editing process fails.
    ///
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createEdit).
-   func editImage(
+   func legacyEditImage(
       parameters: ImageEditParameters)
       async throws -> OpenAIResponse<ImageObject>
    
@@ -289,9 +289,36 @@ public protocol OpenAIService {
    /// - Throws: An error if the image variation creation process fails.
    ///
    /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createVariation).
-   func createImageVariations(
+   func legacyCreateImageVariations(
       parameters: ImageVariationParameters)
       async throws -> OpenAIResponse<ImageObject>
+   
+   /// - Parameter parameters: Settings for the image creation request.
+   /// - Returns: An `OpenAIResponse` containing image generation results.
+   /// - Throws: An error if the image creation process fails.
+   ///
+   /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/create).
+   func createImages(
+      parameters: CreateImageParameters)
+      async throws -> CreateImageResponse
+   
+   /// - Parameter parameters: Settings for the image edit request.
+   /// - Returns: An `OpenAIResponse` containing edited image results.
+   /// - Throws: An error if the image editing process fails.
+   ///
+   /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createEdit).
+   func editImage(
+      parameters: CreateImageEditParameters)
+      async throws -> CreateImageResponse
+
+   /// - Parameter parameters: Settings for the image variation request.
+   /// - Returns: An `OpenAIResponse` containing image variation results.
+   /// - Throws: An error if the image variation creation process fails.
+   ///
+   /// For more information, refer to [OpenAI's Image API documentation](https://platform.openai.com/docs/api-reference/images/createVariation).
+   func createImageVariations(
+      parameters: CreateImageVariationParameters)
+      async throws -> CreateImageResponse
    
    // MARK: Models
    

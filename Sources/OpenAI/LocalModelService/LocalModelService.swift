@@ -111,15 +111,36 @@ struct LocalModelService: OpenAIService {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   func createImages(parameters: ImageCreateParameters) async throws -> OpenAIResponse<ImageObject> {
+   func legacyCreateImages(parameters: ImageCreateParameters) async throws -> OpenAIResponse<ImageObject> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   func editImage(parameters: ImageEditParameters) async throws -> OpenAIResponse<ImageObject> {
+   func legacyEditImage(parameters: ImageEditParameters) async throws -> OpenAIResponse<ImageObject> {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    
-   func createImageVariations(parameters: ImageVariationParameters) async throws -> OpenAIResponse<ImageObject> {
+   func legacyCreateImageVariations(parameters: ImageVariationParameters) async throws -> OpenAIResponse<ImageObject> {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func createImages(
+      parameters: CreateImageParameters)
+      async throws -> CreateImageResponse
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func editImage(
+      parameters: CreateImageEditParameters)
+      async throws -> CreateImageResponse
+   {
+      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+   }
+   
+   public func createImageVariations(
+      parameters: CreateImageVariationParameters)
+      async throws -> CreateImageResponse
+   {
       fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
    }
    

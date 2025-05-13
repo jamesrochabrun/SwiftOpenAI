@@ -48,7 +48,7 @@ import SwiftOpenAI
          let stream = try await service.startStreamedChat(parameters: parameters)
          for try await result in stream {
             // Extract the first choice from the stream results, if none exist, exit the loop.
-            guard let choice = result.choices.first else { return }
+            guard let choice = result.choices?.first else { return }
             
             // Store initial `role` and `functionCall` data from the first `choice.delta` for UI display.
             // This information is essential for maintaining context in the conversation and for updating
@@ -64,7 +64,7 @@ import SwiftOpenAI
             // Assign the content received in the current message to the newDelta.
             newDelta.content = temporalReceivedMessageContent
             // Update the UI with the latest assistant message and the corresponding delta.
-            await updateLastAssistantMessage(content: choice.delta.content ?? "", delta: newDelta)
+            await updateLastAssistantMessage(content: choice.delta?.content ?? "", delta: newDelta)
          }
       } catch {
          // If an error occurs, update the UI to display the error message.

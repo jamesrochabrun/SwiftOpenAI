@@ -61,8 +61,8 @@ import SwiftOpenAI
       async throws
    {
       do {
-         let avatarURLs = try await service.createImages(parameters: .init(prompt: prompt, model: .dalle3(.largeSquare))).data.compactMap(\.url)
-         self.avatarURL = avatarURLs.first
+         let avatarURLs = try await service.createImages(parameters: .init(prompt: prompt, model: .dallE3)).data?.compactMap(\.url)
+         self.avatarURL = URL(string: avatarURLs?.first ?? "")
       } catch {
          debugPrint("\(error)")
       }

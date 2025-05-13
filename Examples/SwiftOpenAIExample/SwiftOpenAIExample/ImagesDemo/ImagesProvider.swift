@@ -22,7 +22,7 @@ import SwiftOpenAI
       parameters: ImageCreateParameters) 
       async throws
    {
-      let urls = try await service.createImages(
+      let urls = try await service.legacyCreateImages(
          parameters: parameters).data.map(\.url)
       self.images = urls.compactMap { $0 }
    }
@@ -31,7 +31,7 @@ import SwiftOpenAI
       parameters: ImageEditParameters)
       async throws
    {
-      let urls = try await service.editImage(
+      let urls = try await service.legacyEditImage(
          parameters: parameters).data.map(\.url)
       self.images = urls.compactMap { $0 }
    }
@@ -40,7 +40,7 @@ import SwiftOpenAI
       parameters: ImageVariationParameters)
       async throws
    {
-      let urls = try await service.createImageVariations(parameters: parameters).data.map(\.url)
+      let urls = try await service.legacyCreateImageVariations(parameters: parameters).data.map(\.url)
       self.images = urls.compactMap { $0 }
    }
 }

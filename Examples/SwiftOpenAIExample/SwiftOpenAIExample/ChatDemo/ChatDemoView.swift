@@ -75,7 +75,7 @@ struct ChatDemoView: View {
                   messages: [.init(
                   role: .user,
                   content: content)],
-                  model: .gpt4o)
+                  model: .custom("claude-3-7-sonnet-20250219"))
                switch selectedSegment {
                case .chatCompletion:
                   try await chatProvider.startChat(parameters: parameters)

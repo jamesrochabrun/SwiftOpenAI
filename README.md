@@ -102,6 +102,7 @@ to stay on the bleeding edge.
 SwiftOpenAI supports various providers that are OpenAI-compatible, including but not limited to:
 
 - [Azure OpenAI](#azure-openai)
+- [Anthropic](#anthropic)
 - [Gemini](#gemini)
 - [Ollama](#ollama)
 - [Groq](#groq)
@@ -3591,6 +3592,31 @@ let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStor
 ```
 
 ⚠️ We currently support Only Assistants Beta 2. If you need support for Assistants V1, you can access it in the jroch-supported-branch-for-assistants-v1 branch or in the v2.3 release.. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
+
+## Anthropic
+
+Anthropic provides OpenAI compatibility, for more, visit the [documentation](https://docs.anthropic.com/en/api/openai-sdk#getting-started-with-the-openai-sdk)
+
+To use Claude models with `SwiftOpenAI` you can.
+
+```swift
+let anthropicApiKey = ""
+let openAIService = OpenAIServiceFactory.service(apiKey: anthropicApiKey, 
+                     overrideBaseURL: "https://api.anthropic.com", 
+                     overrideVersion: "v1")
+```
+
+Now you can create the completio parameters like this:
+
+```swift
+let parameters = ChatCompletionParameters(
+   messages: [.init(
+   role: .user,
+   content: "Are you Claude?")],
+   model: .custom("claude-3-7-sonnet-20250219"))
+```
+
+For a more complete Anthropic Swift Package, you can use [SwiftAnthropic](https://github.com/jamesrochabrun/SwiftAnthropic)
 
 ## Azure OpenAI
 

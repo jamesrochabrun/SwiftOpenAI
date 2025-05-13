@@ -52,7 +52,7 @@ enum FunctionCallDefinition: String, CaseIterable {
          origin: .received(.gpt))
       updateLastAssistantMessage(assistantMessage)
       
-      let urls = try await service.legacyCreateImages(parameters: .init(prompt: prompt, model: .dalle2(.small), numberOfImages: count)).data.compactMap(\.url)
+      let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dalle2(.small), numberOfImages: count)).data.compactMap(\.url)
       
       let dalleAssistantMessage = ChatMessageDisplayModel(
          content: .content(.init(text: nil, urls: urls)),
@@ -103,7 +103,7 @@ enum FunctionCallDefinition: String, CaseIterable {
       do {
          let chat = try await service.startChat(parameters: parameters)
          
-         guard let assistantMessage = chat.choices?.first?.message else { return }
+         guard let assistantMessage = chat.choices.first?.message else { return }
          
          let content = assistantMessage.content ?? ""
 
@@ -157,7 +157,7 @@ enum FunctionCallDefinition: String, CaseIterable {
          model: .gpt41106Preview)
       do {
          let chat = try await service.startChat(parameters: paramsForChat)
-         guard let assistantMessage = chat.choices?.first?.message else { return }
+         guard let assistantMessage = chat.choices.first?.message else { return }
          await updateLastAssistantMessage(.init(content: .content(.init(text: assistantMessage.content)), origin: .received(.gpt)))
       } catch {
          // If an error occurs, update the UI to display the error message.

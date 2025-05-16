@@ -10,50 +10,51 @@ import SwiftOpenAI
 
 struct ChatMessageDisplayModel: Identifiable {
 
-   let id: UUID
-   var content: DisplayContent
-   let origin: MessageOrigin
+  init(
+    id: UUID = UUID(),
+    content: DisplayContent,
+    origin: MessageOrigin)
+  {
+    self.id = id
+    self.content = content
+    self.origin = origin
+  }
 
-   enum DisplayContent: Equatable {
+  enum DisplayContent: Equatable {
 
-      case content(DisplayMessageType)
-      case error(String)
+    case content(DisplayMessageType)
+    case error(String)
 
-      static func ==(lhs: DisplayContent, rhs: DisplayContent) -> Bool {
-         switch (lhs, rhs) {
-         case let (.content(a), .content(b)):
-             return a == b
-         case let (.error(a), .error(b)):
-            return a == b
-         default:
-            return false
-         }
+    static func ==(lhs: DisplayContent, rhs: DisplayContent) -> Bool {
+      switch (lhs, rhs) {
+      case (.content(let a), .content(let b)):
+        a == b
+      case (.error(let a), .error(let b)):
+        a == b
+      default:
+        false
       }
+    }
 
-      struct DisplayMessageType: Equatable {
-         var text: String?
-         var urls: [URL]? = nil
-      }
-   }
+    struct DisplayMessageType: Equatable {
+      var text: String?
+      var urls: [URL]? = nil
+    }
+  }
 
-   init(
-      id: UUID = UUID(),
-      content: DisplayContent,
-      origin: MessageOrigin)
-   {
-      self.id = id
-      self.content = content
-      self.origin = origin
-   }
+  enum MessageOrigin {
 
-   enum MessageOrigin {
+    case received(ReceivedSource)
+    case sent
 
-      case received(ReceivedSource)
-      case sent
+    enum ReceivedSource {
+      case gpt
+      case dalle
+    }
+  }
 
-      enum ReceivedSource {
-         case gpt
-         case dalle
-      }
-   }
+  let id: UUID
+  var content: DisplayContent
+  let origin: MessageOrigin
+
 }

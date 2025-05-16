@@ -8,7 +8,7 @@
 import Foundation
 
 public struct DeletionStatus: Decodable {
-   public let id: String
-   public let object: String
-   public let deleted: Bool
+  public let id: String
+  public let object: String
+  public let deleted: Bool
 }

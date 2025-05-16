@@ -7,13 +7,15 @@
 
 import Foundation
 
-enum Sizes {}
+// MARK: - Sizes
+
+enum Sizes { }
 
 extension Sizes {
 
-   static let spacingExtraSmall: CGFloat = 4.0
-   static let spacingSmall: CGFloat = 6
-   static let spacingMedium: CGFloat = 8
-   static let spacingLarge: CGFloat = 12
-   static let spacingExtraLarge: CGFloat = 16
+  static let spacingExtraSmall: CGFloat = 4.0
+  static let spacingSmall: CGFloat = 6
+  static let spacingMedium: CGFloat = 8
+  static let spacingLarge: CGFloat = 12
+  static let spacingExtraLarge: CGFloat = 16
 }

@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-enum ThemeColor {}
+// MARK: - ThemeColor
+
+enum ThemeColor { }
 
 extension ThemeColor {
 
-   static let tintColor: Color = .purple
+  static let tintColor = Color.purple
 }

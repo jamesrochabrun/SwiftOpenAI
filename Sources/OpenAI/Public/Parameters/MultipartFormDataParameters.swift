@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol MultipartFormDataParameters {
-   
-   func encode(boundary: String) -> Data
+
+  func encode(boundary: String) -> Data
 }

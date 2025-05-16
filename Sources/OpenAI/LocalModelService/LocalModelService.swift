@@ -8,348 +8,514 @@
 import Foundation
 
 struct LocalModelService: OpenAIService {
-   
-   let session: URLSession
-   let decoder: JSONDecoder
-   let openAIEnvironment: OpenAIEnvironment
 
-   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
-   private let apiKey: Authorization
-   /// Set this flag to TRUE if you need to print request events in DEBUG builds.
-   private let debugEnabled: Bool
-   
-   public init(
-      apiKey: Authorization = .apiKey(""),
-      baseURL: String,
-      proxyPath: String? = nil,
-      overrideVersion: String? = nil,
-      configuration: URLSessionConfiguration = .default,
-      decoder: JSONDecoder = .init(),
-      debugEnabled: Bool)
-   {
-      self.session = URLSession(configuration: configuration)
-      self.decoder = decoder
-      self.apiKey = apiKey
-      self.openAIEnvironment = OpenAIEnvironment(baseURL: baseURL, proxyPath: proxyPath, version: overrideVersion ?? "v1")
-      self.debugEnabled = debugEnabled
-   }
-   
-   func createTranscription(parameters: AudioTranscriptionParameters) async throws -> AudioObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createTranslation(parameters: AudioTranslationParameters) async throws -> AudioObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createSpeech(parameters: AudioSpeechParameters) async throws -> AudioSpeechObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func startChat(
-      parameters: ChatCompletionParameters)
-      async throws -> ChatCompletionObject
-   {
-      var chatParameters = parameters
-      chatParameters.stream = false
-      let request = try LocalModelAPI.chat.request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: nil, method: .post, params: chatParameters)
-      return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
-   }
-   
-   func startStreamedChat(
-      parameters: ChatCompletionParameters)
-      async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
-   {
-      var chatParameters = parameters
-      chatParameters.stream = true
-      chatParameters.streamOptions = .init(includeUsage: true)
-      let request = try LocalModelAPI.chat.request(apiKey: apiKey, openAIEnvironment: openAIEnvironment, organizationID: nil, method: .post, params: chatParameters)
-      return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
-   }
-   
-   func createEmbeddings(parameters: EmbeddingParameter) async throws -> OpenAIResponse<EmbeddingObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createFineTuningJob(parameters: FineTuningJobParameters) async throws -> FineTuningJobObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listFineTuningJobs(after lastJobID: String?, limit: Int?) async throws -> OpenAIResponse<FineTuningJobObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveFineTuningJob(id: String) async throws -> FineTuningJobObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func cancelFineTuningJobWith(id: String) async throws -> FineTuningJobObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listFineTuningEventsForJobWith(id: String, after lastEventId: String?, limit: Int?) async throws -> OpenAIResponse<FineTuningJobEventObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listFiles() async throws -> OpenAIResponse<FileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func uploadFile(parameters: FileParameters) async throws -> FileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteFileWith(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveFileWith(id: String) async throws -> FileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveContentForFileWith(id: String) async throws -> [[String : Any]] {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func legacyCreateImages(parameters: ImageCreateParameters) async throws -> OpenAIResponse<ImageObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func legacyEditImage(parameters: ImageEditParameters) async throws -> OpenAIResponse<ImageObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func legacyCreateImageVariations(parameters: ImageVariationParameters) async throws -> OpenAIResponse<ImageObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func createImages(
-      parameters: CreateImageParameters)
-      async throws -> CreateImageResponse
-   {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func editImage(
-      parameters: CreateImageEditParameters)
-      async throws -> CreateImageResponse
-   {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   public func createImageVariations(
-      parameters: CreateImageVariationParameters)
-      async throws -> CreateImageResponse
-   {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listModels() async throws -> OpenAIResponse<ModelObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveModelWith(id: String) async throws -> ModelObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteFineTuneModelWith(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createModerationFromText(parameters: ModerationParameter<String>) async throws -> ModerationObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createModerationFromTexts(parameters: ModerationParameter<[String]>) async throws -> ModerationObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createAssistant(parameters: AssistantParameters) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveAssistant(id: String) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func modifyAssistant(id: String, parameters: AssistantParameters) async throws -> AssistantObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteAssistant(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listAssistants(limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<AssistantObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createThread(parameters: CreateThreadParameters) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveThread(id: String) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func modifyThread(id: String, parameters: ModifyThreadParameters) async throws -> ThreadObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteThread(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createMessage(threadID: String, parameters: MessageParameter) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveMessage(threadID: String, messageID: String) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func modifyMessage(threadID: String, messageID: String, parameters: ModifyMessageParameters) async throws -> MessageObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteMessage(threadID: String, messageID: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listMessages(threadID: String, limit: Int?, order: String?, after: String?, before: String?, runID: String?) async throws -> OpenAIResponse<MessageObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createRun(threadID: String, parameters: RunParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveRun(threadID: String, runID: String) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func modifyRun(threadID: String, runID: String, parameters: ModifyRunParameters) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listRuns(threadID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func cancelRun(threadID: String, runID: String) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func submitToolOutputsToRun(threadID: String, runID: String, parameters: RunToolsOutputParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createThreadAndRun(parameters: CreateThreadAndRunParameter) async throws -> RunObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveRunstep(threadID: String, runID: String, stepID: String) async throws -> RunStepObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listRunSteps(threadID: String, runID: String, limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<RunStepObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createThreadAndRunStream(parameters: CreateThreadAndRunParameter) async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createRunStream(threadID: String, parameters: RunParameter) async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func submitToolOutputsToRunStream(threadID: String, runID: String, parameters: RunToolsOutputParameter) async throws -> AsyncThrowingStream<AssistantStreamEvent, Error> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createBatch(parameters: BatchParameter) async throws -> BatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveBatch(id: String) async throws -> BatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func cancelBatch(id: String) async throws -> BatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listBatch(after: String?, limit: Int?) async throws -> OpenAIResponse<BatchObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createVectorStore(parameters: VectorStoreParameter) async throws -> VectorStoreObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listVectorStores(limit: Int?, order: String?, after: String?, before: String?) async throws -> OpenAIResponse<VectorStoreObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveVectorStore(id: String) async throws -> VectorStoreObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func modifyVectorStore(parameters: VectorStoreParameter, id: String) async throws -> VectorStoreObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteVectorStore(id: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createVectorStoreFile(vectorStoreID: String, parameters: VectorStoreFileParameter) async throws -> VectorStoreFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listVectorStoreFiles(vectorStoreID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> VectorStoreFileObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func deleteVectorStoreFile(vectorStoreID: String, fileID: String) async throws -> DeletionStatus {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func createVectorStoreFileBatch(vectorStoreID: String, parameters: VectorStoreFileBatchParameter) async throws -> VectorStoreFileBatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func retrieveVectorStoreFileBatch(vectorStoreID: String, batchID: String) async throws -> VectorStoreFileBatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func cancelVectorStoreFileBatch(vectorStoreID: String, batchID: String) async throws -> VectorStoreFileBatchObject {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func listVectorStoreFilesInABatch(vectorStoreID: String, batchID: String, limit: Int?, order: String?, after: String?, before: String?, filter: String?) async throws -> OpenAIResponse<VectorStoreFileObject> {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   // MARK: Response
-   
-   func responseCreate(
-      _ parameters: ModelResponseParameter)
-      async throws -> ResponseModel
-   {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
-   func responseModel(
-      id: String)
-      async throws -> ResponseModel
-   {
-      fatalError("Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
-   }
-   
+  public init(
+    apiKey: Authorization = .apiKey(""),
+    baseURL: String,
+    proxyPath: String? = nil,
+    overrideVersion: String? = nil,
+    configuration: URLSessionConfiguration = .default,
+    decoder: JSONDecoder = .init(),
+    debugEnabled: Bool)
+  {
+    session = URLSession(configuration: configuration)
+    self.decoder = decoder
+    self.apiKey = apiKey
+    openAIEnvironment = OpenAIEnvironment(baseURL: baseURL, proxyPath: proxyPath, version: overrideVersion ?? "v1")
+    self.debugEnabled = debugEnabled
+  }
+
+  public func createImages(
+    parameters _: CreateImageParameters)
+    async throws -> CreateImageResponse
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  public func editImage(
+    parameters _: CreateImageEditParameters)
+    async throws -> CreateImageResponse
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  public func createImageVariations(
+    parameters _: CreateImageVariationParameters)
+    async throws -> CreateImageResponse
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  let session: URLSession
+  let decoder: JSONDecoder
+  let openAIEnvironment: OpenAIEnvironment
+
+  func createTranscription(parameters _: AudioTranscriptionParameters) async throws -> AudioObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createTranslation(parameters _: AudioTranslationParameters) async throws -> AudioObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createSpeech(parameters _: AudioSpeechParameters) async throws -> AudioSpeechObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func startChat(
+    parameters: ChatCompletionParameters)
+    async throws -> ChatCompletionObject
+  {
+    var chatParameters = parameters
+    chatParameters.stream = false
+    let request = try LocalModelAPI.chat.request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: nil,
+      method: .post,
+      params: chatParameters)
+    return try await fetch(debugEnabled: debugEnabled, type: ChatCompletionObject.self, with: request)
+  }
+
+  func startStreamedChat(
+    parameters: ChatCompletionParameters)
+    async throws -> AsyncThrowingStream<ChatCompletionChunkObject, Error>
+  {
+    var chatParameters = parameters
+    chatParameters.stream = true
+    chatParameters.streamOptions = .init(includeUsage: true)
+    let request = try LocalModelAPI.chat.request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: nil,
+      method: .post,
+      params: chatParameters)
+    return try await fetchStream(debugEnabled: debugEnabled, type: ChatCompletionChunkObject.self, with: request)
+  }
+
+  func createEmbeddings(parameters _: EmbeddingParameter) async throws -> OpenAIResponse<EmbeddingObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createFineTuningJob(parameters _: FineTuningJobParameters) async throws -> FineTuningJobObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listFineTuningJobs(after _: String?, limit _: Int?) async throws -> OpenAIResponse<FineTuningJobObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveFineTuningJob(id _: String) async throws -> FineTuningJobObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func cancelFineTuningJobWith(id _: String) async throws -> FineTuningJobObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listFineTuningEventsForJobWith(
+    id _: String,
+    after _: String?,
+    limit _: Int?)
+    async throws -> OpenAIResponse<FineTuningJobEventObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listFiles() async throws -> OpenAIResponse<FileObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func uploadFile(parameters _: FileParameters) async throws -> FileObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteFileWith(id _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveFileWith(id _: String) async throws -> FileObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveContentForFileWith(id _: String) async throws -> [[String: Any]] {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func legacyCreateImages(parameters _: ImageCreateParameters) async throws -> OpenAIResponse<ImageObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func legacyEditImage(parameters _: ImageEditParameters) async throws -> OpenAIResponse<ImageObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func legacyCreateImageVariations(parameters _: ImageVariationParameters) async throws -> OpenAIResponse<ImageObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listModels() async throws -> OpenAIResponse<ModelObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveModelWith(id _: String) async throws -> ModelObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteFineTuneModelWith(id _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createModerationFromText(parameters _: ModerationParameter<String>) async throws -> ModerationObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createModerationFromTexts(parameters _: ModerationParameter<[String]>) async throws -> ModerationObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createAssistant(parameters _: AssistantParameters) async throws -> AssistantObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveAssistant(id _: String) async throws -> AssistantObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func modifyAssistant(id _: String, parameters _: AssistantParameters) async throws -> AssistantObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteAssistant(id _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listAssistants(
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?)
+    async throws -> OpenAIResponse<AssistantObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createThread(parameters _: CreateThreadParameters) async throws -> ThreadObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveThread(id _: String) async throws -> ThreadObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func modifyThread(id _: String, parameters _: ModifyThreadParameters) async throws -> ThreadObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteThread(id _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createMessage(threadID _: String, parameters _: MessageParameter) async throws -> MessageObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveMessage(threadID _: String, messageID _: String) async throws -> MessageObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func modifyMessage(
+    threadID _: String,
+    messageID _: String,
+    parameters _: ModifyMessageParameters)
+    async throws -> MessageObject
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteMessage(threadID _: String, messageID _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listMessages(
+    threadID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?,
+    runID _: String?)
+    async throws -> OpenAIResponse<MessageObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createRun(threadID _: String, parameters _: RunParameter) async throws -> RunObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveRun(threadID _: String, runID _: String) async throws -> RunObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func modifyRun(threadID _: String, runID _: String, parameters _: ModifyRunParameters) async throws -> RunObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listRuns(
+    threadID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?)
+    async throws -> OpenAIResponse<RunObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func cancelRun(threadID _: String, runID _: String) async throws -> RunObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func submitToolOutputsToRun(
+    threadID _: String,
+    runID _: String,
+    parameters _: RunToolsOutputParameter)
+    async throws -> RunObject
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createThreadAndRun(parameters _: CreateThreadAndRunParameter) async throws -> RunObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveRunstep(threadID _: String, runID _: String, stepID _: String) async throws -> RunStepObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listRunSteps(
+    threadID _: String,
+    runID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?)
+    async throws -> OpenAIResponse<RunStepObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createThreadAndRunStream(parameters _: CreateThreadAndRunParameter) async throws
+    -> AsyncThrowingStream<AssistantStreamEvent, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createRunStream(
+    threadID _: String,
+    parameters _: RunParameter)
+    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func submitToolOutputsToRunStream(
+    threadID _: String,
+    runID _: String,
+    parameters _: RunToolsOutputParameter)
+    async throws -> AsyncThrowingStream<AssistantStreamEvent, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createBatch(parameters _: BatchParameter) async throws -> BatchObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveBatch(id _: String) async throws -> BatchObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func cancelBatch(id _: String) async throws -> BatchObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listBatch(after _: String?, limit _: Int?) async throws -> OpenAIResponse<BatchObject> {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createVectorStore(parameters _: VectorStoreParameter) async throws -> VectorStoreObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listVectorStores(
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?)
+    async throws -> OpenAIResponse<VectorStoreObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveVectorStore(id _: String) async throws -> VectorStoreObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func modifyVectorStore(parameters _: VectorStoreParameter, id _: String) async throws -> VectorStoreObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteVectorStore(id _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createVectorStoreFile(
+    vectorStoreID _: String,
+    parameters _: VectorStoreFileParameter)
+    async throws -> VectorStoreFileObject
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listVectorStoreFiles(
+    vectorStoreID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?,
+    filter _: String?)
+    async throws -> OpenAIResponse<VectorStoreFileObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveVectorStoreFile(vectorStoreID _: String, fileID _: String) async throws -> VectorStoreFileObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteVectorStoreFile(vectorStoreID _: String, fileID _: String) async throws -> DeletionStatus {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createVectorStoreFileBatch(
+    vectorStoreID _: String,
+    parameters _: VectorStoreFileBatchParameter)
+    async throws -> VectorStoreFileBatchObject
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func retrieveVectorStoreFileBatch(vectorStoreID _: String, batchID _: String) async throws -> VectorStoreFileBatchObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func cancelVectorStoreFileBatch(vectorStoreID _: String, batchID _: String) async throws -> VectorStoreFileBatchObject {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listVectorStoreFilesInABatch(
+    vectorStoreID _: String,
+    batchID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?,
+    before _: String?,
+    filter _: String?)
+    async throws -> OpenAIResponse<VectorStoreFileObject>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  // MARK: Response
+
+  func responseCreate(
+    _: ModelResponseParameter)
+    async throws -> ResponseModel
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func responseModel(
+    id _: String)
+    async throws -> ResponseModel
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
+  private let apiKey: Authorization
+  /// Set this flag to TRUE if you need to print request events in DEBUG builds.
+  private let debugEnabled: Bool
+
 }

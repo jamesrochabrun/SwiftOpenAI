@@ -16,11 +16,10 @@ struct DefaultOpenAIService: OpenAIService {
     proxyPath: String? = nil,
     overrideVersion: String? = nil,
     extraHeaders: [String: String]? = nil,
-    configuration: URLSessionConfiguration,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    session = URLSession(configuration: configuration)
+    self.httpClient = AsyncHTTPClientAdapter.createDefault()
     self.decoder = decoder
     self.apiKey = .bearer(apiKey)
     self.organizationID = organizationID
@@ -32,7 +31,7 @@ struct DefaultOpenAIService: OpenAIService {
     self.debugEnabled = debugEnabled
   }
 
-  let session: URLSession
+  let httpClient: HTTPClient
   let decoder: JSONDecoder
   let openAIEnvironment: OpenAIEnvironment
 

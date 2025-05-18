@@ -14,11 +14,10 @@ struct LocalModelService: OpenAIService {
     baseURL: String,
     proxyPath: String? = nil,
     overrideVersion: String? = nil,
-    configuration: URLSessionConfiguration = .default,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    session = URLSession(configuration: configuration)
+    self.httpClient = AsyncHTTPClientAdapter.createDefault()
     self.decoder = decoder
     self.apiKey = apiKey
     openAIEnvironment = OpenAIEnvironment(baseURL: baseURL, proxyPath: proxyPath, version: overrideVersion ?? "v1")
@@ -49,7 +48,7 @@ struct LocalModelService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
-  let session: URLSession
+  let httpClient: HTTPClient
   let decoder: JSONDecoder
   let openAIEnvironment: OpenAIEnvironment
 

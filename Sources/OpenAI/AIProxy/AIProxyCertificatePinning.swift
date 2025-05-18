@@ -4,7 +4,7 @@
 //
 //  Created by Lou Zell on 6/23/24.
 //
-
+#if !os(Linux)
 import Foundation
 import OSLog
 
@@ -181,3 +181,4 @@ private func getServerCert(secTrust: SecTrust) -> SecCertificate? {
     return SecTrustGetCertificateAtIndex(secTrust, 0)
   }
 }
+#endif

@@ -4,7 +4,7 @@
 //
 //  Created by Lou Zell on 3/27/24.
 //
-
+#if !os(Linux)
 import Foundation
 
 private let aiproxySecureDelegate = AIProxyCertificatePinningDelegate()
@@ -44,8 +44,10 @@ struct AIProxyService: OpenAIService {
     self.organizationID = organizationID
     self.debugEnabled = debugEnabled
     openAIEnvironment = .init(baseURL: serviceURL ?? "https://api.aiproxy.pro", proxyPath: nil, version: "v1")
+    self.httpClient = NoOpClient()
   }
 
+  let httpClient: HTTPClient
   let session: URLSession
   let decoder: JSONDecoder
   let openAIEnvironment: OpenAIEnvironment
@@ -1314,3 +1316,26 @@ struct AIProxyService: OpenAIService {
   private let organizationID: String?
 
 }
+
+// MARK: - NoOpClient
+
+// An HTTPClient created specifically for AIProxyService, since it will only be used on iOS/macOS
+// and we will not be supporting it on Linux.
+private struct NoOpClient: HTTPClient {
+  func data(for request: HTTPRequest) async throws -> (Data, HTTPResponse) {
+    (
+      Data(),
+      HTTPResponse(statusCode: 500, headers: [:])
+    )
+  }
+
+  func bytes(for request: HTTPRequest) async throws -> (HTTPByteStream, HTTPResponse) {
+    (
+      HTTPByteStream.bytes(
+        .init(unfolding: { nil })
+      ),
+      HTTPResponse(statusCode: 500, headers: [:])
+    )
+  }
+}
+#endif

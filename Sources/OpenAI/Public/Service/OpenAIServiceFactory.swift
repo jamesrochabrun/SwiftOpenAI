@@ -14,21 +14,24 @@ public class OpenAIServiceFactory {
   /// - Parameters:
   ///   - apiKey: The API key required for authentication.
   ///   - organizationID: The optional organization ID for multi-tenancy (default is `nil`).
-  ///   - configuration: The URL session configuration to be used for network calls (default is `.default`).
   ///   - decoder: The JSON decoder to be used for parsing API responses (default is `JSONDecoder.init()`).
+  ///   - httpClient: The HTTPClient to be used for network calls. Defaults to `AsyncHTTPClientAdapter.createDefault()`
   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
-
+  ///
   /// - Returns: A fully configured object conforming to `OpenAIService`.
   public static func service(
     apiKey: String,
     organizationID: String? = nil,
     decoder: JSONDecoder = .init(),
+    httpClient: HTTPClient? = nil,
     debugEnabled: Bool = false)
     -> OpenAIService
   {
-    DefaultOpenAIService(
+    let client = httpClient ?? AsyncHTTPClientAdapter.createDefault()
+    return DefaultOpenAIService(
       apiKey: apiKey,
       organizationID: organizationID,
+      httpClient: client,
       decoder: decoder,
       debugEnabled: debugEnabled)
   }
@@ -40,17 +43,21 @@ public class OpenAIServiceFactory {
   /// - Parameters:
   ///   - azureConfiguration: The AzureOpenAIConfiguration.
   ///   - decoder: The JSON decoder to be used for parsing API responses (default is `JSONDecoder.init()`).
+  ///   - httpClient: The HTTPClient to be used for network calls. Defaults to `AsyncHTTPClientAdapter.createDefault()`
   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
   ///
   /// - Returns: A fully configured object conforming to `OpenAIService`.
   public static func service(
     azureConfiguration: AzureOpenAIConfiguration,
     decoder: JSONDecoder = .init(),
+    httpClient: HTTPClient? = nil,
     debugEnabled: Bool = false)
     -> OpenAIService
   {
-    DefaultOpenAIAzureService(
+    let client = httpClient ?? AsyncHTTPClientAdapter.createDefault()
+    return DefaultOpenAIAzureService(
       azureConfiguration: azureConfiguration,
+      httpClient: client,
       decoder: decoder,
       debugEnabled: debugEnabled)
   }
@@ -101,18 +108,22 @@ public class OpenAIServiceFactory {
   /// - Parameters:
   ///   - apiKey: The optional API key required for authentication.
   ///   - baseURL: The local host URL. defaults to  "http://localhost:11434"
+  ///   - httpClient: The HTTPClient to be used for network calls. Defaults to `AsyncHTTPClientAdapter.createDefault()`
   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
   ///
   /// - Returns: A fully configured object conforming to `OpenAIService`.
   public static func service(
     apiKey: Authorization = .apiKey(""),
     baseURL: String,
+    httpClient: HTTPClient? = nil,
     debugEnabled: Bool = false)
     -> OpenAIService
   {
-    LocalModelService(
+    let client = httpClient ?? AsyncHTTPClientAdapter.createDefault()
+    return LocalModelService(
       apiKey: apiKey,
       baseURL: baseURL,
+      httpClient: client,
       debugEnabled: debugEnabled)
   }
 
@@ -128,6 +139,7 @@ public class OpenAIServiceFactory {
   ///   - proxyPath: The proxy path e.g `openai`
   ///   - overrideVersion: The API version. defaults to `v1`
   ///   - extraHeaders: Additional headers needed for the request. Do not provide API key in these headers.
+  ///   - httpClient: The HTTPClient to be used for network calls. Defaults to `AsyncHTTPClientAdapter.createDefault()`
   ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
   ///
   /// - Returns: A fully configured object conforming to `OpenAIService`.
@@ -137,15 +149,18 @@ public class OpenAIServiceFactory {
     proxyPath: String? = nil,
     overrideVersion: String? = nil,
     extraHeaders: [String: String]? = nil,
+    httpClient: HTTPClient? = nil,
     debugEnabled: Bool = false)
     -> OpenAIService
   {
-    DefaultOpenAIService(
+    let client = httpClient ?? AsyncHTTPClientAdapter.createDefault()
+    return DefaultOpenAIService(
       apiKey: apiKey,
       baseURL: overrideBaseURL,
       proxyPath: proxyPath,
       overrideVersion: overrideVersion,
       extraHeaders: extraHeaders,
+      httpClient: client,
       debugEnabled: debugEnabled)
   }
 }

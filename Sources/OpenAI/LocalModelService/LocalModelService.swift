@@ -14,10 +14,11 @@ struct LocalModelService: OpenAIService {
     baseURL: String,
     proxyPath: String? = nil,
     overrideVersion: String? = nil,
+    httpClient: HTTPClient,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    self.httpClient = AsyncHTTPClientAdapter.createDefault()
+    self.httpClient = httpClient
     self.decoder = decoder
     self.apiKey = apiKey
     openAIEnvironment = OpenAIEnvironment(baseURL: baseURL, proxyPath: proxyPath, version: overrideVersion ?? "v1")

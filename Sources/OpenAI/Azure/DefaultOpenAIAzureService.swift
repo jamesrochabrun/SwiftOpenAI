@@ -14,10 +14,11 @@ final public class DefaultOpenAIAzureService: OpenAIService {
 
   public init(
     azureConfiguration: AzureOpenAIConfiguration,
+    httpClient: HTTPClient,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    self.httpClient = AsyncHTTPClientAdapter.createDefault()
+    self.httpClient = httpClient
     self.decoder = decoder
     openAIEnvironment = OpenAIEnvironment(
       baseURL: "https://\(azureConfiguration.resourceName)/openai.azure.com",

@@ -16,10 +16,11 @@ struct DefaultOpenAIService: OpenAIService {
     proxyPath: String? = nil,
     overrideVersion: String? = nil,
     extraHeaders: [String: String]? = nil,
+    httpClient: HTTPClient,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    self.httpClient = AsyncHTTPClientAdapter.createDefault()
+    self.httpClient = httpClient
     self.decoder = decoder
     self.apiKey = .bearer(apiKey)
     self.organizationID = organizationID

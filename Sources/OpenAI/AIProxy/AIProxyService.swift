@@ -40,12 +40,11 @@ struct AIProxyService: OpenAIService {
     self.organizationID = organizationID
     self.debugEnabled = debugEnabled
     openAIEnvironment = .init(baseURL: serviceURL ?? "https://api.aiproxy.pro", proxyPath: nil, version: "v1")
-	self.httpClient = URLSessionHTTPClientAdapter(
-	  urlSession: URLSession(
-	  configuration: .default,
-	  delegate: aiproxySecureDelegate,
-	  delegateQueue: nil)
-	)
+    httpClient = URLSessionHTTPClientAdapter(
+      urlSession: URLSession(
+        configuration: .default,
+        delegate: aiproxySecureDelegate,
+        delegateQueue: nil))
   }
 
   let httpClient: HTTPClient

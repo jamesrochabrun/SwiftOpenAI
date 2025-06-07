@@ -4,6 +4,8 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - HTTPClient
+
 /// Protocol that abstracts HTTP client functionality
 public protocol HTTPClient {
   /// Fetches data for a given HTTP request
@@ -17,17 +19,10 @@ public protocol HTTPClient {
   func bytes(for request: HTTPRequest) async throws -> (HTTPByteStream, HTTPResponse)
 }
 
+// MARK: - HTTPRequest
+
 /// Represents an HTTP request with platform-agnostic properties
 public struct HTTPRequest {
-  /// The URL for the request
-  var url: URL
-  /// The HTTP method for the request
-  var method: HTTPMethod
-  /// The HTTP headers for the request
-  var headers: [String: String]
-  /// The body of the request, if any
-  var body: Data?
-
   public init(url: URL, method: HTTPMethod, headers: [String: String], body: Data? = nil) {
     self.url = url
     self.method = method
@@ -41,23 +36,37 @@ public struct HTTPRequest {
     guard let url = urlRequest.url else {
       throw URLError(.badURL)
     }
-    
-    guard let httpMethodString = urlRequest.httpMethod,
-          let httpMethod = HTTPMethod(rawValue: httpMethodString) else {
+
+    guard
+      let httpMethodString = urlRequest.httpMethod,
+      let httpMethod = HTTPMethod(rawValue: httpMethodString)
+    else {
       throw URLError(.unsupportedURL)
     }
-    
+
     var headers: [String: String] = [:]
     if let allHTTPHeaderFields = urlRequest.allHTTPHeaderFields {
       headers = allHTTPHeaderFields
     }
-    
+
     self.url = url
-    self.method = httpMethod
+    method = httpMethod
     self.headers = headers
-    self.body = urlRequest.httpBody
+    body = urlRequest.httpBody
   }
+
+  /// The URL for the request
+  var url: URL
+  /// The HTTP method for the request
+  var method: HTTPMethod
+  /// The HTTP headers for the request
+  var headers: [String: String]
+  /// The body of the request, if any
+  var body: Data?
+
 }
+
+// MARK: - HTTPResponse
 
 /// Represents an HTTP response with platform-agnostic properties
 public struct HTTPResponse {
@@ -72,6 +81,8 @@ public struct HTTPResponse {
   }
 }
 
+// MARK: - HTTPByteStream
+
 /// Represents a stream of bytes or lines from an HTTP response
 public enum HTTPByteStream {
   /// A stream of bytes
@@ -80,16 +91,16 @@ public enum HTTPByteStream {
   case lines(AsyncThrowingStream<String, Error>)
 }
 
-// MARK: - HTTPClient Factory
+// MARK: - HTTPClientFactory
 
-public struct HTTPClientFactory {
+public enum HTTPClientFactory {
   /// Creates a default HTTPClient implementation appropriate for the current platform
   /// - Returns: URLSessionHTTPClientAdapter on Apple platforms, AsyncHTTPClientAdapter on Linux
   public static func createDefault() -> HTTPClient {
-#if os(Linux)
+    #if os(Linux)
     return AsyncHTTPClientAdapter.createDefault()
-#else
+    #else
     return URLSessionHTTPClientAdapter()
-#endif
+    #endif
   }
 }

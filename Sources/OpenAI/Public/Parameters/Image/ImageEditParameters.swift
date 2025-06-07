@@ -37,11 +37,11 @@ public struct ImageEditParameters: Encodable {
     let maskData = mask?.tiffRepresentation
     #endif
 
-    guard let imageData = imageData else {
+    guard let imageData else {
       fatalError("Failed to get image data")
     }
 
-    if mask != nil && maskData == nil {
+    if mask != nil, maskData == nil {
       fatalError("Failed to get mask data")
     }
 
@@ -52,8 +52,7 @@ public struct ImageEditParameters: Encodable {
       prompt: prompt,
       numberOfImages: numberOfImages,
       responseFormat: responseFormat,
-      user: user
-    )
+      user: user)
   }
   #endif
 
@@ -75,9 +74,9 @@ public struct ImageEditParameters: Encodable {
     responseFormat: ImageResponseFormat? = nil,
     user: String? = nil)
   {
-    self.image = imageData
+    image = imageData
     self.model = model?.model
-    self.mask = maskData
+    mask = maskData
     self.prompt = prompt
     n = numberOfImages
     size = model?.size

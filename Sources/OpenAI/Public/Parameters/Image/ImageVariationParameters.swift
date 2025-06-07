@@ -31,7 +31,7 @@ public struct ImageVariationParameters: Encodable {
     let imageData = image.tiffRepresentation
     #endif
 
-    guard let imageData = imageData else {
+    guard let imageData else {
       fatalError("Failed to load image data from image.")
     }
 
@@ -40,8 +40,7 @@ public struct ImageVariationParameters: Encodable {
       model: model,
       numberOfImages: numberOfImages,
       responseFormat: responseFormat,
-      user: user
-    )
+      user: user)
   }
   #endif
 
@@ -64,7 +63,7 @@ public struct ImageVariationParameters: Encodable {
         "Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
     }
 
-    self.image = imageData
+    image = imageData
     n = numberOfImages
     self.model = model?.model
     size = model?.size

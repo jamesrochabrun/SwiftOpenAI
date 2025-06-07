@@ -43,7 +43,7 @@ public struct CreateImageEditParameters: Encodable {
     let maskData = mask?.tiffRepresentation
     #endif
 
-    guard let imageData = imageData else {
+    guard let imageData else {
       fatalError("Failed to get image data")
     }
 
@@ -56,8 +56,7 @@ public struct CreateImageEditParameters: Encodable {
       quality: quality,
       responseFormat: responseFormat,
       size: size,
-      user: user
-    )
+      user: user)
   }
 
   /// Creates parameters for editing multiple images (for gpt-image-1 only)
@@ -111,8 +110,7 @@ public struct CreateImageEditParameters: Encodable {
       quality: quality,
       responseFormat: nil, // Not needed for gpt-image-1
       size: size,
-      user: user
-    )
+      user: user)
   }
   #endif
 

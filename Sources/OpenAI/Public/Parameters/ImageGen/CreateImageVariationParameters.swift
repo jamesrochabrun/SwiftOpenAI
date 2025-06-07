@@ -39,7 +39,7 @@ public struct CreateImageVariationParameters: Encodable {
     let imageData = image.tiffRepresentation
     #endif
 
-    guard let imageData = imageData else {
+    guard let imageData else {
       fatalError("Failed to get image data")
     }
 
@@ -48,8 +48,7 @@ public struct CreateImageVariationParameters: Encodable {
       numberOfImages: numberOfImages,
       responseFormat: responseFormat,
       size: size,
-      user: user
-    )
+      user: user)
   }
   #endif
 

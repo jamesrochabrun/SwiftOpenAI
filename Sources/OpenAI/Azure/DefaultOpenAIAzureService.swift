@@ -10,6 +10,8 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - DefaultOpenAIAzureService
+
 final public class DefaultOpenAIAzureService: OpenAIService {
 
   public init(

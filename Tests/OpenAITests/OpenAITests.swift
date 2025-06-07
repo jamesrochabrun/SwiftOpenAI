@@ -184,7 +184,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741476542)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
     XCTAssertNil(responseModel.error)
     XCTAssertNil(responseModel.incompleteDetails)
     XCTAssertNil(responseModel.instructions)
@@ -205,6 +205,11 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.usage?.totalTokens, 123)
     XCTAssertEqual(responseModel.usage?.inputTokensDetails?.cachedTokens, 0)
     XCTAssertEqual(responseModel.usage?.outputTokensDetails?.reasoningTokens, 0)
+    
+    // Test new fields
+    XCTAssertNil(responseModel.background)
+    XCTAssertNil(responseModel.serviceTier)
+    XCTAssertEqual(responseModel.store, true)
 
     // Test output content
     XCTAssertEqual(responseModel.output.count, 1)
@@ -302,7 +307,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741476777)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
     XCTAssertNil(responseModel.error)
     XCTAssertNil(responseModel.incompleteDetails)
     XCTAssertNil(responseModel.instructions)
@@ -460,7 +465,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741484430)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
     XCTAssertNil(responseModel.error)
     XCTAssertNil(responseModel.incompleteDetails)
     XCTAssertNil(responseModel.instructions)
@@ -658,7 +663,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741485253)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
     XCTAssertNil(responseModel.error)
     XCTAssertNil(responseModel.incompleteDetails)
     XCTAssertNil(responseModel.instructions)
@@ -856,7 +861,7 @@ final class OpenAITests: XCTestCase {
     let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
 
     // Test error properties
-    XCTAssertEqual(responseModel.status, "failed")
+    XCTAssertEqual(responseModel.status, .failed)
     XCTAssertNotNil(responseModel.error)
     XCTAssertEqual(responseModel.error?.code, "server_error")
     XCTAssertEqual(responseModel.error?.message, "The server encountered an error while processing your request.")
@@ -907,7 +912,7 @@ final class OpenAITests: XCTestCase {
     let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
 
     // Test incomplete properties
-    XCTAssertEqual(responseModel.status, "incomplete")
+    XCTAssertEqual(responseModel.status, .incomplete)
     XCTAssertNotNil(responseModel.incompleteDetails)
     XCTAssertEqual(responseModel.incompleteDetails?.reason, "content_filter")
 
@@ -1012,7 +1017,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741294021)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
 
     // Test tool configuration
     XCTAssertEqual(responseModel.tools.count, 1)
@@ -1109,7 +1114,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.id, "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808")
     XCTAssertEqual(responseModel.object, "response")
     XCTAssertEqual(responseModel.createdAt, 1741477868)
-    XCTAssertEqual(responseModel.status, "completed")
+    XCTAssertEqual(responseModel.status, .completed)
     XCTAssertEqual(responseModel.model, "o1-2024-12-17")
 
     // Test reasoning properties
@@ -1145,5 +1150,150 @@ final class OpenAITests: XCTestCase {
 
     // Test outputText convenience property
     XCTAssertEqual(responseModel.outputText, "The classic tongue twister...")
+  }
+
+  // MARK: - New Fields Test (background, serviceTier, store)
+
+  func testResponseModelNewFields() throws {
+    // Test response with new fields
+    let json = """
+      {
+        "id": "resp_test_new_fields",
+        "object": "response",
+        "created_at": 1741485253,
+        "status": "completed",
+        "background": true,
+        "service_tier": "flex",
+        "store": false,
+        "model": "gpt-4o-2024-08-06",
+        "output": [
+          {
+            "type": "message",
+            "id": "msg_test",
+            "status": "completed",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "output_text",
+                "text": "Test response with new fields",
+                "annotations": []
+              }
+            ]
+          }
+        ],
+        "parallel_tool_calls": true,
+        "text": { "format": { "type": "text" } },
+        "tool_choice": "auto",
+        "tools": [],
+        "metadata": {}
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
+
+    // Test new fields
+    XCTAssertEqual(responseModel.background, true)
+    XCTAssertEqual(responseModel.serviceTier, "flex")
+    XCTAssertEqual(responseModel.store, false)
+    XCTAssertEqual(responseModel.status, .completed)
+  }
+
+  // MARK: - Status Enum Test
+
+  func testResponseModelStatusEnum() throws {
+    let statusValues: [(String, ResponseModel.Status)] = [
+      ("completed", .completed),
+      ("failed", .failed),
+      ("in_progress", .inProgress),
+      ("cancelled", .cancelled),
+      ("queued", .queued),
+      ("incomplete", .incomplete)
+    ]
+
+    for (jsonStatus, expectedStatus) in statusValues {
+      let json = """
+        {
+          "id": "resp_status_test",
+          "object": "response",
+          "created_at": 1741485253,
+          "status": "\(jsonStatus)",
+          "model": "gpt-4o-2024-08-06",
+          "output": [],
+          "parallel_tool_calls": true,
+          "text": { "format": { "type": "text" } },
+          "tool_choice": "auto",
+          "tools": [],
+          "metadata": {}
+        }
+        """
+
+      let decoder = JSONDecoder()
+      let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
+      
+      XCTAssertEqual(responseModel.status, expectedStatus, "Status '\(jsonStatus)' should decode to \(expectedStatus)")
+    }
+  }
+
+  // MARK: - Service Tier Values Test
+
+  func testServiceTierValues() throws {
+    let serviceTierValues = ["auto", "default", "flex", "scale"]
+    
+    for tier in serviceTierValues {
+      let json = """
+        {
+          "id": "resp_service_tier_test",
+          "object": "response",
+          "created_at": 1741485253,
+          "status": "completed",
+          "service_tier": "\(tier)",
+          "model": "gpt-4o-2024-08-06",
+          "output": [],
+          "parallel_tool_calls": true,
+          "text": { "format": { "type": "text" } },
+          "tool_choice": "auto",
+          "tools": [],
+          "metadata": {}
+        }
+        """
+
+      let decoder = JSONDecoder()
+      let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
+      
+      XCTAssertEqual(responseModel.serviceTier, tier, "Service tier '\(tier)' should be properly decoded")
+    }
+  }
+
+  // MARK: - Null Fields Test
+
+  func testResponseModelNullFields() throws {
+    // Test that null/missing fields are properly handled
+    let json = """
+      {
+        "id": "resp_null_fields_test",
+        "object": "response",
+        "created_at": 1741485253,
+        "status": "completed",
+        "background": null,
+        "service_tier": null,
+        "store": null,
+        "model": "gpt-4o-2024-08-06",
+        "output": [],
+        "parallel_tool_calls": true,
+        "text": { "format": { "type": "text" } },
+        "tool_choice": "auto",
+        "tools": [],
+        "metadata": {}
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
+
+    // Test that null values are properly decoded as nil
+    XCTAssertNil(responseModel.background)
+    XCTAssertNil(responseModel.serviceTier)
+    XCTAssertNil(responseModel.store)
   }
 }

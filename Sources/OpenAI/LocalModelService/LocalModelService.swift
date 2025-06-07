@@ -514,7 +514,7 @@ struct LocalModelService: OpenAIService {
   }
 
   func responseCreateStream(
-    _ parameters: ModelResponseParameter)
+    _: ModelResponseParameter)
     async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
   {
     fatalError(

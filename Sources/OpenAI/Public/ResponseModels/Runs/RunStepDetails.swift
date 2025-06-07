@@ -270,7 +270,7 @@ public struct CodeInterpreterImageOutput: Codable {
 
 }
 
-// MARK: - FileSearchToolCall
+// MARK: - RunStepFileSearchToolCall
 
 public struct RunStepFileSearchToolCall: Codable {
 
@@ -282,7 +282,7 @@ public struct RunStepFileSearchToolCall: Codable {
   }
 }
 
-// MARK: - FunctionToolCall
+// MARK: - RunStepFunctionToolCall
 
 public struct RunStepFunctionToolCall: Codable {
 

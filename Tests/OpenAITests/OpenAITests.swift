@@ -205,7 +205,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.usage?.totalTokens, 123)
     XCTAssertEqual(responseModel.usage?.inputTokensDetails?.cachedTokens, 0)
     XCTAssertEqual(responseModel.usage?.outputTokensDetails?.reasoningTokens, 0)
-    
+
     // Test new fields
     XCTAssertNil(responseModel.background)
     XCTAssertNil(responseModel.serviceTier)
@@ -1208,7 +1208,7 @@ final class OpenAITests: XCTestCase {
       ("in_progress", .inProgress),
       ("cancelled", .cancelled),
       ("queued", .queued),
-      ("incomplete", .incomplete)
+      ("incomplete", .incomplete),
     ]
 
     for (jsonStatus, expectedStatus) in statusValues {
@@ -1230,7 +1230,7 @@ final class OpenAITests: XCTestCase {
 
       let decoder = JSONDecoder()
       let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
-      
+
       XCTAssertEqual(responseModel.status, expectedStatus, "Status '\(jsonStatus)' should decode to \(expectedStatus)")
     }
   }
@@ -1239,7 +1239,7 @@ final class OpenAITests: XCTestCase {
 
   func testServiceTierValues() throws {
     let serviceTierValues = ["auto", "default", "flex", "scale"]
-    
+
     for tier in serviceTierValues {
       let json = """
         {
@@ -1260,7 +1260,7 @@ final class OpenAITests: XCTestCase {
 
       let decoder = JSONDecoder()
       let responseModel = try decoder.decode(ResponseModel.self, from: json.data(using: .utf8)!)
-      
+
       XCTAssertEqual(responseModel.serviceTier, tier, "Service tier '\(tier)' should be properly decoded")
     }
   }

@@ -58,25 +58,25 @@ public enum InputType: Codable {
 public enum InputItem: Codable {
   /// Input message with role and content
   case message(InputMessage)
-  
+
   /// Output message from the model (for conversation history)
   case outputMessage(OutputMessage)
-  
+
   /// File search tool call
   case fileSearchToolCall(FileSearchToolCall)
-  
+
   /// Function tool call
   case functionToolCall(FunctionToolCall)
-  
+
   /// Function tool call output
   case functionToolCallOutput(FunctionToolCallOutput)
-  
+
   /// Other input item types can be added here as needed
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let type = try container.decode(String.self, forKey: .type)
-    
+
     switch type {
     case "message":
       self = try .message(InputMessage(from: decoder))
@@ -91,7 +91,7 @@ public enum InputItem: Codable {
       self = try .message(InputMessage(from: decoder))
     }
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     switch self {
     case .message(let message):
@@ -106,7 +106,7 @@ public enum InputItem: Codable {
       try output.encode(to: encoder)
     }
   }
-  
+
   private enum CodingKeys: String, CodingKey {
     case type
     case role
@@ -117,24 +117,29 @@ public enum InputItem: Codable {
 
 /// A message input to the model with a role indicating instruction following hierarchy
 public struct InputMessage: Codable {
-  /// The role of the message input (user, system, assistant, developer)
-  public let role: String
-  
-  /// The content of the message
-  public let content: MessageContent
-  
-  /// The type of the message input. Always "message"
-  public let type: String?
-  
-  /// The status of item. Populated when items are returned via API
-  public let status: String?
-  
-  public init(role: String, content: MessageContent, type: String? = "message", status: String? = nil) {
+  public init(role: String, content: MessageContent, type: String? = "message", status: String? = nil, id: String? = nil) {
     self.role = role
     self.content = content
     self.type = type
     self.status = status
+    self.id = id
   }
+
+  /// The role of the message input (user, system, assistant, developer)
+  public let role: String
+
+  /// The content of the message
+  public let content: MessageContent
+
+  /// The type of the message input. Always "message"
+  public let type: String?
+
+  /// The status of item. Populated when items are returned via API
+  public let status: String?
+
+  /// The unique ID of the message (for assistant messages with response IDs)
+  public let id: String?
+
 }
 
 // MARK: - MessageContent
@@ -143,13 +148,13 @@ public struct InputMessage: Codable {
 public enum MessageContent: Codable {
   /// Text input as string
   case text(String)
-  
+
   /// Array of content items
   case array([ContentItem])
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    
+
     if let text = try? container.decode(String.self) {
       self = .text(text)
     } else if let array = try? container.decode([ContentItem].self) {
@@ -160,7 +165,7 @@ public enum MessageContent: Codable {
         debugDescription: "Content must be a string or an array of content items")
     }
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     switch self {
@@ -187,10 +192,10 @@ public enum ContentItem: Codable {
 
   /// Audio content
   case audio(AudioContent)
-  
+
   /// Output text (for assistant messages)
   case outputText(OutputTextContent)
-  
+
   /// Refusal (for assistant messages)
   case refusal(RefusalContent)
 
@@ -212,10 +217,10 @@ public enum ContentItem: Codable {
 
     case "input_audio":
       self = try .audio(singleValueContainer.decode(AudioContent.self))
-      
+
     case "output_text":
       self = try .outputText(singleValueContainer.decode(OutputTextContent.self))
-      
+
     case "refusal":
       self = try .refusal(singleValueContainer.decode(RefusalContent.self))
 
@@ -275,23 +280,23 @@ public struct TextContent: Codable {
 
 /// Image content structure
 public struct ImageContent: Codable {
-  /// The type of content, always "input_image"
-  public let type = "input_image"
-  
-  /// The detail level of the image. One of high, low, or auto. Defaults to auto
-  public let detail: String
-  
-  /// The ID of the file to be sent to the model
-  public let fileId: String?
-  
-  /// The URL of the image to be sent to the model. A fully qualified URL or base64 encoded image in a data URL
-  public let imageUrl: String?
-
   public init(detail: String = "auto", fileId: String? = nil, imageUrl: String? = nil) {
     self.detail = detail
     self.fileId = fileId
     self.imageUrl = imageUrl
   }
+
+  /// The type of content, always "input_image"
+  public let type = "input_image"
+
+  /// The detail level of the image. One of high, low, or auto. Defaults to auto
+  public let detail: String
+
+  /// The ID of the file to be sent to the model
+  public let fileId: String?
+
+  /// The URL of the image to be sent to the model. A fully qualified URL or base64 encoded image in a data URL
+  public let imageUrl: String?
 
   enum CodingKeys: String, CodingKey {
     case type
@@ -305,23 +310,23 @@ public struct ImageContent: Codable {
 
 /// File content structure
 public struct FileContent: Codable {
-  /// The type of content, always "input_file"
-  public let type = "input_file"
-  
-  /// The content of the file to be sent to the model
-  public let fileData: String?
-  
-  /// The ID of the file to be sent to the model
-  public let fileId: String?
-  
-  /// The name of the file to be sent to the model
-  public let filename: String?
-
   public init(fileData: String? = nil, fileId: String? = nil, filename: String? = nil) {
     self.fileData = fileData
     self.fileId = fileId
     self.filename = filename
   }
+
+  /// The type of content, always "input_file"
+  public let type = "input_file"
+
+  /// The content of the file to be sent to the model
+  public let fileData: String?
+
+  /// The ID of the file to be sent to the model
+  public let fileId: String?
+
+  /// The name of the file to be sent to the model
+  public let filename: String?
 
   enum CodingKeys: String, CodingKey {
     case type
@@ -360,39 +365,40 @@ public struct AudioContent: Codable {
 
 /// A text output from the model
 public struct OutputTextContent: Codable {
-  /// The text content
-  public let text: String
-  
-  /// Annotations in the text, if any
-  public let annotations: [Any]? // For now, using Any. Can be made more specific later
-  
-  /// The type of the content. Always "output_text"
-  public let type = "output_text"
-  
   public init(text: String, annotations: [Any]? = nil) {
     self.text = text
     self.annotations = annotations
   }
-  
-  enum CodingKeys: String, CodingKey {
-    case text
-    case annotations
-    case type
-  }
-  
-  // Custom encoding/decoding to handle annotations
+
+  /// Custom encoding/decoding to handle annotations
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    self.text = try container.decode(String.self, forKey: .text)
-    self.annotations = nil // Skip decoding annotations for now
+    text = try container.decode(String.self, forKey: .text)
+    annotations = nil // Skip decoding annotations for now
   }
-  
+
+  /// The text content
+  public let text: String
+
+  /// Annotations in the text, if any
+  public let annotations: [Any]? // For now, using Any. Can be made more specific later
+
+  /// The type of the content. Always "output_text"
+  public let type = "output_text"
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(text, forKey: .text)
     try container.encode(type, forKey: .type)
     // Skip encoding annotations for now
   }
+
+  enum CodingKeys: String, CodingKey {
+    case text
+    case annotations
+    case type
+  }
+
 }
 
 // MARK: - RefusalContent
@@ -401,10 +407,10 @@ public struct OutputTextContent: Codable {
 public struct RefusalContent: Codable {
   /// The refusal explanation from the model
   public let refusal: String
-  
+
   /// The type of the refusal. Always "refusal"
   public let type = "refusal"
-  
+
   public init(refusal: String) {
     self.refusal = refusal
   }
@@ -414,21 +420,6 @@ public struct RefusalContent: Codable {
 
 /// An output message from the model (used in conversation history)
 public struct OutputMessage: Codable {
-  /// The content of the output message
-  public let content: [ContentItem]
-  
-  /// The unique ID of the output message
-  public let id: String
-  
-  /// The role of the output message. Always "assistant"
-  public let role: String
-  
-  /// The status of the message. One of in_progress, completed, or incomplete
-  public let status: String
-  
-  /// The type of the output message. Always "message"
-  public let type: String
-  
   public init(content: [ContentItem], id: String, role: String = "assistant", status: String, type: String = "message") {
     self.content = content
     self.id = id
@@ -436,9 +427,25 @@ public struct OutputMessage: Codable {
     self.status = status
     self.type = type
   }
+
+  /// The content of the output message
+  public let content: [ContentItem]
+
+  /// The unique ID of the output message
+  public let id: String
+
+  /// The role of the output message. Always "assistant"
+  public let role: String
+
+  /// The status of the message. One of in_progress, completed, or incomplete
+  public let status: String
+
+  /// The type of the output message. Always "message"
+  public let type: String
+
 }
 
-// MARK: - Tool Call Types
+// MARK: - FileSearchToolCall
 
 /// File search tool call
 public struct FileSearchToolCall: Codable {
@@ -447,14 +454,14 @@ public struct FileSearchToolCall: Codable {
   public let status: String
   public let type = "file_search_call"
   public let results: [FileSearchResult]?
-  
+
   public struct FileSearchResult: Codable {
     public let attributes: [String: String]?
     public let fileId: String?
     public let filename: String?
     public let score: Double?
     public let text: String?
-    
+
     enum CodingKeys: String, CodingKey {
       case attributes
       case fileId = "file_id"
@@ -463,15 +470,10 @@ public struct FileSearchToolCall: Codable {
   }
 }
 
+// MARK: - FunctionToolCall
+
 /// Function tool call
 public struct FunctionToolCall: Codable {
-  public let arguments: String
-  public let callId: String
-  public let name: String
-  public let type = "function_call"
-  public let id: String?
-  public let status: String?
-  
   public init(arguments: String, callId: String, name: String, id: String? = nil, status: String? = nil) {
     self.arguments = arguments
     self.callId = callId
@@ -479,13 +481,22 @@ public struct FunctionToolCall: Codable {
     self.id = id
     self.status = status
   }
-  
+
+  public let arguments: String
+  public let callId: String
+  public let name: String
+  public let type = "function_call"
+  public let id: String?
+  public let status: String?
+
   enum CodingKeys: String, CodingKey {
     case arguments
     case callId = "call_id"
     case name, type, id, status
   }
 }
+
+// MARK: - FunctionToolCallOutput
 
 /// Function tool call output
 public struct FunctionToolCallOutput: Codable {
@@ -494,14 +505,14 @@ public struct FunctionToolCallOutput: Codable {
   public let type = "function_call_output"
   public let id: String?
   public let status: String?
-  
+
   public init(callId: String, output: String, id: String? = nil, status: String? = nil) {
     self.callId = callId
     self.output = output
     self.id = id
     self.status = status
   }
-  
+
   enum CodingKeys: String, CodingKey {
     case callId = "call_id"
     case output, type, id, status

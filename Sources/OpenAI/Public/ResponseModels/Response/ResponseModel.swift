@@ -10,7 +10,7 @@ import Foundation
 /// The Response object returned when retrieving a model response
 /// [Get a model response](https://platform.openai.com/docs/api-reference/responses/get)
 public struct ResponseModel: Decodable {
-  
+
   /// The status of the response generation.
   public enum Status: String, Decodable {
     case completed
@@ -58,7 +58,7 @@ public struct ResponseModel: Decodable {
 
   /// Whether to run the model response in the background. Learn more.
   public let background: Bool?
-  
+
   /// Unix timestamp (in seconds) of when this Response was created.
   public let createdAt: Int
 
@@ -105,7 +105,7 @@ public struct ResponseModel: Decodable {
 
   /// Configuration options for reasoning models.
   public let reasoning: Reasoning?
-  
+
   /// Specifies the latency tier to use for processing the request.
   /// This parameter is relevant for customers subscribed to the scale tier service:
   /// - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier credits until they are exhausted.
@@ -118,7 +118,7 @@ public struct ResponseModel: Decodable {
 
   /// The status of the response generation. One of completed, failed, in_progress, cancelled, queued, or incomplete.
   public let status: Status?
-  
+
   /// Whether to store the message. Used for model improvement.
   public let store: Bool?
 

@@ -34,6 +34,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
    - [Structured Outputs](#structured-outputs)
    - [Vision](#vision)
 - [Response](#response)
+   - [Streaming Responses](#streaming-responses)
 - [Embeddings](#embeddings)
 - [Fine-tuning](#fine-tuning)
 - [Batch](#batch)
@@ -1268,6 +1269,14 @@ For more details about how to also uploading base 64 encoded images in iOS check
 
 OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
 
+**New in v3.0.0:**
+- Full streaming support with `responseCreateStream` method
+- Comprehensive `ResponseStreamEvent` enum covering 40+ event types
+- Enhanced `InputMessage` with `id` field for response ID tracking
+- Improved conversation state management with `previousResponseId`
+- Real-time text streaming, function calls, and tool usage events
+- Support for reasoning summaries, web search, file search, and image generation events
+
 Related guides:
 
 - [Quickstart](https://platform.openai.com/docs/quickstart?api-mode=responses)
@@ -1442,6 +1451,38 @@ public struct ResponseModel: Decodable {
 }
 ```
 
+Input Types
+```swift
+// InputType represents the input to the Response API
+public enum InputType: Codable {
+    case string(String)  // Simple text input
+    case array([InputItem])  // Array of input items for complex conversations
+}
+
+// InputItem represents different types of input
+public enum InputItem: Codable {
+    case message(InputMessage)  // User, assistant, system messages
+    case functionToolCall(FunctionToolCall)  // Function calls
+    case functionToolCallOutput(FunctionToolCallOutput)  // Function outputs
+    // ... other input types
+}
+
+// InputMessage structure with support for response IDs
+public struct InputMessage: Codable {
+    public let role: String  // "user", "assistant", "system"
+    public let content: MessageContent
+    public let type: String?  // Always "message"
+    public let status: String?  // "completed" for assistant messages
+    public let id: String?  // Response ID for assistant messages (new in v3.0.0)
+}
+
+// MessageContent can be text or array of content items
+public enum MessageContent: Codable {
+    case text(String)
+    case array([ContentItem])  // For multimodal content
+}
+```
+
 Usage
 
 Simple text input
@@ -1556,6 +1597,293 @@ Retrieving a response
 ```swift
 let responseId = "resp_abc123"
 let response = try await service.responseModel(id: responseId)
+```
+
+#### Streaming Responses
+
+The Response API supports streaming responses using Server-Sent Events (SSE). This allows you to receive partial responses as they are generated, enabling real-time UI updates and better user experience.
+
+Stream Events
+```swift
+// The ResponseStreamEvent enum represents all possible streaming events
+public enum ResponseStreamEvent: Decodable {
+  case responseCreated(ResponseCreatedEvent)
+  case responseInProgress(ResponseInProgressEvent)
+  case responseCompleted(ResponseCompletedEvent)
+  case responseFailed(ResponseFailedEvent)
+  case outputItemAdded(OutputItemAddedEvent)
+  case outputTextDelta(OutputTextDeltaEvent)
+  case outputTextDone(OutputTextDoneEvent)
+  case functionCallArgumentsDelta(FunctionCallArgumentsDeltaEvent)
+  case reasoningSummaryTextDelta(ReasoningSummaryTextDeltaEvent)
+  case error(ErrorEvent)
+  // ... and many more event types
+}
+```
+
+Basic Streaming Example
+```swift
+// Enable streaming by setting stream: true
+let parameters = ModelResponseParameter(
+    input: .string("Tell me a story"),
+    model: .gpt4o,
+    stream: true
+)
+
+// Create a stream
+let stream = try await service.responseCreateStream(parameters)
+
+// Process events as they arrive
+for try await event in stream {
+    switch event {
+    case .outputTextDelta(let delta):
+        // Append text chunk to your UI
+        print(delta.delta, terminator: "")
+        
+    case .responseCompleted(let completed):
+        // Response is complete
+        print("\nResponse ID: \(completed.response.id)")
+        
+    case .error(let error):
+        // Handle errors
+        print("Error: \(error.message)")
+        
+    default:
+        // Handle other events as needed
+        break
+    }
+}
+```
+
+Streaming with Conversation State
+```swift
+// Maintain conversation continuity with previousResponseId
+var previousResponseId: String? = nil
+var messages: [(role: String, content: String)] = []
+
+// First message
+let firstParams = ModelResponseParameter(
+    input: .string("Hello!"),
+    model: .gpt4o,
+    stream: true
+)
+
+let firstStream = try await service.responseCreateStream(firstParams)
+var firstResponse = ""
+
+for try await event in firstStream {
+    switch event {
+    case .outputTextDelta(let delta):
+        firstResponse += delta.delta
+        
+    case .responseCompleted(let completed):
+        previousResponseId = completed.response.id
+        messages.append((role: "user", content: "Hello!"))
+        messages.append((role: "assistant", content: firstResponse))
+        
+    default:
+        break
+    }
+}
+
+// Follow-up message with conversation context
+var inputArray: [InputItem] = []
+
+// Add conversation history
+for message in messages {
+    inputArray.append(.message(InputMessage(
+        role: message.role,
+        content: .text(message.content)
+    )))
+}
+
+// Add new user message
+inputArray.append(.message(InputMessage(
+    role: "user",
+    content: .text("How are you?")
+)))
+
+let followUpParams = ModelResponseParameter(
+    input: .array(inputArray),
+    model: .gpt4o,
+    previousResponseId: previousResponseId,
+    stream: true
+)
+
+let followUpStream = try await service.responseCreateStream(followUpParams)
+// Process the follow-up stream...
+```
+
+Streaming with Tools and Function Calling
+```swift
+let parameters = ModelResponseParameter(
+    input: .string("What's the weather in San Francisco?"),
+    model: .gpt4o,
+    tools: [
+        Tool(
+            type: "function",
+            function: ChatCompletionParameters.ChatFunction(
+                name: "get_weather",
+                description: "Get current weather",
+                parameters: JSONSchema(
+                    type: .object,
+                    properties: [
+                        "location": JSONSchema(type: .string)
+                    ],
+                    required: ["location"]
+                )
+            )
+        )
+    ],
+    stream: true
+)
+
+let stream = try await service.responseCreateStream(parameters)
+var functionCallArguments = ""
+
+for try await event in stream {
+    switch event {
+    case .functionCallArgumentsDelta(let delta):
+        // Accumulate function call arguments
+        functionCallArguments += delta.delta
+        
+    case .functionCallArgumentsDone(let done):
+        // Function call is complete
+        print("Function: \(done.name)")
+        print("Arguments: \(functionCallArguments)")
+        
+    case .outputTextDelta(let delta):
+        // Regular text output
+        print(delta.delta, terminator: "")
+        
+    default:
+        break
+    }
+}
+```
+
+Canceling a Stream
+```swift
+// Streams can be canceled using Swift's task cancellation
+let streamTask = Task {
+    let stream = try await service.responseCreateStream(parameters)
+    
+    for try await event in stream {
+        // Check if task is cancelled
+        if Task.isCancelled {
+            break
+        }
+        
+        // Process events...
+    }
+}
+
+// Cancel the stream when needed
+streamTask.cancel()
+```
+
+Complete Streaming Implementation Example
+```swift
+@MainActor
+@Observable
+class ResponseStreamProvider {
+    var messages: [Message] = []
+    var isStreaming = false
+    var error: String?
+    
+    private let service: OpenAIService
+    private var previousResponseId: String?
+    private var streamTask: Task<Void, Never>?
+    
+    init(service: OpenAIService) {
+        self.service = service
+    }
+    
+    func sendMessage(_ text: String) {
+        streamTask?.cancel()
+        
+        // Add user message
+        messages.append(Message(role: .user, content: text))
+        
+        // Start streaming
+        streamTask = Task {
+            await streamResponse(for: text)
+        }
+    }
+    
+    private func streamResponse(for userInput: String) async {
+        isStreaming = true
+        error = nil
+        
+        // Create streaming message placeholder
+        let streamingMessage = Message(role: .assistant, content: "", isStreaming: true)
+        messages.append(streamingMessage)
+        
+        do {
+            // Build conversation history
+            var inputArray: [InputItem] = []
+            for message in messages.dropLast(2) {
+                inputArray.append(.message(InputMessage(
+                    role: message.role.rawValue,
+                    content: .text(message.content)
+                )))
+            }
+            inputArray.append(.message(InputMessage(
+                role: "user",
+                content: .text(userInput)
+            )))
+            
+            let parameters = ModelResponseParameter(
+                input: .array(inputArray),
+                model: .gpt4o,
+                previousResponseId: previousResponseId,
+                stream: true
+            )
+            
+            let stream = try await service.responseCreateStream(parameters)
+            var accumulatedText = ""
+            
+            for try await event in stream {
+                guard !Task.isCancelled else { break }
+                
+                switch event {
+                case .outputTextDelta(let delta):
+                    accumulatedText += delta.delta
+                    updateStreamingMessage(with: accumulatedText)
+                    
+                case .responseCompleted(let completed):
+                    previousResponseId = completed.response.id
+                    finalizeStreamingMessage(with: accumulatedText, responseId: completed.response.id)
+                    
+                case .error(let errorEvent):
+                    throw APIError.requestFailed(description: errorEvent.message)
+                    
+                default:
+                    break
+                }
+            }
+        } catch {
+            self.error = error.localizedDescription
+            messages.removeLast() // Remove streaming message on error
+        }
+        
+        isStreaming = false
+    }
+    
+    private func updateStreamingMessage(with content: String) {
+        if let index = messages.lastIndex(where: { $0.isStreaming }) {
+            messages[index].content = content
+        }
+    }
+    
+    private func finalizeStreamingMessage(with content: String, responseId: String) {
+        if let index = messages.lastIndex(where: { $0.isStreaming }) {
+            messages[index].content = content
+            messages[index].isStreaming = false
+            messages[index].responseId = responseId
+        }
+    }
+}
 ```
 
 ### Embeddings

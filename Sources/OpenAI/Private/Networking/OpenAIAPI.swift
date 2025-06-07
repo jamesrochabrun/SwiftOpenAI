@@ -136,7 +136,7 @@ enum OpenAIAPI {
 
   enum ResponseCategory {
     case create
-    case retrieve(responseID: String)
+    case get(responseID: String)
   }
 }
 
@@ -272,7 +272,7 @@ extension OpenAIAPI: Endpoint {
     case .response(let category):
       switch category {
       case .create: return "\(version)/responses"
-      case .retrieve(let responseID): return "\(version)/responses/\(responseID)"
+      case .get(let responseID): return "\(version)/responses/\(responseID)"
       }
     }
   }

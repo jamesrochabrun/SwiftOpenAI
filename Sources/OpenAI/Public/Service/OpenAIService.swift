@@ -992,6 +992,14 @@ public protocol OpenAIService {
   func responseModel(
     id: String)
     async throws -> ResponseModel
+
+  /// Returns a streaming [Response](https://platform.openai.com/docs/api-reference/responses/object) object.
+  ///
+  /// - Parameter parameters: The response model parameters with stream set to true
+  /// - Returns: An AsyncThrowingStream of ResponseStreamEvent objects
+  func responseCreateStream(
+    _ parameters: ModelResponseParameter)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
 }
 
 extension OpenAIService {

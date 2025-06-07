@@ -917,6 +917,22 @@ final public class DefaultOpenAIAzureService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
   }
 
+  public func responseCreateStream(
+    _ parameters: ModelResponseParameter)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+  {
+    var responseParameters = parameters
+    responseParameters.stream = true
+    let request = try AzureOpenAIAPI.response(.create(deploymentID: parameters.model)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: nil,
+      method: .post,
+      params: responseParameters,
+      queryItems: initialQueryItems)
+    return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

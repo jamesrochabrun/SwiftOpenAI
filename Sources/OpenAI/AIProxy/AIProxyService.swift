@@ -1299,6 +1299,22 @@ struct AIProxyService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
   }
 
+  func responseCreateStream(
+    _ parameters: ModelResponseParameter)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+  {
+    var responseParameters = parameters
+    responseParameters.stream = true
+    let request = try await OpenAIAPI.response(.create).request(
+      aiproxyPartialKey: partialKey,
+      clientID: clientID,
+      organizationID: organizationID,
+      openAIEnvironment: openAIEnvironment,
+      method: .post,
+      params: responseParameters)
+    return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// Your partial key is provided during the integration process at dashboard.aiproxy.pro

@@ -1271,13 +1271,29 @@ struct DefaultOpenAIService: OpenAIService {
     id: String)
     async throws -> ResponseModel
   {
-    let request = try OpenAIAPI.response(.retrieve(responseID: id)).request(
+    let request = try OpenAIAPI.response(.get(responseID: id)).request(
       apiKey: apiKey,
       openAIEnvironment: openAIEnvironment,
       organizationID: organizationID,
       method: .post,
       extraHeaders: extraHeaders)
     return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+  }
+
+  func responseCreateStream(
+    _ parameters: ModelResponseParameter)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+  {
+    var responseParameters = parameters
+    responseParameters.stream = true
+    let request = try OpenAIAPI.response(.create).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: responseParameters,
+      extraHeaders: extraHeaders)
+    return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
   }
 
   private static let assistantsBetaV2 = "assistants=v2"

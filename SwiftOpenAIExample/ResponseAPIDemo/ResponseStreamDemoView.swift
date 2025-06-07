@@ -5,25 +5,24 @@
 //  Created by James Rochabrun on 6/7/25.
 //
 
-import SwiftUI
 import SwiftOpenAI
+import SwiftUI
+
+// MARK: - ResponseStreamDemoView
 
 struct ResponseStreamDemoView: View {
-  
-  @State private var provider: ResponseStreamProvider
-  @State private var inputText = ""
-  @FocusState private var isInputFocused: Bool
-  @Environment(\.colorScheme) var colorScheme
-  
+
   init(service: OpenAIService) {
-    self._provider = State(initialValue: ResponseStreamProvider(service: service))
+    _provider = State(initialValue: ResponseStreamProvider(service: service))
   }
-  
+
+  @Environment(\.colorScheme) var colorScheme
+
   var body: some View {
     VStack(spacing: 0) {
       // Header
       headerView
-      
+
       // Messages
       ScrollViewReader { proxy in
         ScrollView {
@@ -32,7 +31,7 @@ struct ResponseStreamDemoView: View {
               MessageBubbleView(message: message)
                 .id(message.id)
             }
-            
+
             if provider.isStreaming {
               HStack {
                 LoadingIndicatorView()
@@ -50,7 +49,7 @@ struct ResponseStreamDemoView: View {
           }
         }
       }
-      
+
       // Error view
       if let error = provider.error {
         Text(error)
@@ -60,7 +59,7 @@ struct ResponseStreamDemoView: View {
           .padding(.vertical, 8)
           .background(Color.red.opacity(0.1))
       }
-      
+
       // Input area
       inputArea
     }
@@ -75,18 +74,22 @@ struct ResponseStreamDemoView: View {
       }
     }
   }
-  
+
+  @State private var provider: ResponseStreamProvider
+  @State private var inputText = ""
+  @FocusState private var isInputFocused: Bool
+
   // MARK: - Subviews
-  
+
   private var headerView: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Streaming Responses with Conversation State")
         .font(.headline)
-      
+
       Text("This demo uses the Responses API with streaming to maintain conversation context across multiple turns.")
         .font(.caption)
         .foregroundColor(.secondary)
-      
+
       if provider.messages.isEmpty {
         Label("Start a conversation below", systemImage: "bubble.left.and.bubble.right")
           .font(.caption)
@@ -98,7 +101,7 @@ struct ResponseStreamDemoView: View {
     .padding()
     .background(Color(UIColor.secondarySystemBackground))
   }
-  
+
   private var inputArea: some View {
     HStack(spacing: 12) {
       TextField("Type a message...", text: $inputText, axis: .vertical)
@@ -109,7 +112,7 @@ struct ResponseStreamDemoView: View {
         .onSubmit {
           sendMessage()
         }
-      
+
       Button(action: sendMessage) {
         Image(systemName: provider.isStreaming ? "stop.circle.fill" : "arrow.up.circle.fill")
           .font(.title2)
@@ -123,15 +126,12 @@ struct ResponseStreamDemoView: View {
       Rectangle()
         .frame(height: 1)
         .foregroundColor(Color(UIColor.separator)),
-      alignment: .top
-    )
+      alignment: .top)
   }
-  
-  // MARK: - Actions
-  
+
   private func sendMessage() {
     guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-    
+
     if provider.isStreaming {
       provider.stopStreaming()
     } else {
@@ -142,12 +142,12 @@ struct ResponseStreamDemoView: View {
   }
 }
 
-// MARK: - Message Bubble View
+// MARK: - MessageBubbleView
 
 struct MessageBubbleView: View {
   let message: ResponseStreamProvider.ResponseMessage
   @Environment(\.colorScheme) var colorScheme
-  
+
   var body: some View {
     HStack {
       if message.role == .assistant {
@@ -156,8 +156,7 @@ struct MessageBubbleView: View {
           .cornerRadius(16)
           .overlay(
             RoundedRectangle(cornerRadius: 16)
-              .stroke(borderColor, lineWidth: 1)
-          )
+              .stroke(borderColor, lineWidth: 1))
         Spacer(minLength: 60)
       } else {
         Spacer(minLength: 60)
@@ -168,10 +167,10 @@ struct MessageBubbleView: View {
       }
     }
   }
-  
+
   private var messageContent: some View {
     VStack(alignment: .leading, spacing: 4) {
-      if message.role == .assistant && message.isStreaming {
+      if message.role == .assistant, message.isStreaming {
         HStack(spacing: 4) {
           Image(systemName: "dot.radiowaves.left.and.right")
             .font(.caption2)
@@ -181,12 +180,12 @@ struct MessageBubbleView: View {
             .foregroundColor(.secondary)
         }
       }
-      
+
       Text(message.content.isEmpty && message.isStreaming ? " " : message.content)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-      
-      if message.role == .assistant && !message.isStreaming && message.responseId != nil {
+
+      if message.role == .assistant, !message.isStreaming, message.responseId != nil {
         Text("Response ID: \(String(message.responseId?.prefix(8) ?? ""))")
           .font(.caption2)
           .foregroundColor(.secondary)
@@ -195,28 +194,25 @@ struct MessageBubbleView: View {
       }
     }
   }
-  
+
   private var backgroundGradient: some View {
     LinearGradient(
       gradient: Gradient(colors: [
         Color(UIColor.secondarySystemBackground),
-        Color(UIColor.tertiarySystemBackground)
+        Color(UIColor.tertiarySystemBackground),
       ]),
       startPoint: .topLeading,
-      endPoint: .bottomTrailing
-    )
+      endPoint: .bottomTrailing)
   }
-  
+
   private var borderColor: Color {
     colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.1)
   }
 }
 
-// MARK: - Loading Indicator
+// MARK: - LoadingIndicatorView
 
 struct LoadingIndicatorView: View {
-  @State private var animationAmount = 0.0
-  
   var body: some View {
     ZStack {
       ForEach(0..<3) { index in
@@ -231,13 +227,15 @@ struct LoadingIndicatorView: View {
     .onAppear {
       withAnimation(
         .easeInOut(duration: 0.8)
-        .repeatForever(autoreverses: true)
-      ) {
+          .repeatForever(autoreverses: true))
+      {
         animationAmount = 1
       }
     }
   }
-  
+
+  @State private var animationAmount = 0.0
+
   private func animationScale(for index: Int) -> Double {
     let delay = Double(index) * 0.1
     let progress = (animationAmount + delay).truncatingRemainder(dividingBy: 1.0)
@@ -252,4 +250,3 @@ struct LoadingIndicatorView: View {
     ResponseStreamDemoView(service: OpenAIServiceFactory.service(apiKey: "test"))
   }
 }
-

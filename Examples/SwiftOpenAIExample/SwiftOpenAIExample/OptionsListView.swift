@@ -30,7 +30,7 @@ struct OptionsListView: View {
     case chatStructuredOutputTool = "Chat Structured Output Tools"
     case configureAssistant = "Configure Assistant"
     case realTimeAPI = "Real time API"
-    case responseStream = "Response Stream Demo"
+     case responseStream = "Response Stream Demo" // TODO: Add ResponseStreamDemo files to Xcode project
 
     var id: String { rawValue }
   }
@@ -85,8 +85,8 @@ struct OptionsListView: View {
           AssistantConfigurationDemoView(service: openAIService)
         case .realTimeAPI:
           Text("WIP")
-        case .responseStream:
-          ResponseStreamDemoView(service: openAIService)
+         case .responseStream:
+           ResponseStreamDemoView(service: openAIService) // TODO: Add ResponseStreamDemo files to Xcode project
         }
       }
     }

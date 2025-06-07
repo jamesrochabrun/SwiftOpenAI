@@ -6,6 +6,11 @@
 //
 
 import Foundation
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 // MARK: - CreateImageVariationParameters
 
@@ -13,6 +18,7 @@ import Foundation
 /// This endpoint only supports `dall-e-2`.
 public struct CreateImageVariationParameters: Encodable {
 
+  #if canImport(UIKit) || canImport(AppKit)
   /// Creates parameters for generating variations of an image
   /// - Parameters:
   ///   - image: The image to use as the basis for variations
@@ -33,17 +39,19 @@ public struct CreateImageVariationParameters: Encodable {
     let imageData = image.tiffRepresentation
     #endif
 
-    if imageData == nil {
-      assertionFailure("Failed to get image data")
+    guard let imageData = imageData else {
+      fatalError("Failed to get image data")
     }
 
-    self.image = imageData!
-    model = ModelType.dallE2.rawValue
-    n = numberOfImages
-    self.responseFormat = responseFormat?.rawValue
-    self.size = size?.rawValue
-    self.user = user
+    self.init(
+      imageData: imageData,
+      numberOfImages: numberOfImages,
+      responseFormat: responseFormat,
+      size: size,
+      user: user
+    )
   }
+  #endif
 
   /// Creates parameters from raw image data
   /// - Parameters:

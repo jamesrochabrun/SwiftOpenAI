@@ -16,6 +16,8 @@
 		7B029E3E2C69BEA70025681A /* ChatStructureOutputToolDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B029E3D2C69BEA70025681A /* ChatStructureOutputToolDemoView.swift */; };
 		7B1268052B08246400400694 /* AssistantConfigurationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */; };
 		7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */; };
+		7B2B6D562DF434670059B4BB /* ResponseStreamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2B6D552DF434670059B4BB /* ResponseStreamDemoView.swift */; };
+		7B2B6D582DF4347E0059B4BB /* ResponseStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2B6D572DF4347E0059B4BB /* ResponseStreamProvider.swift */; };
 		7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */; };
 		7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */; };
 		7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */; };
@@ -99,6 +101,8 @@
 		7B029E3D2C69BEA70025681A /* ChatStructureOutputToolDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStructureOutputToolDemoView.swift; sourceTree = "<group>"; };
 		7B1268042B08246400400694 /* AssistantConfigurationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationDemoView.swift; sourceTree = "<group>"; };
 		7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationProvider.swift; sourceTree = "<group>"; };
+		7B2B6D552DF434670059B4BB /* ResponseStreamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseStreamDemoView.swift; sourceTree = "<group>"; };
+		7B2B6D572DF4347E0059B4BB /* ResponseStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseStreamProvider.swift; sourceTree = "<group>"; };
 		7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantsListDemoView.swift; sourceTree = "<group>"; };
 		7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantThreadConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantStreamDemoScreen.swift; sourceTree = "<group>"; };
@@ -214,6 +218,15 @@
 				7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */,
 			);
 			path = Assistants;
+			sourceTree = "<group>";
+		};
+		7B2B6D542DF434550059B4BB /* ResponseAPIDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B2B6D552DF434670059B4BB /* ResponseStreamDemoView.swift */,
+				7B2B6D572DF4347E0059B4BB /* ResponseStreamProvider.swift */,
+			);
+			path = ResponseAPIDemo;
 			sourceTree = "<group>";
 		};
 		7B436B972AE25045003CE281 /* Utilities */ = {
@@ -379,6 +392,7 @@
 		7BA788CB2AE23A48008825D5 /* SwiftOpenAIExample */ = {
 			isa = PBXGroup;
 			children = (
+				7B2B6D542DF434550059B4BB /* ResponseAPIDemo */,
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
 				7BE802572D2877D30080E06A /* PredictedOutputsDemo */,
 				7B50DD292C2A9D1D0070A64D /* LocalChatDemo */,
@@ -680,6 +694,8 @@
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,
 				7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */,
 				7B436BBC2AE7ABD3003CE281 /* ModelsProvider.swift in Sources */,
+				7B2B6D562DF434670059B4BB /* ResponseStreamDemoView.swift in Sources */,
+				7B2B6D582DF4347E0059B4BB /* ResponseStreamProvider.swift in Sources */,
 				7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */,
 				7BBE7EA72B02E8AC0096A693 /* ThemeColor.swift in Sources */,
 				7BA788FE2AE23B95008825D5 /* AudioProvider.swift in Sources */,

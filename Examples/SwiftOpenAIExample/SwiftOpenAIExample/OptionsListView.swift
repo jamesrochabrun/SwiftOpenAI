@@ -9,7 +9,7 @@ import SwiftOpenAI
 import SwiftUI
 
 struct OptionsListView: View {
-
+  
   /// https://platform.openai.com/docs/api-reference
   enum APIOption: String, CaseIterable, Identifiable {
     case audio = "Audio"
@@ -30,15 +30,15 @@ struct OptionsListView: View {
     case chatStructuredOutputTool = "Chat Structured Output Tools"
     case configureAssistant = "Configure Assistant"
     case realTimeAPI = "Real time API"
-     case responseStream = "Response Stream Demo" // TODO: Add ResponseStreamDemo files to Xcode project
-
+    case responseStream = "Response Stream Demo"
+    
     var id: String { rawValue }
   }
-
+  
   var openAIService: OpenAIService
-
+  
   var options: [APIOption]
-
+  
   var body: some View {
     List(options, id: \.self, selection: $selection) { option in
       Text(option.rawValue)
@@ -85,15 +85,13 @@ struct OptionsListView: View {
           AssistantConfigurationDemoView(service: openAIService)
         case .realTimeAPI:
           Text("WIP")
-         case .responseStream:
-          Text("WIP")
-
-        //   ResponseStreamDemoView(service: openAIService)
+        case .responseStream:
+          ResponseStreamDemoView(service: openAIService)
         }
       }
     }
   }
-
+  
   @State private var selection: APIOption? = nil
-
+  
 }

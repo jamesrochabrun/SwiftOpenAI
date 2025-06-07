@@ -86,7 +86,9 @@ struct OptionsListView: View {
         case .realTimeAPI:
           Text("WIP")
          case .responseStream:
-           ResponseStreamDemoView(service: openAIService) // TODO: Add ResponseStreamDemo files to Xcode project
+          Text("WIP")
+
+        //   ResponseStreamDemoView(service: openAIService)
         }
       }
     }

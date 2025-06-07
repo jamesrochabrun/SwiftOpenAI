@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 /// Protocol that abstracts HTTP client functionality
 public protocol HTTPClient {
   /// Fetches data for a given HTTP request

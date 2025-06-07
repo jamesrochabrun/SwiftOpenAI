@@ -4,6 +4,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
+#if !os(Linux)
 /// Adapter that implements HTTPClient protocol using URLSession
 public class URLSessionHTTPClientAdapter: HTTPClient {
 
@@ -97,3 +98,4 @@ public class URLSessionHTTPClientAdapter: HTTPClient {
         return result
     }
 }
+#endif

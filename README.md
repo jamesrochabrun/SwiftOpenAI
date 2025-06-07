@@ -1269,7 +1269,6 @@ For more details about how to also uploading base 64 encoded images in iOS check
 
 OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
 
-**New in v3.0.0:**
 - Full streaming support with `responseCreateStream` method
 - Comprehensive `ResponseStreamEvent` enum covering 40+ event types
 - Enhanced `InputMessage` with `id` field for response ID tracking
@@ -1473,7 +1472,7 @@ public struct InputMessage: Codable {
     public let content: MessageContent
     public let type: String?  // Always "message"
     public let status: String?  // "completed" for assistant messages
-    public let id: String?  // Response ID for assistant messages (new in v3.0.0)
+    public let id: String?  // Response ID for assistant messages
 }
 
 // MessageContent can be text or array of content items

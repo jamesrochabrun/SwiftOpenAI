@@ -18,14 +18,19 @@ public struct Reasoning: Codable {
   /// A summary of the reasoning performed by the model.
   /// This can be useful for debugging and understanding the model's reasoning process. One of concise or detailed.
   public var generateSummary: String?
+  
+  /// Summary field used in response objects (nullable)
+  public var summary: String?
 
   enum CodingKeys: String, CodingKey {
     case effort
     case generateSummary = "generate_summary"
+    case summary
   }
 
-  public init(effort: String? = nil, generateSummary: String? = nil) {
+  public init(effort: String? = nil, generateSummary: String? = nil, summary: String? = nil) {
     self.effort = effort
     self.generateSummary = generateSummary
+    self.summary = summary
   }
 }

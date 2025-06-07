@@ -1,5 +1,5 @@
 //
-//  MessageContent.swift
+//  AssistantMessageContent.swift
 //
 //
 //  Created by James Rochabrun on 3/17/24.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-// MARK: - MessageContent
+// MARK: - AssistantMessageContent
 
 ///  The [content](https://platform.openai.com/docs/api-reference/messages/object#messages/object-content) of the message in array of text and/or images.
-public enum MessageContent: Codable {
+public enum AssistantMessageContent: Codable {
 
   case imageFile(ImageFile)
   case imageUrl(ImageURL)

@@ -272,7 +272,7 @@ public struct CodeInterpreterImageOutput: Codable {
 
 // MARK: - FileSearchToolCall
 
-public struct FileSearchToolCall: Codable {
+public struct RunStepFileSearchToolCall: Codable {
 
   /// For now, this is always going to be an empty object.
   public let fileSearch: [String: String]?
@@ -284,7 +284,7 @@ public struct FileSearchToolCall: Codable {
 
 // MARK: - FunctionToolCall
 
-public struct FunctionToolCall: Codable {
+public struct RunStepFunctionToolCall: Codable {
 
   /// The name of the function.
   public var name: String?

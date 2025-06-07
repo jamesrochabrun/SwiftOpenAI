@@ -17,8 +17,42 @@ import AppKit
 /// [Creates a variation of a given image.](https://platform.openai.com/docs/api-reference/images/createVariation)
 public struct ImageVariationParameters: Encodable {
 
+  #if canImport(UIKit) || canImport(AppKit)
   public init(
     image: PlatformImage,
+    model: Dalle? = nil,
+    numberOfImages: Int? = nil,
+    responseFormat: ImageResponseFormat? = nil,
+    user: String? = nil)
+  {
+    #if canImport(UIKit)
+    let imageData = image.pngData()
+    #elseif canImport(AppKit)
+    let imageData = image.tiffRepresentation
+    #endif
+
+    guard let imageData else {
+      fatalError("Failed to load image data from image.")
+    }
+
+    self.init(
+      imageData: imageData,
+      model: model,
+      numberOfImages: numberOfImages,
+      responseFormat: responseFormat,
+      user: user)
+  }
+  #endif
+
+  /// Creates parameters from raw data (for platforms without UIKit/AppKit support)
+  /// - Parameters:
+  ///   - imageData: Raw image data
+  ///   - model: The model to use
+  ///   - numberOfImages: Number of images to generate
+  ///   - responseFormat: Format of the response
+  ///   - user: User identifier
+  public init(
+    imageData: Data,
     model: Dalle? = nil,
     numberOfImages: Int? = nil,
     responseFormat: ImageResponseFormat? = nil,
@@ -29,17 +63,7 @@ public struct ImageVariationParameters: Encodable {
         "Only dall-e-2 is supported at this time [https://platform.openai.com/docs/api-reference/images/createEdit]")
     }
 
-    #if canImport(UIKit)
-    let imageData = image.pngData()
-    #elseif canImport(AppKit)
-    let imageData = image.tiffRepresentation
-    #endif
-
-    if imageData == nil {
-      assertionFailure("Failed ot load image data from image.")
-    }
-
-    self.image = imageData!
+    image = imageData
     n = numberOfImages
     self.model = model?.model
     size = model?.size

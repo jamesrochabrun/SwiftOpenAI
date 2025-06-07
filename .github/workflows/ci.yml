@@ -10,19 +10,29 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build_and_test:
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-        swift-version: ["6.0.1"]
-    runs-on: ${{ matrix.os }}
+  build_and_test_macos:
+    runs-on: macos-latest
     steps:
-    - uses: swift-actions/setup-swift@v2
-      with:
-        swift-version: ${{ matrix.swift-version }}
+    - uses: actions/checkout@v4
     - name: Get swift version
       run: swift --version
+    - name: Build
+      run: swift build -q
+    - name: Run tests
+      run: swift test -q
+
+  build_and_test_linux:
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.0.1-jammy
+    steps:
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y curl git
     - uses: actions/checkout@v4
+    - name: Get swift version
+      run: swift --version
     - name: Build
       run: swift build -q
     - name: Run tests
@@ -37,7 +47,5 @@ jobs:
       uses: Homebrew/actions/setup-homebrew@master
     - name: Install swiftformat
       run: brew install swiftformat
-    - name: Run linter
-      run: swiftformat --config rules.swiftformat .
-    - name: Verify that `swiftformat --config rules.swiftformat .` did not change outputs (if it did, please re-run it and re-commit!)
-      run: git diff --exit-code
+    - name: Check formatting
+      run: swiftformat --config rules.swiftformat --lint .

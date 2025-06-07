@@ -34,21 +34,21 @@ struct AIProxyService: OpenAIService {
     organizationID: String? = nil,
     debugEnabled: Bool)
   {
-    session = URLSession(
-      configuration: .default,
-      delegate: aiproxySecureDelegate,
-      delegateQueue: nil)
     decoder = JSONDecoder()
     self.partialKey = partialKey
     self.clientID = clientID
     self.organizationID = organizationID
     self.debugEnabled = debugEnabled
     openAIEnvironment = .init(baseURL: serviceURL ?? "https://api.aiproxy.pro", proxyPath: nil, version: "v1")
-    self.httpClient = NoOpClient()
+	self.httpClient = URLSessionHTTPClientAdapter(
+	  urlSession: URLSession(
+	  configuration: .default,
+	  delegate: aiproxySecureDelegate,
+	  delegateQueue: nil)
+	)
   }
 
   let httpClient: HTTPClient
-  let session: URLSession
   let decoder: JSONDecoder
   let openAIEnvironment: OpenAIEnvironment
 
@@ -1315,27 +1315,5 @@ struct AIProxyService: OpenAIService {
   /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
   private let organizationID: String?
 
-}
-
-// MARK: - NoOpClient
-
-// An HTTPClient created specifically for AIProxyService, since it will only be used on iOS/macOS
-// and we will not be supporting it on Linux.
-private struct NoOpClient: HTTPClient {
-  func data(for request: HTTPRequest) async throws -> (Data, HTTPResponse) {
-    (
-      Data(),
-      HTTPResponse(statusCode: 500, headers: [:])
-    )
-  }
-
-  func bytes(for request: HTTPRequest) async throws -> (HTTPByteStream, HTTPResponse) {
-    (
-      HTTPByteStream.bytes(
-        .init(unfolding: { nil })
-      ),
-      HTTPResponse(statusCode: 500, headers: [:])
-    )
-  }
 }
 #endif

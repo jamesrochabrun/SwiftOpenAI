@@ -5,6 +5,7 @@
 //  Created by Joe Fabisevich on 5/18/25.
 //
 
+#if os(Linux)
 import AsyncHTTPClient
 import Foundation
 import NIOCore
@@ -128,4 +129,5 @@ public class AsyncHTTPClientAdapter: HTTPClient {
     deinit {
         shutdown()
     }
-} 
+}
+#endif

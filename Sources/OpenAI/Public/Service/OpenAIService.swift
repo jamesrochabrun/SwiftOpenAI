@@ -1012,12 +1012,7 @@ extension OpenAIService {
       printCurlCommand(request)
 
       // Convert URLRequest to HTTPRequest
-      let httpRequest = HTTPRequest(
-        url: request.url!,
-        method: HTTPMethod(rawValue: request.httpMethod ?? "GET") ?? .get,
-        headers: request.allHTTPHeaderFields ?? [:],
-        body: request.httpBody
-      )
+      let httpRequest = try HTTPRequest(from: request)
 
       let (data, response) = try await httpClient.data(for: httpRequest)
 
@@ -1063,12 +1058,7 @@ extension OpenAIService {
       printCurlCommand(request)
 
       // Convert URLRequest to HTTPRequest
-      let httpRequest = HTTPRequest(
-        url: request.url!,
-        method: HTTPMethod(rawValue: request.httpMethod ?? "GET") ?? .get,
-        headers: request.allHTTPHeaderFields ?? [:],
-        body: request.httpBody
-      )
+      let httpRequest = try HTTPRequest(from: request)
 
       let (data, response) = try await httpClient.data(for: httpRequest)
 
@@ -1109,12 +1099,7 @@ extension OpenAIService {
       }
 
       // Convert URLRequest to HTTPRequest
-      let httpRequest = HTTPRequest(
-        url: request.url!,
-        method: HTTPMethod(rawValue: request.httpMethod ?? "GET") ?? .get,
-        headers: request.allHTTPHeaderFields ?? [:],
-        body: request.httpBody
-      )
+      let httpRequest = try HTTPRequest(from: request)
 
       let (data, response) = try await httpClient.data(for: httpRequest)
 
@@ -1182,12 +1167,7 @@ extension OpenAIService {
       }
 
       // Convert URLRequest to HTTPRequest
-      let httpRequest = HTTPRequest(
-        url: request.url!,
-        method: HTTPMethod(rawValue: request.httpMethod ?? "GET") ?? .get,
-        headers: request.allHTTPHeaderFields ?? [:],
-        body: request.httpBody
-      )
+      let httpRequest = try HTTPRequest(from: request)
 
       let (byteStream, response) = try await httpClient.bytes(for: httpRequest)
 
@@ -1275,12 +1255,7 @@ extension OpenAIService {
       printCurlCommand(request)
 
       // Convert URLRequest to HTTPRequest
-      let httpRequest = HTTPRequest(
-        url: request.url!,
-        method: HTTPMethod(rawValue: request.httpMethod ?? "GET") ?? .get,
-        headers: request.allHTTPHeaderFields ?? [:],
-        body: request.httpBody
-      )
+      let httpRequest = try HTTPRequest(from: request)
 
       let (byteStream, response) = try await httpClient.bytes(for: httpRequest)
 

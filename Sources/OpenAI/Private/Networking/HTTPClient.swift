@@ -30,6 +30,29 @@ public struct HTTPRequest {
     self.headers = headers
     self.body = body
   }
+
+  /// Initializes an HTTPRequest from a URLRequest
+  /// - Parameter urlRequest: The URLRequest to convert
+  public init(from urlRequest: URLRequest) throws {
+    guard let url = urlRequest.url else {
+      throw URLError(.badURL)
+    }
+    
+    guard let httpMethodString = urlRequest.httpMethod,
+          let httpMethod = HTTPMethod(rawValue: httpMethodString) else {
+      throw URLError(.unsupportedURL)
+    }
+    
+    var headers: [String: String] = [:]
+    if let allHTTPHeaderFields = urlRequest.allHTTPHeaderFields {
+      headers = allHTTPHeaderFields
+    }
+    
+    self.url = url
+    self.method = httpMethod
+    self.headers = headers
+    self.body = urlRequest.httpBody
+  }
 }
 
 /// Represents an HTTP response with platform-agnostic properties
@@ -51,4 +74,18 @@ public enum HTTPByteStream {
   case bytes(AsyncThrowingStream<UInt8, Error>)
   /// A stream of lines (strings)
   case lines(AsyncThrowingStream<String, Error>)
+}
+
+// MARK: - HTTPClient Factory
+
+public struct HTTPClientFactory {
+  /// Creates a default HTTPClient implementation appropriate for the current platform
+  /// - Returns: URLSessionHTTPClientAdapter on Apple platforms, AsyncHTTPClientAdapter on Linux
+  public static func createDefault() -> HTTPClient {
+#if os(Linux)
+    return AsyncHTTPClientAdapter.createDefault()
+#else
+    return URLSessionHTTPClientAdapter()
+#endif
+  }
 }

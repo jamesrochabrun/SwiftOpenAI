@@ -4116,7 +4116,7 @@ For Supported API's using Groq visit its [documentation](https://console.groq.co
 
 ## xAI
 
-![grok-vision](https://github.com/user-attachments/assets/596ef28a-b8ea-4868-b37c-36ae28d77a30)
+<img width="792" alt="xAI Grok" src="https://github.com/user-attachments/assets/596ef28a-b8ea-4868-b37c-36ae28d77a30">
 
 xAI provides an OpenAI-compatible completion API to its Grok models. You can use the OpenAI SDK to access these models.
 

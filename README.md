@@ -107,6 +107,7 @@ SwiftOpenAI supports various providers that are OpenAI-compatible, including but
 - [Gemini](#gemini)
 - [Ollama](#ollama)
 - [Groq](#groq)
+- [xAI](#xai)
 - [OpenRouter](#openRouter)
 - [DeepSeek](#deepseek)
 - [AIProxy](#aiproxy)
@@ -4112,6 +4113,19 @@ let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "htt
 ```
 
 For Supported API's using Groq visit its [documentation](https://console.groq.com/docs/openai).
+
+## xAI
+
+![grok-vision](https://github.com/user-attachments/assets/596ef28a-b8ea-4868-b37c-36ae28d77a30)
+
+xAI provides an OpenAI-compatible completion API to its Grok models. You can use the OpenAI SDK to access these models.
+
+```swift
+let apiKey = "your_api_xai_key"
+let service = OpenAIServiceFactory.service(apiKey: apiKey, overrideBaseURL: "https://api.x.ai", overrideVersion: "v1")
+```
+
+For more information about the `xAI` api visit its [documentation](https://docs.x.ai/docs/overview).
 
 ## OpenRouter
 

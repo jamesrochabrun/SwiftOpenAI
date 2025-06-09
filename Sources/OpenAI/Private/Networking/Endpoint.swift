@@ -6,10 +6,13 @@
 //
 
 import Foundation
+#if os(Linux)
+import FoundationNetworking
+#endif
 
 // MARK: - HTTPMethod
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
   case post = "POST"
   case get = "GET"
   case delete = "DELETE"
@@ -39,7 +42,11 @@ extension Endpoint {
     throws -> URLRequest
   {
     let finalPath = path(in: openAIEnvironment)
-    var request = URLRequest(url: urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
+    let components = urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems)
+    guard let url = components.url else {
+      throw URLError(.badURL)
+    }
+    var request = URLRequest(url: url)
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
     if let organizationID {
@@ -70,7 +77,11 @@ extension Endpoint {
     throws -> URLRequest
   {
     let finalPath = path(in: openAIEnvironment)
-    var request = URLRequest(url: urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems).url!)
+    let components = urlComponents(base: openAIEnvironment.baseURL, path: finalPath, queryItems: queryItems)
+    guard let url = components.url else {
+      throw URLError(.badURL)
+    }
+    var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
     let boundary = UUID().uuidString
     request.addValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
@@ -88,7 +99,9 @@ extension Endpoint {
     queryItems: [URLQueryItem])
     -> URLComponents
   {
-    var components = URLComponents(string: base)!
+    guard var components = URLComponents(string: base) else {
+      fatalError("Invalid base URL: \(base)")
+    }
     components.path = path
     if !queryItems.isEmpty {
       components.queryItems = queryItems

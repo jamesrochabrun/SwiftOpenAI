@@ -6,16 +6,21 @@
 //
 
 import Foundation
+#if os(Linux)
+import FoundationNetworking
+#endif
+
+// MARK: - DefaultOpenAIAzureService
 
 final public class DefaultOpenAIAzureService: OpenAIService {
 
   public init(
     azureConfiguration: AzureOpenAIConfiguration,
-    urlSessionConfiguration: URLSessionConfiguration = .default,
+    httpClient: HTTPClient,
     decoder: JSONDecoder = .init(),
     debugEnabled: Bool)
   {
-    session = URLSession(configuration: urlSessionConfiguration)
+    self.httpClient = httpClient
     self.decoder = decoder
     openAIEnvironment = OpenAIEnvironment(
       baseURL: "https://\(azureConfiguration.resourceName)/openai.azure.com",
@@ -27,7 +32,7 @@ final public class DefaultOpenAIAzureService: OpenAIService {
     self.debugEnabled = debugEnabled
   }
 
-  public let session: URLSession
+  public let httpClient: HTTPClient
   public let decoder: JSONDecoder
   public let openAIEnvironment: OpenAIEnvironment
 

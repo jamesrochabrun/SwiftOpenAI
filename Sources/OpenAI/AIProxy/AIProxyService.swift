@@ -4,7 +4,7 @@
 //
 //  Created by Lou Zell on 3/27/24.
 //
-
+#if !os(Linux)
 import Foundation
 
 private let aiproxySecureDelegate = AIProxyCertificatePinningDelegate()
@@ -34,19 +34,20 @@ struct AIProxyService: OpenAIService {
     organizationID: String? = nil,
     debugEnabled: Bool)
   {
-    session = URLSession(
-      configuration: .default,
-      delegate: aiproxySecureDelegate,
-      delegateQueue: nil)
     decoder = JSONDecoder()
     self.partialKey = partialKey
     self.clientID = clientID
     self.organizationID = organizationID
     self.debugEnabled = debugEnabled
     openAIEnvironment = .init(baseURL: serviceURL ?? "https://api.aiproxy.pro", proxyPath: nil, version: "v1")
+    httpClient = URLSessionHTTPClientAdapter(
+      urlSession: URLSession(
+        configuration: .default,
+        delegate: aiproxySecureDelegate,
+        delegateQueue: nil))
   }
 
-  let session: URLSession
+  let httpClient: HTTPClient
   let decoder: JSONDecoder
   let openAIEnvironment: OpenAIEnvironment
 
@@ -1330,3 +1331,4 @@ struct AIProxyService: OpenAIService {
   private let organizationID: String?
 
 }
+#endif

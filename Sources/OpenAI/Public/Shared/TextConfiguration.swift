@@ -57,7 +57,7 @@ public enum FormatType: Codable {
     case .text:
       try container.encode("text", forKey: .type)
 
-    case let .jsonSchema(schema, name):
+    case .jsonSchema(let schema, let name):
       try container.encode("json_schema", forKey: .type)
       try container.encode(name ?? "schema_response", forKey: .name)
       try container.encode(schema, forKey: .schema)

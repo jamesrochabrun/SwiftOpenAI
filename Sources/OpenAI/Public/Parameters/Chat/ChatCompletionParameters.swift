@@ -39,7 +39,8 @@ public struct ChatCompletionParameters: Encodable {
     temperature: Double? = nil,
     topProbability: Double? = nil,
     user: String? = nil,
-    streamOptions: StreamOptions? = nil)
+    streamOptions: StreamOptions? = nil,
+    extraBody: [String: Any]? = nil)
   {
     self.messages = messages
     self.model = model.value
@@ -69,6 +70,7 @@ public struct ChatCompletionParameters: Encodable {
     topP = topProbability
     self.user = user
     self.streamOptions = streamOptions
+    self.extraBody = extraBody
   }
 
   public struct Message: Encodable {
@@ -488,6 +490,9 @@ public struct ChatCompletionParameters: Encodable {
   /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
   /// [Learn more](https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids).
   public var user: String?
+  /// Additional parameters that are not part of the standard OpenAI API but may be supported by the underlying service.
+  /// This allows access to experimental or provider-specific features.
+  public var extraBody: [String: Any]?
 
   enum CodingKeys: String, CodingKey {
     case messages

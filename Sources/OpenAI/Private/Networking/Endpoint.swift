@@ -62,7 +62,7 @@ extension Endpoint {
     }
     request.httpMethod = method.rawValue
     if let params {
-      request.httpBody = try JSONEncoder().encode(params)
+      request.httpBody = try encodeWithExtraBody(params)
     }
     return request
   }
@@ -107,6 +107,34 @@ extension Endpoint {
       components.queryItems = queryItems
     }
     return components
+  }
+  
+  /// Add extraBody handling through JSON merging
+  private func encodeWithExtraBody(_ params: Encodable) throws -> Data {
+    let encoder = JSONEncoder()
+    let baseData = try encoder.encode(params)
+    
+    // Check if this is ChatCompletionParameters with extraBody
+    if let chatParams = params as? ChatCompletionParameters,
+       let extraBody = chatParams.extraBody,
+       !extraBody.isEmpty {
+      
+      // Parse base JSON
+      guard var baseJSON = try JSONSerialization.jsonObject(with: baseData) as? [String: Any] else {
+        throw URLError(.cannotParseResponse)
+      }
+      
+      // Merge extraBody into base JSON
+      for (key, value) in extraBody {
+        baseJSON[key] = value
+      }
+      
+      // Re-encode merged JSON
+      return try JSONSerialization.data(withJSONObject: baseJSON)
+    }
+    
+    // Return standard encoding if no extraBody
+    return baseData
   }
 
 }

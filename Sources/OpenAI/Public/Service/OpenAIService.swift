@@ -1028,7 +1028,7 @@ extension OpenAIService {
       var errorMessage = "status code \(response.statusCode)"
       do {
         let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
-        errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
         // If decoding fails, keep the original error message with status code
       }
@@ -1076,7 +1076,7 @@ extension OpenAIService {
       var errorMessage = "Status code \(response.statusCode)"
       do {
         let errorResponse = try decoder.decode(OpenAIErrorResponse.self, from: data)
-        errorMessage += " \(errorResponse.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+        errorMessage = errorResponse.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
         if let errorString = String(data: data, encoding: .utf8), !errorString.isEmpty {
           errorMessage += " - \(errorString)"
@@ -1122,7 +1122,7 @@ extension OpenAIService {
       var errorMessage = "status code \(response.statusCode)"
       do {
         let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
-        errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
         // If decoding fails, keep the original error message with status code
       }
@@ -1193,7 +1193,7 @@ extension OpenAIService {
         // as error responses are regular JSON, not streaming data
         let (errorData, _) = try await httpClient.data(for: httpRequest)
         let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
-        errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
         // If decoding fails, keep the original error message with status code
       }
@@ -1291,7 +1291,7 @@ extension OpenAIService {
         // as error responses are regular JSON, not streaming data
         let (errorData, _) = try await httpClient.data(for: httpRequest)
         let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
-        errorMessage += " \(error.error.message ?? "NO ERROR MESSAGE PROVIDED")"
+        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
         // If decoding fails, keep the original error message with status code
       }

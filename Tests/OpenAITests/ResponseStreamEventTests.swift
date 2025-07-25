@@ -115,10 +115,146 @@ final class ResponseStreamEventTests: XCTestCase {
       XCTAssertEqual(addedEvent.type, "response.output_item.added")
       XCTAssertEqual(addedEvent.outputIndex, 0)
       XCTAssertEqual(addedEvent.sequenceNumber, 2)
-      XCTAssertEqual(addedEvent.item.id, "item_123")
-      XCTAssertEqual(addedEvent.item.type, "message")
+      
+      if case .message(let message) = addedEvent.item {
+        XCTAssertEqual(message.id, "item_123")
+        XCTAssertEqual(message.type, "message")
+        XCTAssertEqual(message.status, "in_progress")
+        XCTAssertEqual(message.role, "assistant")
+      } else {
+        XCTFail("Expected message item")
+      }
     } else {
       XCTFail("Expected outputItemAdded event")
+    }
+  }
+  
+  func testOutputItemAddedWithFunctionCall() throws {
+    let json = """
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "sequence_number": 2,
+        "item": {
+          "id": "func_123",
+          "type": "function_call",
+          "call_id": "call_456",
+          "name": "get_weather",
+          "arguments": "",
+          "status": "in_progress"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemAdded(let addedEvent) = event {
+      if case .functionCall(let functionCall) = addedEvent.item {
+        XCTAssertEqual(functionCall.id, "func_123")
+        XCTAssertEqual(functionCall.callId, "call_456")
+        XCTAssertEqual(functionCall.name, "get_weather")
+        XCTAssertEqual(functionCall.status, "in_progress")
+      } else {
+        XCTFail("Expected function call item")
+      }
+    } else {
+      XCTFail("Expected outputItemAdded event")
+    }
+  }
+  
+  func testOutputItemAddedWithImageGeneration() throws {
+    let json = """
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "sequence_number": 3,
+        "item": {
+          "id": "img_123",
+          "type": "image_generation_call",
+          "status": "in_progress"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemAdded(let addedEvent) = event {
+      if case .imageGenerationCall(let imageGen) = addedEvent.item {
+        XCTAssertEqual(imageGen.id, "img_123")
+        XCTAssertEqual(imageGen.type, "image_generation_call")
+        XCTAssertEqual(imageGen.status, "in_progress")
+      } else {
+        XCTFail("Expected image generation call item")
+      }
+    } else {
+      XCTFail("Expected outputItemAdded event")
+    }
+  }
+  
+  func testOutputItemAddedWithCodeInterpreter() throws {
+    let json = """
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "sequence_number": 4,
+        "item": {
+          "id": "code_123",
+          "type": "code_interpreter_call",
+          "container_id": "container_456",
+          "status": "interpreting"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemAdded(let addedEvent) = event {
+      if case .codeInterpreterCall(let codeInterpreter) = addedEvent.item {
+        XCTAssertEqual(codeInterpreter.id, "code_123")
+        XCTAssertEqual(codeInterpreter.containerId, "container_456")
+        XCTAssertEqual(codeInterpreter.status, "interpreting")
+      } else {
+        XCTFail("Expected code interpreter call item")
+      }
+    } else {
+      XCTFail("Expected outputItemAdded event")
+    }
+  }
+  
+  func testOutputItemDoneWithMCPCall() throws {
+    let json = """
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "sequence_number": 5,
+        "item": {
+          "id": "mcp_123",
+          "type": "mcp_call",
+          "name": "get_data",
+          "server_label": "my_server",
+          "arguments": "{\\"key\\": \\"value\\"}",
+          "output": "result data"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemDone(let doneEvent) = event {
+      if case .mcpCall(let mcpCall) = doneEvent.item {
+        XCTAssertEqual(mcpCall.id, "mcp_123")
+        XCTAssertEqual(mcpCall.name, "get_data")
+        XCTAssertEqual(mcpCall.serverLabel, "my_server")
+        XCTAssertEqual(mcpCall.output, "result data")
+      } else {
+        XCTFail("Expected MCP call item")
+      }
+    } else {
+      XCTFail("Expected outputItemDone event")
     }
   }
 
@@ -402,7 +538,7 @@ final class ResponseStreamEventTests: XCTestCase {
       {"type": "response.content_part.done", "item_id": "item_123", "output_index": 0, "content_index": 0, "sequence_number": 7, "part": {"type": "text", "text": "Hello, world!"}}
       """,
       """
-      {"type": "response.output_item.done", "output_index": 0, "sequence_number": 8, "item": {"id": "item_123", "type": "message", "status": "completed", "role": "assistant", "content": []}}
+      {"type": "response.output_item.done", "output_index": 0, "sequence_number": 8, "item": {"id": "item_123", "type": "message", "status": "completed", "role": "assistant", "content": [{"type": "output_text", "text": "Hello, world!", "annotations": []}]}}
       """,
       """
       {"type": "response.completed", "sequence_number": 9, "response": {"id": "resp_123", "object": "model_response", "created_at": 1704067200, "model": "gpt-4o", "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}, "output": [], "status": "completed", "metadata": {}, "parallel_tool_calls": true, "text": {"format": {"type": "text"}}, "tool_choice": "none", "tools": []}}
@@ -460,6 +596,114 @@ final class ResponseStreamEventTests: XCTestCase {
       XCTAssertEqual(event.partialImageB64, "iVBORw0KGgoAAAANS...")
     } else {
       XCTFail("Expected imageGenerationCallPartialImage event")
+    }
+  }
+
+  // MARK: - Additional Output Item Type Tests
+  
+  func testOutputItemLocalShellCall() throws {
+    let json = """
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "sequence_number": 6,
+        "item": {
+          "id": "shell_123",
+          "type": "local_shell_call",
+          "call_id": "call_789",
+          "action": {
+            "type": "execute",
+            "command": "ls -la"
+          },
+          "status": "in_progress"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemAdded(let addedEvent) = event {
+      if case .localShellCall(let shellCall) = addedEvent.item {
+        XCTAssertEqual(shellCall.id, "shell_123")
+        XCTAssertEqual(shellCall.callId, "call_789")
+        XCTAssertEqual(shellCall.action.command, "ls -la")
+        XCTAssertEqual(shellCall.status, "in_progress")
+      } else {
+        XCTFail("Expected local shell call item")
+      }
+    } else {
+      XCTFail("Expected outputItemAdded event")
+    }
+  }
+  
+  func testOutputItemMCPListTools() throws {
+    let json = """
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "sequence_number": 7,
+        "item": {
+          "id": "list_123",
+          "type": "mcp_list_tools",
+          "server_label": "my_server",
+          "tools": [
+            {
+              "name": "tool1",
+              "description": "First tool"
+            }
+          ]
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemDone(let doneEvent) = event {
+      if case .mcpListTools(let listTools) = doneEvent.item {
+        XCTAssertEqual(listTools.id, "list_123")
+        XCTAssertEqual(listTools.serverLabel, "my_server")
+        XCTAssertEqual(listTools.tools.count, 1)
+        XCTAssertEqual(listTools.tools[0].name, "tool1")
+      } else {
+        XCTFail("Expected MCP list tools item")
+      }
+    } else {
+      XCTFail("Expected outputItemDone event")
+    }
+  }
+  
+  func testOutputItemMCPApprovalRequest() throws {
+    let json = """
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "sequence_number": 8,
+        "item": {
+          "id": "approval_123",
+          "type": "mcp_approval_request",
+          "name": "sensitive_operation",
+          "server_label": "my_server",
+          "arguments": "{\\"action\\": \\"delete_all\\"}"
+        }
+      }
+      """
+
+    let decoder = JSONDecoder()
+    let event = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
+
+    if case .outputItemAdded(let addedEvent) = event {
+      if case .mcpApprovalRequest(let approval) = addedEvent.item {
+        XCTAssertEqual(approval.id, "approval_123")
+        XCTAssertEqual(approval.name, "sensitive_operation")
+        XCTAssertEqual(approval.serverLabel, "my_server")
+        XCTAssertEqual(approval.arguments, "{\"action\": \"delete_all\"}")
+      } else {
+        XCTFail("Expected MCP approval request item")
+      }
+    } else {
+      XCTFail("Expected outputItemAdded event")
     }
   }
 

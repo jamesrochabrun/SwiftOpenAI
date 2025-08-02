@@ -47,7 +47,7 @@ final class ModelResponseParameterTests: XCTestCase {
   // MARK: - Complex Input Tests
 
   func testModelResponseParameterWithMultimodalInput() throws {
-    // Create multimodal input with text and image
+    // Create multimodal input with text and image content
     let textContent = TextContent(text: "What's in this image?")
     let imageContent = ImageContent(
       detail: "high",

@@ -7,7 +7,7 @@ let package = Package(
   name: "SwiftOpenAI",
   platforms: [
     .iOS(.v15),
-    .macOS(.v13),
+    .macOS(.v12),
     .watchOS(.v9),
   ],
   products: [

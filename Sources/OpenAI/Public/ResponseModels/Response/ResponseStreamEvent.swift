@@ -1102,13 +1102,97 @@ public struct ErrorEvent: Decodable {
 
 // MARK: - StreamOutputItem
 
-/// Stream output item (simplified version for streaming)
-public struct StreamOutputItem: Decodable {
-  public let id: String
-  public let type: String
-  public let status: String?
-  public let role: String?
-  public let content: [OutputItem.ContentItem]?
+/// Stream output item that supports all output types during streaming
+public enum StreamOutputItem: Decodable {
+  /// An output message from the model
+  case message(OutputItem.Message)
+  /// The results of a file search tool call
+  case fileSearchCall(OutputItem.FileSearchToolCall)
+  /// A tool call to run a function
+  case functionCall(OutputItem.FunctionToolCall)
+  /// The results of a web search tool call
+  case webSearchCall(OutputItem.WebSearchToolCall)
+  /// A tool call to a computer use tool
+  case computerCall(OutputItem.ComputerToolCall)
+  /// A description of the chain of thought used by a reasoning model
+  case reasoning(OutputItem.Reasoning)
+  /// An image generation request made by the model
+  case imageGenerationCall(OutputItem.ImageGenerationCall)
+  /// A tool call to run code
+  case codeInterpreterCall(OutputItem.CodeInterpreterCall)
+  /// A tool call to run a command on the local shell
+  case localShellCall(OutputItem.LocalShellCall)
+  /// An invocation of a tool on an MCP server
+  case mcpCall(OutputItem.MCPCall)
+  /// A list of tools available on an MCP server
+  case mcpListTools(OutputItem.MCPListTools)
+  /// A request for human approval of a tool invocation
+  case mcpApprovalRequest(OutputItem.MCPApprovalRequest)
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    let type = try container.decode(String.self, forKey: .type)
+
+    switch type {
+    case "message":
+      let message = try OutputItem.Message(from: decoder)
+      self = .message(message)
+
+    case "file_search_call":
+      let fileSearch = try OutputItem.FileSearchToolCall(from: decoder)
+      self = .fileSearchCall(fileSearch)
+
+    case "function_call":
+      let functionCall = try OutputItem.FunctionToolCall(from: decoder)
+      self = .functionCall(functionCall)
+
+    case "web_search_call":
+      let webSearch = try OutputItem.WebSearchToolCall(from: decoder)
+      self = .webSearchCall(webSearch)
+
+    case "computer_call":
+      let computerCall = try OutputItem.ComputerToolCall(from: decoder)
+      self = .computerCall(computerCall)
+
+    case "reasoning":
+      let reasoning = try OutputItem.Reasoning(from: decoder)
+      self = .reasoning(reasoning)
+
+    case "image_generation_call":
+      let imageGeneration = try OutputItem.ImageGenerationCall(from: decoder)
+      self = .imageGenerationCall(imageGeneration)
+
+    case "code_interpreter_call":
+      let codeInterpreter = try OutputItem.CodeInterpreterCall(from: decoder)
+      self = .codeInterpreterCall(codeInterpreter)
+
+    case "local_shell_call":
+      let localShell = try OutputItem.LocalShellCall(from: decoder)
+      self = .localShellCall(localShell)
+
+    case "mcp_call":
+      let mcpCall = try OutputItem.MCPCall(from: decoder)
+      self = .mcpCall(mcpCall)
+
+    case "mcp_list_tools":
+      let mcpListTools = try OutputItem.MCPListTools(from: decoder)
+      self = .mcpListTools(mcpListTools)
+
+    case "mcp_approval_request":
+      let mcpApprovalRequest = try OutputItem.MCPApprovalRequest(from: decoder)
+      self = .mcpApprovalRequest(mcpApprovalRequest)
+
+    default:
+      throw DecodingError.dataCorruptedError(
+        forKey: .type,
+        in: container,
+        debugDescription: "Unknown stream output item type: \(type)")
+    }
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case type
+  }
 }
 
 // MARK: - ContentPart

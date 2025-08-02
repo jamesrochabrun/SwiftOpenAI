@@ -28,7 +28,9 @@ final class ModelResponseParameterTests: XCTestCase {
       content: .text("What's the capital of France?"))
 
     let parameter = ModelResponseParameter(
-      input: .array([.message(inputMessage)]),
+      input: .array([
+        .message(inputMessage)
+      ]),
       model: .gpt4o)
 
     // Test encoding
@@ -59,10 +61,13 @@ final class ModelResponseParameterTests: XCTestCase {
       ]))
 
     let parameter = ModelResponseParameter(
-      input: .array([.message(inputMessage)]),
+      input: .array([
+        .message(inputMessage)
+      ]),
       model: .gpt4o,
       maxOutputTokens: 500,
-      temperature: 0.7)
+      temperature: 0.7
+    )
 
     // Test encoding
     let encoder = JSONEncoder()
@@ -75,8 +80,10 @@ final class ModelResponseParameterTests: XCTestCase {
     // Verify all fields
     XCTAssertTrue(json.contains("\"text\":\"What's in this image?\""), "Text not found in JSON")
     XCTAssertTrue(
-      json.contains("https:\\/\\/example.com\\/image.jpg") || json.contains("https://example.com/image.jpg"),
-      "Image URL not found in JSON")
+      json.contains("https:\/\/example.com\/image.jpg") ||
+      json.contains("https://example.com/image.jpg"),
+      "Image URL not found in JSON"
+    )
     XCTAssertTrue(json.contains("\"detail\":\"high\""), "Detail not found in JSON")
     XCTAssertTrue(json.contains("\"max_output_tokens\":500"), "Max output tokens not found in JSON")
     XCTAssertTrue(json.contains("\"temperature\":0.7"), "Temperature not found in JSON")
@@ -95,9 +102,12 @@ final class ModelResponseParameterTests: XCTestCase {
               description: "The city and state"
             ),
           ],
-          required: ["location"]),
+          required: ["location"]
+        ),
         strict: true,
-        description: "Get the weather for a location"))
+        description: "Get the weather for a location"
+      )
+    )
 
     // Create function call in conversation history
     let functionCall = FunctionToolCall(
@@ -105,22 +115,25 @@ final class ModelResponseParameterTests: XCTestCase {
       callId: "call_123",
       name: "get_weather",
       id: "fc_456",
-      status: "completed")
+      status: "completed"
+    )
 
     let functionOutput = FunctionToolCallOutput(
       callId: "call_123",
-      output: "{\"temperature\": \"72°F\", \"condition\": \"sunny\"}")
+      output: "{\"temperature\": \"72\u000B0F\", \"condition\": \"sunny\"}"
+    )
 
     let parameter = ModelResponseParameter(
       input: .array([
         .message(InputMessage(role: "user", content: .text("What's the weather in Boston?"))),
         .functionToolCall(functionCall),
         .functionToolCallOutput(functionOutput),
-        .message(InputMessage(role: "assistant", content: .text("The weather in Boston is 72°F and sunny."))),
+        .message(InputMessage(role: "assistant", content: .text("The weather in Boston is 72\u000B0F and sunny."))),
       ]),
       model: .gpt4o,
       toolChoice: .auto,
-      tools: [functionTool])
+      tools: [functionTool]
+    )
 
     // Test encoding
     let encoder = JSONEncoder()
@@ -155,7 +168,8 @@ final class ModelResponseParameterTests: XCTestCase {
       tools: [],
       topP: 0.9,
       truncation: "auto",
-      user: "user_123")
+      user: "user_123"
+    )
 
     // Test encoding
     let encoder = JSONEncoder()

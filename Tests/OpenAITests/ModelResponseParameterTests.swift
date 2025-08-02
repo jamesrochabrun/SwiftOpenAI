@@ -79,7 +79,7 @@ final class ModelResponseParameterTests: XCTestCase {
     // Verify all fields
     XCTAssertTrue(json.contains("\"text\":\"What's in this image?\""), "Text not found in JSON")
     XCTAssertTrue(
-      json.contains("https:\/\/example.com\/image.jpg") ||
+      json.contains("https:\\/\\/example.com\\/image.jpg") ||
         json.contains("https://example.com/image.jpg"),
       "Image URL not found in JSON")
     XCTAssertTrue(json.contains("\"detail\":\"high\""), "Detail not found in JSON")
@@ -113,14 +113,14 @@ final class ModelResponseParameterTests: XCTestCase {
 
     let functionOutput = FunctionToolCallOutput(
       callId: "call_123",
-      output: "{\"temperature\": \"72\u000B0F\", \"condition\": \"sunny\"}")
+      output: "{\"temperature\": \"72°F\", \"condition\": \"sunny\"}")
 
     let parameter = ModelResponseParameter(
       input: .array([
         .message(InputMessage(role: "user", content: .text("What's the weather in Boston?"))),
         .functionToolCall(functionCall),
         .functionToolCallOutput(functionOutput),
-        .message(InputMessage(role: "assistant", content: .text("The weather in Boston is 72\u000B0F and sunny."))),
+        .message(InputMessage(role: "assistant", content: .text("The weather in Boston is 72°F and sunny."))),
       ]),
       model: .gpt4o,
       toolChoice: .auto,

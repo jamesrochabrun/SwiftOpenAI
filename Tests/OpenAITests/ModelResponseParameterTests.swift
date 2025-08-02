@@ -97,8 +97,7 @@ final class ModelResponseParameterTests: XCTestCase {
           properties: [
             "location": JSONSchema(
               type: .string,
-              description: "The city and state"
-            ),
+              description: "The city and state"),
           ],
           required: ["location"]),
         strict: true,

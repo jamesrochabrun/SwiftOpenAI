@@ -52,14 +52,15 @@ import SwiftUI
 // 1: Define the Step schema object
 
 let stepSchema = JSONSchema(
-  type: .object,
-  properties: [
-    "explanation": JSONSchema(type: .string),
-    "output": JSONSchema(
-      type: .string),
-  ],
-  required: ["explanation", "output"],
-  additionalProperties: false)
+    type: .object,
+    properties: [
+        "explanation": JSONSchema(type: .string),
+        "output": JSONSchema(
+            type: .string),
+    ],
+    required: ["explanation", "output"],
+    additionalProperties: false
+)
 
 // 2. Define the steps Array schema.
 
@@ -70,16 +71,18 @@ let finalAnswerSchema = JSONSchema(type: .string)
 
 /// 4. Define the response format JSON schema.
 let responseFormatSchema = JSONSchemaResponseFormat(
-  name: "math_response",
-  strict: true,
-  schema: JSONSchema(
-    type: .object,
-    properties: [
-      "steps": stepsArraySchema,
-      "final_answer": finalAnswerSchema,
-    ],
-    required: ["steps", "final_answer"],
-    additionalProperties: false))
+    name: "math_response",
+    strict: true,
+    schema: JSONSchema(
+        type: .object,
+        properties: [
+            "steps": stepsArraySchema,
+            "final_answer": finalAnswerSchema,
+        ],
+        required: ["steps", "final_answer"],
+        additionalProperties: false
+    )
+)
 
 // MARK: - ChatStructuredOutputDemoView
 
@@ -112,108 +115,108 @@ let responseFormatSchema = JSONSchemaResponseFormat(
 // )
 
 struct ChatStructuredOutputDemoView: View {
-
-  init(service: OpenAIService) {
-    _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service))
-  }
-
-  enum ChatConfig {
-    case chatCompletion
-    case chatCompeltionStream
-  }
-
-  var body: some View {
-    ScrollView {
-      VStack {
-        picker
-        textArea
-        Text(chatProvider.errorMessage)
-          .foregroundColor(.red)
-        switch selectedSegment {
-        case .chatCompeltionStream:
-          streamedChatResultView
-        case .chatCompletion:
-          chatCompletionResultView
-        }
-      }
+    init(service: OpenAIService) {
+        _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service))
     }
-    .overlay(
-      Group {
-        if isLoading {
-          ProgressView()
-        } else {
-          EmptyView()
-        }
-      })
-  }
 
-  var picker: some View {
-    Picker("Options", selection: $selectedSegment) {
-      Text("Chat Completion").tag(ChatConfig.chatCompletion)
-      Text("Chat Completion stream").tag(ChatConfig.chatCompeltionStream)
+    enum ChatConfig {
+        case chatCompletion
+        case chatCompeltionStream
     }
-    .pickerStyle(SegmentedPickerStyle())
-    .padding()
-  }
 
-  var textArea: some View {
-    HStack(spacing: 4) {
-      TextField("Enter prompt", text: $prompt, axis: .vertical)
-        .textFieldStyle(.roundedBorder)
+    var body: some View {
+        ScrollView {
+            VStack {
+                picker
+                textArea
+                Text(chatProvider.errorMessage)
+                    .foregroundColor(.red)
+                switch selectedSegment {
+                case .chatCompeltionStream:
+                    streamedChatResultView
+                case .chatCompletion:
+                    chatCompletionResultView
+                }
+            }
+        }
+        .overlay(
+            Group {
+                if isLoading {
+                    ProgressView()
+                } else {
+                    EmptyView()
+                }
+            })
+    }
+
+    var picker: some View {
+        Picker("Options", selection: $selectedSegment) {
+            Text("Chat Completion").tag(ChatConfig.chatCompletion)
+            Text("Chat Completion stream").tag(ChatConfig.chatCompeltionStream)
+        }
+        .pickerStyle(SegmentedPickerStyle())
         .padding()
-      Button {
-        Task {
-          isLoading = true
-          defer { isLoading = false } // ensure isLoading is set to false when the
+    }
 
-          let content = ChatCompletionParameters.Message.ContentType.text(prompt)
-          prompt = ""
-          let parameters = ChatCompletionParameters(
-            messages: [
-              .init(role: .system, content: .text("You are a helpful math tutor.")),
-              .init(
-                role: .user,
-                content: content),
-            ],
-            model: .gpt4o20240806,
-            responseFormat: .jsonSchema(responseFormatSchema))
-          switch selectedSegment {
-          case .chatCompletion:
-            try await chatProvider.startChat(parameters: parameters)
-          case .chatCompeltionStream:
-            try await chatProvider.startStreamedChat(parameters: parameters)
-          }
+    var textArea: some View {
+        HStack(spacing: 4) {
+            TextField("Enter prompt", text: $prompt, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+            Button {
+                Task {
+                    isLoading = true
+                    defer { isLoading = false } // ensure isLoading is set to false when the
+
+                    let content = ChatCompletionParameters.Message.ContentType.text(prompt)
+                    prompt = ""
+                    let parameters = ChatCompletionParameters(
+                        messages: [
+                            .init(role: .system, content: .text("You are a helpful math tutor.")),
+                            .init(
+                                role: .user,
+                                content: content
+                            ),
+                        ],
+                        model: .gpt4o20240806,
+                        responseFormat: .jsonSchema(responseFormatSchema)
+                    )
+                    switch selectedSegment {
+                    case .chatCompletion:
+                        try await chatProvider.startChat(parameters: parameters)
+                    case .chatCompeltionStream:
+                        try await chatProvider.startStreamedChat(parameters: parameters)
+                    }
+                }
+            } label: {
+                Image(systemName: "paperplane")
+            }
+            .buttonStyle(.bordered)
         }
-      } label: {
-        Image(systemName: "paperplane")
-      }
-      .buttonStyle(.bordered)
+        .padding()
     }
-    .padding()
-  }
 
-  /// stream = `false`
-  var chatCompletionResultView: some View {
-    ForEach(Array(chatProvider.messages.enumerated()), id: \.offset) { _, val in
-      VStack(spacing: 0) {
-        Text("\(val)")
-      }
+    /// stream = `false`
+    var chatCompletionResultView: some View {
+        ForEach(Array(chatProvider.messages.enumerated()), id: \.offset) { _, val in
+            VStack(spacing: 0) {
+                Text("\(val)")
+            }
+        }
     }
-  }
 
-  /// stream = `true`
-  var streamedChatResultView: some View {
-    VStack {
-      Button("Cancel stream") {
-        chatProvider.cancelStream()
-      }
-      Text(chatProvider.message)
+    /// stream = `true`
+    var streamedChatResultView: some View {
+        VStack {
+            Button("Cancel stream") {
+                chatProvider.cancelStream()
+            }
+            Text(chatProvider.message)
+        }
     }
-  }
 
-  @State private var chatProvider: ChatStructuredOutputProvider
-  @State private var isLoading = false
-  @State private var prompt = ""
-  @State private var selectedSegment = ChatConfig.chatCompeltionStream
-
+    @State private var chatProvider: ChatStructuredOutputProvider
+    @State private var isLoading = false
+    @State private var prompt = ""
+    @State private var selectedSegment = ChatConfig.chatCompeltionStream
 }

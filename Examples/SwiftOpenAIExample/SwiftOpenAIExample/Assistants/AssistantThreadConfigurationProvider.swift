@@ -10,85 +10,86 @@ import SwiftOpenAI
 
 @Observable
 class AssistantThreadConfigurationProvider {
+    // MARK: - Initializer
 
-  // MARK: - Initializer
-
-  init(service: OpenAIService) {
-    self.service = service
-  }
-
-  var thread: ThreadObject?
-  var message: MessageObject?
-  var runObject: RunObject?
-  var messageText = ""
-  var toolOuptutMessage = ""
-  var functionCallOutput = ""
-
-  func createThread()
-    async throws
-  {
-    do {
-      thread = try await service.createThread(parameters: .init())
-    } catch {
-      print("THREAD ERROR: \(error)")
+    init(service: OpenAIService) {
+        self.service = service
     }
-  }
 
-  func createMessage(
-    threadID: String,
-    parameters: MessageParameter)
-    async throws
-  {
-    do {
-      message = try await service.createMessage(threadID: threadID, parameters: parameters)
-    } catch {
-      print("THREAD ERROR: \(error)")
-    }
-  }
+    var thread: ThreadObject?
+    var message: MessageObject?
+    var runObject: RunObject?
+    var messageText = ""
+    var toolOuptutMessage = ""
+    var functionCallOutput = ""
 
-  func createRunAndStreamMessage(
-    threadID: String,
-    parameters: RunParameter)
-    async throws
-  {
-    do {
-      let stream = try await service.createRunStream(threadID: threadID, parameters: parameters)
-      for try await result in stream {
-        switch result {
-        case .threadMessageDelta(let messageDelta):
-          let content = messageDelta.delta.content.first
-          switch content {
-          case .imageFile, .imageUrl, nil:
-            break
-          case .text(let textContent):
-            messageText += textContent.text.value
-          }
-
-        case .threadRunStepDelta(let runStepDelta):
-          let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall
-          switch toolCall {
-          case .codeInterpreterToolCall(let toolCall):
-            toolOuptutMessage += toolCall.input ?? ""
-          case .fileSearchToolCall(let toolCall):
-            print("PROVIDER: File search tool call \(toolCall)")
-          case .functionToolCall(let toolCall):
-            functionCallOutput += toolCall.arguments
-          case nil:
-            print("PROVIDER: tool call nil")
-          }
-
-        case .threadRunCompleted(let runObject):
-          print("PROVIDER: the run is completed - \(runObject)")
-
-        default: break
+    func createThread()
+        async throws
+    {
+        do {
+            thread = try await service.createThread(parameters: .init())
+        } catch {
+            print("THREAD ERROR: \(error)")
         }
-      }
-    } catch {
-      print("THREAD ERROR: \(error)")
     }
-  }
 
-  // MARK: - Private Properties
-  private let service: OpenAIService
+    func createMessage(
+        threadID: String,
+        parameters: MessageParameter
+    )
+        async throws
+    {
+        do {
+            message = try await service.createMessage(threadID: threadID, parameters: parameters)
+        } catch {
+            print("THREAD ERROR: \(error)")
+        }
+    }
 
+    func createRunAndStreamMessage(
+        threadID: String,
+        parameters: RunParameter
+    )
+        async throws
+    {
+        do {
+            let stream = try await service.createRunStream(threadID: threadID, parameters: parameters)
+            for try await result in stream {
+                switch result {
+                case let .threadMessageDelta(messageDelta):
+                    let content = messageDelta.delta.content.first
+                    switch content {
+                    case .imageFile, .imageUrl, nil:
+                        break
+                    case let .text(textContent):
+                        messageText += textContent.text.value
+                    }
+
+                case let .threadRunStepDelta(runStepDelta):
+                    let toolCall = runStepDelta.delta.stepDetails.toolCalls?.first?.toolCall
+                    switch toolCall {
+                    case let .codeInterpreterToolCall(toolCall):
+                        toolOuptutMessage += toolCall.input ?? ""
+                    case let .fileSearchToolCall(toolCall):
+                        print("PROVIDER: File search tool call \(toolCall)")
+                    case let .functionToolCall(toolCall):
+                        functionCallOutput += toolCall.arguments
+                    case nil:
+                        print("PROVIDER: tool call nil")
+                    }
+
+                case let .threadRunCompleted(runObject):
+                    print("PROVIDER: the run is completed - \(runObject)")
+
+                default: break
+                }
+            }
+        } catch {
+            print("THREAD ERROR: \(error)")
+        }
+    }
+
+    // MARK: - Private Properties
+
+    private let service: OpenAIService
 }

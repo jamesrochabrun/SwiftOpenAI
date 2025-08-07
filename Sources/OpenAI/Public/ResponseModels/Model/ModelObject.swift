@@ -44,9 +44,9 @@ public struct ModelObject: Decodable {
   /// The Unix timestamp (in seconds) when the model was created.
   public let created: Int?
   /// The object type, which is always "model".
-  public let object: String
+  public let object: String?
   /// The organization that owns the model.
-  public let ownedBy: String
+  public let ownedBy: String?
   /// An array representing the current permissions of a model. Each element in the array corresponds to a specific permission setting. If there are no permissions or if the data is unavailable, the array may be nil.
   public let permission: [Permission]?
 

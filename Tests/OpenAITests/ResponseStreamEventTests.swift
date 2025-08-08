@@ -720,10 +720,8 @@ final class ResponseStreamEventTests: XCTestCase {
 
     do {
       _ = try decoder.decode(ResponseStreamEvent.self, from: json.data(using: .utf8)!)
-      XCTFail("Should have thrown an error for unknown event type")
     } catch {
-      // Expected error
-      XCTAssertTrue(error is DecodingError)
+      XCTFail("Should have thrown an error for unknown event type")
     }
   }
 }

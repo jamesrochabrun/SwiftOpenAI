@@ -396,6 +396,7 @@ public struct ChatCompletionParameters: Encodable {
   }
 
   public enum ReasoningEffort: String, Encodable {
+    case minimal
     case low
     case medium
     case high

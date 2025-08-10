@@ -15,6 +15,7 @@ public struct ChatCompletionParameters: Encodable {
     model: Model,
     store: Bool? = nil,
     reasoningEffort: ReasoningEffort? = nil,
+    verbosity: Verbosity? = nil,
     metadata: [String: String]? = nil,
     frequencyPenalty: Double? = nil,
     functionCall: FunctionCall? = nil,
@@ -44,6 +45,7 @@ public struct ChatCompletionParameters: Encodable {
     self.model = model.value
     self.store = store
     self.reasoningEffort = reasoningEffort?.rawValue
+    self.verbosity = verbosity?.rawValue
     self.metadata = metadata
     self.frequencyPenalty = frequencyPenalty
     self.functionCall = functionCall
@@ -399,6 +401,21 @@ public struct ChatCompletionParameters: Encodable {
     case low
     case medium
     case high
+    /// The new minimal setting produces very few reasoning tokens for cases where you need the fastest possible time-to-first-token. We often see better performance when the model can produce a few tokens when needed versus none. The default is medium.
+    ///
+    /// The minimal setting performs especially well in coding and instruction following scenarios, adhering closely to given directions. However, it may require prompting to act more proactively. To improve the model's reasoning quality, even at minimal effort, encourage it to “think” or outline its steps before answering.
+    case minimal
+  }
+
+  /// Verbosity determines how many output tokens are generated. Lowering the number of tokens reduces overall latency. While the model's reasoning approach stays mostly the same, the model finds ways to answer more concisely—which can either improve or diminish answer quality, depending on your use case. Here are some scenarios for both ends of the verbosity spectrum:
+  /// High verbosity: Use when you need the model to provide thorough explanations of documents or perform extensive code refactoring.
+  /// Low verbosity: Best for situations where you want concise answers or simple code generation, such as SQL queries.
+  /// Models before GPT-5 have used medium verbosity by default. With GPT-5, we make this option configurable as one of high, medium, or low.
+  /// When generating code, medium and high verbosity levels yield longer, more structured code with inline explanations, while low verbosity produces shorter, more concise code with minimal commentary.
+  public enum Verbosity: String, Encodable {
+    case high
+    case medium
+    case low
   }
 
   /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)
@@ -411,6 +428,8 @@ public struct ChatCompletionParameters: Encodable {
   /// Constrains effort on reasoning for [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values are low, medium, and high. Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.
   /// Defaults to medium o1 models only
   public var reasoningEffort: String?
+  /// Verbosity determines how many output tokens are generated. Lowering the number of tokens reduces overall latency.
+  public var verbosity: String?
   /// Developer-defined tags and values used for filtering completions in the [dashboard](https://platform.openai.com/chat-completions).
   public var metadata: [String: String]?
   /// Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim. Defaults to 0
@@ -485,6 +504,7 @@ public struct ChatCompletionParameters: Encodable {
     case model
     case store
     case reasoningEffort = "reasoning_effort"
+    case verbosity
     case metadata
     case frequencyPenalty = "frequency_penalty"
     case toolChoice = "tool_choice"

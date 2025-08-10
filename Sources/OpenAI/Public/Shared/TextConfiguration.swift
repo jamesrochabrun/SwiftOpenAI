@@ -14,8 +14,12 @@ public struct TextConfiguration: Codable {
   /// An object specifying the format that the model must output
   public var format: FormatType
 
-  public init(format: FormatType) {
+  /// The verbosity level for the response (e.g., "low", "medium", "high")
+  public var verbosity: String?
+
+  public init(format: FormatType, verbosity: String? = nil) {
     self.format = format
+    self.verbosity = verbosity
   }
 }
 

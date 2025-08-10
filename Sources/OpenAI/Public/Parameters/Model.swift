@@ -62,6 +62,13 @@ public enum Model {
   /// Vision
   case gpt4VisionPreview // Vision
 
+  /// Complex reasoning, broad world knowledge, and code-heavy or multi-step agentic tasks
+  case gpt5
+  /// Cost-optimized reasoning and chat; balances speed, cost, and capability
+  case gpt5Mini
+  /// High-throughput tasks, especially simple instruction-following or classification
+  case gpt5Nano
+
   /// Images
   case dalle2
   case dalle3
@@ -93,6 +100,9 @@ public enum Model {
     case .gpt40125Preview: "gpt-4-0125-preview"
     case .gpt4Turbo20240409: "gpt-4-turbo-2024-04-09"
     case .gpt4turbo: "gpt-4-turbo"
+    case .gpt5: "gpt-5"
+    case .gpt5Mini: "gpt-5-mini"
+    case .gpt5Nano: "gpt-5-nano"
     case .custom(let model): model
     }
   }

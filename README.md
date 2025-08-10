@@ -403,6 +403,7 @@ public struct ChatCompletionParameters: Encodable {
    /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)
    public var messages: [Message]
    /// ID of the model to use. See the [model endpoint compatibility](https://platform.openai.com/docs/models/how-we-use-your-data) table for details on which models work with the Chat API.
+   /// Supports GPT-4, GPT-4o, GPT-5, and other models. For GPT-5 family: .gpt5, .gpt5Mini, .gpt5Nano
    public var model: String
    /// Whether or not to store the output of this chat completion request for use in our [model distillation](https://platform.openai.com/docs/guides/distillation) or [evals](https://platform.openai.com/docs/guides/evals) products.
    /// Defaults to false
@@ -1290,6 +1291,47 @@ OpenAI's most advanced interface for generating model responses. Supports text a
 - Improved conversation state management with `previousResponseId`
 - Real-time text streaming, function calls, and tool usage events
 - Support for reasoning summaries, web search, file search, and image generation events
+- **NEW**: Support for GPT-5 models (gpt-5, gpt-5-mini, gpt-5-nano)
+- **NEW**: Verbosity parameter for controlling response detail level
+
+#### ModelResponseParameter
+
+The `ModelResponseParameter` provides a comprehensive interface for creating model responses:
+
+```swift
+let parameters = ModelResponseParameter(
+    input: .text("What is the answer to life, the universe, and everything?"),
+    model: .gpt5,  // Support for GPT-5, GPT-5-mini, GPT-5-nano
+    text: TextConfiguration(
+        format: .text,
+        verbosity: "low"  // NEW: Control response verbosity ("low", "medium", "high")
+    ),
+    temperature: 0.7
+)
+
+let response = try await service.responseCreate(parameters)
+```
+
+#### Available GPT-5 Models
+
+```swift
+public enum Model {
+    case gpt5        // Complex reasoning, broad world knowledge, and code-heavy or multi-step agentic tasks
+    case gpt5Mini    // Cost-optimized reasoning and chat; balances speed, cost, and capability
+    case gpt5Nano    // High-throughput tasks, especially simple instruction-following or classification
+    // ... other models
+}
+```
+
+#### TextConfiguration with Verbosity
+
+```swift
+// Create a text configuration with verbosity control
+let textConfig = TextConfiguration(
+    format: .text,       // Can be .text, .jsonObject, or .jsonSchema
+    verbosity: "medium"  // Controls response detail level
+)
+```
 
 Related guides:
 

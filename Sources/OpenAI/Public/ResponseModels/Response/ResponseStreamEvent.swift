@@ -142,7 +142,7 @@ public enum ResponseStreamEvent: Decodable {
 
   /// Emitted when an error occurs
   case error(ErrorEvent)
-    
+
   /// For unknown event type
   case unknownEventType(String)
 

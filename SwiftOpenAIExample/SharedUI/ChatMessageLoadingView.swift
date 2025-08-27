@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 struct ChatMessageLoadingView: View {
-
   var animationDuration: Double
   @State private var isScaledUp = false
 

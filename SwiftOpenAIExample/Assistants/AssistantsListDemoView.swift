@@ -15,7 +15,6 @@ extension AssistantObject: Identifiable { }
 // MARK: - AssistantsListDemoView
 
 public struct AssistantsListDemoView: View {
-
   public var body: some View {
     NavigationView {
       ForEach(assistants) { assistant in
@@ -42,5 +41,4 @@ public struct AssistantsListDemoView: View {
 
   let assistants: [AssistantObject]
   let service: OpenAIService
-
 }

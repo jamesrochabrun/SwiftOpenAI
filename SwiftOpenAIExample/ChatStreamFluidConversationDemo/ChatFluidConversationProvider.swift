@@ -10,11 +10,13 @@ import SwiftUI
 
 @Observable
 class ChatFluidConversationProvider {
-
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   // MARK: - Public Properties
@@ -87,6 +89,7 @@ class ChatFluidConversationProvider {
   private static var parameterMessagesMaxStorageCount = 5
 
   // MARK: - Private Properties
+
   private let service: OpenAIService
 
   /// Accumulates the streamed message content for real-time display updates in the UI.

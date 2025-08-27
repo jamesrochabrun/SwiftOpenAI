@@ -10,7 +10,6 @@ import SwiftUI
 
 @Observable
 class ImagesProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
@@ -44,5 +43,4 @@ class ImagesProvider {
   }
 
   private let service: OpenAIService
-
 }

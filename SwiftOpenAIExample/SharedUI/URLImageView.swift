@@ -10,7 +10,6 @@ import SwiftUI
 // MARK: - URLImageView
 
 struct URLImageView: View {
-
   let url: URL
 
   var body: some View {

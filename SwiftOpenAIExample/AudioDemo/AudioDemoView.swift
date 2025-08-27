@@ -1,5 +1,5 @@
 //
-//  AudioDemo.swift
+//  AudioDemoView.swift
 //  SwiftOpenAIExample
 //
 //  Created by James Rochabrun on 10/19/23.
@@ -9,7 +9,6 @@ import SwiftOpenAI
 import SwiftUI
 
 struct AudioDemoView: View {
-
   init(service: OpenAIService) {
     _audioProvider = State(initialValue: AudioProvider(service: service))
   }
@@ -102,5 +101,4 @@ struct AudioDemoView: View {
   @State private var prompt = ""
 
   private let contentLoader = ContentLoader()
-
 }

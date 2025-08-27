@@ -10,7 +10,6 @@ import SwiftUI
 
 @Observable
 class EmbeddingsProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
@@ -25,5 +24,4 @@ class EmbeddingsProvider {
   }
 
   private let service: OpenAIService
-
 }

@@ -12,7 +12,6 @@ import SwiftUI
 // MARK: - AssistantFunctionCallDefinition
 
 enum AssistantFunctionCallDefinition: String, CaseIterable {
-
   case createImage = "create_image"
 
   var functionTool: AssistantObject.Tool {
@@ -36,7 +35,6 @@ enum AssistantFunctionCallDefinition: String, CaseIterable {
 // MARK: - AssistantConfigurationDemoView
 
 struct AssistantConfigurationDemoView: View {
-
   init(service: OpenAIService) {
     self.service = service
     _provider = State(initialValue: AssistantConfigurationProvider(service: service))
@@ -217,7 +215,6 @@ struct AssistantConfigurationDemoView: View {
   @State private var filePickerInitialActions: [FilePickerAction] = []
 
   private let service: OpenAIService
-
 }
 
 extension Binding where Value == String? {
@@ -235,7 +232,6 @@ extension Binding where Value == String? {
 // MARK: InputView
 
 struct InputView<Content: View>: View {
-
   let content: Content
   let title: String
 
@@ -253,11 +249,9 @@ struct InputView<Content: View>: View {
   }
 
   @Environment(\.inputViewStyle) private var style: InputViewStyle
-
 }
 
 struct InputViewStyle {
-
   let verticalPadding: CGFloat
 
   init(verticalPadding: CGFloat = 8.0) {
@@ -298,7 +292,6 @@ struct CheckboxView: View {
 }
 
 struct CheckboxRow: View {
-
   let title: String
   @Binding var isChecked: Bool
 

@@ -11,7 +11,6 @@ import SwiftUI
 // MARK: - FunctionCallDefinition
 
 enum FunctionCallDefinition: String, CaseIterable {
-
   case createImage = "create_image"
 
   // Add more functions if needed, parallel function calling is supported.
@@ -38,11 +37,13 @@ enum FunctionCallDefinition: String, CaseIterable {
 
 @Observable
 class ChatFunctionCallProvider {
-
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   // MARK: - Public Properties
@@ -61,7 +62,7 @@ class ChatFunctionCallProvider {
       origin: .received(.gpt))
     updateLastAssistantMessage(assistantMessage)
 
-    let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dallE2)).data?.compactMap(\.url)
+    let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dallE3)).data?.compactMap(\.url)
       .compactMap { URL(string: $0) } ?? []
 
     let dalleAssistantMessage = ChatMessageDisplayModel(
@@ -92,9 +93,15 @@ class ChatFunctionCallProvider {
 
     let tools = FunctionCallDefinition.allCases.map(\.functionTool)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt41106Preview
+    }
+    
     let parameters = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt41106Preview,
+      model: model,
       toolChoice: ToolChoice.auto,
       tools: tools)
 
@@ -151,9 +158,15 @@ class ChatFunctionCallProvider {
 
     chatMessageParameters.insert(systemMessage, at: 0)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt41106Preview
+    }
+    
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt41106Preview)
+      model: model)
     do {
       let chat = try await service.startChat(parameters: paramsForChat)
       guard let assistantMessage = chat.choices?.first?.message else { return }
@@ -249,7 +262,6 @@ class ChatFunctionCallProvider {
 }
 
 extension String {
-
   fileprivate func toDictionary() -> [String: Any]? {
     guard let jsonData = data(using: .utf8) else {
       print("Failed to convert JSON string to Data.")
@@ -258,7 +270,7 @@ extension String {
 
     do {
       return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-    } catch let error {
+    } catch {
       print("Failed to deserialize JSON: \(error.localizedDescription)")
       return nil
     }

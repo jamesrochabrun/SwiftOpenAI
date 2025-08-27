@@ -11,7 +11,6 @@ import SwiftUI
 
 @Observable
 class AudioProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }

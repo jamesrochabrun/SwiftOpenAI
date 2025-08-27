@@ -10,14 +10,13 @@ import SwiftUI
 
 @Observable
 class ModelsProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
 
   var models: [ModelObject] = []
-  var retrievedModel: ModelObject? = nil
-  var deletionStatus: DeletionStatus? = nil
+  var retrievedModel: ModelObject?
+  var deletionStatus: DeletionStatus?
 
   func listModels() async throws {
     models = try await service.listModels().data
@@ -38,5 +37,4 @@ class ModelsProvider {
   }
 
   private let service: OpenAIService
-
 }

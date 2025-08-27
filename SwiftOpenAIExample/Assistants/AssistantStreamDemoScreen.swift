@@ -11,7 +11,6 @@ import SwiftUI
 // MARK: - AssistantStartThreadScreen
 
 public struct AssistantStartThreadScreen: View {
-
   init(assistant: AssistantObject, service: OpenAIService) {
     self.assistant = assistant
     self.service = service
@@ -146,13 +145,11 @@ public struct AssistantStartThreadScreen: View {
   @State private var prompt = ""
 
   @State private var tutorialStage = TutorialState.crateThread
-
 }
 
 // MARK: - ChatStreamView
 
 struct ChatStreamView: View {
-
   let provider: AssistantThreadConfigurationProvider
   let prompt: String
   let assistantName: String?

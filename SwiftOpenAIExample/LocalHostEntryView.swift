@@ -9,7 +9,6 @@ import SwiftOpenAI
 import SwiftUI
 
 struct LocalHostEntryView: View {
-
   var body: some View {
     NavigationStack {
       VStack {
@@ -38,7 +37,6 @@ struct LocalHostEntryView: View {
   }
 
   @State private var url = ""
-
 }
 
 #Preview {

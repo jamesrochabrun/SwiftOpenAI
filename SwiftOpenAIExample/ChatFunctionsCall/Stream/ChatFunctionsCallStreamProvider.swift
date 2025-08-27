@@ -23,11 +23,13 @@ struct FunctionCallStreamedResponse {
 
 @Observable
 class ChatFunctionsCallStreamProvider {
-
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   // MARK: - Public Properties
@@ -85,9 +87,15 @@ class ChatFunctionsCallStreamProvider {
 
     let tools = FunctionCallDefinition.allCases.map(\.functionTool)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt35Turbo1106
+    }
+    
     let parameters = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt35Turbo1106,
+      model: model,
       toolChoice: ToolChoice.auto,
       tools: tools)
 
@@ -197,9 +205,15 @@ class ChatFunctionsCallStreamProvider {
   }
 
   func continueChat() async {
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt41106Preview
+    }
+    
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt41106Preview)
+      model: model)
     do {
       // Begin the chat stream with the updated parameters.
       let stream = try await service.startStreamedChat(parameters: paramsForChat)
@@ -297,7 +311,6 @@ class ChatFunctionsCallStreamProvider {
 }
 
 extension String {
-
   fileprivate func toDictionary() -> [String: Any]? {
     guard let jsonData = data(using: .utf8) else {
       print("Failed to convert JSON string to Data.")
@@ -306,7 +319,7 @@ extension String {
 
     do {
       return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-    } catch let error {
+    } catch {
       print("Failed to deserialize JSON: \(error.localizedDescription)")
       return nil
     }

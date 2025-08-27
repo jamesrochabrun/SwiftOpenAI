@@ -11,7 +11,6 @@ import SwiftUI
 // MARK: - ResponseStreamDemoView
 
 struct ResponseStreamDemoView: View {
-
   init(service: OpenAIService) {
     _provider = State(initialValue: ResponseStreamProvider(service: service))
   }
@@ -106,7 +105,7 @@ struct ResponseStreamDemoView: View {
     HStack(spacing: 12) {
       TextField("Type a message...", text: $inputText, axis: .vertical)
         .textFieldStyle(.roundedBorder)
-        .lineLimit(1...5)
+        .lineLimit(1 ... 5)
         .focused($isInputFocused)
         .disabled(provider.isStreaming)
         .onSubmit {
@@ -215,7 +214,7 @@ struct MessageBubbleView: View {
 struct LoadingIndicatorView: View {
   var body: some View {
     ZStack {
-      ForEach(0..<3) { index in
+      ForEach(0 ..< 3) { index in
         Circle()
           .fill(Color.blue)
           .frame(width: 8, height: 8)

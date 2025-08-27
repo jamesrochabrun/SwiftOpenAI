@@ -10,15 +10,14 @@ import SwiftUI
 
 @Observable
 class FilesProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
 
   var files: [FileObject] = []
-  var uploadedFile: FileObject? = nil
-  var deletedStatus: DeletionStatus? = nil
-  var retrievedFile: FileObject? = nil
+  var uploadedFile: FileObject?
+  var deletedStatus: DeletionStatus?
+  var retrievedFile: FileObject?
   var fileContent: [[String: Any]] = []
 
   func listFiles() async throws {
@@ -54,5 +53,4 @@ class FilesProvider {
   }
 
   private let service: OpenAIService
-
 }

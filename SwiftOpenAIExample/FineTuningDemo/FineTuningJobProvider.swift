@@ -10,14 +10,13 @@ import SwiftUI
 
 @Observable
 class FineTuningJobProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
 
-  var createdFineTuningJob: FineTuningJobObject? = nil
-  var canceledFineTuningJob: FineTuningJobObject? = nil
-  var retrievedFineTuningJob: FineTuningJobObject? = nil
+  var createdFineTuningJob: FineTuningJobObject?
+  var canceledFineTuningJob: FineTuningJobObject?
+  var retrievedFineTuningJob: FineTuningJobObject?
   var fineTunedJobs: [FineTuningJobObject] = []
   var finteTuningEventObjects: [FineTuningJobEventObject] = []
 
@@ -56,5 +55,4 @@ class FineTuningJobProvider {
   }
 
   private let service: OpenAIService
-
 }

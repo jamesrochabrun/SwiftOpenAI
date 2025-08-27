@@ -9,15 +9,14 @@ import SwiftOpenAI
 import SwiftUI
 
 final class FilesPickerProvider {
-
   init(service: OpenAIService) {
     self.service = service
   }
 
   var files: [FileObject] = []
-  var uploadedFile: FileObject? = nil
-  var deletedStatus: DeletionStatus? = nil
-  var retrievedFile: FileObject? = nil
+  var uploadedFile: FileObject?
+  var deletedStatus: DeletionStatus?
+  var retrievedFile: FileObject?
   var fileContent: [[String: Any]] = []
 
   func listFiles() async throws {
@@ -53,5 +52,4 @@ final class FilesPickerProvider {
   }
 
   private let service: OpenAIService
-
 }

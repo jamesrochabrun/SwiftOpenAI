@@ -11,7 +11,6 @@ import SwiftUI
 @MainActor
 @Observable
 class ResponseStreamProvider {
-
   // MARK: - Initialization
 
   init(service: OpenAIService) {

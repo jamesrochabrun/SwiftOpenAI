@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct LoadingView: View {
-
   @State private var dotsCount = 0
 
   let timer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()

@@ -9,7 +9,6 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ModelsDemoView: View {
-
   init(service: OpenAIService) {
     _modelsProvider = State(initialValue: ModelsProvider(service: service))
   }
@@ -47,5 +46,4 @@ struct ModelsDemoView: View {
   @State private var modelsProvider: ModelsProvider
   @State private var isLoading = false
   @State private var errorMessage = ""
-
 }

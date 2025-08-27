@@ -9,7 +9,6 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ModerationDemoView: View {
-
   init(service: OpenAIService) {
     _moderationProvider = State(initialValue: ModerationProvider(service: service))
   }
@@ -62,5 +61,4 @@ struct ModerationDemoView: View {
   @State private var isLoading = false
   @State private var prompt = ""
   @State private var errorMessage = ""
-
 }

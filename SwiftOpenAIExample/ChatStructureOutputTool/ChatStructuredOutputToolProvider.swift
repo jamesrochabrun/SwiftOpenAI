@@ -82,8 +82,11 @@ final class ChatStructuredOutputToolProvider {
 
   // MARK: - Init
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   var chatDisplayMessages: [ChatMessageDisplayModel] = []
@@ -99,9 +102,15 @@ final class ChatStructuredOutputToolProvider {
     let userMessage = createUserMessage(prompt)
     chatMessageParameters.append(userMessage)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt4o20240806
+    }
+    
     let parameters = ChatCompletionParameters(
       messages: [systemMessage] + chatMessageParameters,
-      model: .gpt4o20240806,
+      model: model,
       tools: StructuredToolCall.allCases.map(\.functionTool))
 
     do {
@@ -168,9 +177,15 @@ extension ChatStructuredOutputToolProvider {
   }
 
   func continueChat() async {
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt4o
+    }
+    
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt4o)
+      model: model)
     do {
       let chat = try await service.startChat(parameters: paramsForChat)
       guard let assistantMessage = chat.choices?.first?.message else { return }
@@ -248,5 +263,4 @@ extension ChatStructuredOutputToolProvider {
       chatDisplayMessages.append(message)
     }
   }
-
 }

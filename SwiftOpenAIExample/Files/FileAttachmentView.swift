@@ -11,7 +11,6 @@ import SwiftUI
 // MARK: - FileAttachmentView
 
 struct FileAttachmentView: View {
-
   init(
     service: OpenAIService,
     action: FilePickerAction,

@@ -112,9 +112,12 @@ let responseFormatSchema = JSONSchemaResponseFormat(
 // )
 
 struct ChatStructuredOutputDemoView: View {
-
-  init(service: OpenAIService) {
-    _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service))
+  
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
+    self.customModel = customModel
+    _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service, customModel: customModel))
   }
 
   enum ChatConfig {
@@ -168,6 +171,12 @@ struct ChatStructuredOutputDemoView: View {
 
           let content = ChatCompletionParameters.Message.ContentType.text(prompt)
           prompt = ""
+          let model: Model = if let customModel = customModel, !customModel.isEmpty {
+            .custom(customModel)
+          } else {
+            .gpt4o20240806
+          }
+          
           let parameters = ChatCompletionParameters(
             messages: [
               .init(role: .system, content: .text("You are a helpful math tutor.")),
@@ -175,7 +184,7 @@ struct ChatStructuredOutputDemoView: View {
                 role: .user,
                 content: content),
             ],
-            model: .gpt4o20240806,
+            model: model,
             responseFormat: .jsonSchema(responseFormatSchema))
           switch selectedSegment {
           case .chatCompletion:
@@ -215,5 +224,4 @@ struct ChatStructuredOutputDemoView: View {
   @State private var isLoading = false
   @State private var prompt = ""
   @State private var selectedSegment = ChatConfig.chatCompeltionStream
-
 }

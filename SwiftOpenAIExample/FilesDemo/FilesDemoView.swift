@@ -11,7 +11,6 @@ import SwiftUI
 // MARK: - FilesDemoView
 
 struct FilesDemoView: View {
-
   init(service: OpenAIService) {
     _filesProvider = State(initialValue: FilesProvider(service: service))
   }
@@ -118,13 +117,11 @@ struct FilesDemoView: View {
   @State private var selectedSegment = Config.list
 
   private let contentLoader = ContentLoader()
-
 }
 
 // MARK: - FileObjectView
 
 struct FileObjectView: View {
-
   init(file: FileObject) {
     self.file = file
   }
@@ -151,5 +148,4 @@ struct FileObjectView: View {
   }
 
   private let file: FileObject
-
 }

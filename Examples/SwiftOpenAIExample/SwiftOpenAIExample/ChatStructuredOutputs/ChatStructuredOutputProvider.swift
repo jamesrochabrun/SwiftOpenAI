@@ -14,8 +14,11 @@ import SwiftOpenAI
 final class ChatStructuredOutputProvider {
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   var message = ""

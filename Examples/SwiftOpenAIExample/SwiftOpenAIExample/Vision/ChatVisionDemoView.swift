@@ -10,8 +10,12 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatVisionDemoView: View {
-  init(service: OpenAIService) {
-    _chatProvider = State(initialValue: ChatVisionProvider(service: service))
+
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
+    self.customModel = customModel
+    _chatProvider = State(initialValue: ChatVisionProvider(service: service, customModel: customModel))
   }
 
   var body: some View {
@@ -78,9 +82,15 @@ struct ChatVisionDemoView: View {
           .text(prompt),
         ] + selectedImageURLS.map { .imageUrl(.init(url: $0)) }
         resetInput()
+        let model: Model = if let customModel = customModel, !customModel.isEmpty {
+          .custom(customModel)
+        } else {
+          .gpt4o
+        }
+        
         try await chatProvider.startStreamedChat(parameters: .init(
           messages: [.init(role: .user, content: .contentArray(content))],
-          model: .gpt4o, maxTokens: 300), content: content)
+          model: model, maxTokens: 300), content: content)
       }
     } label: {
       Image(systemName: "paperplane")

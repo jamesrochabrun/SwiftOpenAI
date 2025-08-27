@@ -48,6 +48,18 @@ struct ServiceSelectionView: View {
               .fontWeight(.light)
             }
           }
+
+          NavigationLink(destination: XAIIntroView()) {
+            VStack(alignment: .leading) {
+              Text("xAI/Grok Service")
+                .padding(.bottom, 10)
+              Group {
+                Text("Use this service to test SwiftOpenAI functionality with xAI's Grok API.")
+              }
+              .font(.caption)
+              .fontWeight(.light)
+            }
+          }
         }
       }
     }

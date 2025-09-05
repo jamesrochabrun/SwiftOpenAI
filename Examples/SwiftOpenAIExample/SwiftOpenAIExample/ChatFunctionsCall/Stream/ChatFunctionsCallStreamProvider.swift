@@ -204,7 +204,7 @@ class ChatFunctionsCallStreamProvider {
       let stream = try await service.startStreamedChat(parameters: paramsForChat)
       for try await result in stream {
         // Extract the first choice from the stream results, if none exist, exit the loop.
-        guard let choice = result.choices?.first else { return }
+        guard let choice = result.choices?.first else { continue }
 
         /// The streamed content to display
         if let newContent = choice.delta?.content {

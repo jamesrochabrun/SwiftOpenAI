@@ -39,7 +39,8 @@ public struct ChatCompletionParameters: Encodable {
     temperature: Double? = nil,
     topProbability: Double? = nil,
     user: String? = nil,
-    streamOptions: StreamOptions? = nil)
+    streamOptions: StreamOptions? = nil,
+    thinking: Thinking? = nil)
   {
     self.messages = messages
     self.model = model.value
@@ -70,6 +71,7 @@ public struct ChatCompletionParameters: Encodable {
     topP = topProbability
     self.user = user
     self.streamOptions = streamOptions
+    self.thinking = thinking
   }
 
   public struct Message: Encodable {
@@ -417,6 +419,20 @@ public struct ChatCompletionParameters: Encodable {
     case medium
     case low
   }
+    
+  public enum ThinkingType: String, Encodable {
+    case disabled
+    case enabled
+    case auto
+  }
+    
+  public struct Thinking: Encodable {
+    public let type: ThinkingType
+        
+    public init(type: ThinkingType) {
+      self.type = type
+    }
+  }
 
   /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)
   public var messages: [Message]
@@ -531,6 +547,7 @@ public struct ChatCompletionParameters: Encodable {
     case temperature
     case topP = "top_p"
     case user
+    case thinking
   }
 
   /// If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format) as they become available, with the stream terminated by a data: [DONE] message. [Example Python code](https://cookbook.openai.com/examples/how_to_stream_completions ).
@@ -538,4 +555,6 @@ public struct ChatCompletionParameters: Encodable {
   var stream: Bool? = nil
   /// Options for streaming response. Only set this when you set stream: true
   var streamOptions: StreamOptions?
+    
+  var thinking: Thinking?
 }

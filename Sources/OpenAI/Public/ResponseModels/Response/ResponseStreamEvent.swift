@@ -143,6 +143,9 @@ public enum ResponseStreamEvent: Decodable {
   /// Emitted when an error occurs
   case error(ErrorEvent)
 
+  /// For unknown event type
+  case unknownEventType(String)
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let type = try container.decode(String.self, forKey: .type)
@@ -237,10 +240,7 @@ public enum ResponseStreamEvent: Decodable {
     case "error":
       self = try .error(ErrorEvent(from: decoder))
     default:
-      throw DecodingError.dataCorruptedError(
-        forKey: .type,
-        in: container,
-        debugDescription: "Unknown event type: \(type)")
+      self = .unknownEventType(type)
     }
   }
 

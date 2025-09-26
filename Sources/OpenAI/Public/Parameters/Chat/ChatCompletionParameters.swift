@@ -40,8 +40,8 @@ public struct ChatCompletionParameters: Encodable {
     topProbability: Double? = nil,
     user: String? = nil,
     streamOptions: StreamOptions? = nil,
-    thinking: Thinking? = nil)
-  {
+    thinking: Thinking? = nil
+  ) {
     self.messages = messages
     self.model = model.value
     self.store = store
@@ -83,8 +83,8 @@ public struct ChatCompletionParameters: Encodable {
       audio: Audio? = nil,
       functionCall: FunctionCall? = nil,
       toolCalls: [ToolCall]? = nil,
-      toolCallID: String? = nil)
-    {
+      toolCallID: String? = nil
+    ) {
       self.role = role.rawValue
       self.content = content
       self.refusal = refusal
@@ -146,7 +146,7 @@ public struct ChatCompletionParameters: Encodable {
           }
         }
 
-        public static func ==(lhs: MessageContent, rhs: MessageContent) -> Bool {
+        public static func == (lhs: MessageContent, rhs: MessageContent) -> Bool {
           switch (lhs, rhs) {
           case (.text(let a), .text(let b)):
             a == b
@@ -207,10 +207,10 @@ public struct ChatCompletionParameters: Encodable {
     }
 
     public enum Role: String {
-      case system // content, role
-      case user // content, role
-      case assistant // content, role, tool_calls
-      case tool // content, role, tool_call_id
+      case system  // content, role
+      case user  // content, role
+      case assistant  // content, role, tool_calls
+      case tool  // content, role, tool_call_id
     }
 
     public struct Audio: Encodable {
@@ -291,8 +291,8 @@ public struct ChatCompletionParameters: Encodable {
 
     public init(
       type: String = "function",
-      function: ChatFunction)
-    {
+      function: ChatFunction
+    ) {
       self.type = type
       self.function = function
     }
@@ -303,8 +303,8 @@ public struct ChatCompletionParameters: Encodable {
       name: String,
       strict: Bool?,
       description: String?,
-      parameters: JSONSchema?)
-    {
+      parameters: JSONSchema?
+    ) {
       self.name = name
       self.strict = strict
       self.description = description
@@ -357,8 +357,8 @@ public struct ChatCompletionParameters: Encodable {
 
     public init(
       voice: String,
-      format: String)
-    {
+      format: String
+    ) {
       self.voice = voice
       self.format = format
     }
@@ -419,16 +419,16 @@ public struct ChatCompletionParameters: Encodable {
     case medium
     case low
   }
-    
+
   public enum ThinkingType: String, Encodable {
     case disabled
     case enabled
     case auto
   }
-    
+
   public struct Thinking: Encodable {
     public let type: ThinkingType
-        
+
     public init(type: ThinkingType) {
       self.type = type
     }
@@ -555,6 +555,6 @@ public struct ChatCompletionParameters: Encodable {
   var stream: Bool? = nil
   /// Options for streaming response. Only set this when you set stream: true
   var streamOptions: StreamOptions?
-    
+
   var thinking: Thinking?
 }

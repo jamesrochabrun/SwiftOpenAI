@@ -80,14 +80,14 @@ enum StructuredToolCall: String, CaseIterable {
 @Observable
 final class ChatStructuredOutputToolProvider {
 
-  // MARK: - Init
-
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
     self.customModel = customModel
   }
+
+  // MARK: - Init
+
+  let customModel: String?
 
   var chatDisplayMessages: [ChatMessageDisplayModel] = []
   let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
@@ -102,12 +102,13 @@ final class ChatStructuredOutputToolProvider {
     let userMessage = createUserMessage(prompt)
     chatMessageParameters.append(userMessage)
 
-    let model: Model = if let customModel = customModel, !customModel.isEmpty {
-      .custom(customModel)
-    } else {
-      .gpt4o20240806
-    }
-    
+    let model: Model =
+      if let customModel, !customModel.isEmpty {
+        .custom(customModel)
+      } else {
+        .gpt4o20240806
+      }
+
     let parameters = ChatCompletionParameters(
       messages: [systemMessage] + chatMessageParameters,
       model: model,
@@ -177,12 +178,13 @@ extension ChatStructuredOutputToolProvider {
   }
 
   func continueChat() async {
-    let model: Model = if let customModel = customModel, !customModel.isEmpty {
-      .custom(customModel)
-    } else {
-      .gpt4o
-    }
-    
+    let model: Model =
+      if let customModel, !customModel.isEmpty {
+        .custom(customModel)
+      } else {
+        .gpt4o
+      }
+
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
       model: model)

@@ -44,7 +44,7 @@ public struct HTTPRequest {
       throw URLError(.unsupportedURL)
     }
 
-    var headers: [String: String] = [:]
+    var headers = [String: String]()
     if let allHTTPHeaderFields = urlRequest.allHTTPHeaderFields {
       headers = allHTTPHeaderFields
     }

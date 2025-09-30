@@ -210,9 +210,9 @@ struct AssistantConfigurationDemoView: View {
   @State private var parameters = AssistantParameters(action: .create(model: Model.gpt41106Preview.value))
   @State private var isAvatarLoading = false
   @State private var showAvatarFlow = false
-  @State private var fileIDS: [String] = []
+  @State private var fileIDS = [String]()
   /// Used mostly to display already uploaded files if any.
-  @State private var filePickerInitialActions: [FilePickerAction] = []
+  @State private var filePickerInitialActions = [FilePickerAction]()
 
   private let service: OpenAIService
 }
@@ -229,7 +229,7 @@ extension Binding where Value == String? {
   AssistantConfigurationDemoView(service: OpenAIServiceFactory.service(apiKey: ""))
 }
 
-// MARK: InputView
+// MARK: - InputView
 
 struct InputView<Content: View>: View {
   let content: Content
@@ -251,6 +251,8 @@ struct InputView<Content: View>: View {
   @Environment(\.inputViewStyle) private var style: InputViewStyle
 }
 
+// MARK: - InputViewStyle
+
 struct InputViewStyle {
   let verticalPadding: CGFloat
 
@@ -258,6 +260,8 @@ struct InputViewStyle {
     self.verticalPadding = verticalPadding
   }
 }
+
+// MARK: - InputViewStyleKey
 
 struct InputViewStyleKey: EnvironmentKey {
   static let defaultValue = InputViewStyle()
@@ -276,6 +280,8 @@ extension View {
   }
 }
 
+// MARK: - CheckboxView
+
 struct CheckboxView: View {
   @Binding var isChecked: Bool
 
@@ -290,6 +296,8 @@ struct CheckboxView: View {
     .buttonStyle(PlainButtonStyle())
   }
 }
+
+// MARK: - CheckboxRow
 
 struct CheckboxRow: View {
   let title: String

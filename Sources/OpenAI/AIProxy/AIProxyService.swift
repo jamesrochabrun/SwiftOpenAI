@@ -167,7 +167,7 @@ struct AIProxyService: OpenAIService {
     limit: Int? = nil)
     async throws -> OpenAIResponse<FineTuningJobObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let lastJobID, let limit {
       queryItems = [.init(name: "after", value: lastJobID), .init(name: "limit", value: "\(limit)")]
     } else if let lastJobID {
@@ -218,7 +218,7 @@ struct AIProxyService: OpenAIService {
     limit: Int? = nil)
     async throws -> OpenAIResponse<FineTuningJobEventObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let lastEventId, let limit {
       queryItems = [.init(name: "after", value: lastEventId), .init(name: "limit", value: "\(limit)")]
     } else if let lastEventId {
@@ -527,7 +527,7 @@ struct AIProxyService: OpenAIService {
     before: String? = nil)
     async throws -> OpenAIResponse<AssistantObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -685,7 +685,7 @@ struct AIProxyService: OpenAIService {
     runID _: String? = nil)
     async throws -> OpenAIResponse<MessageObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -767,7 +767,7 @@ struct AIProxyService: OpenAIService {
     before: String? = nil)
     async throws -> OpenAIResponse<RunObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -865,7 +865,7 @@ struct AIProxyService: OpenAIService {
     before: String? = nil)
     async throws -> OpenAIResponse<RunStepObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -990,7 +990,7 @@ struct AIProxyService: OpenAIService {
     limit: Int? = nil)
     async throws -> OpenAIResponse<BatchObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -1031,7 +1031,7 @@ struct AIProxyService: OpenAIService {
     before: String? = nil)
     async throws -> OpenAIResponse<VectorStoreObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -1126,7 +1126,7 @@ struct AIProxyService: OpenAIService {
     filter: String? = nil)
     async throws -> OpenAIResponse<VectorStoreFileObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }
@@ -1241,7 +1241,7 @@ struct AIProxyService: OpenAIService {
     filter: String? = nil)
     async throws -> OpenAIResponse<VectorStoreFileObject>
   {
-    var queryItems: [URLQueryItem] = []
+    var queryItems = [URLQueryItem]()
     if let limit {
       queryItems.append(.init(name: "limit", value: "\(limit)"))
     }

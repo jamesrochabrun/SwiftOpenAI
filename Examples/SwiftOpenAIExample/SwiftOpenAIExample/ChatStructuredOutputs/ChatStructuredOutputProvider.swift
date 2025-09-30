@@ -19,7 +19,7 @@ final class ChatStructuredOutputProvider {
   }
 
   var message = ""
-  var messages: [String] = []
+  var messages = [String]()
   var errorMessage = ""
 
   // MARK: - Public Methods

@@ -35,19 +35,16 @@ enum StructuredToolCall: String, CaseIterable {
           type: .string,
           description: "The type of the UI component",
           additionalProperties: false,
-          enum: ["div", "button", "header", "section", "field", "form"]
-        ),
+          enum: ["div", "button", "header", "section", "field", "form"]),
         "label": JSONSchema(
           type: .string,
           description: "The label of the UI component, used for buttons or form fields",
-          additionalProperties: false
-        ),
+          additionalProperties: false),
         "children": JSONSchema(
           type: .array,
           description: "Nested UI components",
           items: JSONSchema(ref: "#"),
-          additionalProperties: false
-        ),
+          additionalProperties: false),
         "attributes": JSONSchema(
           type: .array,
           description: "Arbitrary attributes for the UI component, suitable for any element",
@@ -57,18 +54,15 @@ enum StructuredToolCall: String, CaseIterable {
               "name": JSONSchema(
                 type: .string,
                 description: "The name of the attribute, for example onClick or className",
-                additionalProperties: false
-              ),
+                additionalProperties: false),
               "value": JSONSchema(
                 type: .string,
                 description: "The value of the attribute",
-                additionalProperties: false
-              ),
+                additionalProperties: false),
             ],
             required: ["name", "value"],
             additionalProperties: false),
-          additionalProperties: false
-        ),
+          additionalProperties: false),
       ],
       required: ["type", "label", "children", "attributes"],
       additionalProperties: false)
@@ -89,7 +83,7 @@ final class ChatStructuredOutputToolProvider {
 
   let customModel: String?
 
-  var chatDisplayMessages: [ChatMessageDisplayModel] = []
+  var chatDisplayMessages = [ChatMessageDisplayModel]()
   let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
 
   func startChat(
@@ -161,8 +155,8 @@ final class ChatStructuredOutputToolProvider {
 
   private let service: OpenAIService
   private var lastDisplayedMessageID: UUID?
-  private var chatMessageParameters: [ChatCompletionParameters.Message] = []
-  private var availableFunctions: [StructuredToolCall: (String) -> String] = [:]
+  private var chatMessageParameters = [ChatCompletionParameters.Message]()
+  private var availableFunctions = [StructuredToolCall: (String) -> String]()
 
 }
 

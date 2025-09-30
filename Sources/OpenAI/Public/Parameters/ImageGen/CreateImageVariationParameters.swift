@@ -128,7 +128,7 @@ public struct CreateImageVariationParameters: Encodable {
 
 extension CreateImageVariationParameters: MultipartFormDataParameters {
   public func encode(boundary: String) -> Data {
-    var entries: [MultipartFormDataEntry] = []
+    var entries = [MultipartFormDataEntry]()
 
     // Add image file
     entries.append(.file(

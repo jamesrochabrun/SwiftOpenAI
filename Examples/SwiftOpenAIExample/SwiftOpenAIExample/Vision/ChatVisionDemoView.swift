@@ -126,9 +126,9 @@ struct ChatVisionDemoView: View {
   @State private var chatProvider: ChatVisionProvider
   @State private var isLoading = false
   @State private var prompt = ""
-  @State private var selectedItems: [PhotosPickerItem] = []
-  @State private var selectedImages: [Image] = []
-  @State private var selectedImageURLS: [URL] = []
+  @State private var selectedItems = [PhotosPickerItem]()
+  @State private var selectedImages = [Image]()
+  @State private var selectedImageURLS = [URL]()
 
   /// Called when the user taps on the send button. Clears the selected images and prompt.
   private func resetInput() {

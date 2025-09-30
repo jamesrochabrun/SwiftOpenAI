@@ -1033,7 +1033,7 @@ extension OpenAIService {
         description: errorMessage,
         statusCode: response.statusCode)
     }
-    var content: [[String: Any]] = []
+    var content = [[String: Any]]()
     if let jsonString = String(data: data, encoding: String.Encoding.utf8) {
       let lines = jsonString.split(separator: "\n")
       for line in lines {

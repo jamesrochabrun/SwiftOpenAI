@@ -46,7 +46,7 @@ class ChatFunctionCallProvider {
   // MARK: - Public Properties
 
   /// To be used for UI purposes.
-  var chatDisplayMessages: [ChatMessageDisplayModel] = []
+  var chatDisplayMessages = [ChatMessageDisplayModel]()
 
   @MainActor
   func generateImage(arguments: String) async throws -> String {
@@ -174,8 +174,8 @@ class ChatFunctionCallProvider {
   private let service: OpenAIService
   private var lastDisplayedMessageID: UUID?
   /// To be used for a new request
-  private var chatMessageParameters: [ChatCompletionParameters.Message] = []
-  private var availableFunctions: [FunctionCallDefinition: @MainActor (String) async throws -> String] = [:]
+  private var chatMessageParameters = [ChatCompletionParameters.Message]()
+  private var availableFunctions = [FunctionCallDefinition: @MainActor (String) async throws -> String]()
 
   // MARK: - Private Methods
 

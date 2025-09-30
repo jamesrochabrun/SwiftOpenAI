@@ -14,7 +14,7 @@ class ChatProvider {
     self.service = service
   }
 
-  var messages: [String] = []
+  var messages = [String]()
   var errorMessage = ""
   var message = ""
   var usage: ChatUsage?

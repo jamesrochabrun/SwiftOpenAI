@@ -68,7 +68,7 @@ public enum Model {
   case gpt5Mini
   /// High-throughput tasks, especially simple instruction-following or classification
   case gpt5Nano
-  
+
   case gpt5Codex
 
   /// Images

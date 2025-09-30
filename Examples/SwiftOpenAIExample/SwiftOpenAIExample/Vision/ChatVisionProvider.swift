@@ -19,7 +19,7 @@ class ChatVisionProvider {
   // MARK: - Public Properties
 
   /// A collection of messages for display in the UI, representing the conversation.
-  var chatMessages: [ChatDisplayMessage] = []
+  var chatMessages = [ChatDisplayMessage]()
 
   // MARK: - Public Methods
 
@@ -71,7 +71,7 @@ class ChatVisionProvider {
   /// Tracks the identifier of the last message displayed, enabling updates in the from the streaming API response.
   private var lastDisplayedMessageID: UUID?
   /// Stores the initial chat message's delta, which uniquely includes metadata like `role`.
-  private var firstChatMessageResponseDelta: [String: ChatCompletionChunkObject.ChatChoice.Delta] = [:]
+  private var firstChatMessageResponseDelta = [String: ChatCompletionChunkObject.ChatChoice.Delta]()
 
   // MARK: - Private Methods
 

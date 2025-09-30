@@ -17,8 +17,8 @@ class FineTuningJobProvider {
   var createdFineTuningJob: FineTuningJobObject?
   var canceledFineTuningJob: FineTuningJobObject?
   var retrievedFineTuningJob: FineTuningJobObject?
-  var fineTunedJobs: [FineTuningJobObject] = []
-  var finteTuningEventObjects: [FineTuningJobEventObject] = []
+  var fineTunedJobs = [FineTuningJobObject]()
+  var finteTuningEventObjects = [FineTuningJobEventObject]()
 
   func createFineTuningJob(
     parameters: FineTuningJobParameters)

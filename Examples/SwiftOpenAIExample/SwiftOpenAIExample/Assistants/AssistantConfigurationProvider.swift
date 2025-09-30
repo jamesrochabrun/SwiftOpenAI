@@ -17,7 +17,7 @@ class AssistantConfigurationProvider {
   }
 
   var assistant: AssistantObject?
-  var assistants: [AssistantObject] = []
+  var assistants = [AssistantObject]()
   var avatarURL: URL?
   var assistantDeletionStatus: DeletionStatus?
 

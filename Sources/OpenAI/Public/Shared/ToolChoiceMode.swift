@@ -26,6 +26,9 @@ public enum ToolChoiceMode: Codable {
   /// Use this option to force the model to call a specific function.
   case functionTool(FunctionTool)
 
+  /// Use this option to force the model to call a specific custom tool.
+  case customTool(CustomToolChoice)
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
 
@@ -46,6 +49,8 @@ public enum ToolChoiceMode: Codable {
       self = .hostedTool(hostedTool)
     } else if let functionTool = try? container.decode(FunctionTool.self) {
       self = .functionTool(functionTool)
+    } else if let customTool = try? container.decode(CustomToolChoice.self) {
+      self = .customTool(customTool)
     } else {
       throw DecodingError.dataCorruptedError(
         in: container,
@@ -66,6 +71,8 @@ public enum ToolChoiceMode: Codable {
     case .hostedTool(let toolType):
       try container.encode(toolType)
     case .functionTool(let tool):
+      try container.encode(tool)
+    case .customTool(let tool):
       try container.encode(tool)
     }
   }
@@ -132,6 +139,26 @@ public struct FunctionTool: Codable {
 
   /// For function calling, the type is always function
   public var type = "function"
+
+  public init(name: String) {
+    self.name = name
+  }
+
+  enum CodingKeys: String, CodingKey {
+    case name
+    case type
+  }
+}
+
+// MARK: - CustomToolChoice
+
+/// Custom tool choice specification
+public struct CustomToolChoice: Codable {
+  /// The name of the custom tool to call
+  public var name: String
+
+  /// For custom tool calling, the type is always custom
+  public var type = "custom"
 
   public init(name: String) {
     self.name = name

@@ -13,11 +13,11 @@ final class FilesPickerProvider {
     self.service = service
   }
 
-  var files: [FileObject] = []
+  var files = [FileObject]()
   var uploadedFile: FileObject?
   var deletedStatus: DeletionStatus?
   var retrievedFile: FileObject?
-  var fileContent: [[String: Any]] = []
+  var fileContent = [[String: Any]]()
 
   func listFiles() async throws {
     files = try await service.listFiles().data

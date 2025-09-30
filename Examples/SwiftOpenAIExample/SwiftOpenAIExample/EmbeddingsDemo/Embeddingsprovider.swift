@@ -14,7 +14,7 @@ class EmbeddingsProvider {
     self.service = service
   }
 
-  var embeddings: [EmbeddingObject] = []
+  var embeddings = [EmbeddingObject]()
 
   func createEmbeddings(
     parameters: EmbeddingParameter)

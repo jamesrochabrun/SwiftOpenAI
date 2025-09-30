@@ -545,7 +545,7 @@ final class ResponseStreamEventTests: XCTestCase {
     ]
 
     let decoder = JSONDecoder()
-    var receivedEvents: [ResponseStreamEvent] = []
+    var receivedEvents = [ResponseStreamEvent]()
 
     // Decode all events
     for eventJson in events {

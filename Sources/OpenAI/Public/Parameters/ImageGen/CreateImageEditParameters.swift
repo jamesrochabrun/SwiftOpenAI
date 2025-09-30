@@ -76,7 +76,7 @@ public struct CreateImageEditParameters: Encodable {
     size: String? = nil,
     user: String? = nil)
   {
-    var imageDataArray: [Data] = []
+    var imageDataArray = [Data]()
 
     for image in images {
       #if canImport(UIKit)
@@ -223,7 +223,7 @@ public struct CreateImageEditParameters: Encodable {
 
 extension CreateImageEditParameters: MultipartFormDataParameters {
   public func encode(boundary: String) -> Data {
-    var entries: [MultipartFormDataEntry] = []
+    var entries = [MultipartFormDataEntry]()
 
     // Add images (possibly multiple for gpt-image-1)
     for (index, imageData) in image.enumerated() {

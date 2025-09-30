@@ -32,6 +32,8 @@ public enum OutputItem: Decodable {
   case mcpListTools(MCPListTools)
   /// A request for human approval of a tool invocation
   case mcpApprovalRequest(MCPApprovalRequest)
+  /// A custom tool call that returns plain text
+  case customToolCall(CustomToolCall)
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -85,6 +87,10 @@ public enum OutputItem: Decodable {
     case "mcp_approval_request":
       let mcpApprovalRequest = try MCPApprovalRequest(from: decoder)
       self = .mcpApprovalRequest(mcpApprovalRequest)
+
+    case "custom_tool_call":
+      let customToolCall = try CustomToolCall(from: decoder)
+      self = .customToolCall(customToolCall)
 
     default:
       throw DecodingError.dataCorruptedError(
@@ -207,6 +213,30 @@ public enum OutputItem: Decodable {
 
     enum CodingKeys: String, CodingKey {
       case arguments, callId = "call_id", name, type, id, status
+    }
+  }
+
+  // MARK: - Custom Tool Call
+
+  /// A custom tool call that returns plain text instead of JSON
+  public struct CustomToolCall: Decodable {
+    /// The unique ID of the custom tool call
+    public let id: String
+    /// The type of the custom tool call. Always "custom_tool_call"
+    public let type: String
+    /// The status of the item. One of "in_progress", "completed", or "incomplete"
+    public let status: String?
+    /// The call ID for this custom tool call
+    public let callId: String
+    /// The plain text input to the custom tool
+    public let input: String
+    /// The name of the custom tool
+    public let name: String
+
+    enum CodingKeys: String, CodingKey {
+      case id, type, status
+      case callId = "call_id"
+      case input, name
     }
   }
 

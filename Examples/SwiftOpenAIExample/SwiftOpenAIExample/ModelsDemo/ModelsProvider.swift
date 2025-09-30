@@ -14,7 +14,7 @@ class ModelsProvider {
     self.service = service
   }
 
-  var models: [ModelObject] = []
+  var models = [ModelObject]()
   var retrievedModel: ModelObject?
   var deletionStatus: DeletionStatus?
 

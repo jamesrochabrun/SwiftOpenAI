@@ -33,7 +33,7 @@ class ResponseStreamProvider {
     }
   }
 
-  var messages: [ResponseMessage] = []
+  var messages = [ResponseMessage]()
   var isStreaming = false
   var currentStreamingMessage: ResponseMessage?
   var error: String?
@@ -103,7 +103,7 @@ class ResponseStreamProvider {
 
     do {
       // Build input array with conversation history
-      var inputArray: [InputItem] = []
+      var inputArray = [InputItem]()
 
       // Add conversation history
       for message in messages.dropLast(2) { // Exclude current user message and streaming placeholder

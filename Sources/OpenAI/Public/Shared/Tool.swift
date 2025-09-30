@@ -21,6 +21,9 @@ public enum Tool: Codable {
   /// This tool searches the web for relevant results to use in a response
   case webSearch(WebSearchTool)
 
+  /// A custom tool that returns plain text instead of JSON
+  case custom(CustomTool)
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let type = try container.decode(String.self, forKey: .type)
@@ -36,6 +39,8 @@ public enum Tool: Codable {
       self = try .computerUse(singleValueContainer.decode(ComputerUseTool.self))
     case "web_search_preview", "web_search_preview_2025_03_11":
       self = try .webSearch(singleValueContainer.decode(WebSearchTool.self))
+    case "custom":
+      self = try .custom(singleValueContainer.decode(CustomTool.self))
     default:
       throw DecodingError.dataCorruptedError(
         forKey: .type,
@@ -412,6 +417,32 @@ public enum Tool: Codable {
     }
   }
 
+  /// A custom tool that returns plain text instead of JSON
+  public struct CustomTool: Codable {
+    public init(
+      name: String,
+      description: String? = nil)
+    {
+      self.name = name
+      self.description = description
+    }
+
+    /// The name of the custom tool
+    public let name: String
+
+    /// A description of what the custom tool does
+    public let description: String?
+
+    /// The type of the custom tool. Always custom
+    public let type = "custom"
+
+    enum CodingKeys: String, CodingKey {
+      case name
+      case description
+      case type
+    }
+  }
+
   /// Approximate location parameters for the search
   public struct UserLocation: Codable {
     public init(
@@ -479,6 +510,8 @@ public enum Tool: Codable {
     case .computerUse(let tool):
       try container.encode(tool)
     case .webSearch(let tool):
+      try container.encode(tool)
+    case .custom(let tool):
       try container.encode(tool)
     }
   }

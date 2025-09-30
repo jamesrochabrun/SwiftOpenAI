@@ -68,6 +68,8 @@ public enum Model {
   case gpt5Mini
   /// High-throughput tasks, especially simple instruction-following or classification
   case gpt5Nano
+  
+  case gpt5Codex
 
   /// Images
   case dalle2
@@ -103,6 +105,7 @@ public enum Model {
     case .gpt5: "gpt-5"
     case .gpt5Mini: "gpt-5-mini"
     case .gpt5Nano: "gpt-5-nano"
+    case .gpt5Codex: "gpt-5-codex"
     case .custom(let model): model
     }
   }

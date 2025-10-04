@@ -39,27 +39,29 @@ enum FunctionCallDefinition: String, CaseIterable {
 class ChatFunctionCallProvider {
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   // MARK: - Public Properties
 
   /// To be used for UI purposes.
-  var chatDisplayMessages = [ChatMessageDisplayModel]()
+  var chatDisplayMessages: [ChatMessageDisplayModel] = []
 
   @MainActor
   func generateImage(arguments: String) async throws -> String {
     let dictionary = arguments.toDictionary()!
     let prompt = dictionary["prompt"] as! String
-    let count = (dictionary["count"] as? Int) ?? 1
 
     let assistantMessage = ChatMessageDisplayModel(
       content: .content(.init(text: "Generating images...")),
       origin: .received(.gpt))
     updateLastAssistantMessage(assistantMessage)
 
-    let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dallE2)).data?.compactMap(\.url)
+    let urls = try await service.createImages(parameters: .init(prompt: prompt, model: .dallE3)).data?.compactMap(\.url)
       .compactMap { URL(string: $0) } ?? []
 
     let dalleAssistantMessage = ChatMessageDisplayModel(
@@ -90,9 +92,15 @@ class ChatFunctionCallProvider {
 
     let tools = FunctionCallDefinition.allCases.map(\.functionTool)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt41106Preview
+    }
+    
     let parameters = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt41106Preview,
+      model: model,
       toolChoice: ToolChoice.auto,
       tools: tools)
 
@@ -149,9 +157,15 @@ class ChatFunctionCallProvider {
 
     chatMessageParameters.insert(systemMessage, at: 0)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt41106Preview
+    }
+    
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt41106Preview)
+      model: model)
     do {
       let chat = try await service.startChat(parameters: paramsForChat)
       guard let assistantMessage = chat.choices?.first?.message else { return }
@@ -174,8 +188,8 @@ class ChatFunctionCallProvider {
   private let service: OpenAIService
   private var lastDisplayedMessageID: UUID?
   /// To be used for a new request
-  private var chatMessageParameters = [ChatCompletionParameters.Message]()
-  private var availableFunctions = [FunctionCallDefinition: @MainActor (String) async throws -> String]()
+  private var chatMessageParameters: [ChatCompletionParameters.Message] = []
+  private var availableFunctions: [FunctionCallDefinition: @MainActor (String) async throws -> String] = [:]
 
   // MARK: - Private Methods
 

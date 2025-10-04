@@ -112,8 +112,12 @@ let responseFormatSchema = JSONSchemaResponseFormat(
 // )
 
 struct ChatStructuredOutputDemoView: View {
-  init(service: OpenAIService) {
-    _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service))
+  
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
+    self.customModel = customModel
+    _chatProvider = State(initialValue: ChatStructuredOutputProvider(service: service, customModel: customModel))
   }
 
   enum ChatConfig {

@@ -25,8 +25,11 @@ struct FunctionCallStreamedResponse {
 class ChatFunctionsCallStreamProvider {
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
+  let customModel: String?
+  
+  init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
+    self.customModel = customModel
   }
 
   // MARK: - Public Properties
@@ -84,9 +87,15 @@ class ChatFunctionsCallStreamProvider {
 
     let tools = FunctionCallDefinition.allCases.map(\.functionTool)
 
+    let model: Model = if let customModel = customModel, !customModel.isEmpty {
+      .custom(customModel)
+    } else {
+      .gpt35Turbo1106
+    }
+    
     let parameters = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: .gpt35Turbo1106,
+      model: model,
       toolChoice: ToolChoice.auto,
       tools: tools)
 

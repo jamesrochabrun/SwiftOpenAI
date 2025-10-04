@@ -39,8 +39,21 @@ struct OptionsListView: View {
   var options: [APIOption]
 
   var body: some View {
-    List(options, id: \.self, selection: $selection) { option in
-      Text(option.rawValue)
+    VStack {
+      // Custom model input field
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Custom Model (Optional)")
+          .font(.caption)
+          .foregroundColor(.secondary)
+        TextField("e.g., grok-beta, claude-3-opus, etc.", text: $customModel)
+          .textFieldStyle(.roundedBorder)
+          .autocapitalization(.none)
+          .disableAutocorrection(true)
+      }
+      .padding()
+      List(options, id: \.self, selection: $selection) { option in
+        Text(option.rawValue)
+      }
     }
     .sheet(item: $selection) { selection in
       VStack {
@@ -51,11 +64,11 @@ struct OptionsListView: View {
         case .audio:
           AudioDemoView(service: openAIService)
         case .chat:
-          ChatDemoView(service: openAIService)
+          ChatDemoView(service: openAIService, customModel: customModel)
         case .chatPredictedOutput:
-          ChatPredictedOutputDemoView(service: openAIService)
+          ChatPredictedOutputDemoView(service: openAIService, customModel: customModel)
         case .vision:
-          ChatVisionDemoView(service: openAIService)
+          ChatVisionDemoView(service: openAIService, customModel: customModel)
         case .embeddings:
           EmbeddingsDemoView(service: openAIService)
         case .fineTuning:
@@ -65,21 +78,21 @@ struct OptionsListView: View {
         case .images:
           ImagesDemoView(service: openAIService)
         case .localChat:
-          LocalChatDemoView(service: openAIService)
+          LocalChatDemoView(service: openAIService, customModel: customModel)
         case .models:
           ModelsDemoView(service: openAIService)
         case .moderations:
           ModerationDemoView(service: openAIService)
         case .chatHistoryConversation:
-          ChatStreamFluidConversationDemoView(service: openAIService)
+          ChatStreamFluidConversationDemoView(service: openAIService, customModel: customModel)
         case .chatFunctionCall:
           ChatFunctionCallDemoView(service: openAIService)
         case .chatFunctionsCallStream:
-          ChatFunctionsCalllStreamDemoView(service: openAIService)
+          ChatFunctionsCalllStreamDemoView(service: openAIService, customModel: customModel)
         case .chatStructuredOutput:
-          ChatStructuredOutputDemoView(service: openAIService)
+          ChatStructuredOutputDemoView(service: openAIService, customModel: customModel)
         case .chatStructuredOutputTool:
-          ChatStructureOutputToolDemoView(service: openAIService)
+          ChatStructureOutputToolDemoView(service: openAIService, customModel: customModel)
         case .configureAssistant:
           AssistantConfigurationDemoView(service: openAIService)
         case .realTimeAPI:
@@ -92,4 +105,5 @@ struct OptionsListView: View {
   }
 
   @State private var selection: APIOption? = nil
+  @State private var customModel = ""
 }

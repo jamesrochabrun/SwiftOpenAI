@@ -10,11 +10,14 @@ import SwiftUI
 
 @Observable
 class ChatVisionProvider {
+  init(service: OpenAIService, customModel: String? = nil) {
+    self.service = service
+    self.customModel = customModel
+  }
+
   // MARK: - Initializer
 
-  init(service: OpenAIService) {
-    self.service = service
-  }
+  let customModel: String?
 
   // MARK: - Public Properties
 

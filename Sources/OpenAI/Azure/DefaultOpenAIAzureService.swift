@@ -977,6 +977,13 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     fatalError("conversationCreate not implemented for Azure OpenAI Service")
   }
 
+  public func getConversation(
+    id: String)
+    async throws -> ConversationModel
+  {
+    fatalError("getConversation not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

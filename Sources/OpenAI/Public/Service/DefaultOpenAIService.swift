@@ -1427,6 +1427,19 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: ConversationModel.self, with: request)
   }
 
+  func getConversation(
+    id: String)
+    async throws -> ConversationModel
+  {
+    let request = try OpenAIAPI.conversantions(.get(conversationID: id)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .get,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: ConversationModel.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)

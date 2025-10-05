@@ -86,7 +86,7 @@ public enum HostedToolType: Codable {
   case fileSearch
 
   /// Web search tool
-  case webSearchPreview
+  case webSearch
 
   /// Computer use tool
   case computerUsePreview
@@ -101,8 +101,8 @@ public enum HostedToolType: Codable {
     switch type {
     case "file_search":
       self = .fileSearch
-    case "web_search_preview":
-      self = .webSearchPreview
+    case "web_search", "web_search_2025_08_26":
+      self = .webSearch
     case "computer_use_preview":
       self = .computerUsePreview
     default:
@@ -116,8 +116,8 @@ public enum HostedToolType: Codable {
     switch self {
     case .fileSearch:
       try container.encode("file_search", forKey: .type)
-    case .webSearchPreview:
-      try container.encode("web_search_preview", forKey: .type)
+    case .webSearch:
+      try container.encode("web_search", forKey: .type)
     case .computerUsePreview:
       try container.encode("computer_use_preview", forKey: .type)
     case .custom(let value):

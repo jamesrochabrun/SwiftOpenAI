@@ -278,7 +278,7 @@ public struct TextContent: Codable {
 
 /// Image content structure
 public struct ImageContent: Codable {
-  public init(detail: String = "auto", fileId: String? = nil, imageUrl: String? = nil) {
+  public init(detail: String? = "auto", fileId: String? = nil, imageUrl: String? = nil) {
     self.detail = detail
     self.fileId = fileId
     self.imageUrl = imageUrl
@@ -287,8 +287,8 @@ public struct ImageContent: Codable {
   /// The type of content, always "input_image"
   public let type = "input_image"
 
-  /// The detail level of the image. One of high, low, or auto. Defaults to auto
-  public let detail: String
+  /// The detail level of the image. One of high, low, or auto. Defaults to auto when creating.
+  public let detail: String?
 
   /// The ID of the file to be sent to the model
   public let fileId: String?
@@ -308,9 +308,10 @@ public struct ImageContent: Codable {
 
 /// File content structure
 public struct FileContent: Codable {
-  public init(fileData: String? = nil, fileId: String? = nil, filename: String? = nil) {
+  public init(fileData: String? = nil, fileId: String? = nil, fileUrl: String? = nil, filename: String? = nil) {
     self.fileData = fileData
     self.fileId = fileId
+    self.fileUrl = fileUrl
     self.filename = filename
   }
 
@@ -323,6 +324,9 @@ public struct FileContent: Codable {
   /// The ID of the file to be sent to the model
   public let fileId: String?
 
+  /// The URL of the file to be sent to the model
+  public let fileUrl: String?
+
   /// The name of the file to be sent to the model
   public let filename: String?
 
@@ -330,6 +334,7 @@ public struct FileContent: Codable {
     case type
     case fileData = "file_data"
     case fileId = "file_id"
+    case fileUrl = "file_url"
     case filename
   }
 }
@@ -417,7 +422,7 @@ public struct RefusalContent: Codable {
 
 /// An output message from the model (used in conversation history)
 public struct OutputMessage: Codable {
-  public init(content: [ContentItem], id: String, role: String = "assistant", status: String, type: String = "message") {
+  public init(content: [ContentItem], id: String, role: String = "assistant", status: String? = nil, type: String = "message") {
     self.content = content
     self.id = id
     self.role = role
@@ -434,8 +439,8 @@ public struct OutputMessage: Codable {
   /// The role of the output message. Always "assistant"
   public let role: String
 
-  /// The status of the message. One of in_progress, completed, or incomplete
-  public let status: String
+  /// The status of the message. One of in_progress, completed, or incomplete. Populated when items are returned via API.
+  public let status: String?
 
   /// The type of the output message. Always "message"
   public let type: String

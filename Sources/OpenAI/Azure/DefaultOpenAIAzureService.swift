@@ -968,6 +968,15 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     fatalError("responseInputItems not implemented for Azure OpenAI Service")
   }
 
+  // MARK: - Conversations
+
+  public func conversationCreate(
+    parameters: CreateConversationParameter?)
+    async throws -> ConversationModel
+  {
+    fatalError("conversationCreate not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

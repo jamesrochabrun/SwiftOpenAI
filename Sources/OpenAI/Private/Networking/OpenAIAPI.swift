@@ -30,6 +30,10 @@ enum OpenAIAPI {
 
   /// OpenAI's most advanced interface for generating model responses. Supports text and image inputs, and text outputs. Create stateful interactions with the model, using the output of previous responses as input. Extend the model's capabilities with built-in tools for file search, web search, computer use, and more. Allow the model access to external systems and data using function calling.
   case response(ResponseCategory) // https://platform.openai.com/docs/api-reference/responses
+  
+  /// Conversations
+  /// Create and manage conversations to store and retrieve conversation state across Response API calls.
+  case conversantions(ConversationCategory) // https://platform.openai.com/docs/api-reference/conversations
 
   enum AssistantCategory {
     case create
@@ -138,6 +142,10 @@ enum OpenAIAPI {
     case delete(responseID: String)
     case cancel(responseID: String)
     case inputItems(responseID: String)
+  }
+  
+  enum ConversationCategory {
+    case create
   }
 }
 
@@ -276,6 +284,11 @@ extension OpenAIAPI: Endpoint {
       case .delete(let responseID): return "\(version)/responses/\(responseID)"
       case .cancel(let responseID): return "\(version)/responses/\(responseID)/cancel"
       case .inputItems(let responseID): return "\(version)/responses/\(responseID)/input_items"
+      }
+      
+    case .conversantions(let category):
+      switch category {
+      case .create: return "\(version)/conversations"
       }
     }
   }

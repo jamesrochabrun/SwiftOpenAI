@@ -1039,6 +1039,16 @@ public protocol OpenAIService {
     id: String,
     parameters: GetInputItemsParameter?)
     async throws -> OpenAIResponse<InputItem>
+
+  // MARK: - Conversations
+
+  /// [Create a conversation.](https://platform.openai.com/docs/api-reference/conversations/create)
+  ///
+  /// - Parameter parameters: The conversation creation parameters
+  /// - Returns: A Conversation object
+  func conversationCreate(
+    parameters: CreateConversationParameter?)
+    async throws -> ConversationModel
 }
 
 extension OpenAIService {

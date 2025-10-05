@@ -1058,6 +1058,10 @@ public protocol OpenAIService {
     id: String,
     parameters: UpdateConversationParameter)
     async throws -> ConversationModel
+
+  func deleteConversation(
+    id: String)
+    async throws -> DeletionStatus
 }
 
 extension OpenAIService {

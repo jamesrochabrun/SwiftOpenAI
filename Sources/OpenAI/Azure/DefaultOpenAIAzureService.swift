@@ -992,6 +992,13 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     fatalError("updateConversation not implemented for Azure OpenAI Service")
   }
 
+  public func deleteConversation(
+    id: String)
+    async throws -> DeletionStatus
+  {
+    fatalError("deleteConversation not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

@@ -1351,6 +1351,19 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
   }
 
+  func responseDelete(
+    id: String)
+    async throws -> DeletionStatus
+  {
+    let request = try OpenAIAPI.response(.delete(responseID: id)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .delete,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)

@@ -530,6 +530,14 @@ struct LocalModelService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
+  func responseDelete(
+    id _: String)
+    async throws -> DeletionStatus
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
   private let apiKey: Authorization
   /// Set this flag to TRUE if you need to print request events in DEBUG builds.

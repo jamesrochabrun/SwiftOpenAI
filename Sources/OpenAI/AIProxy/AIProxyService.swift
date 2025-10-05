@@ -1324,6 +1324,13 @@ struct AIProxyService: OpenAIService {
     return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
   }
 
+  func responseDelete(
+    id _: String)
+    async throws -> DeletionStatus
+  {
+    fatalError("responseDelete not implemented for AIProxy Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// Your partial key is provided during the integration process at dashboard.aiproxy.pro

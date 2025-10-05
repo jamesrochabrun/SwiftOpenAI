@@ -946,6 +946,13 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     return try await fetchStream(debugEnabled: debugEnabled, type: ResponseStreamEvent.self, with: request)
   }
 
+  public func responseDelete(
+    id: String)
+    async throws -> DeletionStatus
+  {
+    fatalError("responseDelete not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

@@ -1012,6 +1012,14 @@ public protocol OpenAIService {
   func responseCreateStream(
     _ parameters: ModelResponseParameter)
     async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+
+  /// [Deletes a model response with the given ID.](https://platform.openai.com/docs/api-reference/responses/delete)
+  ///
+  /// - Parameter id: The ID of the response to delete
+  /// - Returns: A DeletionStatus object confirming the deletion
+  func responseDelete(
+    id: String)
+    async throws -> DeletionStatus
 }
 
 extension OpenAIService {

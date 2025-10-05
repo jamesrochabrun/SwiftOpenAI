@@ -1338,6 +1338,14 @@ struct AIProxyService: OpenAIService {
     fatalError("responseCancel not implemented for AIProxy Service")
   }
 
+  func responseInputItems(
+    id _: String,
+    parameters _: GetInputItemsParameter?)
+    async throws -> OpenAIResponse<InputItem>
+  {
+    fatalError("responseInputItems not implemented for AIProxy Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// Your partial key is provided during the integration process at dashboard.aiproxy.pro

@@ -960,6 +960,14 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     fatalError("responseCancel not implemented for Azure OpenAI Service")
   }
 
+  public func responseInputItems(
+    id: String,
+    parameters: GetInputItemsParameter?)
+    async throws -> OpenAIResponse<InputItem>
+  {
+    fatalError("responseInputItems not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

@@ -1029,6 +1029,16 @@ public protocol OpenAIService {
   func responseCancel(
     id: String)
     async throws -> ResponseModel
+
+  /// [Returns a list of input items for a given response.](https://platform.openai.com/docs/api-reference/responses/input-items)
+  ///
+  /// - Parameter id: The ID of the response to retrieve input items for
+  /// - Parameter parameters: Optional query parameters for pagination and filtering
+  /// - Returns: A list of input item objects
+  func responseInputItems(
+    id: String,
+    parameters: GetInputItemsParameter?)
+    async throws -> OpenAIResponse<InputItem>
 }
 
 extension OpenAIService {

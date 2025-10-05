@@ -1053,6 +1053,11 @@ public protocol OpenAIService {
   func getConversation(
     id: String)
     async throws -> ConversationModel
+
+  func updateConversation(
+    id: String,
+    parameters: UpdateConversationParameter)
+    async throws -> ConversationModel
 }
 
 extension OpenAIService {

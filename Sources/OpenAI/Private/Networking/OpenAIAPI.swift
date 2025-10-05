@@ -147,6 +147,7 @@ enum OpenAIAPI {
   enum ConversationCategory {
     case create
     case get(conversationID: String)
+    case update(conversationID: String)
   }
 }
 
@@ -291,6 +292,7 @@ extension OpenAIAPI: Endpoint {
       switch category {
       case .create: return "\(version)/conversations"
       case .get(let conversationID): return "\(version)/conversations/\(conversationID)"
+      case .update(let conversationID): return "\(version)/conversations/\(conversationID)"
       }
     }
   }

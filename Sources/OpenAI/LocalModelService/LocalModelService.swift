@@ -505,8 +505,18 @@ struct LocalModelService: OpenAIService {
   }
 
   func responseModel(
-    id _: String)
+    id _: String,
+    parameters _: GetResponseParameter?)
     async throws -> ResponseModel
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func responseModelStream(
+    id _: String,
+    parameters _: GetResponseParameter?)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
   {
     fatalError(
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")

@@ -909,7 +909,8 @@ public final class DefaultOpenAIAzureService: OpenAIService {
   }
 
   public func responseModel(
-    id: String)
+    id: String,
+    parameters: GetResponseParameter?)
     async throws -> ResponseModel
   {
     let request = try AzureOpenAIAPI.response(.retrieve(responseID: id)).request(
@@ -919,6 +920,14 @@ public final class DefaultOpenAIAzureService: OpenAIService {
       method: .post,
       queryItems: initialQueryItems)
     return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+  }
+
+  public func responseModelStream(
+    id: String,
+    parameters: GetResponseParameter?)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+  {
+    fatalError("responseModelStream not implemented for Azure OpenAI Service")
   }
 
   public func responseCreateStream(

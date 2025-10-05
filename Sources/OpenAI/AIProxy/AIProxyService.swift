@@ -1287,7 +1287,8 @@ struct AIProxyService: OpenAIService {
   }
 
   func responseModel(
-    id _: String)
+    id _: String,
+    parameters _: GetResponseParameter?)
     async throws -> ResponseModel
   {
     let request = try await OpenAIAPI.chat.request(
@@ -1297,6 +1298,14 @@ struct AIProxyService: OpenAIService {
       openAIEnvironment: openAIEnvironment,
       method: .post)
     return try await fetch(debugEnabled: debugEnabled, type: ResponseModel.self, with: request)
+  }
+
+  func responseModelStream(
+    id _: String,
+    parameters _: GetResponseParameter?)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
+  {
+    fatalError("responseModelStream not implemented for AIProxy Service")
   }
 
   func responseCreateStream(

@@ -104,7 +104,7 @@ class ResponseStreamProvider {
     do {
       // Build input array with conversation history
       var inputArray = [InputItem]()
-
+      
       // Add conversation history
       for message in messages.dropLast(2) { // Exclude current user message and streaming placeholder
         let content = message.content
@@ -118,16 +118,17 @@ class ResponseStreamProvider {
             content: .text(content))))
         }
       }
-
+      
       // Add current user message
       inputArray.append(.message(InputMessage(role: "user", content: .text(userInput))))
-
+      
       let parameters = ModelResponseParameter(
         input: .array(inputArray),
         model: .gpt5,
         instructions: "You are a helpful assistant. Use the conversation history to provide contextual responses.",
         maxOutputTokens: 1000,
-        previousResponseId: previousResponseId)
+        previousResponseId: previousResponseId,
+        tools: [.imageGeneration(.init())])
 
       let stream = try await service.responseCreateStream(parameters)
       var accumulatedText = ""

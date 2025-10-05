@@ -989,9 +989,21 @@ public protocol OpenAIService {
   /// [The Response object matching the specified ID.](https://platform.openai.com/docs/api-reference/responses/get)
   ///
   /// - Parameter id: The ID of the ResponseModel
+  /// - Parameter parameters: Optional query parameters for the request
   func responseModel(
-    id: String)
+    id: String,
+    parameters: GetResponseParameter?)
     async throws -> ResponseModel
+
+  /// Returns a streaming [Response](https://platform.openai.com/docs/api-reference/responses/get) object for a specific response ID.
+  ///
+  /// - Parameter id: The ID of the ResponseModel
+  /// - Parameter parameters: Optional query parameters for the request (stream will be set to true)
+  /// - Returns: An AsyncThrowingStream of ResponseStreamEvent objects
+  func responseModelStream(
+    id: String,
+    parameters: GetResponseParameter?)
+    async throws -> AsyncThrowingStream<ResponseStreamEvent, Error>
 
   /// Returns a streaming [Response](https://platform.openai.com/docs/api-reference/responses/object) object.
   ///

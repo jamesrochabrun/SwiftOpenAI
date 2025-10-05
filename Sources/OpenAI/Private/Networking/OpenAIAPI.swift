@@ -136,6 +136,7 @@ enum OpenAIAPI {
     case create
     case get(responseID: String)
     case delete(responseID: String)
+    case cancel(responseID: String)
   }
 }
 
@@ -272,6 +273,7 @@ extension OpenAIAPI: Endpoint {
       case .create: return "\(version)/responses"
       case .get(let responseID): return "\(version)/responses/\(responseID)"
       case .delete(let responseID): return "\(version)/responses/\(responseID)"
+      case .cancel(let responseID): return "\(version)/responses/\(responseID)/cancel"
       }
     }
   }

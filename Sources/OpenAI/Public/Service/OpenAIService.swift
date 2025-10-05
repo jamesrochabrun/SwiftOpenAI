@@ -1020,6 +1020,15 @@ public protocol OpenAIService {
   func responseDelete(
     id: String)
     async throws -> DeletionStatus
+
+  /// [Cancels a model response with the given ID.](https://platform.openai.com/docs/api-reference/responses/cancel)
+  /// Only responses created with the background parameter set to true can be cancelled.
+  ///
+  /// - Parameter id: The ID of the response to cancel
+  /// - Returns: A Response object
+  func responseCancel(
+    id: String)
+    async throws -> ResponseModel
 }
 
 extension OpenAIService {

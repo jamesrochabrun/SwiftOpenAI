@@ -124,6 +124,8 @@ public enum OutputItem: Decodable {
   public enum ContentItem: Decodable {
     /// Text output from the model
     case outputText(OutputText)
+    /// A refusal from the model
+    case refusal(Refusal)
 
     public init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -133,6 +135,10 @@ public enum OutputItem: Decodable {
       case "output_text":
         let text = try OutputText(from: decoder)
         self = .outputText(text)
+
+      case "refusal":
+        let refusal = try Refusal(from: decoder)
+        self = .refusal(refusal)
 
       default:
         throw DecodingError.dataCorruptedError(
@@ -156,6 +162,18 @@ public enum OutputItem: Decodable {
       }
     }
 
+    /// A refusal from the model
+    public struct Refusal: Decodable {
+      /// The refusal explanation from the model
+      public let refusal: String
+      /// The type of the refusal. Always "refusal"
+      public let type: String
+
+      enum CodingKeys: String, CodingKey {
+        case refusal, type
+      }
+    }
+
     /// Annotation in text output
     public struct Annotation: Decodable {
       // Properties would be defined based on different annotation types
@@ -173,6 +191,28 @@ public enum OutputItem: Decodable {
 
   /// The results of a file search tool call
   public struct FileSearchToolCall: Decodable {
+    /// A search result from a file search
+    public struct SearchResult: Decodable {
+      /// Set of key-value pairs attached to the object
+      public let attributes: [String: ComputerToolCall.AnyCodable]?
+      /// The unique ID of the file
+      public let fileId: String?
+      /// The name of the file
+      public let filename: String?
+      /// The relevance score of the file - a value between 0 and 1
+      public let score: Double?
+      /// The text that was retrieved from the file
+      public let text: String?
+
+      enum CodingKeys: String, CodingKey {
+        case attributes
+        case fileId = "file_id"
+        case filename
+        case score
+        case text
+      }
+    }
+
     /// The unique ID of the file search tool call
     public let id: String
     /// The queries used to search for files
@@ -183,11 +223,6 @@ public enum OutputItem: Decodable {
     public let type: String
     /// The results of the file search tool call
     public let results: [SearchResult]?
-
-    /// A search result from a file search
-    public struct SearchResult: Decodable {
-      // Properties for search results would be defined here
-    }
 
     enum CodingKeys: String, CodingKey {
       case id, queries, status, type, results
@@ -244,6 +279,14 @@ public enum OutputItem: Decodable {
 
   /// The results of a web search tool call
   public struct WebSearchToolCall: Decodable {
+    /// Action taken in web search
+    public struct Action: Decodable {
+      // Action properties will use AnyCodable for flexibility
+      // as different action types (search, open_page, find) have different structures
+    }
+
+    /// An object describing the specific action taken in this web search call
+    public let action: Action?
     /// The unique ID of the web search tool call
     public let id: String
     /// The status of the web search tool call
@@ -252,7 +295,7 @@ public enum OutputItem: Decodable {
     public let type: String
 
     enum CodingKeys: String, CodingKey {
-      case id, status, type
+      case action, id, status, type
     }
   }
 
@@ -405,17 +448,30 @@ public enum OutputItem: Decodable {
       public let type: String
     }
 
+    /// Reasoning text content
+    public struct ReasoningContent: Decodable {
+      /// The reasoning text from the model
+      public let text: String
+      /// The type of the reasoning text. Always "reasoning_text"
+      public let type: String
+    }
+
     /// The unique identifier of the reasoning content
     public let id: String
-    /// Reasoning text contents
+    /// Reasoning summary contents
     public let summary: [SummaryItem]
     /// The type of the object. Always "reasoning"
     public let type: String
     /// The status of the item
     public let status: String?
+    /// Reasoning text content
+    public let content: [ReasoningContent]?
+    /// The encrypted content of the reasoning item
+    public let encryptedContent: String?
 
     enum CodingKeys: String, CodingKey {
-      case id, summary, type, status
+      case id, summary, type, status, content
+      case encryptedContent = "encrypted_content"
     }
   }
 
@@ -521,10 +577,25 @@ public enum OutputItem: Decodable {
   public struct LocalShellCall: Decodable {
     /// Execute a shell command on the server
     public struct Action: Decodable {
-      /// The command to execute
-      public let command: String
-      /// The type of action. Always "execute"
+      /// The command to run
+      public let command: [String]
+      /// The type of the local shell action. Always "exec"
       public let type: String
+      /// Environment variables to set for the command
+      public let env: [String: String]?
+      /// Optional timeout in milliseconds for the command
+      public let timeoutMs: Int?
+      /// Optional user to run the command as
+      public let user: String?
+      /// Optional working directory to run the command in
+      public let workingDirectory: String?
+
+      enum CodingKeys: String, CodingKey {
+        case command, type, env
+        case timeoutMs = "timeout_ms"
+        case user
+        case workingDirectory = "working_directory"
+      }
     }
 
     /// The action to perform
@@ -561,10 +632,14 @@ public enum OutputItem: Decodable {
     public let serverLabel: String
     /// The type of the item. Always "mcp_call"
     public let type: String
+    /// Unique identifier for the MCP tool call approval request
+    public let approvalRequestId: String?
     /// The error from the tool call, if any
     public let error: String?
     /// The output from the tool call
     public let output: String?
+    /// The status of the tool call. One of in_progress, completed, incomplete, calling, or failed
+    public let status: String?
 
     enum CodingKeys: String, CodingKey {
       case arguments
@@ -572,8 +647,10 @@ public enum OutputItem: Decodable {
       case name
       case serverLabel = "server_label"
       case type
+      case approvalRequestId = "approval_request_id"
       case error
       case output
+      case status
     }
   }
 
@@ -589,11 +666,14 @@ public enum OutputItem: Decodable {
       public let description: String?
       /// Input schema for the tool
       public let inputSchema: [String: ComputerToolCall.AnyCodable]?
+      /// Additional annotations about the tool
+      public let annotations: [String: ComputerToolCall.AnyCodable]?
 
       enum CodingKeys: String, CodingKey {
         case name
         case description
         case inputSchema = "input_schema"
+        case annotations
       }
     }
 

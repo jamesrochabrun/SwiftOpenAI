@@ -109,8 +109,8 @@ final class ResponseModelValidationTests: XCTestCase {
     }
 
     // Validate tools
-    XCTAssertEqual(responseModel.tools.count, 1)
-    if case .webSearch(let webSearchTool) = responseModel.tools[0] {
+    XCTAssertEqual(responseModel.tools?.count, 1)
+    if let tools = responseModel.tools, case .webSearch(let webSearchTool) = tools[0] {
       // Check that the type is webSearchPreview
       if case .webSearchPreview = webSearchTool.type {
         // Type is correct
@@ -141,8 +141,8 @@ final class ResponseModelValidationTests: XCTestCase {
     }
 
     // Validate tools
-    XCTAssertEqual(responseModel.tools.count, 1)
-    if case .fileSearch(let fileSearchTool) = responseModel.tools[0] {
+    XCTAssertEqual(responseModel.tools?.count, 1)
+    if let tools = responseModel.tools, case .fileSearch(let fileSearchTool) = tools[0] {
       XCTAssertEqual(fileSearchTool.type, "file_search")
       XCTAssertEqual(fileSearchTool.maxNumResults, 20)
       XCTAssertNotNil(fileSearchTool.rankingOptions)
@@ -171,8 +171,8 @@ final class ResponseModelValidationTests: XCTestCase {
     }
 
     // Validate tools
-    XCTAssertEqual(responseModel.tools.count, 1)
-    if case .function(let functionTool) = responseModel.tools[0] {
+    XCTAssertEqual(responseModel.tools?.count, 1)
+    if let tools = responseModel.tools, case .function(let functionTool) = tools[0] {
       XCTAssertEqual(functionTool.name, "get_current_weather")
       XCTAssertEqual(functionTool.strict, true)
     } else {

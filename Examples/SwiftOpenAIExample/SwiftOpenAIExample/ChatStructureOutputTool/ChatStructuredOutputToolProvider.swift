@@ -12,7 +12,6 @@ import SwiftUI
 // MARK: - StructuredToolCall
 
 enum StructuredToolCall: String, CaseIterable {
-
   case structureUI = "structured_ui"
 
   var functionTool: ChatCompletionParameters.Tool {
@@ -73,7 +72,6 @@ enum StructuredToolCall: String, CaseIterable {
 
 @Observable
 final class ChatStructuredOutputToolProvider {
-
   init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
     self.customModel = customModel
@@ -157,13 +155,11 @@ final class ChatStructuredOutputToolProvider {
   private var lastDisplayedMessageID: UUID?
   private var chatMessageParameters = [ChatCompletionParameters.Message]()
   private var availableFunctions = [StructuredToolCall: (String) -> String]()
-
 }
 
 // MARK: UI related
 
 extension ChatStructuredOutputToolProvider {
-
   func createUserMessage(
     _ prompt: String)
     -> ChatCompletionParameters.Message

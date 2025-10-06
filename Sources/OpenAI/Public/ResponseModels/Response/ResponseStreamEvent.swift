@@ -89,6 +89,12 @@ public enum ResponseStreamEvent: Decodable {
   /// Emitted when a reasoning summary text is completed
   case reasoningSummaryTextDone(ReasoningSummaryTextDoneEvent)
 
+  /// Emitted when a delta is added to reasoning text
+  case reasoningTextDelta(ReasoningTextDeltaEvent)
+
+  /// Emitted when reasoning text is completed
+  case reasoningTextDone(ReasoningTextDoneEvent)
+
   /// Emitted when an image generation call is in progress
   case imageGenerationCallInProgress(ImageGenerationCallInProgressEvent)
 
@@ -100,6 +106,27 @@ public enum ResponseStreamEvent: Decodable {
 
   /// Emitted when an image generation call is completed
   case imageGenerationCallCompleted(ImageGenerationCallCompletedEvent)
+
+  /// Emitted when a code interpreter call is in progress
+  case codeInterpreterCallInProgress(CodeInterpreterCallInProgressEvent)
+
+  /// Emitted when the code interpreter is actively interpreting code
+  case codeInterpreterCallInterpreting(CodeInterpreterCallInterpretingEvent)
+
+  /// Emitted when a code interpreter call is completed
+  case codeInterpreterCallCompleted(CodeInterpreterCallCompletedEvent)
+
+  /// Emitted when a partial code snippet is streamed by the code interpreter
+  case codeInterpreterCallCodeDelta(CodeInterpreterCallCodeDeltaEvent)
+
+  /// Emitted when the code snippet is finalized by the code interpreter
+  case codeInterpreterCallCodeDone(CodeInterpreterCallCodeDoneEvent)
+
+  /// Emitted when there is a delta to custom tool call input
+  case customToolCallInputDelta(CustomToolCallInputDeltaEvent)
+
+  /// Emitted when custom tool call input is complete
+  case customToolCallInputDone(CustomToolCallInputDoneEvent)
 
   /// Emitted when there is a delta to MCP call arguments
   case mcpCallArgumentsDelta(MCPCallArgumentsDeltaEvent)
@@ -203,6 +230,10 @@ public enum ResponseStreamEvent: Decodable {
       self = try .reasoningSummaryTextDelta(ReasoningSummaryTextDeltaEvent(from: decoder))
     case "response.reasoning_summary_text.done":
       self = try .reasoningSummaryTextDone(ReasoningSummaryTextDoneEvent(from: decoder))
+    case "response.reasoning_text.delta":
+      self = try .reasoningTextDelta(ReasoningTextDeltaEvent(from: decoder))
+    case "response.reasoning_text.done":
+      self = try .reasoningTextDone(ReasoningTextDoneEvent(from: decoder))
     case "response.image_generation_call.in_progress":
       self = try .imageGenerationCallInProgress(ImageGenerationCallInProgressEvent(from: decoder))
     case "response.image_generation_call.generating":
@@ -211,6 +242,20 @@ public enum ResponseStreamEvent: Decodable {
       self = try .imageGenerationCallPartialImage(ImageGenerationCallPartialImageEvent(from: decoder))
     case "response.image_generation_call.completed":
       self = try .imageGenerationCallCompleted(ImageGenerationCallCompletedEvent(from: decoder))
+    case "response.code_interpreter_call.in_progress":
+      self = try .codeInterpreterCallInProgress(CodeInterpreterCallInProgressEvent(from: decoder))
+    case "response.code_interpreter_call.interpreting":
+      self = try .codeInterpreterCallInterpreting(CodeInterpreterCallInterpretingEvent(from: decoder))
+    case "response.code_interpreter_call.completed":
+      self = try .codeInterpreterCallCompleted(CodeInterpreterCallCompletedEvent(from: decoder))
+    case "response.code_interpreter_call_code.delta":
+      self = try .codeInterpreterCallCodeDelta(CodeInterpreterCallCodeDeltaEvent(from: decoder))
+    case "response.code_interpreter_call_code.done":
+      self = try .codeInterpreterCallCodeDone(CodeInterpreterCallCodeDoneEvent(from: decoder))
+    case "response.custom_tool_call_input.delta":
+      self = try .customToolCallInputDelta(CustomToolCallInputDeltaEvent(from: decoder))
+    case "response.custom_tool_call_input.done":
+      self = try .customToolCallInputDone(CustomToolCallInputDoneEvent(from: decoder))
     case "response.mcp_call.arguments.delta":
       self = try .mcpCallArgumentsDelta(MCPCallArgumentsDeltaEvent(from: decoder))
     case "response.mcp_call.arguments.done":
@@ -227,7 +272,7 @@ public enum ResponseStreamEvent: Decodable {
       self = try .mcpListToolsCompleted(MCPListToolsCompletedEvent(from: decoder))
     case "response.mcp_list_tools.failed":
       self = try .mcpListToolsFailed(MCPListToolsFailedEvent(from: decoder))
-    case "response.output_text_annotation.added":
+    case "response.output_text.annotation.added":
       self = try .outputTextAnnotationAdded(OutputTextAnnotationAddedEvent(from: decoder))
     case "response.reasoning.delta":
       self = try .reasoningDelta(ReasoningDeltaEvent(from: decoder))
@@ -424,6 +469,7 @@ public struct OutputTextDeltaEvent: Decodable {
   public let outputIndex: Int
   public let contentIndex: Int
   public let delta: String
+  public let logprobs: [LogprobContent]?
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
@@ -432,8 +478,42 @@ public struct OutputTextDeltaEvent: Decodable {
     case outputIndex = "output_index"
     case contentIndex = "content_index"
     case delta
+    case logprobs
     case sequenceNumber = "sequence_number"
   }
+}
+
+// MARK: - LogprobContent
+
+/// Log probability information for a token in the delta
+public struct LogprobContent: Decodable {
+  /// The token string
+  public let token: String
+  /// The log probability of the token
+  public let logprob: Double
+  /// Array of the most likely tokens and their log probabilities
+  public let topLogprobs: [TopLogprob]?
+  /// Byte offsets for the token
+  public let bytes: [Int]?
+
+  enum CodingKeys: String, CodingKey {
+    case token
+    case logprob
+    case topLogprobs = "top_logprobs"
+    case bytes
+  }
+}
+
+// MARK: - TopLogprob
+
+/// Information about a top alternative token
+public struct TopLogprob: Decodable {
+  /// The token string
+  public let token: String
+  /// The log probability of the token
+  public let logprob: Double
+  /// Byte offsets for the token
+  public let bytes: [Int]?
 }
 
 // MARK: - OutputTextDoneEvent
@@ -445,6 +525,7 @@ public struct OutputTextDoneEvent: Decodable {
   public let outputIndex: Int
   public let contentIndex: Int
   public let text: String
+  public let logprobs: [LogprobContent]?
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
@@ -453,6 +534,7 @@ public struct OutputTextDoneEvent: Decodable {
     case outputIndex = "output_index"
     case contentIndex = "content_index"
     case text
+    case logprobs
     case sequenceNumber = "sequence_number"
   }
 }
@@ -525,6 +607,7 @@ public struct FunctionCallArgumentsDoneEvent: Decodable {
   public let type: String
   public let itemId: String
   public let outputIndex: Int
+  public let name: String
   public let arguments: String
   public let sequenceNumber: Int?
 
@@ -532,6 +615,7 @@ public struct FunctionCallArgumentsDoneEvent: Decodable {
     case type
     case itemId = "item_id"
     case outputIndex = "output_index"
+    case name
     case arguments
     case sequenceNumber = "sequence_number"
   }
@@ -723,6 +807,48 @@ public struct ReasoningSummaryTextDoneEvent: Decodable {
   }
 }
 
+// MARK: - ReasoningTextDeltaEvent
+
+/// Emitted when a delta is added to a reasoning text
+public struct ReasoningTextDeltaEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let contentIndex: Int
+  public let delta: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case contentIndex = "content_index"
+    case delta
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - ReasoningTextDoneEvent
+
+/// Emitted when reasoning text is completed
+public struct ReasoningTextDoneEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let contentIndex: Int
+  public let text: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case contentIndex = "content_index"
+    case text
+    case sequenceNumber = "sequence_number"
+  }
+}
+
 // MARK: - ImageGenerationCallInProgressEvent
 
 /// Emitted when an image generation call is in progress
@@ -795,24 +921,141 @@ public struct ImageGenerationCallCompletedEvent: Decodable {
   }
 }
 
+// MARK: - CodeInterpreterCallInProgressEvent
+
+/// Emitted when a code interpreter call is in progress
+public struct CodeInterpreterCallInProgressEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CodeInterpreterCallInterpretingEvent
+
+/// Emitted when the code interpreter is actively interpreting code
+public struct CodeInterpreterCallInterpretingEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CodeInterpreterCallCompletedEvent
+
+/// Emitted when a code interpreter call is completed
+public struct CodeInterpreterCallCompletedEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CodeInterpreterCallCodeDeltaEvent
+
+/// Emitted when a partial code snippet is streamed by the code interpreter
+public struct CodeInterpreterCallCodeDeltaEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let delta: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case delta
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CodeInterpreterCallCodeDoneEvent
+
+/// Emitted when the code snippet is finalized by the code interpreter
+public struct CodeInterpreterCallCodeDoneEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let code: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case code
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CustomToolCallInputDeltaEvent
+
+/// Event representing a delta to the input of a custom tool call
+public struct CustomToolCallInputDeltaEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let delta: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case delta
+    case sequenceNumber = "sequence_number"
+  }
+}
+
+// MARK: - CustomToolCallInputDoneEvent
+
+/// Event indicating that input for a custom tool call is complete
+public struct CustomToolCallInputDoneEvent: Decodable {
+  public let type: String
+  public let itemId: String
+  public let outputIndex: Int
+  public let input: String
+  public let sequenceNumber: Int?
+
+  enum CodingKeys: String, CodingKey {
+    case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
+    case input
+    case sequenceNumber = "sequence_number"
+  }
+}
+
 // MARK: - MCPCallArgumentsDeltaEvent
 
 /// Emitted when there is a delta to MCP call arguments
 public struct MCPCallArgumentsDeltaEvent: Decodable {
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    type = try container.decode(String.self, forKey: .type)
-    outputIndex = try container.decode(Int.self, forKey: .outputIndex)
-    itemId = try container.decode(String.self, forKey: .itemId)
-    sequenceNumber = try container.decodeIfPresent(Int.self, forKey: .sequenceNumber)
-    // For now, decode delta as empty dictionary
-    delta = [:]
-  }
-
   public let type: String
   public let outputIndex: Int
   public let itemId: String
-  public let delta: [String: Any]
+  public let delta: String
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
@@ -828,20 +1071,10 @@ public struct MCPCallArgumentsDeltaEvent: Decodable {
 
 /// Emitted when MCP call arguments are done
 public struct MCPCallArgumentsDoneEvent: Decodable {
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    type = try container.decode(String.self, forKey: .type)
-    outputIndex = try container.decode(Int.self, forKey: .outputIndex)
-    itemId = try container.decode(String.self, forKey: .itemId)
-    sequenceNumber = try container.decodeIfPresent(Int.self, forKey: .sequenceNumber)
-    // For now, decode arguments as empty dictionary
-    arguments = [:]
-  }
-
   public let type: String
   public let outputIndex: Int
   public let itemId: String
-  public let arguments: [String: Any]
+  public let arguments: String
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
@@ -875,10 +1108,14 @@ public struct MCPCallInProgressEvent: Decodable {
 /// Emitted when an MCP call is completed
 public struct MCPCallCompletedEvent: Decodable {
   public let type: String
+  public let itemId: String
+  public let outputIndex: Int
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
     case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
     case sequenceNumber = "sequence_number"
   }
 }
@@ -888,10 +1125,14 @@ public struct MCPCallCompletedEvent: Decodable {
 /// Emitted when an MCP call failed
 public struct MCPCallFailedEvent: Decodable {
   public let type: String
+  public let itemId: String
+  public let outputIndex: Int
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
     case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
     case sequenceNumber = "sequence_number"
   }
 }
@@ -901,10 +1142,14 @@ public struct MCPCallFailedEvent: Decodable {
 /// Emitted when MCP list tools is in progress
 public struct MCPListToolsInProgressEvent: Decodable {
   public let type: String
+  public let itemId: String
+  public let outputIndex: Int
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
     case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
     case sequenceNumber = "sequence_number"
   }
 }
@@ -914,10 +1159,14 @@ public struct MCPListToolsInProgressEvent: Decodable {
 /// Emitted when MCP list tools is completed
 public struct MCPListToolsCompletedEvent: Decodable {
   public let type: String
+  public let itemId: String
+  public let outputIndex: Int
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
     case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
     case sequenceNumber = "sequence_number"
   }
 }
@@ -927,10 +1176,14 @@ public struct MCPListToolsCompletedEvent: Decodable {
 /// Emitted when MCP list tools failed
 public struct MCPListToolsFailedEvent: Decodable {
   public let type: String
+  public let itemId: String
+  public let outputIndex: Int
   public let sequenceNumber: Int?
 
   enum CodingKeys: String, CodingKey {
     case type
+    case itemId = "item_id"
+    case outputIndex = "output_index"
     case sequenceNumber = "sequence_number"
   }
 }

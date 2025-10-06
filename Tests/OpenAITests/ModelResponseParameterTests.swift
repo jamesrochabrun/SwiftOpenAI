@@ -144,7 +144,7 @@ final class ModelResponseParameterTests: XCTestCase {
     let parameter = ModelResponseParameter(
       input: .string("Hello"),
       model: .gpt4o,
-      include: ["file_search_call.results"],
+      include: [.fileSearchCallResults],
       instructions: "You are a helpful assistant",
       maxOutputTokens: 1000,
       metadata: ["user_id": "123", "session": "abc"],
@@ -158,7 +158,7 @@ final class ModelResponseParameterTests: XCTestCase {
       toolChoice: ToolChoiceMode.none,
       tools: [],
       topP: 0.9,
-      truncation: "auto",
+      truncation: .auto,
       user: "user_123")
 
     // Test encoding

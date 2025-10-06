@@ -70,7 +70,14 @@ public enum InputItem: Codable {
   /// Function tool call output
   case functionToolCallOutput(FunctionToolCallOutput)
 
-  /// Other input item types can be added here as needed
+  /// Computer tool call output
+  case computerToolCallOutput(ComputerToolCallOutput)
+
+  /// Local shell call output
+  case localShellCallOutput(LocalShellCallOutput)
+
+  /// MCP approval response
+  case mcpApprovalResponse(MCPApprovalResponse)
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -85,6 +92,12 @@ public enum InputItem: Codable {
       self = try .functionToolCall(FunctionToolCall(from: decoder))
     case "function_call_output":
       self = try .functionToolCallOutput(FunctionToolCallOutput(from: decoder))
+    case "computer_call_output":
+      self = try .computerToolCallOutput(ComputerToolCallOutput(from: decoder))
+    case "local_shell_call_output":
+      self = try .localShellCallOutput(LocalShellCallOutput(from: decoder))
+    case "mcp_approval_response":
+      self = try .mcpApprovalResponse(MCPApprovalResponse(from: decoder))
     default:
       // Try to decode as message if type is not recognized
       self = try .message(InputMessage(from: decoder))
@@ -103,6 +116,12 @@ public enum InputItem: Codable {
       try call.encode(to: encoder)
     case .functionToolCallOutput(let output):
       try output.encode(to: encoder)
+    case .computerToolCallOutput(let output):
+      try output.encode(to: encoder)
+    case .localShellCallOutput(let output):
+      try output.encode(to: encoder)
+    case .mcpApprovalResponse(let response):
+      try response.encode(to: encoder)
     }
   }
 
@@ -278,7 +297,7 @@ public struct TextContent: Codable {
 
 /// Image content structure
 public struct ImageContent: Codable {
-  public init(detail: String = "auto", fileId: String? = nil, imageUrl: String? = nil) {
+  public init(detail: String? = "auto", fileId: String? = nil, imageUrl: String? = nil) {
     self.detail = detail
     self.fileId = fileId
     self.imageUrl = imageUrl
@@ -287,8 +306,8 @@ public struct ImageContent: Codable {
   /// The type of content, always "input_image"
   public let type = "input_image"
 
-  /// The detail level of the image. One of high, low, or auto. Defaults to auto
-  public let detail: String
+  /// The detail level of the image. One of high, low, or auto. Defaults to auto when creating.
+  public let detail: String?
 
   /// The ID of the file to be sent to the model
   public let fileId: String?
@@ -308,9 +327,10 @@ public struct ImageContent: Codable {
 
 /// File content structure
 public struct FileContent: Codable {
-  public init(fileData: String? = nil, fileId: String? = nil, filename: String? = nil) {
+  public init(fileData: String? = nil, fileId: String? = nil, fileUrl: String? = nil, filename: String? = nil) {
     self.fileData = fileData
     self.fileId = fileId
+    self.fileUrl = fileUrl
     self.filename = filename
   }
 
@@ -323,6 +343,9 @@ public struct FileContent: Codable {
   /// The ID of the file to be sent to the model
   public let fileId: String?
 
+  /// The URL of the file to be sent to the model
+  public let fileUrl: String?
+
   /// The name of the file to be sent to the model
   public let filename: String?
 
@@ -330,6 +353,7 @@ public struct FileContent: Codable {
     case type
     case fileData = "file_data"
     case fileId = "file_id"
+    case fileUrl = "file_url"
     case filename
   }
 }
@@ -417,7 +441,7 @@ public struct RefusalContent: Codable {
 
 /// An output message from the model (used in conversation history)
 public struct OutputMessage: Codable {
-  public init(content: [ContentItem], id: String, role: String = "assistant", status: String, type: String = "message") {
+  public init(content: [ContentItem], id: String, role: String = "assistant", status: String? = nil, type: String = "message") {
     self.content = content
     self.id = id
     self.role = role
@@ -434,8 +458,8 @@ public struct OutputMessage: Codable {
   /// The role of the output message. Always "assistant"
   public let role: String
 
-  /// The status of the message. One of in_progress, completed, or incomplete
-  public let status: String
+  /// The status of the message. One of in_progress, completed, or incomplete. Populated when items are returned via API.
+  public let status: String?
 
   /// The type of the output message. Always "message"
   public let type: String
@@ -512,5 +536,143 @@ public struct FunctionToolCallOutput: Codable {
   enum CodingKeys: String, CodingKey {
     case callId = "call_id"
     case output, type, id, status
+  }
+}
+
+// MARK: - ComputerToolCallOutput
+
+/// The output of a computer tool call
+public struct ComputerToolCallOutput: Codable {
+  public init(
+    callId: String,
+    id: String,
+    output: ComputerScreenshot,
+    acknowledgedSafetyChecks: [SafetyCheck]? = nil,
+    status: String? = nil)
+  {
+    self.callId = callId
+    self.id = id
+    self.output = output
+    self.acknowledgedSafetyChecks = acknowledgedSafetyChecks
+    self.status = status
+  }
+
+  /// A computer screenshot
+  public struct ComputerScreenshot: Codable {
+    /// The type of the screenshot. Always "computer_screenshot"
+    public let type: String
+
+    /// The identifier of an uploaded file that contains the screenshot
+    public let fileId: String?
+
+    /// The URL of the screenshot image
+    public let imageUrl: String?
+
+    enum CodingKeys: String, CodingKey {
+      case type
+      case fileId = "file_id"
+      case imageUrl = "image_url"
+    }
+  }
+
+  /// Safety check structure
+  public struct SafetyCheck: Codable {
+    /// The type of the pending safety check
+    public let code: String
+
+    /// The ID of the pending safety check
+    public let id: String
+
+    /// Details about the pending safety check
+    public let message: String
+  }
+
+  /// The ID of the computer tool call that produced the output
+  public let callId: String
+
+  /// The unique ID of the computer call tool output
+  public let id: String
+
+  /// A computer screenshot image used with the computer use tool
+  public let output: ComputerScreenshot
+
+  /// The type of the computer tool call output. Always "computer_call_output"
+  public let type = "computer_call_output"
+
+  /// The safety checks reported by the API that have been acknowledged by the developer
+  public let acknowledgedSafetyChecks: [SafetyCheck]?
+
+  /// The status of the message input. One of in_progress, completed, or incomplete
+  public let status: String?
+
+  enum CodingKeys: String, CodingKey {
+    case callId = "call_id"
+    case id
+    case output
+    case type
+    case acknowledgedSafetyChecks = "acknowledged_safety_checks"
+    case status
+  }
+}
+
+// MARK: - LocalShellCallOutput
+
+/// The output of a local shell tool call
+public struct LocalShellCallOutput: Codable {
+  public init(id: String, output: String, status: String? = nil) {
+    self.id = id
+    self.output = output
+    self.status = status
+  }
+
+  /// The unique ID of the local shell tool call generated by the model
+  public let id: String
+
+  /// A JSON string of the output of the local shell tool call
+  public let output: String
+
+  /// The type of the local shell tool call output. Always "local_shell_call_output"
+  public let type = "local_shell_call_output"
+
+  /// The status of the item. One of in_progress, completed, or incomplete
+  public let status: String?
+
+  enum CodingKeys: String, CodingKey {
+    case id, output, type, status
+  }
+}
+
+// MARK: - MCPApprovalResponse
+
+/// A response to an MCP approval request
+public struct MCPApprovalResponse: Codable {
+  public init(approvalRequestId: String, approve: Bool, id: String, reason: String? = nil) {
+    self.approvalRequestId = approvalRequestId
+    self.approve = approve
+    self.id = id
+    self.reason = reason
+  }
+
+  /// The ID of the approval request being answered
+  public let approvalRequestId: String
+
+  /// Whether the request was approved
+  public let approve: Bool
+
+  /// The unique ID of the approval response
+  public let id: String
+
+  /// The type of the item. Always "mcp_approval_response"
+  public let type = "mcp_approval_response"
+
+  /// Optional reason for the decision
+  public let reason: String?
+
+  enum CodingKeys: String, CodingKey {
+    case approvalRequestId = "approval_request_id"
+    case approve
+    case id
+    case type
+    case reason
   }
 }

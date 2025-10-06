@@ -54,8 +54,31 @@ public struct ResponseModel: Decodable {
     }
   }
 
+  /// Instructions type - can be a string or an array of strings
+  public enum InstructionsType: Decodable {
+    case string(String)
+    case array([String])
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+
+      if let stringValue = try? container.decode(String.self) {
+        self = .string(stringValue)
+      } else if let arrayValue = try? container.decode([String].self) {
+        self = .array(arrayValue)
+      } else {
+        throw DecodingError.dataCorruptedError(
+          in: container,
+          debugDescription: "Expected String or [String] for instructions")
+      }
+    }
+  }
+
   /// Whether to run the model response in the background. Learn more.
   public let background: Bool?
+
+  /// The conversation that this response belongs to. Input items and output items from this response are automatically added to this conversation.
+  public let conversation: Conversation?
 
   /// Unix timestamp (in seconds) of when this Response was created.
   public let createdAt: Int
@@ -69,14 +92,17 @@ public struct ResponseModel: Decodable {
   /// Details about why the response is incomplete.
   public let incompleteDetails: IncompleteDetails?
 
-  /// Inserts a system (or developer) message as the first item in the model's context.
-  /// When using along with previous_response_id, the instructions from a previous response will be not be carried over to the next response.
+  /// A system (or developer) message inserted into the model's context.
+  /// When using along with previous_response_id, the instructions from a previous response will not be carried over to the next response.
   /// This makes it simple to swap out system (or developer) messages in new responses.
-  public let instructions: String?
+  public let instructions: InstructionsType?
 
   /// An upper bound for the number of tokens that can be generated for a response, including visible output tokens
   /// and [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
   public let maxOutputTokens: Int?
+
+  /// The maximum number of total calls to built-in tools that can be processed in a response. This maximum number applies across all built-in tool calls, not per individual tool. Any further attempts to call a tool by the model will be ignored.
+  public let maxToolCalls: Int?
 
   /// Set of 16 key-value pairs that can be attached to an object.
   /// This can be useful for storing additional information about the object in a structured format, and querying for objects via API or the dashboard.
@@ -101,8 +127,17 @@ public struct ResponseModel: Decodable {
   ///  Learn more about [conversation state](https://platform.openai.com/docs/guides/conversation-state).
   public let previousResponseId: String?
 
+  /// Reference to a prompt template and its variables. Learn more.
+  public let prompt: Prompt?
+
+  /// Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the user field. Learn more.
+  public let promptCacheKey: String?
+
   /// Configuration options for reasoning models.
   public let reasoning: Reasoning?
+
+  /// A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies. The IDs should be a string that uniquely identifies each user. We recommend hashing their username or email address, in order to avoid sending us any identifying information. Learn more.
+  public let safetyIdentifier: String?
 
   /// Specifies the latency tier to use for processing the request.
   /// This parameter is relevant for customers subscribed to the scale tier service:
@@ -126,22 +161,25 @@ public struct ResponseModel: Decodable {
   public let temperature: Double?
 
   /// Configuration options for a text response from the model.
-  public let text: TextConfiguration
+  public let text: TextConfiguration?
 
   /// How the model should select which tool (or tools) to use when generating a response.
   /// See the tools parameter to see how to specify which tools the model can call.
-  public let toolChoice: ToolChoiceMode
+  public let toolChoice: ToolChoiceMode?
 
   /// An array of tools the model may call while generating a response. You can specify which tool to use by setting the tool_choice parameter.
   /// The two categories of tools you can provide the model are:
   /// Built-in tools: Tools that are provided by OpenAI that extend the model's capabilities, like [web search](https://platform.openai.com/docs/guides/tools-web-search) or [file search](https://platform.openai.com/docs/guides/tools-file-search0. Learn more about [built-in tools](https://platform.openai.com/docs/guides/tools).
   /// Function calls (custom tools): Functions that are defined by you, enabling the model to call your own code. Learn more about [function calling.](https://platform.openai.com/docs/guides/function-calling)
-  public let tools: [Tool]
+  public let tools: [Tool]?
 
   /// An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass.
   /// So 0.1 means only the tokens comprising the top 10% probability mass are considered.
   /// We generally recommend altering this or temperature but not both.
   public let topP: Double?
+
+  /// An integer between 0 and 20 specifying the number of most likely tokens to return at each token position, each with an associated log probability.
+  public let topLogprobs: Int?
 
   /// The truncation strategy to use for the model response.
   public let truncation: String?
@@ -162,6 +200,8 @@ public struct ResponseModel: Decodable {
           switch contentItem {
           case .outputText(let outputText):
             return outputText.text
+          case .refusal:
+            return nil
           }
         }.joined()
 
@@ -175,6 +215,7 @@ public struct ResponseModel: Decodable {
 
   enum CodingKeys: String, CodingKey {
     case background
+    case conversation
     case id
     case object
     case createdAt = "created_at"
@@ -183,11 +224,15 @@ public struct ResponseModel: Decodable {
     case incompleteDetails = "incomplete_details"
     case instructions
     case maxOutputTokens = "max_output_tokens"
+    case maxToolCalls = "max_tool_calls"
     case model
     case output
     case parallelToolCalls = "parallel_tool_calls"
     case previousResponseId = "previous_response_id"
+    case prompt
+    case promptCacheKey = "prompt_cache_key"
     case reasoning
+    case safetyIdentifier = "safety_identifier"
     case serviceTier = "service_tier"
     case store
     case temperature
@@ -195,6 +240,7 @@ public struct ResponseModel: Decodable {
     case toolChoice = "tool_choice"
     case tools
     case topP = "top_p"
+    case topLogprobs = "top_logprobs"
     case truncation
     case usage
     case user

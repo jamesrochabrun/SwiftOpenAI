@@ -1024,6 +1024,14 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     fatalError("getConversationItem not implemented for Azure OpenAI Service")
   }
 
+  public func deleteConversationItem(
+    conversationID: String,
+    itemID: String)
+    async throws -> ConversationModel
+  {
+    fatalError("deleteConversationItem not implemented for Azure OpenAI Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   private let apiKey: Authorization

@@ -1551,6 +1551,20 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: InputItem.self, with: request)
   }
 
+  func deleteConversationItem(
+    conversationID: String,
+    itemID: String)
+    async throws -> ConversationModel
+  {
+    let request = try OpenAIAPI.conversantions(.deleteItem(conversationID: conversationID, itemID: itemID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .delete,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: ConversationModel.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)

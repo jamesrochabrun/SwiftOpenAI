@@ -1078,6 +1078,11 @@ public protocol OpenAIService {
     itemID: String,
     parameters: GetConversationItemParameter?)
     async throws -> InputItem
+
+  func deleteConversationItem(
+    conversationID: String,
+    itemID: String)
+    async throws -> ConversationModel
 }
 
 extension OpenAIService {

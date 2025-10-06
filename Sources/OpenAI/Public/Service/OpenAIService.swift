@@ -1062,6 +1062,11 @@ public protocol OpenAIService {
   func deleteConversation(
     id: String)
     async throws -> DeletionStatus
+
+  func getConversationItems(
+    id: String,
+    parameters: GetConversationItemsParameter?)
+    async throws -> OpenAIResponse<InputItem>
 }
 
 extension OpenAIService {

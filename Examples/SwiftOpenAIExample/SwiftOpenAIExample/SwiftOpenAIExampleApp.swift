@@ -9,9 +9,9 @@ import SwiftUI
 
 @main
 struct SwiftOpenAIExampleApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ServiceSelectionView()
-        }
+  var body: some Scene {
+    WindowGroup {
+      ServiceSelectionView()
     }
+  }
 }

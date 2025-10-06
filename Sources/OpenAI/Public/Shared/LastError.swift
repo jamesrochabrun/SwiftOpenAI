@@ -8,8 +8,8 @@
 import Foundation
 
 public struct LastError: Codable {
-    /// One of server_error or rate_limit_exceeded.
-    let code: String
-    /// A human-readable description of the error.
-    let message: String
+  /// One of server_error or rate_limit_exceeded.
+  let code: String
+  /// A human-readable description of the error.
+  let message: String
 }

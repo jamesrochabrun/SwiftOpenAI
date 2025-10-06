@@ -151,6 +151,7 @@ enum OpenAIAPI {
     case delete(conversationID: String)
     case items(conversationID: String)
     case createItems(conversationID: String)
+    case item(conversationID: String, itemID: String)
   }
 }
 
@@ -299,6 +300,7 @@ extension OpenAIAPI: Endpoint {
       case .delete(let conversationID): return "\(version)/conversations/\(conversationID)"
       case .items(let conversationID): return "\(version)/conversations/\(conversationID)/items"
       case .createItems(let conversationID): return "\(version)/conversations/\(conversationID)/items"
+      case .item(let conversationID, let itemID): return "\(version)/conversations/\(conversationID)/items/\(itemID)"
       }
     }
   }

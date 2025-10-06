@@ -1529,6 +1529,28 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<InputItem>.self, with: request)
   }
 
+  func getConversationItem(
+    conversationID: String,
+    itemID: String,
+    parameters: GetConversationItemParameter?)
+    async throws -> InputItem
+  {
+    var queryItems: [URLQueryItem] = []
+    if let parameters = parameters, let include = parameters.include {
+      for item in include {
+        queryItems.append(URLQueryItem(name: "include", value: item))
+      }
+    }
+    let request = try OpenAIAPI.conversantions(.item(conversationID: conversationID, itemID: itemID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .get,
+      queryItems: queryItems,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: InputItem.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)

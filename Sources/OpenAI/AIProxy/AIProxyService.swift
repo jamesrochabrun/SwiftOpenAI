@@ -1393,6 +1393,15 @@ struct AIProxyService: OpenAIService {
     fatalError("createConversationItems not implemented for AIProxy Service")
   }
 
+  func getConversationItem(
+    conversationID: String,
+    itemID: String,
+    parameters: GetConversationItemParameter?)
+    async throws -> InputItem
+  {
+    fatalError("getConversationItem not implemented for AIProxy Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// Your partial key is provided during the integration process at dashboard.aiproxy.pro

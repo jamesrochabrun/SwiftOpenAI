@@ -283,7 +283,7 @@ final class OutputItemTests: XCTestCase {
         "call_id": "call_789",
         "action": {
           "type": "execute",
-          "command": "ls -la"
+          "command": ["ls", "-la"]
         },
         "status": "completed"
       }
@@ -296,7 +296,7 @@ final class OutputItemTests: XCTestCase {
       XCTAssertEqual(localShell.id, "shell_123")
       XCTAssertEqual(localShell.callId, "call_789")
       XCTAssertEqual(localShell.action.type, "execute")
-      XCTAssertEqual(localShell.action.command, "ls -la")
+      XCTAssertEqual(localShell.action.command, ["ls", "-la"])
       XCTAssertEqual(localShell.status, "completed")
       XCTAssertEqual(localShell.type, "local_shell_call")
     } else {

@@ -193,7 +193,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertNil(responseModel.previousResponseId)
     XCTAssertNotNil(responseModel.reasoning)
     XCTAssertEqual(responseModel.temperature, 1.0)
-    XCTAssertEqual(responseModel.tools.count, 0)
+    XCTAssertEqual(responseModel.tools?.count, 0)
     XCTAssertEqual(responseModel.topP, 1.0)
     XCTAssertEqual(responseModel.truncation, "disabled")
 
@@ -316,7 +316,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertNil(responseModel.previousResponseId)
     XCTAssertNotNil(responseModel.reasoning)
     XCTAssertEqual(responseModel.temperature, 1.0)
-    XCTAssertEqual(responseModel.tools.count, 0)
+    XCTAssertEqual(responseModel.tools?.count, 0)
     XCTAssertEqual(responseModel.topP, 1.0)
     XCTAssertEqual(responseModel.truncation, "disabled")
 
@@ -474,7 +474,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertNil(responseModel.previousResponseId)
     XCTAssertNotNil(responseModel.reasoning)
     XCTAssertEqual(responseModel.temperature, 1.0)
-    XCTAssertEqual(responseModel.tools.count, 1)
+    XCTAssertEqual(responseModel.tools?.count, 1)
     XCTAssertEqual(responseModel.topP, 1.0)
     XCTAssertEqual(responseModel.truncation, "disabled")
 
@@ -672,7 +672,7 @@ final class OpenAITests: XCTestCase {
     XCTAssertNil(responseModel.previousResponseId)
     XCTAssertNotNil(responseModel.reasoning)
     XCTAssertEqual(responseModel.temperature, 1.0)
-    XCTAssertEqual(responseModel.tools.count, 1)
+    XCTAssertEqual(responseModel.tools?.count, 1)
     XCTAssertEqual(responseModel.topP, 1.0)
     XCTAssertEqual(responseModel.truncation, "disabled")
 
@@ -1019,8 +1019,8 @@ final class OpenAITests: XCTestCase {
     XCTAssertEqual(responseModel.status, .completed)
 
     // Test tool configuration
-    XCTAssertEqual(responseModel.tools.count, 1)
-    if case .function(let functionTool) = responseModel.tools[0] {
+    XCTAssertEqual(responseModel.tools?.count, 1)
+    if let tools = responseModel.tools, case .function(let functionTool) = tools[0] {
       XCTAssertEqual(functionTool.name, "get_current_weather")
       XCTAssertEqual(functionTool.description, "Get the current weather in a given location")
       XCTAssertEqual(functionTool.type, "function")

@@ -1067,6 +1067,11 @@ public protocol OpenAIService {
     id: String,
     parameters: GetConversationItemsParameter?)
     async throws -> OpenAIResponse<InputItem>
+
+  func createConversationItems(
+    id: String,
+    parameters: CreateConversationItemsParameter)
+    async throws -> OpenAIResponse<InputItem>
 }
 
 extension OpenAIService {

@@ -1500,6 +1500,35 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<InputItem>.self, with: request)
   }
 
+  func createConversationItems(
+    id: String,
+    parameters: CreateConversationItemsParameter)
+    async throws -> OpenAIResponse<InputItem>
+  {
+    var queryItems: [URLQueryItem] = []
+    if let include = parameters.include {
+      for item in include {
+        queryItems.append(URLQueryItem(name: "include", value: item))
+      }
+    }
+
+    // Create a body-only parameter struct for encoding
+    struct BodyParameters: Codable {
+      let items: [InputItem]
+    }
+    let bodyParams = BodyParameters(items: parameters.items)
+
+    let request = try OpenAIAPI.conversantions(.createItems(conversationID: id)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: bodyParams,
+      queryItems: queryItems,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<InputItem>.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)

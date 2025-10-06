@@ -21,70 +21,70 @@ import Foundation
 ///
 /// [Documentation](https://platform.openai.com/docs/api-reference/chat/create#chat-create-response_format)
 public enum ResponseFormat: Codable, Equatable {
-  case text // The type of response format being defined: text.
-  case jsonObject // The type of response format being defined: json_object.
-  case jsonSchema(JSONSchemaResponseFormat) // The type of response format being defined: json_schema.
-  case unknown
+    case text // The type of response format being defined: text.
+    case jsonObject // The type of response format being defined: json_object.
+    case jsonSchema(JSONSchemaResponseFormat) // The type of response format being defined: json_schema.
+    case unknown
 
-  public init(from decoder: Decoder) throws {
-    // Attempt to decode the response format as a single string
-    if
-      let singleValueContainer = try? decoder.singleValueContainer(),
-      let typeString = try? singleValueContainer.decode(String.self)
-    {
-      switch typeString {
-      case "text":
-        self = .text
-      case "json_object":
-        self = .jsonObject
-      default:
-        self = .unknown
-      }
-      return
+    public init(from decoder: Decoder) throws {
+        // Attempt to decode the response format as a single string
+        if
+            let singleValueContainer = try? decoder.singleValueContainer(),
+            let typeString = try? singleValueContainer.decode(String.self)
+        {
+            switch typeString {
+            case "text":
+                self = .text
+            case "json_object":
+                self = .jsonObject
+            default:
+                self = .unknown
+            }
+            return
+        }
+
+        // If it’s not a single string, decode it as a dictionary
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(String.self, forKey: .type)
+
+        switch type {
+        case "text":
+            self = .text
+
+        case "json_object":
+            self = .jsonObject
+
+        case "json_schema":
+            let jsonSchema = try container.decode(JSONSchemaResponseFormat.self, forKey: .jsonSchema)
+            self = .jsonSchema(jsonSchema)
+
+        default:
+            self = .unknown
+        }
     }
 
-    // If it’s not a single string, decode it as a dictionary
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    let type = try container.decode(String.self, forKey: .type)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .text:
+            try container.encode("text", forKey: .type)
 
-    switch type {
-    case "text":
-      self = .text
+        case .jsonObject:
+            try container.encode("json_object", forKey: .type)
 
-    case "json_object":
-      self = .jsonObject
+        case let .jsonSchema(jsonSchema):
+            try container.encode("json_schema", forKey: .type)
+            try container.encode(jsonSchema, forKey: .jsonSchema)
 
-    case "json_schema":
-      let jsonSchema = try container.decode(JSONSchemaResponseFormat.self, forKey: .jsonSchema)
-      self = .jsonSchema(jsonSchema)
-
-    default:
-      self = .unknown
+        case .unknown:
+            try container.encode("unknown", forKey: .type)
+        }
     }
-  }
 
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    switch self {
-    case .text:
-      try container.encode("text", forKey: .type)
-
-    case .jsonObject:
-      try container.encode("json_object", forKey: .type)
-
-    case .jsonSchema(let jsonSchema):
-      try container.encode("json_schema", forKey: .type)
-      try container.encode(jsonSchema, forKey: .jsonSchema)
-
-    case .unknown:
-      try container.encode("unknown", forKey: .type)
+    private enum CodingKeys: String, CodingKey {
+        case type
+        case jsonSchema = "json_schema"
     }
-  }
-
-  private enum CodingKeys: String, CodingKey {
-    case type
-    case jsonSchema = "json_schema"
-  }
 }
 
 // MARK: - JSONSchemaResponseFormat
@@ -92,15 +92,15 @@ public enum ResponseFormat: Codable, Equatable {
 /// [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs/structured-outputs)
 /// Specifically to be used for Response format with structured outputs.
 public struct JSONSchemaResponseFormat: Codable, Equatable {
-  let name: String
-  let description: String?
-  let strict: Bool
-  let schema: JSONSchema
+    let name: String
+    let description: String?
+    let strict: Bool
+    let schema: JSONSchema
 
-  public init(name: String, description: String? = nil, strict: Bool, schema: JSONSchema) {
-    self.name = name
-    self.description = description
-    self.strict = strict
-    self.schema = schema
-  }
+    public init(name: String, description: String? = nil, strict: Bool, schema: JSONSchema) {
+        self.name = name
+        self.description = description
+        self.strict = strict
+        self.schema = schema
+    }
 }

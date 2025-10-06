@@ -9,78 +9,79 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatFunctionCallDemoView: View {
-  init(service: OpenAIService, customModel: String? = nil) {
-    self.customModel = customModel
-    _chatProvider = State(initialValue: ChatFunctionCallProvider(service: service, customModel: customModel))
-  }
+    init(service: OpenAIService, customModel: String? = nil) {
+        self.customModel = customModel
+        _chatProvider = State(initialValue: ChatFunctionCallProvider(service: service, customModel: customModel))
+    }
 
-  let customModel: String?
+    let customModel: String?
 
-  var body: some View {
-    ScrollViewReader { proxy in
-      VStack {
-        List(chatProvider.chatDisplayMessages) { message in
-          ChatMessageView(message: message)
-            .listRowSeparator(.hidden)
+    var body: some View {
+        ScrollViewReader { proxy in
+            VStack {
+                List(chatProvider.chatDisplayMessages) { message in
+                    ChatMessageView(message: message)
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .onChange(of: chatProvider.chatDisplayMessages.last?.content) {
+                    let lastMessage = chatProvider.chatDisplayMessages.last
+                    if let id = lastMessage?.id {
+                        proxy.scrollTo(id, anchor: .bottom)
+                    }
+                }
+                textArea
+            }
         }
-        .listStyle(.plain)
-        .onChange(of: chatProvider.chatDisplayMessages.last?.content) {
-          let lastMessage = chatProvider.chatDisplayMessages.last
-          if let id = lastMessage?.id {
-            proxy.scrollTo(id, anchor: .bottom)
-          }
+    }
+
+    var textArea: some View {
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                textField
+                    .padding(.vertical, Sizes.spacingExtraSmall)
+                    .padding(.horizontal, Sizes.spacingSmall)
+            }
+            .padding(.vertical, Sizes.spacingExtraSmall)
+            .padding(.horizontal, Sizes.spacingExtraSmall)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(.gray, lineWidth: 1))
+            .padding(.horizontal, Sizes.spacingMedium)
+            textAreSendButton
         }
-        textArea
-      }
+        .padding(.horizontal)
+        .disabled(isLoading)
     }
-  }
 
-  var textArea: some View {
-    HStack(spacing: 0) {
-      VStack(alignment: .leading, spacing: 0) {
-        textField
-          .padding(.vertical, Sizes.spacingExtraSmall)
-          .padding(.horizontal, Sizes.spacingSmall)
-      }
-      .padding(.vertical, Sizes.spacingExtraSmall)
-      .padding(.horizontal, Sizes.spacingExtraSmall)
-      .background(
-        RoundedRectangle(cornerRadius: 20)
-          .stroke(.gray, lineWidth: 1))
-      .padding(.horizontal, Sizes.spacingMedium)
-      textAreSendButton
+    var textField: some View {
+        TextField(
+            "How Can I help you today?",
+            text: $prompt,
+            axis: .vertical
+        )
     }
-    .padding(.horizontal)
-    .disabled(isLoading)
-  }
 
-  var textField: some View {
-    TextField(
-      "How Can I help you today?",
-      text: $prompt,
-      axis: .vertical)
-  }
-
-  var textAreSendButton: some View {
-    Button {
-      Task {
-        /// Loading UI
-        isLoading = true
-        defer { isLoading = false }
-        // Clears text field.
-        let userPrompt = prompt
-        prompt = ""
-        try await chatProvider.startChat(prompt: userPrompt)
-      }
-    } label: {
-      Image(systemName: "paperplane")
+    var textAreSendButton: some View {
+        Button {
+            Task {
+                /// Loading UI
+                isLoading = true
+                defer { isLoading = false }
+                // Clears text field.
+                let userPrompt = prompt
+                prompt = ""
+                try await chatProvider.startChat(prompt: userPrompt)
+            }
+        } label: {
+            Image(systemName: "paperplane")
+        }
+        .buttonStyle(.bordered)
+        .tint(ThemeColor.tintColor)
+        .disabled(prompt.isEmpty)
     }
-    .buttonStyle(.bordered)
-    .tint(ThemeColor.tintColor)
-    .disabled(prompt.isEmpty)
-  }
 
-  @State private var chatProvider: ChatFunctionCallProvider
-  @State private var isLoading = false
-  @State private var prompt = ""
+    @State private var chatProvider: ChatFunctionCallProvider
+    @State private var isLoading = false
+    @State private var prompt = ""
 }

@@ -9,6 +9,7 @@ import Foundation
 import SwiftOpenAI
 
 struct ChatMessageDisplayModel: Identifiable {
+
   init(
     id: UUID = UUID(),
     content: DisplayContent,
@@ -20,6 +21,7 @@ struct ChatMessageDisplayModel: Identifiable {
   }
 
   enum DisplayContent: Equatable {
+
     case content(DisplayMessageType)
     case error(String)
 
@@ -41,6 +43,7 @@ struct ChatMessageDisplayModel: Identifiable {
   }
 
   enum MessageOrigin {
+
     case received(ReceivedSource)
     case sent
 
@@ -53,4 +56,5 @@ struct ChatMessageDisplayModel: Identifiable {
   let id: UUID
   var content: DisplayContent
   let origin: MessageOrigin
+
 }

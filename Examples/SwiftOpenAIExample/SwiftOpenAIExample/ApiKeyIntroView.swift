@@ -1,5 +1,5 @@
 //
-//  ApiKeyIntroView.swift
+//  ContentView.swift
 //  SwiftOpenAIExample
 //
 //  Created by James Rochabrun on 10/19/23.
@@ -9,6 +9,7 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ApiKeyIntroView: View {
+
   var body: some View {
     NavigationStack {
       VStack {
@@ -52,6 +53,7 @@ struct ApiKeyIntroView: View {
   @State private var apiKey = ""
   @State private var organizationIdentifier = ""
   @State private var localOrganizationID: String? = nil
+
 }
 
 #Preview {

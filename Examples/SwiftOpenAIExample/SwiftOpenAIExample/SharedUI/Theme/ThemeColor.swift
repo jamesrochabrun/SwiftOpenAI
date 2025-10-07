@@ -12,5 +12,6 @@ import SwiftUI
 enum ThemeColor { }
 
 extension ThemeColor {
+
   static let tintColor = Color.purple
 }

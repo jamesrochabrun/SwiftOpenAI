@@ -9,6 +9,7 @@ import SwiftOpenAI
 import SwiftUI
 
 struct AIProxyIntroView: View {
+
   var body: some View {
     NavigationStack {
       VStack {

@@ -10,11 +10,12 @@ import SwiftUI
 
 @Observable
 class ChatProvider {
+
   init(service: OpenAIService) {
     self.service = service
   }
 
-  var messages = [String]()
+  var messages: [String] = []
   var errorMessage = ""
   var message = ""
   var usage: ChatUsage?
@@ -63,5 +64,6 @@ class ChatProvider {
   }
 
   private let service: OpenAIService
-  private var streamTask: Task<Void, Never>?
+  private var streamTask: Task<Void, Never>? = nil
+
 }

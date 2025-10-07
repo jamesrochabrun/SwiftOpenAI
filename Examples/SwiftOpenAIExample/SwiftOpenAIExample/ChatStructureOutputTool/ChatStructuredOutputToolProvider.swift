@@ -12,6 +12,7 @@ import SwiftUI
 // MARK: - StructuredToolCall
 
 enum StructuredToolCall: String, CaseIterable {
+
   case structureUI = "structured_ui"
 
   var functionTool: ChatCompletionParameters.Tool {
@@ -34,16 +35,19 @@ enum StructuredToolCall: String, CaseIterable {
           type: .string,
           description: "The type of the UI component",
           additionalProperties: false,
-          enum: ["div", "button", "header", "section", "field", "form"]),
+          enum: ["div", "button", "header", "section", "field", "form"]
+        ),
         "label": JSONSchema(
           type: .string,
           description: "The label of the UI component, used for buttons or form fields",
-          additionalProperties: false),
+          additionalProperties: false
+        ),
         "children": JSONSchema(
           type: .array,
           description: "Nested UI components",
           items: JSONSchema(ref: "#"),
-          additionalProperties: false),
+          additionalProperties: false
+        ),
         "attributes": JSONSchema(
           type: .array,
           description: "Arbitrary attributes for the UI component, suitable for any element",
@@ -53,15 +57,18 @@ enum StructuredToolCall: String, CaseIterable {
               "name": JSONSchema(
                 type: .string,
                 description: "The name of the attribute, for example onClick or className",
-                additionalProperties: false),
+                additionalProperties: false
+              ),
               "value": JSONSchema(
                 type: .string,
                 description: "The value of the attribute",
-                additionalProperties: false),
+                additionalProperties: false
+              ),
             ],
             required: ["name", "value"],
             additionalProperties: false),
-          additionalProperties: false),
+          additionalProperties: false
+        ),
       ],
       required: ["type", "label", "children", "attributes"],
       additionalProperties: false)
@@ -72,16 +79,14 @@ enum StructuredToolCall: String, CaseIterable {
 
 @Observable
 final class ChatStructuredOutputToolProvider {
-  init(service: OpenAIService, customModel: String? = nil) {
-    self.service = service
-    self.customModel = customModel
-  }
 
   // MARK: - Init
 
-  let customModel: String?
+  init(service: OpenAIService) {
+    self.service = service
+  }
 
-  var chatDisplayMessages = [ChatMessageDisplayModel]()
+  var chatDisplayMessages: [ChatMessageDisplayModel] = []
   let systemMessage = ChatCompletionParameters.Message(role: .system, content: .text("You are a math tutor"))
 
   func startChat(
@@ -94,16 +99,9 @@ final class ChatStructuredOutputToolProvider {
     let userMessage = createUserMessage(prompt)
     chatMessageParameters.append(userMessage)
 
-    let model: Model =
-      if let customModel, !customModel.isEmpty {
-        .custom(customModel)
-      } else {
-        .gpt4o20240806
-      }
-
     let parameters = ChatCompletionParameters(
       messages: [systemMessage] + chatMessageParameters,
-      model: model,
+      model: .gpt4o20240806,
       tools: StructuredToolCall.allCases.map(\.functionTool))
 
     do {
@@ -153,13 +151,15 @@ final class ChatStructuredOutputToolProvider {
 
   private let service: OpenAIService
   private var lastDisplayedMessageID: UUID?
-  private var chatMessageParameters = [ChatCompletionParameters.Message]()
-  private var availableFunctions = [StructuredToolCall: (String) -> String]()
+  private var chatMessageParameters: [ChatCompletionParameters.Message] = []
+  private var availableFunctions: [StructuredToolCall: (String) -> String] = [:]
+
 }
 
 // MARK: UI related
 
 extension ChatStructuredOutputToolProvider {
+
   func createUserMessage(
     _ prompt: String)
     -> ChatCompletionParameters.Message
@@ -168,16 +168,9 @@ extension ChatStructuredOutputToolProvider {
   }
 
   func continueChat() async {
-    let model: Model =
-      if let customModel, !customModel.isEmpty {
-        .custom(customModel)
-      } else {
-        .gpt4o
-      }
-
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
-      model: model)
+      model: .gpt4o)
     do {
       let chat = try await service.startChat(parameters: paramsForChat)
       guard let assistantMessage = chat.choices?.first?.message else { return }
@@ -255,4 +248,5 @@ extension ChatStructuredOutputToolProvider {
       chatDisplayMessages.append(message)
     }
   }
+
 }

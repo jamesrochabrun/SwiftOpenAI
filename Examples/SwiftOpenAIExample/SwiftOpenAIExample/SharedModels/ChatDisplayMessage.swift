@@ -9,6 +9,7 @@ import Foundation
 import SwiftOpenAI
 
 struct ChatDisplayMessage: Identifiable {
+
   init(
     id: UUID = UUID(),
     content: DisplayContent,
@@ -56,4 +57,5 @@ struct ChatDisplayMessage: Identifiable {
   let content: DisplayContent
   let type: DisplayMessageType
   let delta: Delta?
+
 }

@@ -10,6 +10,7 @@ import SwiftOpenAI
 
 @Observable
 class AssistantConfigurationProvider {
+
   // MARK: - Initializer
 
   init(service: OpenAIService) {
@@ -17,7 +18,7 @@ class AssistantConfigurationProvider {
   }
 
   var assistant: AssistantObject?
-  var assistants = [AssistantObject]()
+  var assistants: [AssistantObject] = []
   var avatarURL: URL?
   var assistantDeletionStatus: DeletionStatus?
 
@@ -68,10 +69,10 @@ class AssistantConfigurationProvider {
 
   // TODO: Create demo for this.
   func createVStore() async throws {
-    _ = try await service.createVectorStore(parameters: .init(name: "Personal Data"))
+    let _ = try await service.createVectorStore(parameters: .init(name: "Personal Data"))
   }
 
   // MARK: - Private Properties
-
   private let service: OpenAIService
+
 }

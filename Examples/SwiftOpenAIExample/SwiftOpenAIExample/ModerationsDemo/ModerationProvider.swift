@@ -10,6 +10,7 @@ import SwiftUI
 
 @Observable
 class ModerationProvider {
+
   init(service: OpenAIService) {
     self.service = service
   }
@@ -31,4 +32,5 @@ class ModerationProvider {
   }
 
   private let service: OpenAIService
+
 }

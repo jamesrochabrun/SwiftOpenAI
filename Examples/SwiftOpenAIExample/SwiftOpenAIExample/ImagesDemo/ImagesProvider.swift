@@ -10,11 +10,12 @@ import SwiftUI
 
 @Observable
 class ImagesProvider {
+
   init(service: OpenAIService) {
     self.service = service
   }
 
-  var images = [URL]()
+  var images: [URL] = []
 
   func createImages(
     parameters: ImageCreateParameters)
@@ -43,4 +44,5 @@ class ImagesProvider {
   }
 
   private let service: OpenAIService
+
 }

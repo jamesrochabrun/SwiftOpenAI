@@ -11,6 +11,7 @@ import SwiftUI
 // MARK: - FineTuningJobDemoView
 
 struct FineTuningJobDemoView: View {
+
   init(service: OpenAIService) {
     _fineTuningJobProvider = State(initialValue: FineTuningJobProvider(service: service))
   }
@@ -43,11 +44,13 @@ struct FineTuningJobDemoView: View {
 
   @State private var fineTuningJobProvider: FineTuningJobProvider
   @State private var isLoading = false
+
 }
 
 // MARK: - FineTuningObjectView
 
 struct FineTuningObjectView: View {
+
   init(job: FineTuningJobObject) {
     self.job = job
   }
@@ -76,4 +79,5 @@ struct FineTuningObjectView: View {
   }
 
   private let job: FineTuningJobObject
+
 }

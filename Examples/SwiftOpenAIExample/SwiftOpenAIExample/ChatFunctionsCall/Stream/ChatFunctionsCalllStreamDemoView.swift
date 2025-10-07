@@ -9,12 +9,10 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatFunctionsCalllStreamDemoView: View {
-  init(service: OpenAIService, customModel: String? = nil) {
-    self.customModel = customModel
-    _chatProvider = State(initialValue: ChatFunctionsCallStreamProvider(service: service, customModel: customModel))
-  }
 
-  let customModel: String?
+  init(service: OpenAIService) {
+    _chatProvider = State(initialValue: ChatFunctionsCallStreamProvider(service: service))
+  }
 
   var body: some View {
     ScrollViewReader { proxy in
@@ -83,4 +81,5 @@ struct ChatFunctionsCalllStreamDemoView: View {
   @State private var isLoading = false
   @State private var prompt = ""
   @State private var chatProvider: ChatFunctionsCallStreamProvider
+
 }

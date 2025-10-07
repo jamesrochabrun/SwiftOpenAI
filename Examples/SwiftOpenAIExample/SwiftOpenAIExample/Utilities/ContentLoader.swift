@@ -8,6 +8,7 @@
 import Foundation
 
 struct ContentLoader {
+
   enum Error: Swift.Error {
     case fileNotFound(name: String)
     case fileDecodingFailed(name: String, Swift.Error)

@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ChatMessageView: View {
+
   let message: ChatMessageDisplayModel
 
   @ViewBuilder

@@ -9,6 +9,7 @@ import SwiftOpenAI
 import SwiftUI
 
 struct EmbeddingsDemoView: View {
+
   init(service: OpenAIService) {
     _embeddingsProvider = State(initialValue: EmbeddingsProvider(service: service))
   }
@@ -75,4 +76,5 @@ struct EmbeddingsDemoView: View {
   @State private var isLoading = false
   @State private var prompt = ""
   @State private var errorMessage = ""
+
 }

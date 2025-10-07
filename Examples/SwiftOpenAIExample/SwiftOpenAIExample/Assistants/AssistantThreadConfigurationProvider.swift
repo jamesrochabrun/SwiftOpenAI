@@ -10,6 +10,7 @@ import SwiftOpenAI
 
 @Observable
 class AssistantThreadConfigurationProvider {
+
   // MARK: - Initializer
 
   init(service: OpenAIService) {
@@ -88,6 +89,6 @@ class AssistantThreadConfigurationProvider {
   }
 
   // MARK: - Private Properties
-
   private let service: OpenAIService
+
 }

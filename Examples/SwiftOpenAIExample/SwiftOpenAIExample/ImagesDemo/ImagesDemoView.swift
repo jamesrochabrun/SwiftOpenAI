@@ -9,6 +9,7 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ImagesDemoView: View {
+
   init(service: OpenAIService) {
     _imagesProvider = State(initialValue: ImagesProvider(service: service))
   }
@@ -68,4 +69,5 @@ struct ImagesDemoView: View {
   @State private var isLoading = false
   @State private var prompt = ""
   @State private var errorMessage = ""
+
 }

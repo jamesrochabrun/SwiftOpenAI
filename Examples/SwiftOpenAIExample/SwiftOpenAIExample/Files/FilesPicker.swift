@@ -28,11 +28,13 @@ extension FileParameters: @retroactive Equatable, @retroactive Identifiable {
       lhs.fileName == rhs.fileName &&
       lhs.purpose == rhs.purpose
   }
+
 }
 
 // MARK: - FilePickerAction
 
 enum FilePickerAction: Identifiable, Equatable {
+
   case request(FileParameters)
   case retrieveAndDisplay(id: String)
 
@@ -47,6 +49,7 @@ enum FilePickerAction: Identifiable, Equatable {
 // MARK: - FilesPicker
 
 struct FilesPicker: View {
+
   init(
     service: OpenAIService,
     sectionTitle: String? = nil,
@@ -134,6 +137,7 @@ struct FilesPicker: View {
   private let service: OpenAIService
   private let sectionTitle: String?
   private let actionTitle: String
+
 }
 
 #Preview {

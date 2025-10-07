@@ -1,0 +1,51 @@
+# This workflow will build a Swift project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+
+name: CI tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test_macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get swift version
+      run: swift --version
+    - name: Build
+      run: swift build -q
+    - name: Run tests
+      run: swift test -q
+
+  build_and_test_linux:
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.0.1-jammy
+    steps:
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y curl git
+    - uses: actions/checkout@v4
+    - name: Get swift version
+      run: swift --version
+    - name: Build
+      run: swift build -q
+    - name: Run tests
+      run: swift test -q
+
+  lint:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - name: Install swiftformat
+      run: brew install swiftformat
+    - name: Check formatting
+      run: swiftformat --config rules.swiftformat --lint .

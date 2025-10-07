@@ -12,17 +12,17 @@ import SwiftOpenAI
 
 @Observable
 final class ChatStructuredOutputProvider {
-  // MARK: - Initializer
-
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
     self.customModel = customModel
   }
 
+  // MARK: - Initializer
+
+  let customModel: String?
+
   var message = ""
-  var messages: [String] = []
+  var messages = [String]()
   var errorMessage = ""
 
   // MARK: - Public Methods

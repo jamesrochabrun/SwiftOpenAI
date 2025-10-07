@@ -9,9 +9,6 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatDemoView: View {
-  
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.customModel = customModel
     _chatProvider = State(initialValue: ChatProvider(service: service))
@@ -21,6 +18,8 @@ struct ChatDemoView: View {
     case chatCompletion
     case chatCompeltionStream
   }
+
+  let customModel: String?
 
   var body: some View {
     ScrollView {
@@ -68,12 +67,13 @@ struct ChatDemoView: View {
 
           let content = ChatCompletionParameters.Message.ContentType.text(prompt)
           prompt = ""
-          let model: Model = if let customModel = customModel, !customModel.isEmpty {
-            .custom(customModel)
-          } else {
-            .gpt4o
-          }
-          
+          let model: Model =
+            if let customModel, !customModel.isEmpty {
+              .custom(customModel)
+            } else {
+              .gpt4o
+            }
+
           let parameters = ChatCompletionParameters(
             messages: [.init(
               role: .user,

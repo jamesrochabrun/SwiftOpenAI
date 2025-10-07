@@ -37,25 +37,24 @@ enum FunctionCallDefinition: String, CaseIterable {
 
 @Observable
 class ChatFunctionCallProvider {
-  // MARK: - Initializer
-
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.service = service
     self.customModel = customModel
   }
 
+  // MARK: - Initializer
+
+  let customModel: String?
+
   // MARK: - Public Properties
 
   /// To be used for UI purposes.
-  var chatDisplayMessages: [ChatMessageDisplayModel] = []
+  var chatDisplayMessages = [ChatMessageDisplayModel]()
 
   @MainActor
   func generateImage(arguments: String) async throws -> String {
     let dictionary = arguments.toDictionary()!
     let prompt = dictionary["prompt"] as! String
-    let count = (dictionary["count"] as? Int) ?? 1
 
     let assistantMessage = ChatMessageDisplayModel(
       content: .content(.init(text: "Generating images...")),
@@ -93,12 +92,13 @@ class ChatFunctionCallProvider {
 
     let tools = FunctionCallDefinition.allCases.map(\.functionTool)
 
-    let model: Model = if let customModel = customModel, !customModel.isEmpty {
-      .custom(customModel)
-    } else {
-      .gpt41106Preview
-    }
-    
+    let model: Model =
+      if let customModel, !customModel.isEmpty {
+        .custom(customModel)
+      } else {
+        .gpt41106Preview
+      }
+
     let parameters = ChatCompletionParameters(
       messages: chatMessageParameters,
       model: model,
@@ -158,12 +158,13 @@ class ChatFunctionCallProvider {
 
     chatMessageParameters.insert(systemMessage, at: 0)
 
-    let model: Model = if let customModel = customModel, !customModel.isEmpty {
-      .custom(customModel)
-    } else {
-      .gpt41106Preview
-    }
-    
+    let model: Model =
+      if let customModel, !customModel.isEmpty {
+        .custom(customModel)
+      } else {
+        .gpt41106Preview
+      }
+
     let paramsForChat = ChatCompletionParameters(
       messages: chatMessageParameters,
       model: model)
@@ -189,8 +190,8 @@ class ChatFunctionCallProvider {
   private let service: OpenAIService
   private var lastDisplayedMessageID: UUID?
   /// To be used for a new request
-  private var chatMessageParameters: [ChatCompletionParameters.Message] = []
-  private var availableFunctions: [FunctionCallDefinition: @MainActor (String) async throws -> String] = [:]
+  private var chatMessageParameters = [ChatCompletionParameters.Message]()
+  private var availableFunctions = [FunctionCallDefinition: @MainActor (String) async throws -> String]()
 
   // MARK: - Private Methods
 

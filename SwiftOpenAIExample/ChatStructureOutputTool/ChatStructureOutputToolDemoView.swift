@@ -10,13 +10,12 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatStructureOutputToolDemoView: View {
-  
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.customModel = customModel
     chatProvider = .init(service: service, customModel: customModel)
   }
+
+  let customModel: String?
 
   var body: some View {
     ScrollViewReader { proxy in

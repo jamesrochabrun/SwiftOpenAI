@@ -96,7 +96,7 @@ struct ChatDisplayMessageView: View {
     }
   }
 
-  @State private var urls: [URL] = []
+  @State private var urls = [URL]()
 }
 
 #Preview {

@@ -33,9 +33,6 @@ import SwiftUI
 ///    }'```
 
 struct LocalChatDemoView: View {
-  
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.customModel = customModel
     _chatProvider = State(initialValue: ChatProvider(service: service))
@@ -45,6 +42,8 @@ struct LocalChatDemoView: View {
     case chatCompletion
     case chatCompeltionStream
   }
+
+  let customModel: String?
 
   var body: some View {
     ScrollView {
@@ -92,13 +91,14 @@ struct LocalChatDemoView: View {
 
           let content = ChatCompletionParameters.Message.ContentType.text(prompt)
           prompt = ""
-          let model: Model = if let customModel = customModel, !customModel.isEmpty {
-            .custom(customModel)
-          } else {
-            // Make sure you run `ollama pull llama3` in your terminal to download this model.
-            .custom("llama3")
-          }
-          
+          let model: Model =
+            if let customModel, !customModel.isEmpty {
+              .custom(customModel)
+            } else {
+              // Make sure you run `ollama pull llama3` in your terminal to download this model.
+              .custom("llama3")
+            }
+
           let parameters = ChatCompletionParameters(
             messages: [.init(
               role: .user,

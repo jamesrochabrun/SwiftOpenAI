@@ -9,13 +9,12 @@ import SwiftOpenAI
 import SwiftUI
 
 struct ChatFunctionCallDemoView: View {
-  
-  let customModel: String?
-  
   init(service: OpenAIService, customModel: String? = nil) {
     self.customModel = customModel
     _chatProvider = State(initialValue: ChatFunctionCallProvider(service: service, customModel: customModel))
   }
+
+  let customModel: String?
 
   var body: some View {
     ScrollViewReader { proxy in

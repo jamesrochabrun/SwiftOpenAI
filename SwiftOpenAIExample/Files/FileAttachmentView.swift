@@ -115,6 +115,8 @@ extension View {
   }
 }
 
+// MARK: - DeletionStatus + @retroactive Equatable
+
 extension DeletionStatus: @retroactive Equatable {
   public static func ==(lhs: DeletionStatus, rhs: DeletionStatus) -> Bool {
     lhs.id == rhs.id

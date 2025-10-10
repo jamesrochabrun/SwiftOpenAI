@@ -36,8 +36,12 @@ final class ChatStructuredOutputProvider {
       messages = choices.compactMap(\.message?.content).map { $0.asJsonFormatted() }
       assert(messages.count == 1)
       errorMessage = choices.first?.message?.refusal ?? ""
-    } catch APIError.responseUnsuccessful(let description, let statusCode) {
-      self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+    } catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+      var message = "Network error with status code: \(statusCode) and description: \(description)"
+      if let responseBody {
+        message += " — Response body: \(responseBody)"
+      }
+      self.errorMessage = message
     } catch {
       errorMessage = error.localizedDescription
     }
@@ -58,8 +62,12 @@ final class ChatStructuredOutputProvider {
             self.message = self.message.asJsonFormatted()
           }
         }
-      } catch APIError.responseUnsuccessful(let description, let statusCode) {
-        self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+      } catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+        var message = "Network error with status code: \(statusCode) and description: \(description)"
+        if let responseBody {
+          message += " — Response body: \(responseBody)"
+        }
+        self.errorMessage = message
       } catch {
         self.errorMessage = error.localizedDescription
       }

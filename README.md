@@ -171,7 +171,7 @@ That's all you need to begin accessing the full range of OpenAI endpoints.
 
 You may want to build UI around the type of error that the API returns.
 For example, a `429` means that your requests are being rate limited.
-The `APIError` type has a case `responseUnsuccessful` with two associated values: a `description` and `statusCode`.
+The `APIError` type has a case `responseUnsuccessful` with three associated values: a `description`, `statusCode`, and an optional `responseBody`.
 Here is a usage example using the chat completion API:
 
 ```swift
@@ -181,8 +181,11 @@ let parameters = ChatCompletionParameters(messages: [.init(role: .user, content:
 do {
    let choices = try await service.startChat(parameters: parameters).choices
    // Work with choices
-} catch APIError.responseUnsuccessful(let description, let statusCode) {
+} catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
    print("Network error with status code: \(statusCode) and description: \(description)")
+   if let responseBody {
+      print("Response body: \(responseBody)")
+   }
 } catch {
    print(error.localizedDescription)
 }
@@ -4274,8 +4277,12 @@ do {
             self.reasoningMessage += reasoning
         }
     }
-} catch APIError.responseUnsuccessful(let description, let statusCode) {
-    self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+} catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+    var message = "Network error with status code: \(statusCode) and description: \(description)"
+    if let responseBody {
+        message += " — Response body: \(responseBody)"
+    }
+    self.errorMessage = message
 } catch {
     self.errorMessage = error.localizedDescription
 }
@@ -4328,4 +4335,3 @@ let stream = try await service.startStreamedChat(parameters: parameters)
 
 ## Collaboration
 Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️
-

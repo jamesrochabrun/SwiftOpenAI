@@ -48,20 +48,36 @@ public class URLSessionHTTPClientAdapter: HTTPClient {
       statusCode: httpURLResponse.statusCode,
       headers: convertHeaders(httpURLResponse.allHeaderFields))
 
-    let stream = AsyncThrowingStream<String, Error> { continuation in
-      Task {
-        do {
-          for try await line in asyncBytes.lines {
-            continuation.yield(line)
+    let contentType = httpURLResponse.value(forHTTPHeaderField: "Content-Type") ?? httpURLResponse.mimeType ?? ""
+    if contentType.lowercased().contains("text/event-stream") {
+      let stream = AsyncThrowingStream<String, Error> { continuation in
+        Task {
+          do {
+            for try await line in asyncBytes.lines {
+              continuation.yield(line)
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
           }
-          continuation.finish()
-        } catch {
-          continuation.finish(throwing: error)
         }
       }
+      return (.lines(stream), response)
+    } else {
+      let byteStream = AsyncThrowingStream<UInt8, Error> { continuation in
+        Task {
+          do {
+            for try await byte in asyncBytes {
+              continuation.yield(byte)
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        }
+      }
+      return (.bytes(byteStream), response)
     }
-
-    return (.lines(stream), response)
   }
 
   private let urlSession: URLSession

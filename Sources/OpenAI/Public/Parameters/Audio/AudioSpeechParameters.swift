@@ -61,6 +61,9 @@ public struct AudioSpeechParameters: Encodable {
     case flac
   }
 
+  /// When true, the API will return streaming audio chunks instead of a single response payload.
+  public var stream: Bool?
+
   enum CodingKeys: String, CodingKey {
     case model
     case input
@@ -80,6 +83,4 @@ public struct AudioSpeechParameters: Encodable {
   let responseFormat: String?
   /// Defaults to 1,  The speed of the generated audio. Select a value from 0.25 to 4.0. 1.0 is the default.
   let speed: Double?
-  /// When true, the API will return streaming audio chunks instead of a single response payload.
-  public var stream: Bool?
 }

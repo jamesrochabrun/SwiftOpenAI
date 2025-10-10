@@ -394,9 +394,29 @@ playAudio(from: audioObjectData)
        } catch {
            // Handle errors
            print("Error playing audio: \(error.localizedDescription)")
-       }
    }
+}
 ```
+
+#### Streaming audio responses
+
+```swift
+var parameters = AudioSpeechParameters(
+    model: .tts1,
+    input: "Streaming sample",
+    voice: .nova,
+    stream: true
+)
+
+let audioStream = try await service.createStreamingSpeech(parameters: parameters)
+
+for try await chunk in audioStream {
+    // Each chunk contains audio data you can append or play immediately.
+    handleAudioChunk(chunk.chunk, isLast: chunk.isLastChunk)
+}
+```
+
+The `AudioSpeechChunkObject` exposed in each iteration includes the raw `Data` for playback plus lightweight metadata (`isLastChunk`, `chunkIndex`) so callers can manage buffers or gracefully end playback when the stream finishes.
 
 ### Chat
 Parameters
@@ -1019,6 +1039,26 @@ let prompt = "Tell me a joke"
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt4o)
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
+
+#### Streaming chat with reasoning overrides
+
+```swift
+var parameters = ChatCompletionParameters(
+    messages: [.init(role: .user, content: .text("Give me a concise summary of the Manhattan project"))],
+    model: .gpt4o,
+    reasoning: .init(effort: "medium", maxTokens: 256)
+)
+
+parameters.stream = true
+parameters.streamOptions = .init(includeUsage: true)
+
+let stream = try await service.startStreamedChat(parameters: parameters)
+for try await chunk in stream {
+    handleChunk(chunk)
+}
+```
+
+The new `reasoning` override lets you pass provider-specific reasoning hints (e.g., OpenRouter’s `effort`, `exclude`, or `max_tokens`). When you toggle `stream` and `streamOptions.includeUsage`, the service returns streamed chat deltas plus a final usage summary chunk.
 
 ### Function Calling
 

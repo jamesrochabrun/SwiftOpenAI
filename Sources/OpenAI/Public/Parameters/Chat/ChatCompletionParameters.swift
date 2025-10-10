@@ -39,6 +39,7 @@ public struct ChatCompletionParameters: Encodable {
     temperature: Double? = nil,
     topProbability: Double? = nil,
     user: String? = nil,
+    reasoning: ReasoningOverrides? = nil,
     streamOptions: StreamOptions? = nil)
   {
     self.messages = messages
@@ -69,6 +70,7 @@ public struct ChatCompletionParameters: Encodable {
     self.temperature = temperature
     topP = topProbability
     self.user = user
+    self.reasoning = reasoning
     self.streamOptions = streamOptions
   }
 
@@ -418,6 +420,25 @@ public struct ChatCompletionParameters: Encodable {
     case low
   }
 
+  /// Provider-specific reasoning overrides (e.g. OpenRouter).
+  public struct ReasoningOverrides: Encodable {
+    public init(effort: String? = nil, exclude: Bool? = nil, maxTokens: Int? = nil) {
+      self.effort = effort
+      self.exclude = exclude
+      self.maxTokens = maxTokens
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case effort
+      case exclude
+      case maxTokens = "max_tokens"
+    }
+
+    public var effort: String?
+    public var exclude: Bool?
+    public var maxTokens: Int?
+  }
+
   /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)
   public var messages: [Message]
   /// ID of the model to use. See the [model endpoint compatibility](https://platform.openai.com/docs/models/how-we-use-your-data) table for details on which models work with the Chat API.
@@ -489,6 +510,8 @@ public struct ChatCompletionParameters: Encodable {
   public var seed: Int?
   /// Up to 4 sequences where the API will stop generating further tokens. Defaults to null.
   public var stop: [String]?
+  /// Provider-specific reasoning overrides.
+  public var reasoning: ReasoningOverrides?
   /// What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
   /// We generally recommend altering this or `top_p` but not both. Defaults to 1.
   public var temperature: Double?
@@ -526,6 +549,7 @@ public struct ChatCompletionParameters: Encodable {
     case seed
     case serviceTier = "service_tier"
     case stop
+    case reasoning
     case stream
     case streamOptions = "stream_options"
     case temperature
@@ -535,7 +559,7 @@ public struct ChatCompletionParameters: Encodable {
 
   /// If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format) as they become available, with the stream terminated by a data: [DONE] message. [Example Python code](https://cookbook.openai.com/examples/how_to_stream_completions ).
   /// Defaults to false.
-  var stream: Bool?
+  public var stream: Bool?
   /// Options for streaming response. Only set this when you set stream: true
-  var streamOptions: StreamOptions?
+  public var streamOptions: StreamOptions?
 }

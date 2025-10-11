@@ -14,7 +14,7 @@ import FoundationNetworking
 
 public enum APIError: Error {
   case requestFailed(description: String)
-  case responseUnsuccessful(description: String, statusCode: Int)
+  case responseUnsuccessful(description: String, statusCode: Int, responseBody: String? = nil)
   case invalidData
   case jsonDecodingFailure(description: String)
   case dataCouldNotBeReadMissingData(description: String)
@@ -23,13 +23,30 @@ public enum APIError: Error {
 
   public var displayDescription: String {
     switch self {
-    case .requestFailed(let description): description
-    case .responseUnsuccessful(let description, _): description
-    case .invalidData: "Invalid data"
-    case .jsonDecodingFailure(let description): description
-    case .dataCouldNotBeReadMissingData(let description): description
-    case .bothDecodingStrategiesFailed: "Decoding strategies failed."
-    case .timeOutError: "Time Out Error."
+    case .requestFailed(let description):
+      description
+
+    case .responseUnsuccessful(let description, let statusCode, let responseBody):
+      if let responseBody, !responseBody.isEmpty {
+        "Status \(statusCode): \(description) - Response: \(responseBody)"
+      } else {
+        "Status \(statusCode): \(description)"
+      }
+
+    case .invalidData:
+      "Invalid data"
+
+    case .jsonDecodingFailure(let description):
+      description
+
+    case .dataCouldNotBeReadMissingData(let description):
+      description
+
+    case .bothDecodingStrategiesFailed:
+      "Decoding strategies failed."
+
+    case .timeOutError:
+      "Time Out Error."
     }
   }
 }
@@ -125,6 +142,14 @@ public protocol OpenAIService {
   func createSpeech(
     parameters: AudioSpeechParameters)
     async throws -> AudioSpeechObject
+  /// - Parameter parameters: The audio speech parameters.
+  /// - Returns: A streamed sequence of audio chunks.
+  /// - Throws: An error if the process fails.
+  ///
+  /// For more information, refer to [OpenAI's Audio Speech API documentation](https://platform.openai.com/docs/api-reference/audio/createSpeech).
+  func createStreamingSpeech(
+    parameters: AudioSpeechParameters)
+    async throws -> AsyncThrowingStream<AudioSpeechChunkObject, Error>
 
   // MARK: Chat
 
@@ -1106,6 +1131,7 @@ extension OpenAIService {
 
     guard response.statusCode == 200 else {
       var errorMessage = "status code \(response.statusCode)"
+      let responseBody = String(data: data, encoding: .utf8)
       do {
         let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
         errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
@@ -1114,7 +1140,8 @@ extension OpenAIService {
       }
       throw APIError.responseUnsuccessful(
         description: errorMessage,
-        statusCode: response.statusCode)
+        statusCode: response.statusCode,
+        responseBody: responseBody)
     }
     var content = [[String: Any]]()
     if let jsonString = String(data: data, encoding: String.Encoding.utf8) {
@@ -1154,11 +1181,15 @@ extension OpenAIService {
 
     guard response.statusCode == 200 else {
       var errorMessage = "Status code \(response.statusCode)"
+      var responseBody = String(data: data, encoding: .utf8)
       do {
         let errorResponse = try decoder.decode(OpenAIErrorResponse.self, from: data)
         errorMessage = errorResponse.error.message ?? "NO ERROR MESSAGE PROVIDED"
+        if responseBody == nil, let message = errorResponse.error.message {
+          responseBody = message
+        }
       } catch {
-        if let errorString = String(data: data, encoding: .utf8), !errorString.isEmpty {
+        if let errorString = responseBody, !errorString.isEmpty {
           errorMessage += " - \(errorString)"
         } else {
           errorMessage += " - No error message provided"
@@ -1166,9 +1197,152 @@ extension OpenAIService {
       }
       throw APIError.responseUnsuccessful(
         description: errorMessage,
-        statusCode: response.statusCode)
+        statusCode: response.statusCode,
+        responseBody: responseBody)
     }
     return data
+  }
+
+  /// Streams audio data from the TTS endpoint and yields incremental chunks.
+  public func fetchAudioStream(
+    debugEnabled: Bool,
+    with request: URLRequest)
+    async throws -> AsyncThrowingStream<AudioSpeechChunkObject, Error>
+  {
+    if debugEnabled {
+      printCurlCommand(request)
+    }
+
+    let httpRequest = try HTTPRequest(from: request)
+
+    let (byteStream, response) = try await httpClient.bytes(for: httpRequest)
+
+    if debugEnabled {
+      printHTTPResponse(response)
+    }
+
+    guard response.statusCode == 200 else {
+      let (errorData, _) = try await httpClient.data(for: httpRequest)
+      var errorMessage = "Status code \(response.statusCode)"
+      var responseBody: String?
+      do {
+        let errorResponse = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
+        errorMessage = errorResponse.error.message ?? errorMessage
+        responseBody = String(data: errorData, encoding: .utf8)
+      } catch {
+        responseBody = String(data: errorData, encoding: .utf8)
+        if let responseBody, !responseBody.isEmpty {
+          errorMessage += " - \(responseBody)"
+        } else {
+          errorMessage += " - No error message provided"
+        }
+      }
+      throw APIError.responseUnsuccessful(
+        description: errorMessage,
+        statusCode: response.statusCode,
+        responseBody: responseBody)
+    }
+
+    return AsyncThrowingStream { continuation in
+      let streamTask = Task {
+        var chunkIndex = 0
+        var hasEmittedFinalChunk = false
+        do {
+          switch byteStream {
+          case .bytes(let bytesStream):
+            var currentChunk = Data()
+            let chunkSize = 4096
+            for try await byte in bytesStream {
+              currentChunk.append(byte)
+              if currentChunk.count >= chunkSize {
+                continuation.yield(
+                  AudioSpeechChunkObject(
+                    chunk: currentChunk,
+                    isLastChunk: false,
+                    chunkIndex: chunkIndex))
+                chunkIndex += 1
+                currentChunk = Data()
+              }
+            }
+            if !currentChunk.isEmpty {
+              continuation.yield(
+                AudioSpeechChunkObject(
+                  chunk: currentChunk,
+                  isLastChunk: false,
+                  chunkIndex: chunkIndex))
+              chunkIndex += 1
+            }
+
+          case .lines(let lineStream):
+            let whitespace = CharacterSet.whitespacesAndNewlines
+            for try await line in lineStream {
+              guard line.hasPrefix("data:") else {
+                continue
+              }
+              let payload = line.dropFirst(5).trimmingCharacters(in: whitespace)
+              if payload.isEmpty {
+                continue
+              }
+              if payload == "[DONE]" {
+                hasEmittedFinalChunk = true
+                continuation.yield(
+                  AudioSpeechChunkObject(
+                    chunk: Data(),
+                    isLastChunk: true,
+                    chunkIndex: chunkIndex))
+                continuation.finish()
+                return
+              }
+              let payloadData = Data(payload.utf8)
+              if let audioData = Data(base64Encoded: payload) {
+                continuation.yield(
+                  AudioSpeechChunkObject(
+                    chunk: audioData,
+                    isLastChunk: false,
+                    chunkIndex: chunkIndex))
+                chunkIndex += 1
+                continue
+              }
+              if
+                let jsonObject = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any],
+                let audioData = extractAudioBase64(from: jsonObject)
+              {
+                continuation.yield(
+                  AudioSpeechChunkObject(
+                    chunk: audioData,
+                    isLastChunk: false,
+                    chunkIndex: chunkIndex))
+                chunkIndex += 1
+                if isTerminalAudioEvent(jsonObject) {
+                  hasEmittedFinalChunk = true
+                  continuation.yield(
+                    AudioSpeechChunkObject(
+                      chunk: Data(),
+                      isLastChunk: true,
+                      chunkIndex: chunkIndex))
+                  continuation.finish()
+                  return
+                }
+                continue
+              }
+            }
+          }
+          if !hasEmittedFinalChunk {
+            continuation.yield(
+              AudioSpeechChunkObject(
+                chunk: Data(),
+                isLastChunk: true,
+                chunkIndex: chunkIndex))
+          }
+          continuation.finish()
+        } catch {
+          continuation.finish(throwing: error)
+        }
+      }
+      continuation.onTermination = { @Sendable _ in
+        streamTask.cancel()
+      }
+    }
   }
 
   /// Asynchronously fetches a decodable data type from OpenAI's API.
@@ -1200,6 +1374,7 @@ extension OpenAIService {
 
     guard response.statusCode == 200 else {
       var errorMessage = "status code \(response.statusCode)"
+      let responseBody = String(data: data, encoding: .utf8)
       do {
         let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
         errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
@@ -1208,7 +1383,8 @@ extension OpenAIService {
       }
       throw APIError.responseUnsuccessful(
         description: errorMessage,
-        statusCode: response.statusCode)
+        statusCode: response.statusCode,
+        responseBody: responseBody)
     }
     #if DEBUG
     if debugEnabled {
@@ -1268,18 +1444,23 @@ extension OpenAIService {
 
     guard response.statusCode == 200 else {
       var errorMessage = "status code \(response.statusCode)"
+      var responseBody: String?
       do {
         // For error responses, we need to get the raw data instead of using the stream
         // as error responses are regular JSON, not streaming data
         let (errorData, _) = try await httpClient.data(for: httpRequest)
+        responseBody = String(data: errorData, encoding: .utf8)
         let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
         errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
-        // If decoding fails, keep the original error message with status code
+        if let responseBody, !responseBody.isEmpty {
+          errorMessage += " - \(responseBody)"
+        }
       }
       throw APIError.responseUnsuccessful(
         description: errorMessage,
-        statusCode: response.statusCode)
+        statusCode: response.statusCode,
+        responseBody: responseBody)
     }
 
     // Create a stream from the lines
@@ -1366,18 +1547,23 @@ extension OpenAIService {
 
     guard response.statusCode == 200 else {
       var errorMessage = "status code \(response.statusCode)"
+      var responseBody: String?
       do {
         // For error responses, we need to get the raw data instead of using the stream
         // as error responses are regular JSON, not streaming data
         let (errorData, _) = try await httpClient.data(for: httpRequest)
+        responseBody = String(data: errorData, encoding: .utf8)
         let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
         errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
       } catch {
-        // If decoding fails, keep the original error message with status code
+        if let responseBody, !responseBody.isEmpty {
+          errorMessage += " - \(responseBody)"
+        }
       }
       throw APIError.responseUnsuccessful(
         description: errorMessage,
-        statusCode: response.statusCode)
+        statusCode: response.statusCode,
+        responseBody: responseBody)
     }
 
     // Create a stream from the lines
@@ -1506,6 +1692,76 @@ extension OpenAIService {
         streamTask.cancel()
       }
     }
+  }
+
+  private func extractAudioBase64(from jsonObject: [String: Any]) -> Data? {
+    if let deltaString = jsonObject["delta"] as? String, let data = Data(base64Encoded: deltaString) {
+      return data
+    }
+
+    if
+      let deltaDictionary = jsonObject["delta"] as? [String: Any],
+      let nested = extractAudioBase64(from: deltaDictionary)
+    {
+      return nested
+    }
+
+    if
+      let audioDictionary = jsonObject["audio"] as? [String: Any],
+      let base64String = audioDictionary["data"] as? String ?? audioDictionary["chunk"] as? String,
+      let data = Data(base64Encoded: base64String)
+    {
+      return data
+    }
+
+    if let dataString = jsonObject["data"] as? String, let data = Data(base64Encoded: dataString) {
+      return data
+    }
+
+    if let chunkString = jsonObject["chunk"] as? String, let data = Data(base64Encoded: chunkString) {
+      return data
+    }
+
+    if
+      let resultDictionary = jsonObject["result"] as? [String: Any],
+      let nested = extractAudioBase64(from: resultDictionary)
+    {
+      return nested
+    }
+
+    if let outputs = jsonObject["output"] as? [[String: Any]] {
+      for item in outputs {
+        if let data = extractAudioBase64(from: item) {
+          return data
+        }
+      }
+    }
+
+    if let choices = jsonObject["choices"] as? [[String: Any]] {
+      for choice in choices {
+        if
+          let deltaDictionary = choice["delta"] as? [String: Any],
+          let data = extractAudioBase64(from: deltaDictionary)
+        {
+          return data
+        }
+      }
+    }
+
+    return nil
+  }
+
+  private func isTerminalAudioEvent(_ jsonObject: [String: Any]) -> Bool {
+    if let done = jsonObject["done"] as? Bool, done {
+      return true
+    }
+    if let type = jsonObject["type"] as? String {
+      return type == "response.output_audio.done" || type == "response.done" || type == "response.completed"
+    }
+    if let status = jsonObject["status"] as? String {
+      return status == "completed"
+    }
+    return false
   }
 
   // MARK: Debug Helpers

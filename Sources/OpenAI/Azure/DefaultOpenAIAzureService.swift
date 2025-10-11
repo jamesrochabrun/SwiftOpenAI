@@ -50,6 +50,13 @@ public final class DefaultOpenAIAzureService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
+  public func createStreamingSpeech(parameters _: AudioSpeechParameters) async throws
+    -> AsyncThrowingStream<AudioSpeechChunkObject, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
   public func startChat(parameters: ChatCompletionParameters) async throws -> ChatCompletionObject {
     var chatParameters = parameters
     chatParameters.stream = false

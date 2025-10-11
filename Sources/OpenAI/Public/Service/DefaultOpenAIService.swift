@@ -78,6 +78,22 @@ struct DefaultOpenAIService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  func createStreamingSpeech(
+    parameters: AudioSpeechParameters)
+    async throws -> AsyncThrowingStream<AudioSpeechChunkObject, Error>
+  {
+    var streamingParameters = parameters
+    streamingParameters.stream = true
+    let request = try OpenAIAPI.audio(.speech).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: streamingParameters,
+      extraHeaders: extraHeaders)
+    return try await fetchAudioStream(debugEnabled: debugEnabled, with: request)
+  }
+
   // MARK: Chat
 
   func startChat(

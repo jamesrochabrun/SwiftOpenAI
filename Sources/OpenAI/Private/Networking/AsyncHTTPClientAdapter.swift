@@ -62,29 +62,47 @@ public class AsyncHTTPClientAdapter: HTTPClient {
     let asyncHTTPClientRequest = try createAsyncHTTPClientRequest(from: request)
 
     let response = try await client.execute(asyncHTTPClientRequest, deadline: .now() + .seconds(60))
+    let contentType = response.headers.first(name: "content-type") ?? ""
     let httpResponse = HTTPResponse(
       statusCode: Int(response.status.code),
       headers: convertHeaders(response.headers))
 
-    let stream = AsyncThrowingStream<String, Error> { continuation in
-      Task {
-        do {
-          for try await byteBuffer in response.body {
-            if let string = byteBuffer.getString(at: 0, length: byteBuffer.readableBytes) {
-              let lines = string.split(separator: "\n", omittingEmptySubsequences: false)
-              for line in lines {
-                continuation.yield(String(line))
+    if contentType.lowercased().contains("text/event-stream") {
+      let stream = AsyncThrowingStream<String, Error> { continuation in
+        Task {
+          do {
+            for try await byteBuffer in response.body {
+              if let string = byteBuffer.getString(at: 0, length: byteBuffer.readableBytes) {
+                let lines = string.split(separator: "\n", omittingEmptySubsequences: false)
+                for line in lines {
+                  continuation.yield(String(line))
+                }
               }
             }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
           }
-          continuation.finish()
-        } catch {
-          continuation.finish(throwing: error)
         }
       }
+      return (.lines(stream), httpResponse)
+    } else {
+      let byteStream = AsyncThrowingStream<UInt8, Error> { continuation in
+        Task {
+          do {
+            for try await byteBuffer in response.body {
+              for byte in byteBuffer.readableBytesView {
+                continuation.yield(byte)
+              }
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        }
+      }
+      return (.bytes(byteStream), httpResponse)
     }
-
-    return (.lines(stream), httpResponse)
   }
 
   /// Properly shutdown the HTTP client

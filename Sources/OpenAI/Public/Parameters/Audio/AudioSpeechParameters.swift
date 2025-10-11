@@ -14,13 +14,15 @@ public struct AudioSpeechParameters: Encodable {
     input: String,
     voice: Voice,
     responseFormat: ResponseFormat? = nil,
-    speed: Double? = nil)
+    speed: Double? = nil,
+    stream: Bool? = nil)
   {
     self.model = model.rawValue
     self.input = input
     self.voice = voice.rawValue
     self.responseFormat = responseFormat?.rawValue
     self.speed = speed
+    self.stream = stream
   }
 
   public enum TTSModel {
@@ -59,12 +61,16 @@ public struct AudioSpeechParameters: Encodable {
     case flac
   }
 
+  /// When true, the API will return streaming audio chunks instead of a single response payload.
+  public var stream: Bool?
+
   enum CodingKeys: String, CodingKey {
     case model
     case input
     case voice
     case responseFormat = "response_format"
     case speed
+    case stream
   }
 
   /// One of the available [TTS models](https://platform.openai.com/docs/models/tts): tts-1 or tts-1-hd

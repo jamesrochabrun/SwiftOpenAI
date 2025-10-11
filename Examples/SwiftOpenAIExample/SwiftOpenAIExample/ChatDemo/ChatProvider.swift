@@ -32,8 +32,12 @@ class ChatProvider {
       messages = choices?.compactMap(\.message?.content) ?? []
       dump(chatUsage)
       usage = chatUsage
-    } catch APIError.responseUnsuccessful(let description, let statusCode) {
-      self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+    } catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+      var message = "Network error with status code: \(statusCode) and description: \(description)"
+      if let responseBody {
+        message += " — Response body: \(responseBody)"
+      }
+      self.errorMessage = message
     } catch {
       errorMessage = error.localizedDescription
     }
@@ -50,8 +54,12 @@ class ChatProvider {
           let content = result.choices?.first?.delta?.content ?? ""
           self.message += content
         }
-      } catch APIError.responseUnsuccessful(let description, let statusCode) {
-        self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+      } catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+        var message = "Network error with status code: \(statusCode) and description: \(description)"
+        if let responseBody {
+          message += " — Response body: \(responseBody)"
+        }
+        self.errorMessage = message
       } catch {
         self.errorMessage = error.localizedDescription
       }

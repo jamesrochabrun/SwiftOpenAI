@@ -15,7 +15,7 @@ public struct GetConversationItemParameter: Codable {
   public init(
     include: [ResponseInclude]? = nil)
   {
-    self.include = include?.compactMap(\.rawValue)
+    self.include = include?.map(\.rawValue)
   }
 
   /// Additional fields to include in the response.

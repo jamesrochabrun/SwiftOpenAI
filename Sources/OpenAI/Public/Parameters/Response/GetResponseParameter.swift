@@ -18,7 +18,7 @@ public struct GetResponseParameter: Codable {
     startingAfter: Int? = nil,
     stream: Bool? = nil)
   {
-    self.include = include?.compactMap(\.rawValue)
+    self.include = include?.map(\.rawValue)
     self.includeObfuscation = includeObfuscation
     self.startingAfter = startingAfter
     self.stream = stream

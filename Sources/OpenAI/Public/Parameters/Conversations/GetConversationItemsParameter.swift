@@ -19,7 +19,7 @@ public struct GetConversationItemsParameter: Codable {
     order: String? = nil)
   {
     self.after = after
-    self.include = include?.compactMap(\.rawValue)
+    self.include = include?.map(\.rawValue)
     self.limit = limit
     self.order = order
   }

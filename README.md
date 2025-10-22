@@ -171,7 +171,7 @@ That's all you need to begin accessing the full range of OpenAI endpoints.
 
 You may want to build UI around the type of error that the API returns.
 For example, a `429` means that your requests are being rate limited.
-The `APIError` type has a case `responseUnsuccessful` with two associated values: a `description` and `statusCode`.
+The `APIError` type has a case `responseUnsuccessful` with three associated values: a `description`, `statusCode`, and an optional `responseBody`.
 Here is a usage example using the chat completion API:
 
 ```swift
@@ -181,8 +181,11 @@ let parameters = ChatCompletionParameters(messages: [.init(role: .user, content:
 do {
    let choices = try await service.startChat(parameters: parameters).choices
    // Work with choices
-} catch APIError.responseUnsuccessful(let description, let statusCode) {
+} catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
    print("Network error with status code: \(statusCode) and description: \(description)")
+   if let responseBody {
+      print("Response body: \(responseBody)")
+   }
 } catch {
    print(error.localizedDescription)
 }
@@ -391,9 +394,29 @@ playAudio(from: audioObjectData)
        } catch {
            // Handle errors
            print("Error playing audio: \(error.localizedDescription)")
-       }
    }
+}
 ```
+
+#### Streaming audio responses
+
+```swift
+var parameters = AudioSpeechParameters(
+    model: .tts1,
+    input: "Streaming sample",
+    voice: .nova,
+    stream: true
+)
+
+let audioStream = try await service.createStreamingSpeech(parameters: parameters)
+
+for try await chunk in audioStream {
+    // Each chunk contains audio data you can append or play immediately.
+    handleAudioChunk(chunk.chunk, isLast: chunk.isLastChunk)
+}
+```
+
+The `AudioSpeechChunkObject` exposed in each iteration includes the raw `Data` for playback plus lightweight metadata (`isLastChunk`, `chunkIndex`) so callers can manage buffers or gracefully end playback when the stream finishes.
 
 ### Chat
 Parameters
@@ -1016,6 +1039,26 @@ let prompt = "Tell me a joke"
 let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .text(prompt))], model: .gpt4o)
 let chatCompletionObject = try await service.startStreamedChat(parameters: parameters)
 ```
+
+#### Streaming chat with reasoning overrides
+
+```swift
+var parameters = ChatCompletionParameters(
+    messages: [.init(role: .user, content: .text("Give me a concise summary of the Manhattan project"))],
+    model: .gpt4o,
+    reasoning: .init(effort: "medium", maxTokens: 256)
+)
+
+parameters.stream = true
+parameters.streamOptions = .init(includeUsage: true)
+
+let stream = try await service.startStreamedChat(parameters: parameters)
+for try await chunk in stream {
+    handleChunk(chunk)
+}
+```
+
+The new `reasoning` override lets you pass provider-specific reasoning hints (e.g., OpenRouter’s `effort`, `exclude`, or `max_tokens`). When you toggle `stream` and `streamOptions.includeUsage`, the service returns streamed chat deltas plus a final usage summary chunk.
 
 ### Function Calling
 
@@ -4274,8 +4317,12 @@ do {
             self.reasoningMessage += reasoning
         }
     }
-} catch APIError.responseUnsuccessful(let description, let statusCode) {
-    self.errorMessage = "Network error with status code: \(statusCode) and description: \(description)"
+} catch APIError.responseUnsuccessful(let description, let statusCode, let responseBody) {
+    var message = "Network error with status code: \(statusCode) and description: \(description)"
+    if let responseBody {
+        message += " — Response body: \(responseBody)"
+    }
+    self.errorMessage = message
 } catch {
     self.errorMessage = error.localizedDescription
 }
@@ -4328,4 +4375,3 @@ let stream = try await service.startStreamedChat(parameters: parameters)
 
 ## Collaboration
 Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️
-

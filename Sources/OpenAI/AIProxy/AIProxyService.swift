@@ -95,6 +95,22 @@ struct AIProxyService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  func createStreamingSpeech(
+    parameters: AudioSpeechParameters)
+    async throws -> AsyncThrowingStream<AudioSpeechChunkObject, Error>
+  {
+    var streamingParameters = parameters
+    streamingParameters.stream = true
+    let request = try await OpenAIAPI.audio(.speech).request(
+      aiproxyPartialKey: partialKey,
+      clientID: clientID,
+      organizationID: organizationID,
+      openAIEnvironment: openAIEnvironment,
+      method: .post,
+      params: streamingParameters)
+    return try await fetchAudioStream(debugEnabled: debugEnabled, with: request)
+  }
+
   // MARK: Chat
 
   func startChat(

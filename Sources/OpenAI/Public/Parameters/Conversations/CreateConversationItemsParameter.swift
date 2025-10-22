@@ -17,7 +17,7 @@ public struct CreateConversationItemsParameter: Codable {
     include: [ResponseInclude]? = nil)
   {
     self.items = items
-    self.include = include?.compactMap(\.rawValue)
+    self.include = include?.map(\.rawValue)
   }
 
   /// The items to add to the conversation. You may add up to 20 items at a time.

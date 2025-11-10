@@ -16,9 +16,9 @@ import AudioToolbox
 
 private let logger = Logger(subsystem: "com.swiftopenai", category: "Audio")
 
-enum AudioUtils {
+public enum AudioUtils {
 
-    nonisolated static var headphonesConnected: Bool {
+    nonisolated public static var headphonesConnected: Bool {
         #if os(macOS)
         return audioToolboxHeadphonesConnected()
         #else
@@ -90,7 +90,7 @@ enum AudioUtils {
     #endif
 
     /// Encodes an AVAudioPCMBuffer to base64 string for transmission to OpenAI
-    nonisolated static func base64EncodeAudioPCMBuffer(from buffer: AVAudioPCMBuffer) -> String? {
+    nonisolated public static func base64EncodeAudioPCMBuffer(from buffer: AVAudioPCMBuffer) -> String? {
         guard buffer.format.channelCount == 1 else {
             logger.error("This encoding routine assumes a single channel")
             return nil

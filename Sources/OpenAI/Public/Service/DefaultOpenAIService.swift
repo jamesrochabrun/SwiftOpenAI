@@ -78,6 +78,45 @@ struct DefaultOpenAIService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  func realtimeSession(
+    model: String,
+    configuration: OpenAIRealtimeSessionConfiguration)
+    async throws -> OpenAIRealtimeSession
+  {
+    // Build the WebSocket URL
+    let baseURL = openAIEnvironment.baseURL.replacingOccurrences(of: "https://", with: "wss://")
+    let version = openAIEnvironment.version ?? "v1"
+    let path = openAIEnvironment.proxyPath.map { "\($0)/\(version)" } ?? version
+    let urlString = "\(baseURL)/\(path)/realtime?model=\(model)"
+
+    guard let url = URL(string: urlString) else {
+      throw APIError.requestFailed(description: "Invalid realtime session URL")
+    }
+
+    // Create the WebSocket request with auth headers
+    var request = URLRequest(url: url)
+    request.setValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
+    request.setValue("realtime=v1", forHTTPHeaderField: "openai-beta")
+
+    if let organizationID = organizationID {
+      request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
+    }
+
+    // Add any extra headers
+    extraHeaders?.forEach { key, value in
+      request.setValue(value, forHTTPHeaderField: key)
+    }
+
+    // Create the WebSocket task
+    let webSocketTask = URLSession.shared.webSocketTask(with: request)
+
+    // Return the realtime session
+    return OpenAIRealtimeSession(
+      webSocketTask: webSocketTask,
+      sessionConfiguration: configuration
+    )
+  }
+
   // MARK: Chat
 
   func startChat(

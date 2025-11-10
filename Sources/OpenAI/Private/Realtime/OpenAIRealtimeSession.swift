@@ -21,14 +21,14 @@ nonisolated private let kWebsocketDisconnectedEarlyThreshold: TimeInterval = 3
     let sessionConfiguration: OpenAIRealtimeSessionConfiguration
     private let logger = Logger(subsystem: "com.swiftopenai", category: "Realtime")
 
-    init(
+    nonisolated init(
         webSocketTask: URLSessionWebSocketTask,
         sessionConfiguration: OpenAIRealtimeSessionConfiguration
     ) {
         self.webSocketTask = webSocketTask
         self.sessionConfiguration = sessionConfiguration
 
-        Task {
+        Task { @RealtimeActor in
             await self.sendMessage(OpenAIRealtimeSessionUpdate(session: self.sessionConfiguration))
         }
         self.webSocketTask.resume()
@@ -76,15 +76,15 @@ nonisolated private let kWebsocketDisconnectedEarlyThreshold: TimeInterval = 3
     }
 
     /// Tells the websocket task to receive a new message
-    private func receiveMessage() {
+    nonisolated private func receiveMessage() {
         self.webSocketTask.receive { result in
             switch result {
             case .failure(let error as NSError):
-                Task {
+                Task { @RealtimeActor in
                     await self.didReceiveWebSocketError(error)
                 }
             case .success(let message):
-                Task {
+                Task { @RealtimeActor in
                     await self.didReceiveWebSocketMessage(message)
                 }
             }

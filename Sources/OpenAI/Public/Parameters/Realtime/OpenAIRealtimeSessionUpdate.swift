@@ -11,26 +11,27 @@
 /// Docstrings from:
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/session/update
 nonisolated public struct OpenAIRealtimeSessionUpdate: Encodable {
-    /// Optional client-generated ID used to identify this event.
-    public let eventId: String?
+  public init(
+    eventId: String? = nil,
+    session: OpenAIRealtimeSessionConfiguration)
+  {
+    self.eventId = eventId
+    self.session = session
+  }
 
-    /// Session configuration to update
-    public let session: OpenAIRealtimeSessionConfiguration
+  /// Optional client-generated ID used to identify this event.
+  public let eventId: String?
 
-    /// The event type, must be "session.update".
-    public let type = "session.update"
+  /// Session configuration to update
+  public let session: OpenAIRealtimeSessionConfiguration
 
-    private enum CodingKeys: String, CodingKey {
-        case eventId = "event_id"
-        case session
-        case type
-    }
+  /// The event type, must be "session.update".
+  public let type = "session.update"
 
-    public init(
-        eventId: String? = nil,
-        session: OpenAIRealtimeSessionConfiguration
-    ) {
-        self.eventId = eventId
-        self.session = session
-    }
+  private enum CodingKeys: String, CodingKey {
+    case eventId = "event_id"
+    case session
+    case type
+  }
+
 }

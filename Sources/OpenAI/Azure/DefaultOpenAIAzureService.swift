@@ -50,7 +50,11 @@ public final class DefaultOpenAIAzureService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
-  public func realtimeSession(model _: String, configuration _: OpenAIRealtimeSessionConfiguration) async throws -> OpenAIRealtimeSession {
+  public func realtimeSession(
+    model _: String,
+    configuration _: OpenAIRealtimeSessionConfiguration)
+    async throws -> OpenAIRealtimeSession
+  {
     fatalError(
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }

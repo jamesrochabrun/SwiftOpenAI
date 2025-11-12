@@ -96,8 +96,8 @@ struct AIProxyService: OpenAIService {
   }
 
   func realtimeSession(
-    model: String,
-    configuration: OpenAIRealtimeSessionConfiguration)
+    model _: String,
+    configuration _: OpenAIRealtimeSessionConfiguration)
     async throws -> OpenAIRealtimeSession
   {
     fatalError("Realtime API is not yet supported for AIProxy. Please use DefaultOpenAIService instead.")

@@ -8,6 +8,7 @@
 
 import Foundation
 
-@globalActor public actor RealtimeActor {
-    public static let shared = RealtimeActor()
+@globalActor
+public actor RealtimeActor {
+  public static let shared = RealtimeActor()
 }

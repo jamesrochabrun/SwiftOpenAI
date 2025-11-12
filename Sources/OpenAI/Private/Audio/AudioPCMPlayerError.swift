@@ -9,12 +9,12 @@
 import Foundation
 
 nonisolated public enum AudioPCMPlayerError: LocalizedError, Sendable {
-    case couldNotConfigureAudioEngine(String)
+  case couldNotConfigureAudioEngine(String)
 
-    public var errorDescription: String? {
-        switch self {
-        case .couldNotConfigureAudioEngine(let message):
-            return message
-        }
+  public var errorDescription: String? {
+    switch self {
+    case .couldNotConfigureAudioEngine(let message):
+      message
     }
+  }
 }

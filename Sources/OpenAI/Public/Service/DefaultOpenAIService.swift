@@ -98,7 +98,7 @@ struct DefaultOpenAIService: OpenAIService {
     request.setValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
     request.setValue("realtime=v1", forHTTPHeaderField: "openai-beta")
 
-    if let organizationID = organizationID {
+    if let organizationID {
       request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
     }
 
@@ -113,8 +113,7 @@ struct DefaultOpenAIService: OpenAIService {
     // Return the realtime session
     return OpenAIRealtimeSession(
       webSocketTask: webSocketTask,
-      sessionConfiguration: configuration
-    )
+      sessionConfiguration: configuration)
   }
 
   // MARK: Chat

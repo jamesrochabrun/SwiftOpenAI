@@ -9,12 +9,12 @@
 import Foundation
 
 nonisolated public enum MicrophonePCMSampleVendorError: LocalizedError, Sendable {
-    case couldNotConfigureAudioUnit(String)
+  case couldNotConfigureAudioUnit(String)
 
-    public var errorDescription: String? {
-        switch self {
-        case .couldNotConfigureAudioUnit(let message):
-            return message
-        }
+  public var errorDescription: String? {
+    switch self {
+    case .couldNotConfigureAudioUnit(let message):
+      message
     }
+  }
 }

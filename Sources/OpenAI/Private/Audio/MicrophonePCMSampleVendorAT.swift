@@ -6,6 +6,7 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
+#if canImport(AVFoundation)
 #if os(macOS) || os(iOS)
 
 import AudioToolbox
@@ -281,4 +282,5 @@ class MicrophonePCMSampleVendorAT: MicrophonePCMSampleVendor {
     inNumberFrames)
   return noErr
 }
+#endif
 #endif

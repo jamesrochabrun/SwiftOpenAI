@@ -6,6 +6,7 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
+#if canImport(AVFoundation)
 @preconcurrency import AVFoundation
 import OSLog
 
@@ -132,3 +133,4 @@ nonisolated private func advancedPCMBuffer_noCopy(_ originalBuffer: AVAudioPCMBu
     pcmFormat: originalBuffer.format,
     bufferListNoCopy: audioBufferList)
 }
+#endif

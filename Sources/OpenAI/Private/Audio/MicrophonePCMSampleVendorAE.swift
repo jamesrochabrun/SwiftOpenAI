@@ -6,6 +6,7 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
+#if canImport(AVFoundation)
 @preconcurrency import AVFoundation
 import Foundation
 import OSLog
@@ -111,3 +112,4 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   private var continuation: AsyncStream<AVAudioPCMBuffer>.Continuation?
 
 }
+#endif

@@ -135,10 +135,12 @@ public protocol OpenAIService {
   /// - Throws: An error if the session creation fails
   ///
   /// For more information, refer to [OpenAI's Realtime API documentation](https://platform.openai.com/docs/api-reference/realtime).
+  #if canImport(AVFoundation)
   func realtimeSession(
     model: String,
     configuration: OpenAIRealtimeSessionConfiguration)
     async throws -> OpenAIRealtimeSession
+  #endif
 
   // MARK: Chat
 

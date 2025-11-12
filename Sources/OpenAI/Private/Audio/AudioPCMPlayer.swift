@@ -6,6 +6,7 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
+#if canImport(AVFoundation)
 import AVFoundation
 import Foundation
 import OSLog
@@ -125,3 +126,4 @@ final class AudioPCMPlayer {
   private let playerNode: AVAudioPlayerNode
 
 }
+#endif

@@ -78,6 +78,7 @@ struct DefaultOpenAIService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  #if canImport(AVFoundation)
   func realtimeSession(
     model: String,
     configuration: OpenAIRealtimeSessionConfiguration)
@@ -115,6 +116,7 @@ struct DefaultOpenAIService: OpenAIService {
       webSocketTask: webSocketTask,
       sessionConfiguration: configuration)
   }
+  #endif
 
   // MARK: Chat
 

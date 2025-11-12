@@ -67,6 +67,7 @@ struct LocalModelService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
+  #if canImport(AVFoundation)
   func realtimeSession(
     model _: String,
     configuration _: OpenAIRealtimeSessionConfiguration)
@@ -75,6 +76,7 @@ struct LocalModelService: OpenAIService {
     fatalError(
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
+  #endif
 
   func startChat(
     parameters: ChatCompletionParameters)

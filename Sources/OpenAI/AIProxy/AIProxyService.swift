@@ -95,6 +95,7 @@ struct AIProxyService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  #if canImport(AVFoundation)
   func realtimeSession(
     model _: String,
     configuration _: OpenAIRealtimeSessionConfiguration)
@@ -102,6 +103,7 @@ struct AIProxyService: OpenAIService {
   {
     fatalError("Realtime API is not yet supported for AIProxy. Please use DefaultOpenAIService instead.")
   }
+  #endif
 
   // MARK: Chat
 

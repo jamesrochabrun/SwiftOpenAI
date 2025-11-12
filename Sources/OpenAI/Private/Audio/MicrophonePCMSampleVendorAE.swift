@@ -49,11 +49,13 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
       try inputNode.setVoiceProcessingEnabled(true)
     }
 
-    logger.debug("""
+    
+    let debugText = """
       Using AudioEngine based PCM sample vendor.
       The input node's input format is: \(inputNode.inputFormat(forBus: 0))
       The input node's output format is: \(inputNode.outputFormat(forBus: 0))
-      """)
+      """
+    logger.debug("\(debugText)")
   }
 
   deinit {

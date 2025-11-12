@@ -195,12 +195,23 @@ class MicrophonePCMSampleVendorAT: MicrophonePCMSampleVendor {
   public func stop() {
     continuation?.finish()
     continuation = nil
+
+    // Capture the audio unit reference
     if let au = audioUnit {
-      AudioOutputUnitStop(au)
-      AudioUnitUninitialize(au)
-      AudioComponentInstanceDispose(au)
+      // Clear the property immediately on RealtimeActor
       audioUnit = nil
+
+      // Dispatch the actual AudioToolbox cleanup to a background queue
+      // to avoid priority inversion with the audio render thread.
+      // Note: AudioUnit is a C pointer type (non-Sendable), but the AudioToolbox
+      // cleanup APIs are thread-safe and we've already cleared our reference.
+      DispatchQueue.global(qos: .utility).async {
+        AudioOutputUnitStop(au)
+        AudioUnitUninitialize(au)
+        AudioComponentInstanceDispose(au)
+      }
     }
+
     microphonePCMSampleVendorCommon.audioConverter = nil
   }
 

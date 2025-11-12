@@ -9,7 +9,7 @@
 import Foundation
 
 /// This is sent from server to client when vad detects that speech started.
-nonisolated public struct OpenAIRealtimeInputAudioBufferSpeechStarted: Decodable, Sendable {
+public struct OpenAIRealtimeInputAudioBufferSpeechStarted: Decodable, Sendable {
   public let type = "input_audio_buffer.speech_started"
   public let audioStartMs: Int
 

@@ -6,7 +6,7 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
-nonisolated public enum OpenAIRealtimeMessage: Sendable {
+public enum OpenAIRealtimeMessage: Sendable {
   case error(String?)
   case sessionCreated // "session.created"
   case sessionUpdated // "session.updated"

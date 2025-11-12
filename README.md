@@ -26,7 +26,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 
 ## Description
 
-`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints, now with added support for Azure, AIProxy, and Assistant stream APIs.
+`SwiftOpenAI` is an open-source Swift package that streamlines interactions with **all** OpenAI's API endpoints, now with added support for Azure, AIProxy, Assistant stream APIs, and the new **Realtime API** for low-latency bidirectional voice conversations.
 
 ### OpenAI ENDPOINTS
 

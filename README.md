@@ -406,7 +406,7 @@ The [Realtime API](https://platform.openai.com/docs/api-reference/realtime) enab
 - Add `NSMicrophoneUsageDescription` to your Info.plist
 - On macOS: Enable sandbox entitlements for microphone access and outgoing network connections
 
-Session Configuration
+Parameters
 ```swift
 /// Configuration for creating a realtime session
 public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
@@ -468,7 +468,26 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
 }
 ```
 
-AudioController
+Response
+```swift
+/// Messages received from the realtime API
+public enum OpenAIRealtimeMessage: Sendable {
+   case error(String?)                    // Error occurred
+   case sessionCreated                    // Session successfully created
+   case sessionUpdated                    // Configuration updated
+   case responseCreated                   // Model started generating response
+   case responseAudioDelta(String)        // Audio chunk (base64 PCM16)
+   case inputAudioBufferSpeechStarted     // User started speaking (VAD detected)
+   case responseFunctionCallArgumentsDone(name: String, arguments: String, callId: String)
+   case responseTranscriptDelta(String)   // Partial AI transcript
+   case responseTranscriptDone(String)    // Complete AI transcript
+   case inputAudioBufferTranscript(String)           // User audio transcript
+   case inputAudioTranscriptionDelta(String)         // Partial user transcription
+   case inputAudioTranscriptionCompleted(String)     // Complete user transcription
+}
+```
+
+Supporting Types
 ```swift
 /// Manages microphone input and audio playback for realtime conversations.
 /// Audio played through AudioController does not interfere with mic input (the model won't hear itself).
@@ -509,25 +528,7 @@ public enum AudioUtils {
 }
 ```
 
-Message Types
-```swift
-/// Messages received from the realtime API
-public enum OpenAIRealtimeMessage: Sendable {
-   case error(String?)                    // Error occurred
-   case sessionCreated                    // Session successfully created
-   case sessionUpdated                    // Configuration updated
-   case responseCreated                   // Model started generating response
-   case responseAudioDelta(String)        // Audio chunk (base64 PCM16)
-   case inputAudioBufferSpeechStarted     // User started speaking (VAD detected)
-   case responseFunctionCallArgumentsDone(name: String, arguments: String, callId: String)
-   case responseTranscriptDelta(String)   // Partial AI transcript
-   case responseTranscriptDone(String)    // Complete AI transcript
-   case inputAudioTranscriptionCompleted(String) // Complete user transcription
-   // ... and more message types
-}
-```
-
-Basic Usage
+Usage
 ```swift
 // 1. Create session configuration
 let configuration = OpenAIRealtimeSessionConfiguration(

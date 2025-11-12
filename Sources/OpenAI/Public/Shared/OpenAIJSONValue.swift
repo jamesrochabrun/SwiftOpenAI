@@ -32,7 +32,7 @@ import Foundation
 ///     let encoder = JSONEncoder()
 ///     try encoder.encode(toolSchema) // Compiler is happy
 ///
-nonisolated public enum OpenAIJSONValue: Codable, Sendable {
+public enum OpenAIJSONValue: Codable, Sendable {
   case null(NSNull)
   case bool(Bool)
   case int(Int)

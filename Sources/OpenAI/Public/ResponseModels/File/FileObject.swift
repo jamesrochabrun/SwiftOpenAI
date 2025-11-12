@@ -9,26 +9,6 @@ import Foundation
 
 /// The [File object](https://platform.openai.com/docs/api-reference/files/object) represents a document that has been uploaded to OpenAI.
 public struct FileObject: Decodable {
-  public init(
-    id: String,
-    bytes: Int,
-    createdAt: Int,
-    filename: String,
-    object: String,
-    purpose: String,
-    status: Status,
-    statusDetails: String?)
-  {
-    self.id = id
-    self.bytes = bytes
-    self.createdAt = createdAt
-    self.filename = filename
-    self.object = object
-    self.purpose = purpose
-    self.status = status.rawValue
-    self.statusDetails = statusDetails
-  }
-
   public enum Status: String {
     case uploaded
     case processed

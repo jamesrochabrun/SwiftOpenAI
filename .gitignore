@@ -10,3 +10,4 @@ DerivedData/
 # Xcode Swift Package Manager
 **/xcshareddata/swiftpm/
 **/project.xcworkspace/xcshareddata/swiftpm/
+**/xcshareddata/IDEWorkspaceChecks.plist

@@ -8,7 +8,7 @@
 
 import Foundation
 
-nonisolated public enum MicrophonePCMSampleVendorError: LocalizedError, Sendable {
+public enum MicrophonePCMSampleVendorError: LocalizedError, Sendable {
   case couldNotConfigureAudioUnit(String)
 
   public var errorDescription: String? {

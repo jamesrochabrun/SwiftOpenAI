@@ -126,6 +126,22 @@ public protocol OpenAIService {
     parameters: AudioSpeechParameters)
     async throws -> AudioSpeechObject
 
+  /// Creates a realtime audio session for bidirectional streaming conversation with OpenAI.
+  ///
+  /// - Parameters:
+  ///   - model: The model to use for the realtime session (e.g., "gpt-4o-mini-realtime-preview-2024-12-17")
+  ///   - configuration: Session configuration including voice, turn detection, and other settings
+  /// - Returns: An `OpenAIRealtimeSession` for managing the WebSocket connection
+  /// - Throws: An error if the session creation fails
+  ///
+  /// For more information, refer to [OpenAI's Realtime API documentation](https://platform.openai.com/docs/api-reference/realtime).
+  #if canImport(AVFoundation)
+  func realtimeSession(
+    model: String,
+    configuration: OpenAIRealtimeSessionConfiguration)
+    async throws -> OpenAIRealtimeSession
+  #endif
+
   // MARK: Chat
 
   /// - Parameter parameters: Parameters for the chat completion request.

@@ -10,7 +10,7 @@
 
 /// Realtime session configuration
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/session/update#realtime-client-events/session/update-session
-nonisolated public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
+public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
 
   public init(
     inputAudioFormat: OpenAIRealtimeSessionConfiguration.AudioFormat? = nil,
@@ -40,7 +40,7 @@ nonisolated public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendabl
     self.voice = voice
   }
 
-  nonisolated public enum ToolChoice: Encodable, Sendable {
+  public enum ToolChoice: Encodable, Sendable {
 
     /// The model will not call any tool and instead generates a message.
     /// This is the default when no tools are present in the request body
@@ -163,7 +163,7 @@ nonisolated public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendabl
 // MARK: OpenAIRealtimeSessionConfiguration.InputAudioTranscription
 
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public struct InputAudioTranscription: Encodable, Sendable {
+  public struct InputAudioTranscription: Encodable, Sendable {
     /// The model to use for transcription (e.g., "whisper-1").
     public let model: String
     public init(model: String) {
@@ -175,7 +175,7 @@ extension OpenAIRealtimeSessionConfiguration {
 // MARK: OpenAIRealtimeSessionConfiguration.MaxResponseOutputTokens
 
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public enum MaxResponseOutputTokens: Encodable, Sendable {
+  public enum MaxResponseOutputTokens: Encodable, Sendable {
     case int(Int)
     case infinite
 
@@ -194,7 +194,7 @@ extension OpenAIRealtimeSessionConfiguration {
 // MARK: OpenAIRealtimeSessionConfiguration.Tool
 
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public struct Tool: Encodable, Sendable {
+  public struct Tool: Encodable, Sendable {
     /// The description of the function
     public let description: String
 
@@ -218,7 +218,7 @@ extension OpenAIRealtimeSessionConfiguration {
 // MARK: OpenAIRealtimeSessionConfiguration.TurnDetection
 
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public struct TurnDetection: Encodable, Sendable {
+  public struct TurnDetection: Encodable, Sendable {
 
     public init(
       type: DetectionType)
@@ -259,7 +259,7 @@ extension OpenAIRealtimeSessionConfiguration {
 
 /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public enum AudioFormat: String, Encodable, Sendable {
+  public enum AudioFormat: String, Encodable, Sendable {
     case pcm16
     case g711Ulaw = "g711_ulaw"
     case g711Alaw = "g711_alaw"
@@ -270,7 +270,7 @@ extension OpenAIRealtimeSessionConfiguration {
 
 /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
 extension OpenAIRealtimeSessionConfiguration {
-  nonisolated public enum Modality: String, Encodable, Sendable {
+  public enum Modality: String, Encodable, Sendable {
     case audio
     case text
   }
@@ -279,7 +279,7 @@ extension OpenAIRealtimeSessionConfiguration {
 // MARK: - OpenAIRealtimeSessionConfiguration.TurnDetection.DetectionType
 
 extension OpenAIRealtimeSessionConfiguration.TurnDetection {
-  nonisolated public enum DetectionType: Encodable, Sendable {
+  public enum DetectionType: Encodable, Sendable {
     /// - Parameters:
     ///   - prefixPaddingMs: Amount of audio to include before speech starts (in milliseconds).
     ///                      OpenAI's default is 300
@@ -297,7 +297,7 @@ extension OpenAIRealtimeSessionConfiguration.TurnDetection {
     ///                OpenAI's default is medium
     case semanticVAD(eagerness: Eagerness)
 
-    nonisolated public enum Eagerness: String, Encodable, Sendable {
+    public enum Eagerness: String, Encodable, Sendable {
       case low
       case medium
       case high

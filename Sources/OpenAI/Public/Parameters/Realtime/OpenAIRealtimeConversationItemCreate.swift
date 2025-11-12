@@ -11,7 +11,7 @@ import Foundation
 // MARK: - OpenAIRealtimeConversationItemCreate
 
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/conversation/item/create
-nonisolated public struct OpenAIRealtimeConversationItemCreate: Encodable {
+public struct OpenAIRealtimeConversationItemCreate: Encodable {
   public let type = "conversation.item.create"
   public let item: Item
 

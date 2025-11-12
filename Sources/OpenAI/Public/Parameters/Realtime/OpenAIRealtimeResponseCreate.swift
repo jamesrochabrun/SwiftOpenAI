@@ -11,7 +11,7 @@ import Foundation
 // MARK: - OpenAIRealtimeResponseCreate
 
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/response
-nonisolated public struct OpenAIRealtimeResponseCreate: Encodable {
+public struct OpenAIRealtimeResponseCreate: Encodable {
   public let type = "response.create"
   public let response: Response?
 
@@ -23,7 +23,7 @@ nonisolated public struct OpenAIRealtimeResponseCreate: Encodable {
 // MARK: OpenAIRealtimeResponseCreate.Response
 
 extension OpenAIRealtimeResponseCreate {
-  nonisolated public struct Response: Encodable {
+  public struct Response: Encodable {
     public let instructions: String?
     public let modalities: [String]?
     public let tools: [Tool]?
@@ -43,7 +43,7 @@ extension OpenAIRealtimeResponseCreate {
 // MARK: - OpenAIRealtimeResponseCreate.Response.Tool
 
 extension OpenAIRealtimeResponseCreate.Response {
-  nonisolated public struct Tool: Encodable {
+  public struct Tool: Encodable {
     public let name: String
     public let description: String
     public let parameters: [String: OpenAIJSONValue]

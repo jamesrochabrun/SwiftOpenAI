@@ -10,7 +10,7 @@
 ///
 /// Docstrings from:
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/session/update
-nonisolated public struct OpenAIRealtimeSessionUpdate: Encodable {
+public struct OpenAIRealtimeSessionUpdate: Encodable {
   public init(
     eventId: String? = nil,
     session: OpenAIRealtimeSessionConfiguration)

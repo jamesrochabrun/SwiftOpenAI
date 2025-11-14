@@ -30,7 +30,12 @@ extension OpenAIRealtimeConversationItemCreate {
 
     public init(role: String, text: String) {
       self.role = role
-      content = [.init(text: text)]
+      content = [.text(text)]
+    }
+
+    public init(role: String, content: [Content]) {
+      self.role = role
+      self.content = content
     }
   }
 }
@@ -38,12 +43,26 @@ extension OpenAIRealtimeConversationItemCreate {
 // MARK: - OpenAIRealtimeConversationItemCreate.Item.Content
 
 extension OpenAIRealtimeConversationItemCreate.Item {
-  public struct Content: Encodable {
-    public let type = "input_text"
-    public let text: String
+  public enum Content: Encodable {
+    case text(String)
+    case image(String) // base64 data URL: "data:image/{format};base64,{bytes}"
 
-    public init(text: String) {
-      self.text = text
+    public func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      switch self {
+      case .text(let text):
+        try container.encode("input_text", forKey: .type)
+        try container.encode(text, forKey: .text)
+      case .image(let imageUrl):
+        try container.encode("input_image", forKey: .type)
+        try container.encode(imageUrl, forKey: .imageUrl)
+      }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+      case type
+      case text
+      case imageUrl = "image_url"
     }
   }
 }

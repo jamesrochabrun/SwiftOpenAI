@@ -87,8 +87,24 @@ struct DefaultOpenAIService: OpenAIService {
     // Build the WebSocket URL
     let baseURL = openAIEnvironment.baseURL.replacingOccurrences(of: "https://", with: "wss://")
     let version = openAIEnvironment.version ?? "v1"
-    let path = openAIEnvironment.proxyPath.map { "\($0)/\(version)" } ?? version
-    let urlString = "\(baseURL)/\(path)/realtime?model=\(model)"
+
+    // Check if this is an Azure endpoint (contains "azure_openai" in base URL or proxy path)
+    let isAzureEndpoint = openAIEnvironment.baseURL.contains("azure_openai") ||
+      (openAIEnvironment.proxyPath?.contains("azure_openai") ?? false)
+
+    let path: String
+    let urlString: String
+
+    if isAzureEndpoint {
+      // Azure format: path/realtime?api-version=X&deployment=Y
+      // For Airbnb's Azure proxy, deployment is passed as a query parameter
+      path = openAIEnvironment.proxyPath ?? ""
+      urlString = "\(baseURL)/\(path)/realtime?api-version=\(version)&deployment=\(model)"
+    } else {
+      // OpenAI format: path/version/realtime?model=Y
+      path = openAIEnvironment.proxyPath.map { "\($0)/\(version)" } ?? version
+      urlString = "\(baseURL)/\(path)/realtime?model=\(model)"
+    }
 
     guard let url = URL(string: urlString) else {
       throw APIError.requestFailed(description: "Invalid realtime session URL")
@@ -97,7 +113,11 @@ struct DefaultOpenAIService: OpenAIService {
     // Create the WebSocket request with auth headers
     var request = URLRequest(url: url)
     request.setValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
-    request.setValue("realtime=v1", forHTTPHeaderField: "openai-beta")
+
+    // Only add openai-beta header for non-Azure endpoints
+    if !isAzureEndpoint {
+      request.setValue("realtime=v1", forHTTPHeaderField: "openai-beta")
+    }
 
     if let organizationID {
       request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")

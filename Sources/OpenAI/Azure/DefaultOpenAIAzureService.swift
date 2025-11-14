@@ -22,7 +22,7 @@ public final class DefaultOpenAIAzureService: OpenAIService {
     self.httpClient = httpClient
     self.decoder = decoder
     openAIEnvironment = OpenAIEnvironment(
-      baseURL: "https://\(azureConfiguration.resourceName)/openai.azure.com",
+      baseURL: "https://\(azureConfiguration.resourceName).openai.azure.com",
       proxyPath: nil,
       version: nil)
     apiKey = azureConfiguration.openAIAPIKey

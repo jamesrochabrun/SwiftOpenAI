@@ -53,6 +53,7 @@ extension OpenAIRealtimeConversationItemCreate.Item {
       case .text(let text):
         try container.encode("input_text", forKey: .type)
         try container.encode(text, forKey: .text)
+
       case .image(let imageUrl):
         try container.encode("input_image", forKey: .type)
         try container.encode(imageUrl, forKey: .imageUrl)

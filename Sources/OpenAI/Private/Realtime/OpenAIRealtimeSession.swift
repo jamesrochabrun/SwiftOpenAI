@@ -243,7 +243,9 @@ open class OpenAIRealtimeSession {
 
       logger.error("MCP Error: \(fullError)")
       logger.error("Error details: \(String(describing: errorDetails))")
-      logger.error("Top-level fields: message=\(String(describing: topLevelMessage)), code=\(String(describing: topLevelCode)), reason=\(String(describing: topLevelReason))")
+      logger
+        .error(
+          "Top-level fields: message=\(String(describing: topLevelMessage)), code=\(String(describing: topLevelCode)), reason=\(String(describing: topLevelReason))")
 
       continuation?.yield(.mcpListToolsFailed(fullError))
 

@@ -21,7 +21,7 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
     outputAudioFormat: OpenAIRealtimeSessionConfiguration.AudioFormat? = nil,
     speed: Float? = 1.0,
     temperature: Double? = nil,
-    tools: [OpenAIRealtimeSessionConfiguration.Tool]? = nil,
+    tools: [OpenAIRealtimeSessionConfiguration.RealtimeTool]? = nil,
     toolChoice: OpenAIRealtimeSessionConfiguration.ToolChoice? = nil,
     turnDetection: OpenAIRealtimeSessionConfiguration.TurnDetection? = nil,
     voice: String? = nil)
@@ -130,8 +130,8 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   /// Sampling temperature for the model.
   public let temperature: Double?
 
-  /// Tools (functions) available to the model.
-  public let tools: [Tool]?
+  /// Tools (functions and MCP servers) available to the model.
+  public let tools: [RealtimeTool]?
 
   /// How the model chooses tools. Options are "auto", "none", "required", or specify a function.
   public let toolChoice: ToolChoice?
@@ -191,10 +191,10 @@ extension OpenAIRealtimeSessionConfiguration {
   }
 }
 
-// MARK: OpenAIRealtimeSessionConfiguration.Tool
+// MARK: OpenAIRealtimeSessionConfiguration.FunctionTool
 
 extension OpenAIRealtimeSessionConfiguration {
-  public struct Tool: Encodable, Sendable {
+  public struct FunctionTool: Encodable, Sendable {
     /// The description of the function
     public let description: String
 
@@ -211,6 +211,25 @@ extension OpenAIRealtimeSessionConfiguration {
       self.name = name
       self.description = description
       self.parameters = parameters
+    }
+  }
+}
+
+// MARK: OpenAIRealtimeSessionConfiguration.RealtimeTool
+
+extension OpenAIRealtimeSessionConfiguration {
+  /// Represents a tool that can be either a function or an MCP server
+  public enum RealtimeTool: Encodable, Sendable {
+    case function(FunctionTool)
+    case mcp(Tool.MCPTool)
+
+    public func encode(to encoder: Encoder) throws {
+      switch self {
+      case .function(let tool):
+        try tool.encode(to: encoder)
+      case .mcp(let mcpTool):
+        try mcpTool.encode(to: encoder)
+      }
     }
   }
 }

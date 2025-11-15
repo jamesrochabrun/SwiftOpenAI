@@ -211,6 +211,44 @@ open class OpenAIRealtimeSession {
         continuation?.yield(.inputAudioTranscriptionCompleted(transcript))
       }
 
+    // MCP (Model Context Protocol) message types
+    case "mcp_list_tools.in_progress":
+      logger.debug("MCP: Tool discovery in progress")
+      continuation?.yield(.mcpListToolsInProgress)
+
+    case "mcp_list_tools.completed":
+      logger.debug("MCP: Tool discovery completed")
+      if let tools = json["tools"] as? [String: Any] {
+        continuation?.yield(.mcpListToolsCompleted(tools))
+      } else {
+        continuation?.yield(.mcpListToolsCompleted([:]))
+      }
+
+    case "mcp_list_tools.failed":
+      logger.error("MCP: Tool discovery failed")
+      logger.error("Full JSON payload: \(String(describing: json))")
+
+      let errorDetails = json["error"] as? [String: Any]
+      let errorMessage = errorDetails?["message"] as? String
+      let errorCode = errorDetails?["code"] as? String
+
+      // Also check for top-level error fields
+      let topLevelMessage = json["message"] as? String
+      let topLevelCode = json["code"] as? String
+      let topLevelReason = json["reason"] as? String
+
+      let finalMessage = errorMessage ?? topLevelMessage ?? topLevelReason ?? "Unknown MCP error"
+      let finalCode = errorCode ?? topLevelCode
+      let fullError = finalCode != nil ? "[\(finalCode!)] \(finalMessage)" : finalMessage
+
+      logger.error("MCP Error: \(fullError)")
+      logger.error("Error details: \(String(describing: errorDetails))")
+      logger
+        .error(
+          "Top-level fields: message=\(String(describing: topLevelMessage)), code=\(String(describing: topLevelCode)), reason=\(String(describing: topLevelReason))")
+
+      continuation?.yield(.mcpListToolsFailed(fullError))
+
     default:
       // Log unhandled message types for debugging
       logger.debug("Unhandled message type: \(messageType)")

@@ -21,4 +21,9 @@ public enum OpenAIRealtimeMessage: Sendable {
   case inputAudioBufferTranscript(String) // "input_audio_buffer.transcript"
   case inputAudioTranscriptionDelta(String) // "conversation.item.input_audio_transcription.delta"
   case inputAudioTranscriptionCompleted(String) // "conversation.item.input_audio_transcription.completed"
+
+  // MCP (Model Context Protocol) messages
+  case mcpListToolsInProgress // "mcp_list_tools.in_progress"
+  case mcpListToolsCompleted([String: Any]) // "mcp_list_tools.completed" with tools data
+  case mcpListToolsFailed(String?) // "mcp_list_tools.failed" with error details
 }

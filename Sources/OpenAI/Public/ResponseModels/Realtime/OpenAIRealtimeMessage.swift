@@ -27,6 +27,6 @@ public enum OpenAIRealtimeMessage: Sendable {
   case mcpListToolsCompleted([String: Any]) // "mcp_list_tools.completed" with tools data
   case mcpListToolsFailed(String?) // "mcp_list_tools.failed" with error details
 
-  // Response completion with potential errors
+  /// Response completion with potential errors
   case responseDone(status: String, statusDetails: [String: Any]?) // "response.done"
 }

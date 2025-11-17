@@ -251,17 +251,20 @@ open class OpenAIRealtimeSession {
 
     case "response.done":
       // Handle response completion (may contain errors like insufficient_quota)
-      if let response = json["response"] as? [String: Any],
-         let status = response["status"] as? String {
-
+      if
+        let response = json["response"] as? [String: Any],
+        let status = response["status"] as? String
+      {
         logger.debug("Response done with status: \(status)")
 
         // Pass the full response object for detailed error handling
         continuation?.yield(.responseDone(status: status, statusDetails: response))
 
         // Log errors for debugging
-        if let statusDetails = response["status_details"] as? [String: Any],
-           let error = statusDetails["error"] as? [String: Any] {
+        if
+          let statusDetails = response["status_details"] as? [String: Any],
+          let error = statusDetails["error"] as? [String: Any]
+        {
           let code = error["code"] as? String ?? "unknown"
           let message = error["message"] as? String ?? "Unknown error"
           logger.error("Response error: [\(code)] \(message)")

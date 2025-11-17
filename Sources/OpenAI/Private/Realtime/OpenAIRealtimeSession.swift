@@ -249,9 +249,34 @@ open class OpenAIRealtimeSession {
 
       continuation?.yield(.mcpListToolsFailed(fullError))
 
+    case "response.done":
+      // Handle response completion (may contain errors like insufficient_quota)
+      if
+        let response = json["response"] as? [String: Any],
+        let status = response["status"] as? String
+      {
+        logger.debug("Response done with status: \(status)")
+
+        // Pass the full response object for detailed error handling
+        continuation?.yield(.responseDone(status: status, statusDetails: response))
+
+        // Log errors for debugging
+        if
+          let statusDetails = response["status_details"] as? [String: Any],
+          let error = statusDetails["error"] as? [String: Any]
+        {
+          let code = error["code"] as? String ?? "unknown"
+          let message = error["message"] as? String ?? "Unknown error"
+          logger.error("Response error: [\(code)] \(message)")
+        }
+      } else {
+        logger.warning("Received response.done with unexpected format")
+      }
+
     default:
-      // Log unhandled message types for debugging
-      logger.debug("Unhandled message type: \(messageType)")
+      // Log unhandled message types with more detail for debugging
+      logger.warning("⚠️ Unhandled message type: \(messageType)")
+      logger.debug("Full JSON: \(String(describing: json))")
       break
     }
 

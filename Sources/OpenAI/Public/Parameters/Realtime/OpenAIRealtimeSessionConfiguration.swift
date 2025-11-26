@@ -73,19 +73,12 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
       case .specific(let functionName):
         var container = encoder.container(keyedBy: RootKey.self)
         try container.encode("function", forKey: .type)
-        var functionContainer = container.nestedContainer(
-          keyedBy: FunctionKey.self,
-          forKey: .function)
-        try functionContainer.encode(functionName, forKey: .name)
+        try container.encode(functionName, forKey: .name)
       }
     }
 
     private enum RootKey: CodingKey {
       case type
-      case function
-    }
-
-    private enum FunctionKey: CodingKey {
       case name
     }
 

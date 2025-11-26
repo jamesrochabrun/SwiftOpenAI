@@ -87,14 +87,28 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
     return AsyncStream<AVAudioPCMBuffer> { [weak self] continuation in
       guard let this = self else { return }
       this.continuation = continuation
-      this.inputNode.installTap(onBus: 0, bufferSize: targetBufferSize, format: desiredTapFormat) { [weak this] sampleBuffer, _ in
-        if let accumulatedBuffer = this?.microphonePCMSampleVendorCommon.resampleAndAccumulate(sampleBuffer) {
-          // If the buffer has accumulated to a sufficient level, give it back to the caller
-          Task { @RealtimeActor in
-            this?.continuation?.yield(accumulatedBuffer)
-          }
-        }
-      }
+      this.installTapNonIsolated(
+        inputNode: this.inputNode,
+        bufferSize: targetBufferSize,
+        format: desiredTapFormat
+      )
+    }
+  }
+
+  nonisolated private func installTapNonIsolated(
+    inputNode: AVAudioInputNode,
+    bufferSize: AVAudioFrameCount,
+    format: AVAudioFormat
+  ) {
+    inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) { [weak self] sampleBuffer, _ in
+      guard let self else { return }
+      Task { await self.processBuffer(sampleBuffer) }
+    }
+  }
+
+  private func processBuffer(_ buffer: AVAudioPCMBuffer) {
+    if let accumulatedBuffer = self.microphonePCMSampleVendorCommon.resampleAndAccumulate(buffer) {
+      self.continuation?.yield(accumulatedBuffer)
     }
   }
 

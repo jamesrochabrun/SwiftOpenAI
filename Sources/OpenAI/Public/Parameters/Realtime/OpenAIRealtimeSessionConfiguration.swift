@@ -11,7 +11,6 @@
 /// Realtime session configuration
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/session/update#realtime-client-events/session/update-session
 public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
-
   public init(
     inputAudioFormat: OpenAIRealtimeSessionConfiguration.AudioFormat? = nil,
     inputAudioTranscription: OpenAIRealtimeSessionConfiguration.InputAudioTranscription? = nil,
@@ -41,7 +40,6 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   }
 
   public enum ToolChoice: Encodable, Sendable {
-
     /// The model will not call any tool and instead generates a message.
     /// This is the default when no tools are present in the request body
     case none
@@ -73,22 +71,14 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
       case .specific(let functionName):
         var container = encoder.container(keyedBy: RootKey.self)
         try container.encode("function", forKey: .type)
-        var functionContainer = container.nestedContainer(
-          keyedBy: FunctionKey.self,
-          forKey: .function)
-        try functionContainer.encode(functionName, forKey: .name)
+        try container.encode(functionName, forKey: .name)
       }
     }
 
     private enum RootKey: CodingKey {
       case type
-      case function
-    }
-
-    private enum FunctionKey: CodingKey {
       case name
     }
-
   }
 
   /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
@@ -157,7 +147,6 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
     case turnDetection = "turn_detection"
     case voice
   }
-
 }
 
 // MARK: OpenAIRealtimeSessionConfiguration.InputAudioTranscription
@@ -238,7 +227,6 @@ extension OpenAIRealtimeSessionConfiguration {
 
 extension OpenAIRealtimeSessionConfiguration {
   public struct TurnDetection: Encodable, Sendable {
-
     public init(
       type: DetectionType)
     {
@@ -270,7 +258,6 @@ extension OpenAIRealtimeSessionConfiguration {
       case type
       case eagerness
     }
-
   }
 }
 
@@ -321,6 +308,5 @@ extension OpenAIRealtimeSessionConfiguration.TurnDetection {
       case medium
       case high
     }
-
   }
 }

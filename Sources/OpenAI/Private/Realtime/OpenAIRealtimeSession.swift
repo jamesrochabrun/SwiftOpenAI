@@ -273,6 +273,62 @@ open class OpenAIRealtimeSession {
         logger.warning("Received response.done with unexpected format")
       }
 
+    case "response.text.delta":
+      if let delta = json["delta"] as? String {
+        continuation?.yield(.responseTextDelta(delta))
+      }
+
+    case "response.text.done":
+      if let text = json["text"] as? String {
+        continuation?.yield(.responseTextDone(text))
+      }
+
+    case "response.output_item.added":
+      if
+        let item = json["item"] as? [String: Any],
+        let itemId = item["id"] as? String,
+        let type = item["type"] as? String
+      {
+        continuation?.yield(.responseOutputItemAdded(itemId: itemId, type: type))
+      }
+
+    case "response.output_item.done":
+      if
+        let item = json["item"] as? [String: Any],
+        let itemId = item["id"] as? String,
+        let type = item["type"] as? String
+      {
+        let content = item["content"] as? [[String: Any]]
+        continuation?.yield(.responseOutputItemDone(itemId: itemId, type: type, content: content))
+      }
+
+    case "response.content_part.added":
+      if
+        let part = json["part"] as? [String: Any],
+        let type = part["type"] as? String
+      {
+        continuation?.yield(.responseContentPartAdded(type: type))
+      }
+
+    case "response.content_part.done":
+      if
+        let part = json["part"] as? [String: Any],
+        let type = part["type"] as? String
+      {
+        let text = part["text"] as? String
+        continuation?.yield(.responseContentPartDone(type: type, text: text))
+      }
+
+    case "conversation.item.created":
+      if
+        let item = json["item"] as? [String: Any],
+        let itemId = item["id"] as? String,
+        let type = item["type"] as? String
+      {
+        let role = item["role"] as? String
+        continuation?.yield(.conversationItemCreated(itemId: itemId, type: type, role: role))
+      }
+
     default:
       // Log unhandled message types with more detail for debugging
       logger.warning("⚠️ Unhandled message type: \(messageType)")

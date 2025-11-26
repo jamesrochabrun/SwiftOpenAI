@@ -42,6 +42,6 @@ public enum OpenAIRealtimeMessage: Sendable {
   case responseContentPartAdded(type: String) // "response.content_part.added"
   case responseContentPartDone(type: String, text: String?) // "response.content_part.done"
 
-  // Conversation item
+  /// Conversation item
   case conversationItemCreated(itemId: String, type: String, role: String?) // "conversation.item.created"
 }

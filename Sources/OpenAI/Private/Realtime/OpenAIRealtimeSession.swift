@@ -284,7 +284,8 @@ open class OpenAIRealtimeSession {
       }
 
     case "response.output_item.added":
-      if let item = json["item"] as? [String: Any],
+      if
+        let item = json["item"] as? [String: Any],
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {
@@ -292,7 +293,8 @@ open class OpenAIRealtimeSession {
       }
 
     case "response.output_item.done":
-      if let item = json["item"] as? [String: Any],
+      if
+        let item = json["item"] as? [String: Any],
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {
@@ -301,14 +303,16 @@ open class OpenAIRealtimeSession {
       }
 
     case "response.content_part.added":
-      if let part = json["part"] as? [String: Any],
+      if
+        let part = json["part"] as? [String: Any],
         let type = part["type"] as? String
       {
         continuation?.yield(.responseContentPartAdded(type: type))
       }
 
     case "response.content_part.done":
-      if let part = json["part"] as? [String: Any],
+      if
+        let part = json["part"] as? [String: Any],
         let type = part["type"] as? String
       {
         let text = part["text"] as? String
@@ -316,7 +320,8 @@ open class OpenAIRealtimeSession {
       }
 
     case "conversation.item.created":
-      if let item = json["item"] as? [String: Any],
+      if
+        let item = json["item"] as? [String: Any],
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {

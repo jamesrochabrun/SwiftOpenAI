@@ -29,4 +29,19 @@ public enum OpenAIRealtimeMessage: Sendable {
 
   /// Response completion with potential errors
   case responseDone(status: String, statusDetails: [String: Any]?) // "response.done"
+
+  // Text streaming (for text-only responses)
+  case responseTextDelta(String) // "response.text.delta"
+  case responseTextDone(String) // "response.text.done"
+
+  // Output item lifecycle
+  case responseOutputItemAdded(itemId: String, type: String) // "response.output_item.added"
+  case responseOutputItemDone(itemId: String, type: String, content: [[String: Any]]?) // "response.output_item.done"
+
+  // Content part lifecycle
+  case responseContentPartAdded(type: String) // "response.content_part.added"
+  case responseContentPartDone(type: String, text: String?) // "response.content_part.done"
+
+  // Conversation item
+  case conversationItemCreated(itemId: String, type: String, role: String?) // "conversation.item.created"
 }

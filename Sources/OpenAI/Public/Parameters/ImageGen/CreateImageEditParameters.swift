@@ -149,6 +149,7 @@ public struct CreateImageEditParameters: Encodable {
   public enum ModelType: String {
     case dallE2 = "dall-e-2"
     case gptImage1 = "gpt-image-1"
+    case gptImage1Mini = "gpt-image-1-mini"
   }
 
   public enum Quality: String {

@@ -39,8 +39,9 @@ public struct ChatCompletionParameters: Encodable {
     temperature: Double? = nil,
     topProbability: Double? = nil,
     user: String? = nil,
-    streamOptions: StreamOptions? = nil)
-  {
+    streamOptions: StreamOptions? = nil,
+    thinking: Thinking? = nil
+  ) {
     self.messages = messages
     self.model = model.value
     self.store = store
@@ -70,6 +71,7 @@ public struct ChatCompletionParameters: Encodable {
     topP = topProbability
     self.user = user
     self.streamOptions = streamOptions
+    self.thinking = thinking
   }
 
   public struct Message: Encodable {
@@ -81,8 +83,8 @@ public struct ChatCompletionParameters: Encodable {
       audio: Audio? = nil,
       functionCall: FunctionCall? = nil,
       toolCalls: [ToolCall]? = nil,
-      toolCallID: String? = nil)
-    {
+      toolCallID: String? = nil
+    ) {
       self.role = role.rawValue
       self.content = content
       self.refusal = refusal
@@ -144,7 +146,7 @@ public struct ChatCompletionParameters: Encodable {
           }
         }
 
-        public static func ==(lhs: MessageContent, rhs: MessageContent) -> Bool {
+        public static func == (lhs: MessageContent, rhs: MessageContent) -> Bool {
           switch (lhs, rhs) {
           case (.text(let a), .text(let b)):
             a == b
@@ -205,10 +207,10 @@ public struct ChatCompletionParameters: Encodable {
     }
 
     public enum Role: String {
-      case system // content, role
-      case user // content, role
-      case assistant // content, role, tool_calls
-      case tool // content, role, tool_call_id
+      case system  // content, role
+      case user  // content, role
+      case assistant  // content, role, tool_calls
+      case tool  // content, role, tool_call_id
     }
 
     public struct Audio: Encodable {
@@ -289,8 +291,8 @@ public struct ChatCompletionParameters: Encodable {
 
     public init(
       type: String = "function",
-      function: ChatFunction)
-    {
+      function: ChatFunction
+    ) {
       self.type = type
       self.function = function
     }
@@ -301,8 +303,8 @@ public struct ChatCompletionParameters: Encodable {
       name: String,
       strict: Bool?,
       description: String?,
-      parameters: JSONSchema?)
-    {
+      parameters: JSONSchema?
+    ) {
       self.name = name
       self.strict = strict
       self.description = description
@@ -355,8 +357,8 @@ public struct ChatCompletionParameters: Encodable {
 
     public init(
       voice: String,
-      format: String)
-    {
+      format: String
+    ) {
       self.voice = voice
       self.format = format
     }
@@ -416,6 +418,20 @@ public struct ChatCompletionParameters: Encodable {
     case high
     case medium
     case low
+  }
+
+  public enum ThinkingType: String, Encodable {
+    case disabled
+    case enabled
+    case auto
+  }
+
+  public struct Thinking: Encodable {
+    public let type: ThinkingType
+
+    public init(type: ThinkingType) {
+      self.type = type
+    }
   }
 
   /// A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models)
@@ -531,6 +547,7 @@ public struct ChatCompletionParameters: Encodable {
     case temperature
     case topP = "top_p"
     case user
+    case thinking
   }
 
   /// If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#event_stream_format) as they become available, with the stream terminated by a data: [DONE] message. [Example Python code](https://cookbook.openai.com/examples/how_to_stream_completions ).
@@ -538,4 +555,6 @@ public struct ChatCompletionParameters: Encodable {
   var stream: Bool?
   /// Options for streaming response. Only set this when you set stream: true
   var streamOptions: StreamOptions?
+
+  var thinking: Thinking?
 }

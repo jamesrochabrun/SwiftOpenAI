@@ -155,8 +155,14 @@ extension OpenAIRealtimeSessionConfiguration {
   public struct InputAudioTranscription: Encodable, Sendable {
     /// The model to use for transcription (e.g., "whisper-1").
     public let model: String
-    public init(model: String) {
+
+    /// The language of the input audio in ISO-639-1 format (e.g., "en", "es", "ja").
+    /// Supplying the input language improves transcription accuracy and latency.
+    public let language: String?
+
+    public init(model: String, language: String? = nil) {
       self.model = model
+      self.language = language
     }
   }
 }

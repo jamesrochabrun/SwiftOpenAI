@@ -607,7 +607,7 @@ public struct FunctionCallArgumentsDoneEvent: Decodable {
   public let type: String
   public let itemId: String
   public let outputIndex: Int
-  public let name: String
+  public let name: String?
   public let arguments: String
   public let sequenceNumber: Int?
 

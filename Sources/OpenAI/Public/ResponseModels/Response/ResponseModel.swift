@@ -54,10 +54,11 @@ public struct ResponseModel: Decodable {
     }
   }
 
-  /// Instructions type - can be a string or an array of strings
+  /// Instructions type - can be a string, an array of strings, or an array of messages (for reusable prompts)
   public enum InstructionsType: Decodable {
     case string(String)
     case array([String])
+    case messages([InputMessage])
 
     public init(from decoder: Decoder) throws {
       let container = try decoder.singleValueContainer()
@@ -66,10 +67,12 @@ public struct ResponseModel: Decodable {
         self = .string(stringValue)
       } else if let arrayValue = try? container.decode([String].self) {
         self = .array(arrayValue)
+      } else if let messagesValue = try? container.decode([InputMessage].self) {
+        self = .messages(messagesValue)
       } else {
         throw DecodingError.dataCorruptedError(
           in: container,
-          debugDescription: "Expected String or [String] for instructions")
+          debugDescription: "Expected String, [String], or [InputMessage] for instructions")
       }
     }
   }

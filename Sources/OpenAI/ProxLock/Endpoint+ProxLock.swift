@@ -29,7 +29,7 @@ extension Endpoint {
     }
     var request = URLRequest(url: url)
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.addValue("%ProxLock_PARTIAL_KEY:\(apiKey.value)%", forHTTPHeaderField: apiKey.headerField)
+      request.addValue("Bearer %ProxLock_PARTIAL_KEY:\(apiKey.value)%", forHTTPHeaderField: "Authorization")
     if let organizationID {
       request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
     }
@@ -68,7 +68,7 @@ extension Endpoint {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         let boundary = UUID().uuidString
-        request.addValue("%ProxLock_PARTIAL_KEY:\(apiKey.value)%", forHTTPHeaderField: apiKey.headerField)
+        request.addValue("Bearer %ProxLock_PARTIAL_KEY:\(apiKey.value)%", forHTTPHeaderField: "Authorization")
         if let organizationID {
             request.addValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")
         }

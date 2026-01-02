@@ -1,8 +1,8 @@
 //
-//  DefaultOpenAIService.swift
+//  ProxLockService.swift
 //
 //
-//  Created by James Rochabrun on 10/17/23.
+//  Created by Morris Richman on 1/2/2026.
 //
 
 import Foundation
@@ -19,6 +19,9 @@ enum ProxLockServiceError: Error {
     }
 }
 
+/// The ProxLockOpenAIService acts nearly identically to ``DefaultOpenAIService``, but the requests it sends are processed to proxy through api.proxlock.dev at the last step. This makes maintenance a lot easier as everything is the same except for the request at its last step.
+///
+/// - Warning: ProxLock does not support WebSockets at this time. `realtimeSession` will throw an error if used.
 struct ProxLockOpenAIService: OpenAIService {
   init(
     partialKey: String,
@@ -34,7 +37,7 @@ struct ProxLockOpenAIService: OpenAIService {
   {
     self.httpClient = httpClient
     self.decoder = decoder
-      self.apiKey = .bearer(partialKey)
+      self.apiKey = .apiKey(partialKey)
       self.assosiationID = assosiationID
     self.organizationID = organizationID
     self.extraHeaders = extraHeaders

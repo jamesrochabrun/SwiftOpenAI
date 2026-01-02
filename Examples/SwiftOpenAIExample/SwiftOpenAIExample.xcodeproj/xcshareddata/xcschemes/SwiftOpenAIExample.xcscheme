@@ -82,6 +82,13 @@
             ReferencedContainer = "container:SwiftOpenAIExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "PROXLOCK_DEVICE_CHECK_BYPASS"
+            value = "21015698-3654-44A7-A5C6-28919004C781"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

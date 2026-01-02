@@ -9,14 +9,14 @@ import Foundation
 
 #if !os(Linux)
 enum ProxLockServiceError: Error {
-    case unsupportedFunction(String)
-    
-    var localizedDescription: String {
-        switch self {
-        case .unsupportedFunction(let function):
-            return "\(function) is not yet supported for ProxLock. Please use DefaultOpenAIService instead."
-        }
+  case unsupportedFunction(String)
+
+  var localizedDescription: String {
+    switch self {
+    case .unsupportedFunction(let function):
+      "\(function) is not yet supported for ProxLock. Please use DefaultOpenAIService instead."
     }
+  }
 }
 
 /// The ProxLockOpenAIService acts nearly identically to ``DefaultOpenAIService``, but the requests it sends are processed to proxy through api.proxlock.dev at the last step. This makes maintenance a lot easier as everything is the same except for the request at its last step.
@@ -37,8 +37,8 @@ struct ProxLockOpenAIService: OpenAIService {
   {
     self.httpClient = httpClient
     self.decoder = decoder
-      self.apiKey = .apiKey(partialKey)
-      self.assosiationID = assosiationID
+    apiKey = .apiKey(partialKey)
+    self.assosiationID = assosiationID
     self.organizationID = organizationID
     self.extraHeaders = extraHeaders
     openAIEnvironment = OpenAIEnvironment(
@@ -47,6 +47,9 @@ struct ProxLockOpenAIService: OpenAIService {
       version: overrideVersion ?? "v1")
     self.debugEnabled = debugEnabled
   }
+
+  /// The id for a this key in ProxLock.
+  public let assosiationID: String
 
   let httpClient: HTTPClient
   let decoder: JSONDecoder
@@ -58,7 +61,7 @@ struct ProxLockOpenAIService: OpenAIService {
     parameters: AudioTranscriptionParameters)
     async throws -> AudioObject
   {
-      let request = try await OpenAIAPI.audio(.transcriptions).multiPartRequest(
+    let request = try await OpenAIAPI.audio(.transcriptions).multiPartRequest(
       apiKey: apiKey,
       assosiationID: assosiationID,
       openAIEnvironment: openAIEnvironment,
@@ -100,11 +103,11 @@ struct ProxLockOpenAIService: OpenAIService {
 
   #if canImport(AVFoundation)
   func realtimeSession(
-    model: String,
-    configuration: OpenAIRealtimeSessionConfiguration)
+    model _: String,
+    configuration _: OpenAIRealtimeSessionConfiguration)
     async throws -> OpenAIRealtimeSession
   {
-      throw ProxLockServiceError.unsupportedFunction("Realtime Session")
+    throw ProxLockServiceError.unsupportedFunction("Realtime Session")
   }
   #endif
 
@@ -1681,8 +1684,6 @@ struct ProxLockOpenAIService: OpenAIService {
 
   /// The partial key for ProxLock
   private let apiKey: Authorization
-    /// The id for a this key in ProxLock.
-    public let assosiationID: String
   /// [organization](https://platform.openai.com/docs/api-reference/organization-optional)
   private let organizationID: String?
   /// Set this flag to TRUE if you need to print request events in DEBUG builds.

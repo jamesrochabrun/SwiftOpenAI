@@ -1,5 +1,3 @@
-// MARK: - OpenAIRealtimeSessionConfiguration
-
 //
 //  OpenAIRealtimeSessionConfiguration.swift
 //  SwiftOpenAI
@@ -7,6 +5,8 @@
 //  Created from AIProxySwift
 //  Original: https://github.com/lzell/AIProxySwift
 //
+
+// MARK: - OpenAIRealtimeSessionConfiguration
 
 /// Realtime session configuration
 /// https://platform.openai.com/docs/api-reference/realtime-client-events/session/update#realtime-client-events/session/update-session

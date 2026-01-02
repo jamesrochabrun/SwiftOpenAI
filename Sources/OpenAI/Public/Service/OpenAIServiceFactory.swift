@@ -120,13 +120,12 @@ public class OpenAIServiceFactory {
     debugEnabled: Bool = false)
     -> OpenAIService
   {
-      let client = httpClient ?? HTTPClientFactory.createDefault()
+    let client = httpClient ?? HTTPClientFactory.createDefault()
     return ProxLockOpenAIService(
-        partialKey: proxLockPartialKey,
-        assosiationID: proxLockAssociationID,
-        httpClient: client,
-        debugEnabled: debugEnabled
-    )
+      partialKey: proxLockPartialKey,
+      assosiationID: proxLockAssociationID,
+      httpClient: client,
+      debugEnabled: debugEnabled)
   }
   #endif
 

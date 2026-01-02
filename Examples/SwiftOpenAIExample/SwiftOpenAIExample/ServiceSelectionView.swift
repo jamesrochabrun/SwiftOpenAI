@@ -23,13 +23,14 @@ struct ServiceSelectionView: View {
               .fontWeight(.light)
             }
           }
-            
+
           NavigationLink(destination: ProxLockIntroView()) {
             VStack(alignment: .leading) {
               Text("ProxLock Service")
                 .padding(.bottom, 10)
               Group {
-                  Text("Use this service to test SwiftOpenAI functionality with requests proxied through ProxLock for key protection.")
+                Text(
+                  "Use this service to test SwiftOpenAI functionality with requests proxied through ProxLock for key protection.")
               }
               .font(.caption)
               .fontWeight(.light)

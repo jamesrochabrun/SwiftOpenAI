@@ -98,6 +98,38 @@ public class OpenAIServiceFactory {
   }
   #endif
 
+  #if !os(Linux)
+
+  // MARK: ProxLock
+
+  /// Creates and returns an instance of `OpenAIService` for use with proxlock.dev
+  /// Use this service to protect your OpenAI API key before going to production.
+  ///
+  /// - Parameters:
+  ///   - proxLockPartialKey: The partial key provided in your ProxLock project.
+  ///                        Please see the integration guide for acquiring your key, at https://docs.proxlock.dev
+  ///
+  ///   - proxLockAssociationID: The association ID of your key in your ProxLock project
+  ///   - debugEnabled: If `true` service prints event on DEBUG builds, default to `false`.
+  ///
+  /// - Returns: A conformer of OpenAIService that proxies all requests through api.aiproxy.pro
+  public static func service(
+    proxLockPartialKey: String,
+    proxLockAssociationID: String,
+    httpClient: HTTPClient? = nil,
+    debugEnabled: Bool = false)
+    -> OpenAIService
+  {
+      let client = httpClient ?? HTTPClientFactory.createDefault()
+    return ProxLockOpenAIService(
+        partialKey: proxLockPartialKey,
+        assosiationID: proxLockAssociationID,
+        httpClient: client,
+        debugEnabled: debugEnabled
+    )
+  }
+  #endif
+
   // MARK: Custom URL
 
   /// Creates and returns an instance of `OpenAIService`.

@@ -24,6 +24,19 @@ struct ServiceSelectionView: View {
             }
           }
 
+          NavigationLink(destination: ProxLockIntroView()) {
+            VStack(alignment: .leading) {
+              Text("ProxLock Service")
+                .padding(.bottom, 10)
+              Group {
+                Text(
+                  "Use this service to test SwiftOpenAI functionality with requests proxied through ProxLock for key protection.")
+              }
+              .font(.caption)
+              .fontWeight(.light)
+            }
+          }
+
           NavigationLink(destination: AIProxyIntroView()) {
             VStack(alignment: .leading) {
               Text("AIProxy Service")

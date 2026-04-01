@@ -40,11 +40,11 @@ public enum OpenAIRealtimeMessage: Sendable {
   // Content part lifecycle
   case responseContentPartAdded(type: String) // "response.content_part.added"
   case responseContentPartDone(type: String, text: String?) // "response.content_part.done"
-    
+
   // MCP response
   case responseMcpCallCompleted(eventId: String?, itemId: String?, outputIndex: Int?)
   case responseMcpCallInProgress
-    
+
   /// Conversation item
   case conversationItemCreated(itemId: String, type: String, role: String?) // "conversation.item.created"
 }

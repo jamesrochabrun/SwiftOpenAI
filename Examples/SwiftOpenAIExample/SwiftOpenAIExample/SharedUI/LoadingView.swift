@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct LoadingView: View {
-  @State private var dotsCount = 0
-
   let timer = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
   var body: some View {
@@ -28,4 +26,7 @@ struct LoadingView: View {
   func getDots() -> String {
     String(repeating: ".", count: dotsCount)
   }
+
+  @State private var dotsCount = 0
+
 }

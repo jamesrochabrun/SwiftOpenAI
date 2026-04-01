@@ -10,6 +10,7 @@ import SwiftUI
 struct AttachmentView: View {
   let fileName: String
   @Binding var actionTrigger: Bool
+
   let isLoading: Bool
 
   var body: some View {

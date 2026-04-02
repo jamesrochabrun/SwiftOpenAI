@@ -249,6 +249,15 @@ open class OpenAIRealtimeSession {
 
       continuation?.yield(.mcpListToolsFailed(fullError))
 
+    case "response.mcp_call.completed":
+      let eventId = json["event_id"] as? String
+      let itemId = json["item_id"] as? String
+      let outputIndex = json["output_index"] as? Int
+      continuation?.yield(.responseMcpCallCompleted(eventId: eventId, itemId: itemId, outputIndex: outputIndex))
+
+    case "response.mcp_call.in_progress":
+      continuation?.yield(.responseMcpCallInProgress)
+
     case "response.done":
       // Handle response completion (may contain errors like insufficient_quota)
       if

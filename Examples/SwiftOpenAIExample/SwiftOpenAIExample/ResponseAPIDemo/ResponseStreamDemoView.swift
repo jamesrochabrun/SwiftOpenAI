@@ -145,6 +145,7 @@ struct ResponseStreamDemoView: View {
 
 struct MessageBubbleView: View {
   let message: ResponseStreamProvider.ResponseMessage
+
   @Environment(\.colorScheme) var colorScheme
 
   var body: some View {

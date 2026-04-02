@@ -26,7 +26,6 @@ public enum OpenAIRealtimeMessage: Sendable {
   case mcpListToolsInProgress // "mcp_list_tools.in_progress"
   case mcpListToolsCompleted([String: Any]) // "mcp_list_tools.completed" with tools data
   case mcpListToolsFailed(String?) // "mcp_list_tools.failed" with error details
-
   /// Response completion with potential errors
   case responseDone(status: String, statusDetails: [String: Any]?) // "response.done"
 
@@ -41,6 +40,10 @@ public enum OpenAIRealtimeMessage: Sendable {
   // Content part lifecycle
   case responseContentPartAdded(type: String) // "response.content_part.added"
   case responseContentPartDone(type: String, text: String?) // "response.content_part.done"
+
+  // MCP response
+  case responseMcpCallCompleted(eventId: String?, itemId: String?, outputIndex: Int?)
+  case responseMcpCallInProgress
 
   /// Conversation item
   case conversationItemCreated(itemId: String, type: String, role: String?) // "conversation.item.created"

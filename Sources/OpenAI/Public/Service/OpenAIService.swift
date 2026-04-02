@@ -1419,9 +1419,11 @@ extension OpenAIService {
                   case .threadMessageDelta:
                     let decoded = try self.decoder.decode(MessageDeltaObject.self, from: data)
                     continuation.yield(.threadMessageDelta(decoded))
+
                   case .threadRunStepDelta:
                     let decoded = try self.decoder.decode(RunStepDeltaObject.self, from: data)
                     continuation.yield(.threadRunStepDelta(decoded))
+
                   case .threadRun:
                     // We expect a object of type "thread.run.SOME_STATE" in the data object
                     // However what we get is a `thread.run` object but we can check the status
@@ -1454,6 +1456,7 @@ extension OpenAIService {
                       }
                       #endif
                     }
+
                   default:
                     #if DEBUG
                     if debugEnabled {

@@ -123,6 +123,7 @@ SwiftOpenAI supports various providers that are OpenAI-compatible, including but
 - [Groq](#groq)
 - [xAI](#xai)
 - [OpenRouter](#openRouter)
+- [Tuning Engines](#tuning-engines)
 - [DeepSeek](#deepseek)
 - [AIProxy](#aiproxy)
 
@@ -4496,6 +4497,25 @@ let stream = service.startStreamedChat(parameters: parameters)
 
 For more inofrmation about the `OpenRouter` api visit its [documentation](https://openrouter.ai/docs/quick-start).
 
+## Tuning Engines
+
+[Tuning Engines](https://app.tuningengines.com/docs/inference-api) exposes an OpenAI-compatible endpoint for teams that want Swift clients or server-side Swift apps to use centralized model access, policy checks, audit logs, traces, and usage/cost reporting.
+
+```swift
+let apiKey = ProcessInfo.processInfo.environment["TUNING_ENGINES_API_KEY"] ?? ""
+
+let service = OpenAIServiceFactory.service(
+   apiKey: apiKey,
+   overrideBaseURL: "https://api.tuningengines.com",
+   overrideVersion: "v1")
+
+let prompt = "Summarize what changed in this release."
+let parameters = ChatCompletionParameters(
+   messages: [.init(role: .user, content: .text(prompt))],
+   model: .custom("gpt-4o"))
+let stream = service.startStreamedChat(parameters: parameters)
+```
+
 ## DeepSeek
 
 ![Image](https://github.com/user-attachments/assets/7733f011-691a-4de7-b715-c090e3647304)
@@ -4613,4 +4633,3 @@ let stream = try await service.startStreamedChat(parameters: parameters)
 
 ## Collaboration
 Open a PR for any proposed change pointing it to `main` branch. Unit tests are highly appreciated ❤️
-

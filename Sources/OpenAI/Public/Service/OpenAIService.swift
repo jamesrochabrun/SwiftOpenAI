@@ -126,10 +126,17 @@ public protocol OpenAIService {
     parameters: AudioSpeechParameters)
     async throws -> AudioSpeechObject
 
+  /// Creates an ephemeral client secret for a Realtime session.
+  ///
+  /// Use this when a browser or mobile WebRTC layer should connect without exposing a standard OpenAI API key.
+  func createRealtimeClientSecret(
+    parameters: OpenAIRealtimeClientSecretParameters)
+    async throws -> OpenAIRealtimeClientSecret
+
   /// Creates a realtime audio session for bidirectional streaming conversation with OpenAI.
   ///
   /// - Parameters:
-  ///   - model: The model to use for the realtime session (e.g., "gpt-4o-mini-realtime-preview-2024-12-17")
+  ///   - model: The model to use for the realtime session (e.g., "gpt-realtime-2.1")
   ///   - configuration: Session configuration including voice, turn detection, and other settings
   /// - Returns: An `OpenAIRealtimeSession` for managing the WebSocket connection
   /// - Throws: An error if the session creation fails

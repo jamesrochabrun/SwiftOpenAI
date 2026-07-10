@@ -96,7 +96,7 @@ struct OptionsListView: View {
         case .configureAssistant:
           AssistantConfigurationDemoView(service: openAIService)
         case .realTimeAPI:
-          Text("WIP")
+          RealtimeConversationDemoView(service: openAIService)
         case .responseStream:
           ResponseStreamDemoView(service: openAIService)
         }

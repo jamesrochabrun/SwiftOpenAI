@@ -773,7 +773,7 @@ public enum Tool: Codable {
   }
 
   /// Identifier for service connectors
-  public enum ConnectorId: String, Codable {
+  public enum ConnectorId: String, Codable, Sendable {
     /// Dropbox connector
     case dropbox = "connector_dropbox"
 
@@ -799,8 +799,14 @@ public enum Tool: Codable {
     case sharePoint = "connector_sharepoint"
   }
 
+  /// Allowed MCP invocation contexts.
+  public enum MCPAllowedCaller: String, Codable, Sendable {
+    case direct
+    case programmatic
+  }
+
   /// A filter object to specify which tools are allowed
-  public struct MCPToolFilter: Codable {
+  public struct MCPToolFilter: Codable, Sendable {
     public init(readOnly: Bool? = nil, toolNames: [String]? = nil) {
       self.readOnly = readOnly
       self.toolNames = toolNames
@@ -819,7 +825,7 @@ public enum Tool: Codable {
   }
 
   /// List of allowed tool names or a filter object
-  public enum AllowedTools: Codable {
+  public enum AllowedTools: Codable, Sendable {
     /// A string array of allowed tool names
     case toolNames([String])
 
@@ -853,7 +859,7 @@ public enum Tool: Codable {
   }
 
   /// Approval filters for MCP tools
-  public struct ApprovalFilters: Codable {
+  public struct ApprovalFilters: Codable, Sendable {
     public init(always: MCPToolFilter? = nil, never: MCPToolFilter? = nil) {
       self.always = always
       self.never = never
@@ -867,7 +873,7 @@ public enum Tool: Codable {
   }
 
   /// Specify which of the MCP server's tools require approval
-  public enum RequireApproval: Codable {
+  public enum RequireApproval: Codable, Sendable {
     /// All tools require approval
     case always
 
@@ -915,25 +921,31 @@ public enum Tool: Codable {
   }
 
   /// Give the model access to additional tools via remote Model Context Protocol (MCP) servers
-  public struct MCPTool: Codable {
+  public struct MCPTool: Codable, Sendable {
     public init(
       serverLabel: String,
+      allowedCallers: [MCPAllowedCaller]? = nil,
       allowedTools: AllowedTools? = nil,
       authorization: String? = nil,
       connectorId: ConnectorId? = nil,
+      deferLoading: Bool? = nil,
       headers: [String: String]? = nil,
       requireApproval: RequireApproval? = nil,
       serverDescription: String? = nil,
-      serverUrl: String? = nil)
+      serverUrl: String? = nil,
+      tunnelId: String? = nil)
     {
       self.serverLabel = serverLabel
+      self.allowedCallers = allowedCallers
       self.allowedTools = allowedTools
       self.authorization = authorization
       self.connectorId = connectorId
+      self.deferLoading = deferLoading
       self.headers = headers
       self.requireApproval = requireApproval
       self.serverDescription = serverDescription
       self.serverUrl = serverUrl
+      self.tunnelId = tunnelId
     }
 
     /// A label for this MCP server, used to identify it in tool calls
@@ -945,11 +957,17 @@ public enum Tool: Codable {
     /// List of allowed tool names or a filter object
     public let allowedTools: AllowedTools?
 
+    /// Allowed invocation contexts for this MCP server.
+    public let allowedCallers: [MCPAllowedCaller]?
+
     /// An OAuth access token that can be used with a remote MCP server, either with a custom MCP server URL or a service connector
     public let authorization: String?
 
     /// Identifier for service connectors. One of server_url or connector_id must be provided
     public let connectorId: ConnectorId?
+
+    /// Whether this MCP tool is deferred and discovered via tool search.
+    public let deferLoading: Bool?
 
     /// Optional HTTP headers to send to the MCP server. Use for authentication or other purposes
     public let headers: [String: String]?
@@ -964,16 +982,22 @@ public enum Tool: Codable {
     /// The URL for the MCP server. One of server_url or connector_id must be provided
     public let serverUrl: String?
 
+    /// The Secure MCP Tunnel ID to use instead of a direct server URL.
+    public let tunnelId: String?
+
     enum CodingKeys: String, CodingKey {
       case serverLabel = "server_label"
       case type
+      case allowedCallers = "allowed_callers"
       case allowedTools = "allowed_tools"
       case authorization
       case connectorId = "connector_id"
+      case deferLoading = "defer_loading"
       case headers
       case requireApproval = "require_approval"
       case serverDescription = "server_description"
       case serverUrl = "server_url"
+      case tunnelId = "tunnel_id"
     }
   }
 

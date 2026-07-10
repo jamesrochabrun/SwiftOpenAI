@@ -24,16 +24,19 @@ public struct OpenAIRealtimeConversationItemCreate: Encodable {
 
 extension OpenAIRealtimeConversationItemCreate {
   public struct Item: Encodable {
+    public let id: String?
     public let type = "message"
     public let role: String
     public let content: [Content]
 
-    public init(role: String, text: String) {
+    public init(id: String? = nil, role: String, text: String) {
+      self.id = id
       self.role = role
       content = [.text(text)]
     }
 
-    public init(role: String, content: [Content]) {
+    public init(id: String? = nil, role: String, content: [Content]) {
+      self.id = id
       self.role = role
       self.content = content
     }

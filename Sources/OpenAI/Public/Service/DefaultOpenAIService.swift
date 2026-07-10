@@ -78,6 +78,20 @@ struct DefaultOpenAIService: OpenAIService {
     return AudioSpeechObject(output: data)
   }
 
+  func createRealtimeClientSecret(
+    parameters: OpenAIRealtimeClientSecretParameters)
+    async throws -> OpenAIRealtimeClientSecret
+  {
+    let request = try OpenAIAPI.realtime(.clientSecrets).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: parameters,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: OpenAIRealtimeClientSecret.self, with: request)
+  }
+
   #if canImport(AVFoundation)
   func realtimeSession(
     model: String,
@@ -113,11 +127,6 @@ struct DefaultOpenAIService: OpenAIService {
     // Create the WebSocket request with auth headers
     var request = URLRequest(url: url)
     request.setValue(apiKey.value, forHTTPHeaderField: apiKey.headerField)
-
-    // Only add openai-beta header for non-Azure endpoints
-    if !isAzureEndpoint {
-      request.setValue("realtime=v1", forHTTPHeaderField: "openai-beta")
-    }
 
     if let organizationID {
       request.setValue(organizationID, forHTTPHeaderField: "OpenAI-Organization")

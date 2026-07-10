@@ -2,11 +2,12 @@
 //  RealtimeExample.swift
 //  SwiftOpenAI
 //
-//  Example implementation of OpenAI Realtime API for bidirectional voice conversation
+//  Example implementation of OpenAI Realtime API for bidirectional voice conversation and tool calling
 //
 
 import AVFoundation
-import OpenAI
+import Foundation
+import SwiftOpenAI
 import SwiftUI
 
 // MARK: - RealtimeExampleView
@@ -63,31 +64,56 @@ final class RealtimeManager {
     // Set to false if you want your user to speak first
     let aiSpeaksFirst = true
 
-    let audioController = try await AudioController(modes: [.playback, .record])
-    let micStream = try audioController.micStream()
-
     // Configure the realtime session
     let configuration = OpenAIRealtimeSessionConfiguration(
       inputAudioFormat: .pcm16,
-      inputAudioTranscription: .init(model: "whisper-1"),
+      inputAudioTranscription: .init(model: Model.gptRealtimeWhisper.value, delay: .low, language: "en"),
       instructions: "You are a helpful, witty, and friendly AI assistant. " +
         "Your voice and personality should be warm and engaging, " +
-        "with a lively and playful tone. Talk quickly.",
+        "with a lively and playful tone. Talk quickly. " +
+        "When asked about the current demo context, call get_demo_context before answering.",
       maxResponseOutputTokens: .int(4096),
-      modalities: [.audio, .text],
+      modalities: [.audio],
       outputAudioFormat: .pcm16,
-      temperature: 0.7,
+      parallelToolCalls: true,
+      reasoning: .init(effort: .low),
+      tools: [
+        .function(.init(
+          name: "get_demo_context",
+          description: "Get current context from this SwiftOpenAI Realtime example.",
+          parameters: [
+            "type": "object",
+            "properties": [
+              "topic": [
+                "type": "string",
+                "description": "The context to retrieve.",
+                "enum": ["time", "session"],
+              ],
+            ],
+            "required": ["topic"],
+            "additionalProperties": false,
+          ])),
+      ],
+      toolChoice: .auto,
       turnDetection: .init(
-        type: .semanticVAD(eagerness: .medium)),
-      voice: "shimmer")
+        type: .semanticVAD(eagerness: .auto, createResponse: true, interruptResponse: true)),
+      voice: "marin")
 
     // Create the realtime session
     let realtimeSession = try await service.realtimeSession(
-      model: "gpt-4o-mini-realtime-preview-2024-12-17",
+      model: Model.gptRealtime21.value,
       configuration: configuration)
+
+    // Install the input tap only after the buffered session exists. `micStream()` starts the
+    // fully configured capture/playback graph before either event task begins consuming data.
+    let audioController = try await AudioController(modes: [.playback, .record])
+    let micStream = try audioController.micStream()
 
     // Send audio from the microphone to OpenAI once OpenAI is ready for it
     var isOpenAIReadyForAudio = false
+    var currentResponseID: String?
+    var pendingToolResponseID: String?
+    var currentAudioItemID: String?
     Task {
       for await buffer in micStream {
         if
@@ -109,31 +135,62 @@ final class RealtimeManager {
           realtimeSession.disconnect()
 
         case .sessionUpdated:
+          isOpenAIReadyForAudio = true
           if aiSpeaksFirst {
             await realtimeSession.sendMessage(OpenAIRealtimeResponseCreate())
-          } else {
-            isOpenAIReadyForAudio = true
           }
 
-        case .responseAudioDelta(let base64String):
-          audioController.playPCM16Audio(base64String: base64String)
+        case .responseAudioDelta(let itemID, _, let base64String):
+          currentAudioItemID = itemID
+          audioController.playPCM16Audio(base64String: base64String, itemID: itemID)
 
         case .inputAudioBufferSpeechStarted:
-          // User started speaking, interrupt AI playback
-          audioController.interruptPlayback()
+          if
+            let assistantItemID = currentAudioItemID,
+            let audioEndMS = audioController.interruptPlayback()
+          {
+            await realtimeSession.sendMessage(OpenAIRealtimeConversationItemTruncate(
+              itemID: assistantItemID,
+              audioEndMS: audioEndMS))
+          }
+          currentAudioItemID = nil
 
-        case .responseCreated:
-          isOpenAIReadyForAudio = true
+        case .responseCreated(let responseID):
+          currentResponseID = responseID
 
-        case .responseTranscriptDone(let transcript):
+        case .responseDone(let responseID, let status, _):
+          if Self.responseIDsMatch(currentResponseID, responseID) {
+            currentResponseID = nil
+          }
+          if
+            pendingToolResponseID != nil,
+            Self.responseIDsMatch(pendingToolResponseID, responseID)
+          {
+            pendingToolResponseID = nil
+            if status == "completed" {
+              await realtimeSession.sendMessage(OpenAIRealtimeResponseCreate())
+            }
+          }
+
+        case .responseTranscriptDone(_, _, let transcript):
           print("AI said: \(transcript)")
 
-        case .inputAudioTranscriptionCompleted(let transcript):
+        case .inputAudioTranscriptionCompleted(_, let transcript):
           print("User said: \(transcript)")
 
-        case .responseFunctionCallArgumentsDone(let name, let arguments, let callId):
+        case .responseFunctionCallArgumentsDone(
+          let name,
+          let arguments,
+          let callId,
+          _,
+          let responseID):
           print("Function call: \(name) with args: \(arguments)")
-                    // Handle function calls here
+          let output = Self.handleFunctionCall(name: name, arguments: arguments)
+          await realtimeSession.sendMessage(
+            OpenAIRealtimeFunctionCallOutput(callID: callId, output: output))
+          if currentResponseID != nil {
+            pendingToolResponseID = responseID ?? currentResponseID
+          }
 
         default:
           break
@@ -155,6 +212,24 @@ final class RealtimeManager {
   private var realtimeSession: OpenAIRealtimeSession?
   private var audioController: AudioController?
 
+  private static func responseIDsMatch(_ lhs: String?, _ rhs: String?) -> Bool {
+    guard let lhs, let rhs else { return true }
+    return lhs == rhs
+  }
+
+  private static func handleFunctionCall(name: String, arguments _: String) -> String {
+    guard name == "get_demo_context" else {
+      return #"{"error":"Unknown function"}"#
+    }
+
+    let payload: [String: String] = [
+      "model": Model.gptRealtime21.value,
+      "current_time": ISO8601DateFormatter().string(from: Date()),
+      "session_state": "connected",
+    ]
+    let data = try? JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys])
+    return data.flatMap { String(data: $0, encoding: .utf8) } ?? #"{"error":"Encoding failed"}"#
+  }
 }
 
 // MARK: - Basic Usage Example
@@ -177,14 +252,14 @@ final class RealtimeManager {
 //   let config = OpenAIRealtimeSessionConfiguration(
 //       inputAudioFormat: .pcm16,
 //       instructions: "You are a helpful assistant",
-//       modalities: [.audio, .text],
+//       modalities: [.audio],
 //       outputAudioFormat: .pcm16,
-//       voice: "shimmer"
+//       voice: "marin"
 //   )
 //
 // 5. Create the realtime session:
 //   let session = try await service.realtimeSession(
-//       model: "gpt-4o-mini-realtime-preview-2024-12-17",
+//       model: Model.gptRealtime21.value,
 //       configuration: config
 //   )
 //
@@ -203,7 +278,7 @@ final class RealtimeManager {
 // 8. Listen for and play responses:
 //   for await message in session.receiver {
 //       switch message {
-//       case .responseAudioDelta(let base64Audio):
+//       case .responseAudioDelta(_, _, let base64Audio):
 //           audioController.playPCM16Audio(base64String: base64Audio)
 //       default:
 //           break

@@ -14,10 +14,14 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   public init(
     inputAudioFormat: OpenAIRealtimeSessionConfiguration.AudioFormat? = nil,
     inputAudioTranscription: OpenAIRealtimeSessionConfiguration.InputAudioTranscription? = nil,
+    include: [String]? = nil,
     instructions: String? = nil,
     maxResponseOutputTokens: OpenAIRealtimeSessionConfiguration.MaxResponseOutputTokens? = nil,
     modalities: [OpenAIRealtimeSessionConfiguration.Modality]? = nil,
+    model: String? = nil,
     outputAudioFormat: OpenAIRealtimeSessionConfiguration.AudioFormat? = nil,
+    parallelToolCalls: Bool? = nil,
+    reasoning: OpenAIRealtimeSessionConfiguration.ReasoningConfiguration? = nil,
     speed: Float? = 1.0,
     temperature: Double? = nil,
     tools: [OpenAIRealtimeSessionConfiguration.RealtimeTool]? = nil,
@@ -27,10 +31,14 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   {
     self.inputAudioFormat = inputAudioFormat
     self.inputAudioTranscription = inputAudioTranscription
+    self.include = include
     self.instructions = instructions
     self.maxResponseOutputTokens = maxResponseOutputTokens
     self.modalities = modalities
+    self.model = model
     self.outputAudioFormat = outputAudioFormat
+    self.parallelToolCalls = parallelToolCalls
+    self.reasoning = reasoning
     self.speed = speed
     self.temperature = temperature
     self.tools = tools
@@ -81,11 +89,14 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
     }
   }
 
-  /// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+  /// The format of input audio. Options are `.pcm16`, `.g711Ulaw`, or `.g711Alaw`.
   public let inputAudioFormat: AudioFormat?
 
   /// Configuration for input audio transcription. Set to nil to turn off.
   public let inputAudioTranscription: InputAudioTranscription?
+
+  /// Additional fields to include in server outputs.
+  public let include: [String]?
 
   /// The default system instructions prepended to model calls.
   ///
@@ -106,18 +117,30 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   /// the maximum available tokens for a given model. Defaults to "inf".
   public let maxResponseOutputTokens: MaxResponseOutputTokens?
 
-  /// The set of modalities the model can respond with. To disable audio, set this to ["text"].
-  /// Possible values are `audio` and `text`
+  /// The set of output modalities the model can respond with. To disable audio, set this to `[.text]`.
+  /// Realtime GA accepts one output mode per response: `.audio` or `.text`.
   public let modalities: [Modality]?
+
+  /// The Realtime model used for client-secret session creation.
+  /// WebSocket sessions set the model on the URL, so this can be nil for `realtimeSession`.
+  public let model: String?
 
   /// The format of output audio.
   public let outputAudioFormat: AudioFormat?
+
+  /// Whether the model may call multiple tools in parallel.
+  public let parallelToolCalls: Bool?
+
+  /// Reasoning configuration for Realtime reasoning models such as `gpt-realtime-2.1`.
+  public let reasoning: ReasoningConfiguration?
 
   /// The speed of the generated audio. Select a value from 0.25 to 4.0.
   /// Default to `1.0`
   public let speed: Float?
 
-  /// Sampling temperature for the model.
+  /// Sampling temperature for the beta Realtime API.
+  ///
+  /// The GA Realtime API no longer documents this field, so SwiftOpenAI does not encode it.
   public let temperature: Double?
 
   /// Tools (functions and MCP servers) available to the model.
@@ -133,19 +156,45 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
   /// changed once the model has responded with audio at least once.
   public let voice: String?
 
+  public func encode(to encoder: any Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+
+    try container.encode("realtime", forKey: .type)
+    try container.encodeIfPresent(include, forKey: .include)
+    try container.encodeIfPresent(instructions, forKey: .instructions)
+    try container.encodeIfPresent(maxResponseOutputTokens, forKey: .maxOutputTokens)
+    try container.encodeIfPresent(model, forKey: .model)
+    try container.encodeIfPresent(modalities, forKey: .outputModalities)
+    try container.encodeIfPresent(parallelToolCalls, forKey: .parallelToolCalls)
+    try container.encodeIfPresent(reasoning, forKey: .reasoning)
+    try container.encodeIfPresent(tools, forKey: .tools)
+    try container.encodeIfPresent(toolChoice, forKey: .toolChoice)
+
+    let input = AudioInput(
+      format: inputAudioFormat,
+      transcription: inputAudioTranscription,
+      turnDetection: turnDetection)
+    let output = AudioOutput(
+      format: outputAudioFormat,
+      speed: speed,
+      voice: voice)
+    if input.hasValues || output.hasValues {
+      try container.encode(Audio(input: input.hasValues ? input : nil, output: output.hasValues ? output : nil), forKey: .audio)
+    }
+  }
+
   private enum CodingKeys: String, CodingKey {
-    case inputAudioFormat = "input_audio_format"
-    case inputAudioTranscription = "input_audio_transcription"
+    case audio
+    case include
     case instructions
-    case maxResponseOutputTokens = "max_response_output_tokens"
-    case modalities
-    case outputAudioFormat = "output_audio_format"
-    case speed
-    case temperature
+    case maxOutputTokens = "max_output_tokens"
+    case model
+    case outputModalities = "output_modalities"
+    case parallelToolCalls = "parallel_tool_calls"
+    case reasoning
     case tools
     case toolChoice = "tool_choice"
-    case turnDetection = "turn_detection"
-    case voice
+    case type
   }
 }
 
@@ -153,17 +202,39 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
 
 extension OpenAIRealtimeSessionConfiguration {
   public struct InputAudioTranscription: Encodable, Sendable {
+    public init(
+      model: String,
+      delay: Delay? = nil,
+      language: String? = nil,
+      prompt: String? = nil)
+    {
+      self.model = model
+      self.delay = delay
+      self.language = language
+      self.prompt = prompt
+    }
+
+    public enum Delay: String, Encodable, Sendable {
+      case minimal
+      case low
+      case medium
+      case high
+      case xhigh
+    }
+
     /// The model to use for transcription (e.g., "whisper-1").
     public let model: String
+
+    /// Controls how long the model waits before emitting transcription text.
+    public let delay: Delay?
 
     /// The language of the input audio in ISO-639-1 format (e.g., "en", "es", "ja").
     /// Supplying the input language improves transcription accuracy and latency.
     public let language: String?
 
-    public init(model: String, language: String? = nil) {
-      self.model = model
-      self.language = language
-    }
+    /// Optional text to guide the transcription model.
+    public let prompt: String?
+
   }
 }
 
@@ -182,6 +253,27 @@ extension OpenAIRealtimeSessionConfiguration {
       case .infinite:
         try container.encode("inf")
       }
+    }
+  }
+}
+
+// MARK: OpenAIRealtimeSessionConfiguration.ReasoningConfiguration
+
+extension OpenAIRealtimeSessionConfiguration {
+  public struct ReasoningConfiguration: Encodable, Sendable {
+    public init(effort: Effort? = nil) {
+      self.effort = effort
+    }
+
+    /// Constrains reasoning effort for reasoning-capable Realtime models.
+    public let effort: Effort?
+
+    public enum Effort: String, Encodable, Sendable {
+      case minimal
+      case low
+      case medium
+      case high
+      case xhigh
     }
   }
 }
@@ -243,15 +335,26 @@ extension OpenAIRealtimeSessionConfiguration {
       var container = encoder.container(keyedBy: CodingKeys.self)
 
       switch type {
-      case .serverVAD(let prefixPaddingMs, let silenceDurationMs, let threshold):
+      case .serverVAD(
+        let prefixPaddingMs,
+        let silenceDurationMs,
+        let threshold,
+        let createResponse,
+        let idleTimeoutMs,
+        let interruptResponse):
         try container.encode("server_vad", forKey: .type)
         try container.encode(prefixPaddingMs, forKey: .prefixPaddingMs)
         try container.encode(silenceDurationMs, forKey: .silenceDurationMs)
         try container.encode(threshold, forKey: .threshold)
+        try container.encodeIfPresent(createResponse, forKey: .createResponse)
+        try container.encodeIfPresent(idleTimeoutMs, forKey: .idleTimeoutMs)
+        try container.encodeIfPresent(interruptResponse, forKey: .interruptResponse)
 
-      case .semanticVAD(let eagerness):
+      case .semanticVAD(let eagerness, let createResponse, let interruptResponse):
         try container.encode("semantic_vad", forKey: .type)
-        try container.encode(String(describing: eagerness), forKey: .eagerness)
+        try container.encode(eagerness.rawValue, forKey: .eagerness)
+        try container.encodeIfPresent(createResponse, forKey: .createResponse)
+        try container.encodeIfPresent(interruptResponse, forKey: .interruptResponse)
       }
     }
 
@@ -263,24 +366,82 @@ extension OpenAIRealtimeSessionConfiguration {
       case threshold
       case type
       case eagerness
+      case createResponse = "create_response"
+      case idleTimeoutMs = "idle_timeout_ms"
+      case interruptResponse = "interrupt_response"
+    }
+  }
+}
+
+// MARK: OpenAIRealtimeSessionConfiguration.Audio
+
+extension OpenAIRealtimeSessionConfiguration {
+  private struct Audio: Encodable {
+    let input: AudioInput?
+    let output: AudioOutput?
+  }
+
+  private struct AudioInput: Encodable {
+    let format: AudioFormat?
+    let transcription: InputAudioTranscription?
+    let turnDetection: TurnDetection?
+
+    var hasValues: Bool {
+      format != nil || transcription != nil || turnDetection != nil
+    }
+
+    private enum CodingKeys: String, CodingKey {
+      case format
+      case transcription
+      case turnDetection = "turn_detection"
+    }
+  }
+
+  private struct AudioOutput: Encodable {
+    let format: AudioFormat?
+    let speed: Float?
+    let voice: String?
+
+    var hasValues: Bool {
+      format != nil || speed != nil || voice != nil
     }
   }
 }
 
 // MARK: OpenAIRealtimeSessionConfiguration.AudioFormat
 
-/// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+/// The format of input audio. Options are `.pcm16`, `.g711Ulaw`, or `.g711Alaw`.
 extension OpenAIRealtimeSessionConfiguration {
   public enum AudioFormat: String, Encodable, Sendable {
     case pcm16
     case g711Ulaw = "g711_ulaw"
     case g711Alaw = "g711_alaw"
+
+    public func encode(to encoder: Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      switch self {
+      case .pcm16:
+        try container.encode("audio/pcm", forKey: .type)
+        try container.encode(24_000, forKey: .rate)
+
+      case .g711Ulaw:
+        try container.encode("audio/pcmu", forKey: .type)
+
+      case .g711Alaw:
+        try container.encode("audio/pcma", forKey: .type)
+      }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+      case rate
+      case type
+    }
   }
 }
 
 // MARK: OpenAIRealtimeSessionConfiguration.Modality
 
-/// The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+/// Realtime output modalities.
 extension OpenAIRealtimeSessionConfiguration {
   public enum Modality: String, Encodable, Sendable {
     case audio
@@ -301,18 +462,28 @@ extension OpenAIRealtimeSessionConfiguration.TurnDetection {
     ///   - threshold: Activation threshold for VAD (0.0 to 1.0). A higher threshold will require louder audio to
     ///                activate the model, and thus might perform better in noisy environments.
     ///                OpenAI's default is 0.5
-    case serverVAD(prefixPaddingMs: Int, silenceDurationMs: Int, threshold: Double)
+    case serverVAD(
+      prefixPaddingMs: Int,
+      silenceDurationMs: Int,
+      threshold: Double,
+      createResponse: Bool? = nil,
+      idleTimeoutMs: Int? = nil,
+      interruptResponse: Bool? = nil)
 
     /// - Parameters:
     ///   - eagerness: The eagerness of the model to respond. `low` will wait longer for the user to
     ///                continue speaking, `high` will respond more quickly.
     ///                OpenAI's default is medium
-    case semanticVAD(eagerness: Eagerness)
+    case semanticVAD(
+      eagerness: Eagerness,
+      createResponse: Bool? = nil,
+      interruptResponse: Bool? = nil)
 
     public enum Eagerness: String, Encodable, Sendable {
       case low
       case medium
       case high
+      case auto
     }
   }
 }

@@ -41,6 +41,45 @@ public enum OpenAIJSONValue: Codable, Sendable {
   case array([OpenAIJSONValue])
   case object([String: OpenAIJSONValue])
 
+  /// Creates a sendable JSON value from an object produced by `JSONSerialization`.
+  public init?(jsonObject: Any) {
+    if let number = jsonObject as? NSNumber {
+      switch String(cString: number.objCType) {
+      case "c":
+        self = .bool(number.boolValue)
+      case "f", "d":
+        self = .double(number.doubleValue)
+      default:
+        self = .int(number.intValue)
+      }
+      return
+    }
+
+    switch jsonObject {
+    case let value as Bool:
+      self = .bool(value)
+
+    case is NSNull:
+      self = .null(NSNull())
+
+    case let value as String:
+      self = .string(value)
+
+    case let values as [Any]:
+      let converted = values.compactMap(OpenAIJSONValue.init(jsonObject:))
+      guard converted.count == values.count else { return nil }
+      self = .array(converted)
+
+    case let values as [String: Any]:
+      let converted = values.compactMapValues(OpenAIJSONValue.init(jsonObject:))
+      guard converted.count == values.count else { return nil }
+      self = .object(converted)
+
+    default:
+      return nil
+    }
+  }
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     if container.decodeNil() {

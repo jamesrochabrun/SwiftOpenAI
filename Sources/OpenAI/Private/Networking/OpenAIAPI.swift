@@ -20,6 +20,7 @@ enum OpenAIAPI {
   case message(MessageCategory) // https://platform.openai.com/docs/api-reference/messages
   case model(ModelCategory) // https://platform.openai.com/docs/api-reference/models
   case moderations // https://platform.openai.com/docs/api-reference/moderations
+  case realtime(RealtimeCategory) // https://platform.openai.com/docs/api-reference/realtime
   case run(RunCategory) // https://platform.openai.com/docs/api-reference/runs
   case runStep(RunStepCategory) // https://platform.openai.com/docs/api-reference/runs/step-object
   case thread(ThreadCategory) // https://platform.openai.com/docs/api-reference/threads
@@ -93,6 +94,10 @@ enum OpenAIAPI {
     case cancel(threadID: String, runID: String)
     case submitToolOutput(threadID: String, runID: String)
     case createThreadAndRun
+  }
+
+  enum RealtimeCategory {
+    case clientSecrets
   }
 
   enum RunStepCategory {
@@ -237,6 +242,11 @@ extension OpenAIAPI: Endpoint {
       }
 
     case .moderations: return "\(version)/moderations"
+
+    case .realtime(let category):
+      switch category {
+      case .clientSecrets: return "\(version)/realtime/client_secrets"
+      }
 
     case .run(let category):
       switch category {

@@ -16,6 +16,8 @@ private let logger = Logger(subsystem: "com.swiftopenai", category: "Audio")
 // MARK: - MicrophonePCMSampleVendorAE
 
 /// This is an AVAudioEngine-based implementation that vends PCM16 microphone samples.
+/// When the engine also renders playback, voice processing receives the downlink reference it
+/// needs for acoustic echo cancellation while keeping microphone capture live for barge-in.
 ///
 /// ## Requirements
 ///
@@ -48,6 +50,7 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
 
     if !AudioUtils.headphonesConnected {
       try inputNode.setVoiceProcessingEnabled(true)
+      logger.info("AudioEngine voice processing enabled for full-duplex echo cancellation")
     }
 
     let debugText = """
@@ -63,14 +66,10 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   }
 
   func start() throws -> AsyncStream<AVAudioPCMBuffer> {
-    guard
-      let desiredTapFormat = AVAudioFormat(
-        commonFormat: .pcmFormatInt16,
-        sampleRate: inputNode.outputFormat(forBus: 0).sampleRate,
-        channels: 1,
-        interleaved: false)
-    else {
-      throw OpenAIError.audioConfigurationError("Could not create the desired tap format for realtime")
+    let tapFormat = inputNode.outputFormat(forBus: 0)
+    guard tapFormat.sampleRate > 0, tapFormat.channelCount == 1 else {
+      throw OpenAIError.audioConfigurationError(
+        "Realtime microphone input must have a valid mono output format")
     }
 
     // The buffer size argument specifies the target number of audio frames.
@@ -81,7 +80,7 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
     //
     // There is a note on the installTap documentation that says AudioEngine may
     // adjust the bufferSize internally.
-    let targetBufferSize = UInt32(desiredTapFormat.sampleRate / 20) // 50ms buffers
+    let targetBufferSize = UInt32(tapFormat.sampleRate / 20) // 50ms buffers
     logger.info("PCMSampleVendorAE target buffer size is: \(targetBufferSize)")
 
     return AsyncStream<AVAudioPCMBuffer> { [weak self] continuation in
@@ -90,7 +89,7 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
       this.installTapNonIsolated(
         inputNode: this.inputNode,
         bufferSize: targetBufferSize,
-        format: desiredTapFormat)
+        format: tapFormat)
     }
   }
 
@@ -106,6 +105,7 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   private let inputNode: AVAudioInputNode
   private let microphonePCMSampleVendorCommon = MicrophonePCMSampleVendorCommon()
   private var continuation: AsyncStream<AVAudioPCMBuffer>.Continuation?
+  private var hasLoggedFirstBuffer = false
 
   private nonisolated func installTapNonIsolated(
     inputNode: AVAudioInputNode,
@@ -120,6 +120,10 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
 
   private func processBuffer(_ buffer: AVAudioPCMBuffer) {
     if let accumulatedBuffer = microphonePCMSampleVendorCommon.resampleAndAccumulate(buffer) {
+      if !hasLoggedFirstBuffer {
+        hasLoggedFirstBuffer = true
+        logger.info("Realtime microphone is producing PCM16 buffers")
+      }
       continuation?.yield(accumulatedBuffer)
     }
   }

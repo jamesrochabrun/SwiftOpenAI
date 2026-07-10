@@ -15,14 +15,8 @@ private let logger = Logger(subsystem: "com.swiftopenai", category: "Audio")
 
 // MARK: - AudioPCMPlayer
 
-/// # Warning
-/// The order that you initialize `AudioPCMPlayer()` and `MicrophonePCMSampleVendor()` matters, unfortunately.
-///
-/// The voice processing audio unit on iOS has a volume bug that is not present on macOS.
-/// The volume of playback depends on the initialization order of AVAudioEngine and the `kAudioUnitSubType_VoiceProcessingIO` Audio Unit.
-/// We use AudioEngine for playback in this file, and the voice processing audio unit in MicrophonePCMSampleVendor.
-///
-/// I find the best result to be initializing `AudioPCMPlayer()` first. Otherwise, the playback volume is too quiet on iOS.
+/// Playback shares its `AVAudioEngine` with microphone capture. Keeping both directions in this
+/// graph lets the engine's voice-processing I/O node use playback as its echo-cancellation reference.
 @RealtimeActor
 final class AudioPCMPlayer {
 
@@ -64,7 +58,7 @@ final class AudioPCMPlayer {
     logger.debug("AudioPCMPlayer is being freed")
   }
 
-  public func playPCM16Audio(from base64String: String) {
+  public func playPCM16Audio(from base64String: String, itemID: String?) {
     guard let audioData = Data(base64Encoded: base64String) else {
       logger.error("Could not decode base64 string for audio playback")
       return
@@ -109,14 +103,55 @@ final class AudioPCMPlayer {
     }
 
     if audioEngine.isRunning {
-      playerNode.scheduleBuffer(outPCMBuf, at: nil, options: [], completionHandler: { })
+      if !hasActivePlayback || activeItemID != itemID {
+        hasActivePlayback = true
+        activeItemID = itemID
+        playbackStartSampleTime = currentSampleTime
+        scheduledFrameCount = 0
+      }
+      scheduledFrameCount += AVAudioFramePosition(outPCMBuf.frameLength)
+      let generation = playbackGeneration
+      pendingBufferCount += 1
+      playerNode.scheduleBuffer(
+        outPCMBuf,
+        at: nil,
+        options: [],
+        completionCallbackType: .dataPlayedBack)
+      { [weak self] _ in
+        Task { @RealtimeActor [weak self] in
+          self?.didFinishBuffer(generation: generation)
+        }
+      }
       playerNode.play()
+      if playbackStartSampleTime == nil {
+        playbackStartSampleTime = currentSampleTime ?? 0
+      }
     }
   }
 
-  public func interruptPlayback() {
+  public func interruptPlayback() -> Int? {
+    guard hasActivePlayback else {
+      playerNode.stop()
+      return nil
+    }
     logger.debug("Interrupting playback")
+    let playedMilliseconds = Int((Double(playedFrameCount) / playableFormat.sampleRate) * 1000)
     playerNode.stop()
+    playbackGeneration += 1
+    pendingBufferCount = 0
+    resumePlaybackWaiters()
+    activeItemID = nil
+    hasActivePlayback = false
+    playbackStartSampleTime = nil
+    scheduledFrameCount = 0
+    return playedMilliseconds
+  }
+
+  public func waitUntilPlaybackFinishes() async {
+    guard pendingBufferCount > 0 else { return }
+    await withCheckedContinuation { continuation in
+      playbackWaiters.append(continuation)
+    }
   }
 
   let audioEngine: AVAudioEngine
@@ -124,6 +159,44 @@ final class AudioPCMPlayer {
   private let inputFormat: AVAudioFormat
   private let playableFormat: AVAudioFormat
   private let playerNode: AVAudioPlayerNode
+  private var activeItemID: String?
+  private var hasActivePlayback = false
+  private var playbackStartSampleTime: AVAudioFramePosition?
+  private var scheduledFrameCount: AVAudioFramePosition = 0
+  private var pendingBufferCount = 0
+  private var playbackGeneration = 0
+  private var playbackWaiters = [CheckedContinuation<Void, Never>]()
+
+  private var currentSampleTime: AVAudioFramePosition? {
+    guard
+      let renderTime = playerNode.lastRenderTime,
+      let playerTime = playerNode.playerTime(forNodeTime: renderTime)
+    else {
+      return nil
+    }
+    return playerTime.sampleTime
+  }
+
+  private var playedFrameCount: AVAudioFramePosition {
+    guard let playbackStartSampleTime, let currentSampleTime else { return 0 }
+    return min(max(0, currentSampleTime - playbackStartSampleTime), scheduledFrameCount)
+  }
+
+  private func didFinishBuffer(generation: Int) {
+    guard generation == playbackGeneration, pendingBufferCount > 0 else { return }
+    pendingBufferCount -= 1
+    if pendingBufferCount == 0 {
+      hasActivePlayback = false
+      activeItemID = nil
+      resumePlaybackWaiters()
+    }
+  }
+
+  private func resumePlaybackWaiters() {
+    let waiters = playbackWaiters
+    playbackWaiters.removeAll(keepingCapacity: true)
+    for waiter in waiters { waiter.resume() }
+  }
 
 }
 #endif

@@ -25,7 +25,7 @@ struct AIProxyIntroView: View {
 
         NavigationLink(destination: OptionsListView(
           openAIService: aiproxyService,
-          options: OptionsListView.APIOption.allCases.filter { $0 != .localChat }))
+          options: OptionsListView.APIOption.allCases.filter { $0 != .localChat && $0 != .realTimeAPI }))
         {
           Text("Continue")
             .padding()

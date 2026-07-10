@@ -6,7 +6,6 @@
 //  Original: https://github.com/lzell/AIProxySwift
 //
 
-import CoreFoundation
 import Foundation
 
 // MARK: - OpenAIJSONValue
@@ -45,17 +44,21 @@ public enum OpenAIJSONValue: Codable, Sendable {
   /// Creates a sendable JSON value from an object produced by `JSONSerialization`.
   public init?(jsonObject: Any) {
     if let number = jsonObject as? NSNumber {
-      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+      switch String(cString: number.objCType) {
+      case "c":
         self = .bool(number.boolValue)
-      } else if CFNumberIsFloatType(number) {
+      case "f", "d":
         self = .double(number.doubleValue)
-      } else {
+      default:
         self = .int(number.intValue)
       }
       return
     }
 
     switch jsonObject {
+    case let value as Bool:
+      self = .bool(value)
+
     case is NSNull:
       self = .null(NSNull())
 

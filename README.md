@@ -399,7 +399,7 @@ playAudio(from: audioObjectData)
 
 ### Audio Realtime
 
-The [Realtime API](https://platform.openai.com/docs/api-reference/realtime) enables bidirectional voice conversations with OpenAI's models using WebSockets and low-latency audio streaming. The API supports both audio-to-audio and text-to-audio interactions with built-in voice activity detection, transcription, and function calling.
+The [Realtime API](https://platform.openai.com/docs/api-reference/realtime) enables bidirectional voice conversations with OpenAI's models using WebSockets and low-latency audio streaming. For voice agents, the current recommended model is `gpt-realtime-2.1`; the API supports audio-to-audio interaction, voice activity detection, transcription, function tools, and MCP tools.
 
 **Platform Requirements:** iOS 15+, macOS 13+, watchOS 9+. Requires AVFoundation (not available on Linux).
 
@@ -412,21 +412,29 @@ Parameters
 /// Configuration for creating a realtime session
 public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
 
-   /// The input audio format. Options: .pcm16, .g711_ulaw, .g711_alaw. Default is .pcm16
+   /// The input audio format. Options: .pcm16, .g711Ulaw, .g711Alaw. Encodes to GA audio format objects.
    let inputAudioFormat: AudioFormat?
-   /// Configuration for input audio transcription using Whisper
+   /// Configuration for input audio transcription.
    let inputAudioTranscription: InputAudioTranscription?
+   /// Additional fields to include in server outputs.
+   let include: [String]?
    /// System instructions for the model. Recommended default provided
    let instructions: String?
-   /// Maximum tokens for response output. Can be .value(Int) or .infinite
+   /// Maximum tokens for response output. Can be .int(Int) or .infinite
    let maxResponseOutputTokens: MaxResponseOutputTokens?
-   /// Output modalities: [.audio, .text] or [.text] only. Default is [.audio, .text]
+   /// Output modalities: [.audio] or [.text]. GA Realtime does not request both at once.
    let modalities: [Modality]?
-   /// The output audio format. Options: .pcm16, .g711_ulaw, .g711_alaw. Default is .pcm16
+   /// The model used when creating client secrets.
+   let model: String?
+   /// The output audio format. Options: .pcm16, .g711Ulaw, .g711Alaw.
    let outputAudioFormat: AudioFormat?
-   /// Audio playback speed. Range: 0.25 to 4.0. Default is 1.0
+   /// Whether the model may call multiple tools in parallel.
+   let parallelToolCalls: Bool?
+   /// Reasoning effort for reasoning-capable Realtime models.
+   let reasoning: ReasoningConfiguration?
+   /// Audio playback speed. Range: 0.25 to 1.5. Default is 1.0
    let speed: Double?
-   /// Sampling temperature for model responses. Range: 0.6 to 1.2. Default is 0.8
+   /// Legacy beta field. Not encoded for GA Realtime requests.
    let temperature: Double?
    /// Array of tools/functions available for the model to call
    let tools: [Tool]?
@@ -434,14 +442,14 @@ public struct OpenAIRealtimeSessionConfiguration: Encodable, Sendable {
    let toolChoice: ToolChoice?
    /// Voice activity detection configuration. Options: .serverVAD or .semanticVAD
    let turnDetection: TurnDetection?
-   /// The voice to use. Options: "alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer", "verse"
+   /// The voice to use. Built-ins include "alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer", "verse", "marin", and "cedar".
    let voice: String?
 
    /// Available audio formats
    public enum AudioFormat: String, Encodable, Sendable {
       case pcm16
-      case g711_ulaw = "g711-ulaw"
-      case g711_alaw = "g711-alaw"
+      case g711Ulaw = "g711_ulaw"
+      case g711Alaw = "g711_alaw"
    }
 
    /// Output modalities
@@ -474,24 +482,25 @@ Response
 /// Messages received from the realtime API
 public enum OpenAIRealtimeMessage: Sendable {
    case error(String?)                    // Error occurred
+   case disconnected(String?)             // WebSocket closed unexpectedly
    case sessionCreated                    // Session successfully created
    case sessionUpdated                    // Configuration updated
-   case responseCreated                   // Model started generating response
-   case responseAudioDelta(String)        // Audio chunk (base64 PCM16)
-   case inputAudioBufferSpeechStarted     // User started speaking (VAD detected)
-   case responseFunctionCallArgumentsDone(name: String, arguments: String, callId: String)
-   case responseTranscriptDelta(String)   // Partial AI transcript
-   case responseTranscriptDone(String)    // Complete AI transcript
+   case responseCreated(responseID: String?)
+   case responseAudioDelta(itemID: String?, responseID: String?, delta: String)
+   case inputAudioBufferSpeechStarted(itemID: String?, audioStartMS: Int?)
+   case responseFunctionCallArgumentsDone(name: String, arguments: String, callID: String, itemID: String?, responseID: String?)
+   case responseTranscriptDelta(itemID: String?, responseID: String?, delta: String)
+   case responseTranscriptDone(itemID: String?, responseID: String?, transcript: String)
    case inputAudioBufferTranscript(String)           // User audio transcript
-   case inputAudioTranscriptionDelta(String)         // Partial user transcription
-   case inputAudioTranscriptionCompleted(String)     // Complete user transcription
+   case inputAudioTranscriptionDelta(itemID: String?, delta: String)
+   case inputAudioTranscriptionCompleted(itemID: String?, transcript: String)
 }
 ```
 
 Supporting Types
 ```swift
 /// Manages microphone input and audio playback for realtime conversations.
-/// Audio played through AudioController does not interfere with mic input (the model won't hear itself).
+/// Full-duplex mode shares one voice-processing graph for capture, playback, and echo cancellation.
 @RealtimeActor
 public final class AudioController {
 
@@ -504,16 +513,19 @@ public final class AudioController {
       case playback // Enable audio playback
    }
 
-   /// Returns an AsyncStream of microphone audio buffers
+   /// Installs the microphone tap, starts the shared audio engine, and returns its buffer stream
    /// - Throws: OpenAIError if .record mode wasn't enabled during initialization
    public func micStream() throws -> AsyncStream<AVAudioPCMBuffer>
 
    /// Plays base64-encoded PCM16 audio from the model
    /// - Parameter base64String: Base64-encoded PCM16 audio data
-   public func playPCM16Audio(base64String: String)
+   public func playPCM16Audio(base64String: String, itemID: String? = nil)
 
-   /// Interrupts current audio playback (useful when user starts speaking)
-   public func interruptPlayback()
+   /// Interrupts playback and returns the heard duration of the current item
+   public func interruptPlayback() -> Int?
+
+   /// Waits until all currently queued audio buffers have played
+   public func waitUntilPlaybackFinishes() async
 
    /// Stops all audio operations
    public func stop()
@@ -533,53 +545,78 @@ Usage
 ```swift
 // 1. Create session configuration
 let configuration = OpenAIRealtimeSessionConfiguration(
-   voice: "alloy",
+   inputAudioFormat: .pcm16,
+   inputAudioTranscription: .init(model: Model.gptRealtimeWhisper.value, delay: .low, language: "en"),
    instructions: "You are a helpful AI assistant. Be concise and friendly.",
-   turnDetection: .serverVAD(
-      prefixPaddingMs: 300,
-      silenceDurationMs: 500,
-      threshold: 0.5
-   ),
-   inputAudioTranscription: .init(model: "whisper-1")
+   maxResponseOutputTokens: .int(4096),
+   modalities: [.audio],
+   outputAudioFormat: .pcm16,
+   parallelToolCalls: true,
+   reasoning: .init(effort: .low),
+   turnDetection: .init(type: .semanticVAD(eagerness: .auto, createResponse: true, interruptResponse: true)),
+   voice: "marin"
 )
 
 // 2. Create realtime session
 let session = try await service.realtimeSession(
-   model: "gpt-4o-mini-realtime-preview-2024-12-17",
+   model: Model.gptRealtime21.value,
    configuration: configuration
 )
 
 // 3. Initialize audio controller for recording and playback
 let audioController = try await AudioController(modes: [.record, .playback])
+var isSessionReady = false
+var currentAudioItemID: String?
+var pendingToolResponseID: String?
 
 // 4. Handle incoming messages from OpenAI
 Task {
    for await message in session.receiver {
       switch message {
-      case .responseAudioDelta(let audio):
-         // Play audio from the model
-         audioController.playPCM16Audio(base64String: audio)
+      case .sessionUpdated:
+         isSessionReady = true
+
+      case .responseAudioDelta(let itemID, _, let audio):
+         currentAudioItemID = itemID
+         audioController.playPCM16Audio(base64String: audio, itemID: itemID)
 
       case .inputAudioBufferSpeechStarted:
-         // User started speaking - interrupt model's audio
-         audioController.interruptPlayback()
+         if
+            let currentAudioItemID,
+            let audioEndMS = audioController.interruptPlayback()
+         {
+            await session.sendMessage(OpenAIRealtimeConversationItemTruncate(
+               itemID: currentAudioItemID,
+               audioEndMS: audioEndMS))
+         }
+         currentAudioItemID = nil
 
-      case .responseTranscriptDelta(let text):
+      case .responseTranscriptDelta(_, _, let text):
          // Display partial model transcript
          print("Model (partial): \(text)")
 
-      case .responseTranscriptDone(let text):
+      case .responseTranscriptDone(_, _, let text):
          // Display complete model transcript
          print("Model: \(text)")
 
-      case .inputAudioTranscriptionCompleted(let text):
+      case .inputAudioTranscriptionCompleted(_, let text):
          // Display user's transcribed speech
          print("User: \(text)")
 
-      case .responseFunctionCallArgumentsDone(let name, let args, let callId):
+      case .responseFunctionCallArgumentsDone(let name, let args, let callId, _, let responseID):
          // Handle function call from model
          print("Function call: \(name) with args: \(args)")
-         // Execute function and send result back
+         let result = executeFunction(name: name, arguments: args)
+         await session.sendMessage(OpenAIRealtimeFunctionCallOutput(callID: callId, output: result))
+         pendingToolResponseID = responseID
+
+      case .responseDone(let responseID, let status, _):
+         if pendingToolResponseID == responseID {
+            pendingToolResponseID = nil
+            if status == "completed" {
+               await session.sendMessage(OpenAIRealtimeResponseCreate())
+            }
+         }
 
       case .error(let error):
          print("Error: \(error ?? "Unknown error")")
@@ -594,6 +631,7 @@ Task {
 Task {
    do {
       for try await buffer in audioController.micStream() {
+         guard isSessionReady else { continue }
          // Encode audio buffer to base64
          guard let base64Audio = AudioUtils.base64EncodeAudioPCMBuffer(from: buffer) else {
             continue
@@ -616,8 +654,8 @@ try await session.sendMessage(
 
 // 7. Update session configuration mid-conversation (optional)
 let newConfig = OpenAIRealtimeSessionConfiguration(
-   voice: "shimmer",
-   temperature: 0.9
+   instructions: "Be even more concise.",
+   toolChoice: .auto
 )
 try await session.sendMessage(
    OpenAIRealtimeSessionUpdate(sessionConfig: newConfig)
@@ -631,8 +669,8 @@ session.disconnect()
 Function Calling
 ```swift
 // Define tools in configuration
-let tools: [OpenAIRealtimeSessionConfiguration.Tool] = [
-   .init(
+let tools: [OpenAIRealtimeSessionConfiguration.RealtimeTool] = [
+   .function(.init(
       name: "get_weather",
       description: "Get the current weather in a location",
       parameters: [
@@ -645,7 +683,7 @@ let tools: [OpenAIRealtimeSessionConfiguration.Tool] = [
          ],
          "required": ["location"]
       ]
-   )
+   ))
 ]
 
 let config = OpenAIRealtimeSessionConfiguration(
@@ -654,30 +692,35 @@ let config = OpenAIRealtimeSessionConfiguration(
    toolChoice: .auto
 )
 
+var pendingToolResponseID: String?
+
 // Handle function calls in message receiver
-case .responseFunctionCallArgumentsDone(let name, let args, let callId):
+case .responseFunctionCallArgumentsDone(let name, let args, let callId, _, let responseID):
    if name == "get_weather" {
       // Parse arguments and execute function
       let result = getWeather(arguments: args)
 
       // Send result back to model
-      try await session.sendMessage(
-         OpenAIRealtimeConversationItemCreate(
-            item: .functionCallOutput(
-               callId: callId,
-               output: result
-            )
-         )
-      )
+      await session.sendMessage(OpenAIRealtimeFunctionCallOutput(callID: callId, output: result))
+      pendingToolResponseID = responseID
+   }
+
+case .responseDone(let responseID, let status, _):
+   if pendingToolResponseID == responseID {
+      pendingToolResponseID = nil
+      if status == "completed" {
+         await session.sendMessage(OpenAIRealtimeResponseCreate())
+      }
    }
 ```
 
 Advanced Features
 - **Voice Activity Detection (VAD):** Choose between server-based VAD (with configurable timing) or semantic VAD (with eagerness levels)
-- **Transcription:** Enable Whisper transcription for both user input and model output
+- **Transcription:** Enable input transcription with `gpt-realtime-whisper` or the supported transcription models
 - **Session Updates:** Change voice, instructions, or tools mid-conversation without reconnecting
 - **Response Triggers:** Manually trigger model responses or rely on automatic VAD
-- **Platform-Specific Behavior:** Automatically selects optimal audio API based on platform and headphone connection
+- **Client Secrets:** Use `createRealtimeClientSecret(parameters:)` for ephemeral credentials in WebRTC integrations
+- **Full-Duplex Audio:** Record-and-playback controllers share one `AVAudioEngine` voice-processing graph so the microphone stays live for barge-in without treating model playback as user speech
 
 For a complete implementation example, see `Examples/RealtimeExample/RealtimeExample.swift` in the repository.
 

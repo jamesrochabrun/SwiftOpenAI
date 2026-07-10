@@ -50,6 +50,13 @@ public final class DefaultOpenAIAzureService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
+  public func createRealtimeClientSecret(parameters _: OpenAIRealtimeClientSecretParameters) async throws
+    -> OpenAIRealtimeClientSecret
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
   #if canImport(AVFoundation)
   public func realtimeSession(
     model _: String,

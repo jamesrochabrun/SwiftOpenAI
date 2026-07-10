@@ -22,8 +22,11 @@ open class OpenAIRealtimeSession {
     webSocketTask: URLSessionWebSocketTask,
     sessionConfiguration: OpenAIRealtimeSessionConfiguration)
   {
+    let (receiver, continuation) = AsyncStream<OpenAIRealtimeMessage>.makeStream()
     self.webSocketTask = webSocketTask
     self.sessionConfiguration = sessionConfiguration
+    self.receiver = receiver
+    self.continuation = continuation
 
     Task { @RealtimeActor in
       await self.sendMessage(OpenAIRealtimeSessionUpdate(session: self.sessionConfiguration))
@@ -36,12 +39,9 @@ open class OpenAIRealtimeSession {
     logger.debug("OpenAIRealtimeSession is being freed")
   }
 
-  /// Messages sent from OpenAI are published on this receiver as they arrive
-  public var receiver: AsyncStream<OpenAIRealtimeMessage> {
-    AsyncStream { continuation in
-      self.continuation = continuation
-    }
-  }
+  /// Messages sent from OpenAI, buffered from the moment the session is created.
+  /// Consume this stream from one task for the lifetime of the session.
+  public nonisolated let receiver: AsyncStream<OpenAIRealtimeMessage>
 
   /// Sends a message through the websocket connection
   public func sendMessage(_ encodable: Encodable) async {
@@ -67,8 +67,7 @@ open class OpenAIRealtimeSession {
   /// Close the websocket connection
   public func disconnect() {
     isTearingDown = true
-    continuation?.finish()
-    continuation = nil
+    continuation.finish()
     webSocketTask.cancel()
   }
 
@@ -76,9 +75,13 @@ open class OpenAIRealtimeSession {
 
   private var isTearingDown = false
   private let webSocketTask: URLSessionWebSocketTask
-  private var continuation: AsyncStream<OpenAIRealtimeMessage>.Continuation?
-  private let setupTime = Date()
+  private nonisolated let continuation: AsyncStream<OpenAIRealtimeMessage>.Continuation
+  private let setupTime = Date.now
   private let logger = Logger(subsystem: "com.swiftopenai", category: "Realtime")
+
+  nonisolated private static func jsonValues(from dictionary: [String: Any]) -> [String: OpenAIJSONValue] {
+    dictionary.compactMapValues(OpenAIJSONValue.init(jsonObject:))
+  }
 
   /// Tells the websocket task to receive a new message
   nonisolated private func receiveMessage() {
@@ -86,12 +89,12 @@ open class OpenAIRealtimeSession {
       switch result {
       case .failure(let error as NSError):
         Task { @RealtimeActor in
-          await self.didReceiveWebSocketError(error)
+          self.didReceiveWebSocketError(error)
         }
 
       case .success(let message):
         Task { @RealtimeActor in
-          await self.didReceiveWebSocketMessage(message)
+          self.didReceiveWebSocketMessage(message)
         }
       }
     }
@@ -116,6 +119,7 @@ open class OpenAIRealtimeSession {
       logger.error("Received ws error: \(error.localizedDescription)")
     }
 
+    continuation.yield(.disconnected(error.localizedDescription))
     disconnect()
   }
 
@@ -148,33 +152,54 @@ open class OpenAIRealtimeSession {
       let messageType = json["type"] as? String
     else {
       logger.error("Received websocket data that we don't understand")
+      continuation.yield(.error("Received an invalid Realtime server event."))
       disconnect()
       return
     }
-    logger.debug("Received \(messageType) from OpenAI")
+    switch messageType {
+    case "response.output_audio.delta", "response.audio.delta",
+         "response.output_audio_transcript.delta", "response.audio_transcript.delta",
+         "conversation.item.input_audio_transcription.delta",
+         "response.function_call_arguments.delta":
+      break
+    default:
+      logger.debug("Received \(messageType) from OpenAI")
+    }
 
     switch messageType {
     case "error":
-      let errorBody = String(describing: json["error"] as? [String: Any])
-      logger.error("Received error from OpenAI websocket: \(errorBody)")
-      continuation?.yield(.error(errorBody))
+      let error = json["error"] as? [String: Any]
+      let errorMessage = error?["message"] as? String ?? "Unknown Realtime error"
+      logger.error("Received error from OpenAI websocket: \(errorMessage)")
+      continuation.yield(.error(errorMessage))
 
     case "session.created":
-      continuation?.yield(.sessionCreated)
+      continuation.yield(.sessionCreated)
 
     case "session.updated":
-      continuation?.yield(.sessionUpdated)
+      continuation.yield(.sessionUpdated)
 
-    case "response.audio.delta":
+    case "response.output_audio.delta", "response.audio.delta":
       if let base64Audio = json["delta"] as? String {
-        continuation?.yield(.responseAudioDelta(base64Audio))
+        continuation.yield(.responseAudioDelta(
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String,
+          delta: base64Audio))
       }
 
+    case "response.output_audio.done", "response.audio.done":
+      continuation.yield(.responseAudioDone(
+        itemID: json["item_id"] as? String,
+        responseID: json["response_id"] as? String))
+
     case "response.created":
-      continuation?.yield(.responseCreated)
+      let response = json["response"] as? [String: Any]
+      continuation.yield(.responseCreated(responseID: response?["id"] as? String))
 
     case "input_audio_buffer.speech_started":
-      continuation?.yield(.inputAudioBufferSpeechStarted)
+      continuation.yield(.inputAudioBufferSpeechStarted(
+        itemID: json["item_id"] as? String,
+        audioStartMS: json["audio_start_ms"] as? Int))
 
     case "response.function_call_arguments.done":
       if
@@ -182,46 +207,73 @@ open class OpenAIRealtimeSession {
         let arguments = json["arguments"] as? String,
         let callId = json["call_id"] as? String
       {
-        continuation?.yield(.responseFunctionCallArgumentsDone(name, arguments, callId))
+        continuation.yield(.responseFunctionCallArgumentsDone(
+          name: name,
+          arguments: arguments,
+          callID: callId,
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String))
+      }
+
+    case "response.function_call_arguments.delta":
+      if let delta = json["delta"] as? String {
+        continuation.yield(.responseFunctionCallArgumentsDelta(
+          delta: delta,
+          callID: json["call_id"] as? String,
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String))
       }
 
     // New cases for handling transcription messages
-    case "response.audio_transcript.delta":
+    case "response.output_audio_transcript.delta", "response.audio_transcript.delta":
       if let delta = json["delta"] as? String {
-        continuation?.yield(.responseTranscriptDelta(delta))
+        continuation.yield(.responseTranscriptDelta(
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String,
+          delta: delta))
       }
 
-    case "response.audio_transcript.done":
+    case "response.output_audio_transcript.done", "response.audio_transcript.done":
       if let transcript = json["transcript"] as? String {
-        continuation?.yield(.responseTranscriptDone(transcript))
+        continuation.yield(.responseTranscriptDone(
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String,
+          transcript: transcript))
       }
+
+    case "input_audio_buffer.speech_stopped", "input_audio_buffer.committed", "conversation.item.truncated":
+      break
 
     case "input_audio_buffer.transcript":
       if let transcript = json["transcript"] as? String {
-        continuation?.yield(.inputAudioBufferTranscript(transcript))
+        continuation.yield(.inputAudioBufferTranscript(transcript))
       }
 
     case "conversation.item.input_audio_transcription.delta":
       if let delta = json["delta"] as? String {
-        continuation?.yield(.inputAudioTranscriptionDelta(delta))
+        continuation.yield(.inputAudioTranscriptionDelta(
+          itemID: json["item_id"] as? String,
+          delta: delta))
       }
 
     case "conversation.item.input_audio_transcription.completed":
       if let transcript = json["transcript"] as? String {
-        continuation?.yield(.inputAudioTranscriptionCompleted(transcript))
+        continuation.yield(.inputAudioTranscriptionCompleted(
+          itemID: json["item_id"] as? String,
+          transcript: transcript))
       }
 
     // MCP (Model Context Protocol) message types
     case "mcp_list_tools.in_progress":
       logger.debug("MCP: Tool discovery in progress")
-      continuation?.yield(.mcpListToolsInProgress)
+      continuation.yield(.mcpListToolsInProgress)
 
     case "mcp_list_tools.completed":
       logger.debug("MCP: Tool discovery completed")
       if let tools = json["tools"] as? [String: Any] {
-        continuation?.yield(.mcpListToolsCompleted(tools))
+        continuation.yield(.mcpListToolsCompleted(Self.jsonValues(from: tools)))
       } else {
-        continuation?.yield(.mcpListToolsCompleted([:]))
+        continuation.yield(.mcpListToolsCompleted([:]))
       }
 
     case "mcp_list_tools.failed":
@@ -247,16 +299,25 @@ open class OpenAIRealtimeSession {
         .error(
           "Top-level fields: message=\(String(describing: topLevelMessage)), code=\(String(describing: topLevelCode)), reason=\(String(describing: topLevelReason))")
 
-      continuation?.yield(.mcpListToolsFailed(fullError))
+      continuation.yield(.mcpListToolsFailed(fullError))
 
     case "response.mcp_call.completed":
       let eventId = json["event_id"] as? String
       let itemId = json["item_id"] as? String
       let outputIndex = json["output_index"] as? Int
-      continuation?.yield(.responseMcpCallCompleted(eventId: eventId, itemId: itemId, outputIndex: outputIndex))
+      continuation.yield(.responseMcpCallCompleted(eventId: eventId, itemId: itemId, outputIndex: outputIndex))
 
     case "response.mcp_call.in_progress":
-      continuation?.yield(.responseMcpCallInProgress)
+      continuation.yield(.responseMcpCallInProgress)
+
+    case "response.mcp_call_arguments.done":
+      if let arguments = json["arguments"] as? String {
+        continuation.yield(.responseMcpCallArgumentsDone(
+          arguments: arguments,
+          itemId: json["item_id"] as? String,
+          outputIndex: json["output_index"] as? Int,
+          responseId: json["response_id"] as? String))
+      }
 
     case "response.done":
       // Handle response completion (may contain errors like insufficient_quota)
@@ -267,7 +328,10 @@ open class OpenAIRealtimeSession {
         logger.debug("Response done with status: \(status)")
 
         // Pass the full response object for detailed error handling
-        continuation?.yield(.responseDone(status: status, statusDetails: response))
+        continuation.yield(.responseDone(
+          responseID: response["id"] as? String,
+          status: status,
+          statusDetails: Self.jsonValues(from: response)))
 
         // Log errors for debugging
         if
@@ -282,14 +346,20 @@ open class OpenAIRealtimeSession {
         logger.warning("Received response.done with unexpected format")
       }
 
-    case "response.text.delta":
+    case "response.output_text.delta", "response.text.delta":
       if let delta = json["delta"] as? String {
-        continuation?.yield(.responseTextDelta(delta))
+        continuation.yield(.responseTextDelta(
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String,
+          delta: delta))
       }
 
-    case "response.text.done":
+    case "response.output_text.done", "response.text.done":
       if let text = json["text"] as? String {
-        continuation?.yield(.responseTextDone(text))
+        continuation.yield(.responseTextDone(
+          itemID: json["item_id"] as? String,
+          responseID: json["response_id"] as? String,
+          text: text))
       }
 
     case "response.output_item.added":
@@ -298,7 +368,7 @@ open class OpenAIRealtimeSession {
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {
-        continuation?.yield(.responseOutputItemAdded(itemId: itemId, type: type))
+        continuation.yield(.responseOutputItemAdded(itemId: itemId, type: type))
       }
 
     case "response.output_item.done":
@@ -307,8 +377,8 @@ open class OpenAIRealtimeSession {
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {
-        let content = item["content"] as? [[String: Any]]
-        continuation?.yield(.responseOutputItemDone(itemId: itemId, type: type, content: content))
+        let content = (item["content"] as? [[String: Any]])?.map(Self.jsonValues(from:))
+        continuation.yield(.responseOutputItemDone(itemId: itemId, type: type, content: content))
       }
 
     case "response.content_part.added":
@@ -316,7 +386,7 @@ open class OpenAIRealtimeSession {
         let part = json["part"] as? [String: Any],
         let type = part["type"] as? String
       {
-        continuation?.yield(.responseContentPartAdded(type: type))
+        continuation.yield(.responseContentPartAdded(type: type))
       }
 
     case "response.content_part.done":
@@ -325,18 +395,53 @@ open class OpenAIRealtimeSession {
         let type = part["type"] as? String
       {
         let text = part["text"] as? String
-        continuation?.yield(.responseContentPartDone(type: type, text: text))
+        continuation.yield(.responseContentPartDone(type: type, text: text))
       }
 
-    case "conversation.item.created":
+    case "conversation.item.added", "conversation.item.created":
       if
         let item = json["item"] as? [String: Any],
         let itemId = item["id"] as? String,
         let type = item["type"] as? String
       {
         let role = item["role"] as? String
-        continuation?.yield(.conversationItemCreated(itemId: itemId, type: type, role: role))
+        continuation.yield(.conversationItemCreated(
+          itemID: itemId,
+          type: type,
+          role: role,
+          previousItemID: json["previous_item_id"] as? String))
+
+        if
+          type == "mcp_approval_request",
+          let name = item["name"] as? String,
+          let arguments = item["arguments"] as? String,
+          let serverLabel = item["server_label"] as? String
+        {
+          continuation.yield(.mcpApprovalRequest(
+            id: itemId,
+            name: name,
+            arguments: arguments,
+            serverLabel: serverLabel))
+        }
       }
+
+    case "conversation.item.done":
+      if
+        let item = json["item"] as? [String: Any],
+        let itemID = item["id"] as? String,
+        let type = item["type"] as? String
+      {
+        let content = (item["content"] as? [[String: Any]])?.map(Self.jsonValues(from:))
+        continuation.yield(.conversationItemDone(
+          itemID: itemID,
+          type: type,
+          role: item["role"] as? String,
+          previousItemID: json["previous_item_id"] as? String,
+          content: content))
+      }
+
+    case "rate_limits.updated":
+      continuation.yield(.rateLimitsUpdated)
 
     default:
       // Log unhandled message types with more detail for debugging
@@ -345,9 +450,10 @@ open class OpenAIRealtimeSession {
       break
     }
 
-    if messageType != "error", !isTearingDown {
+    if !isTearingDown {
       receiveMessage()
     }
   }
+
 }
 #endif

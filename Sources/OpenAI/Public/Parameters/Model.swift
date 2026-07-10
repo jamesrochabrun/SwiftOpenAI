@@ -71,6 +71,23 @@ public enum Model {
 
   case gpt5Codex
 
+  /// Latest GA Realtime voice-agent model for low-latency speech-to-speech conversations.
+  case gptRealtime21
+  /// Smaller, lower-cost GPT-Realtime 2.1 variant.
+  case gptRealtime21Mini
+  /// GPT-Realtime 2 reasoning voice model.
+  case gptRealtime2
+  /// GPT-Realtime 1.5 flagship audio model.
+  case gptRealtime15
+  /// GPT-Realtime alias.
+  case gptRealtime
+  /// Cost-efficient GPT-Realtime alias.
+  case gptRealtimeMini
+  /// Dedicated Realtime live translation model.
+  case gptRealtimeTranslate
+  /// Dedicated Realtime live transcription model.
+  case gptRealtimeWhisper
+
   /// Images
   case dalle2
   case dalle3
@@ -106,6 +123,14 @@ public enum Model {
     case .gpt5Mini: "gpt-5-mini"
     case .gpt5Nano: "gpt-5-nano"
     case .gpt5Codex: "gpt-5-codex"
+    case .gptRealtime21: "gpt-realtime-2.1"
+    case .gptRealtime21Mini: "gpt-realtime-2.1-mini"
+    case .gptRealtime2: "gpt-realtime-2"
+    case .gptRealtime15: "gpt-realtime-1.5"
+    case .gptRealtime: "gpt-realtime"
+    case .gptRealtimeMini: "gpt-realtime-mini"
+    case .gptRealtimeTranslate: "gpt-realtime-translate"
+    case .gptRealtimeWhisper: "gpt-realtime-whisper"
     case .custom(let model): model
     }
   }

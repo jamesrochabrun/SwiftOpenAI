@@ -18,6 +18,14 @@
 		7B1268072B08247C00400694 /* AssistantConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */; };
 		7B2B6D562DF434670059B4BB /* ResponseStreamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2B6D552DF434670059B4BB /* ResponseStreamDemoView.swift */; };
 		7B2B6D582DF4347E0059B4BB /* ResponseStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2B6D572DF4347E0059B4BB /* ResponseStreamProvider.swift */; };
+		7B6A10012E00000100000001 /* RealtimeConversationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A10032E00000100000003 /* RealtimeConversationDemoView.swift */; };
+		7B6A10022E00000100000002 /* RealtimeConversationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A10042E00000100000004 /* RealtimeConversationProvider.swift */; };
+		7B6A10062E00000100000006 /* RealtimeConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A100A2E0000010000000A /* RealtimeConversation.swift */; };
+		7B6A10072E00000100000007 /* RealtimeConversationStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A100B2E0000010000000B /* RealtimeConversationStatusView.swift */; };
+		7B6A10082E00000100000008 /* RealtimeConversationControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A100C2E0000010000000C /* RealtimeConversationControls.swift */; };
+		7B6A10092E00000100000009 /* RealtimeTranscriptRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A100D2E0000010000000D /* RealtimeTranscriptRow.swift */; };
+		7B6A100E2E0000010000000E /* RealtimeTurnCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A100F2E0000010000000F /* RealtimeTurnCoordinator.swift */; };
+		7B6A10102E00000100000010 /* RealtimeMicrophoneGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6A10112E00000100000011 /* RealtimeMicrophoneGate.swift */; };
 		7B3DDCC52BAAA722004B5C96 /* AssistantsListDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */; };
 		7B3DDCC72BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */; };
 		7B3DDCC92BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */; };
@@ -103,6 +111,14 @@
 		7B1268062B08247C00400694 /* AssistantConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B2B6D552DF434670059B4BB /* ResponseStreamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseStreamDemoView.swift; sourceTree = "<group>"; };
 		7B2B6D572DF4347E0059B4BB /* ResponseStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseStreamProvider.swift; sourceTree = "<group>"; };
+		7B6A10032E00000100000003 /* RealtimeConversationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationDemoView.swift; sourceTree = "<group>"; };
+		7B6A10042E00000100000004 /* RealtimeConversationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationProvider.swift; sourceTree = "<group>"; };
+		7B6A100A2E0000010000000A /* RealtimeConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversation.swift; sourceTree = "<group>"; };
+		7B6A100B2E0000010000000B /* RealtimeConversationStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationStatusView.swift; sourceTree = "<group>"; };
+		7B6A100C2E0000010000000C /* RealtimeConversationControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeConversationControls.swift; sourceTree = "<group>"; };
+		7B6A100D2E0000010000000D /* RealtimeTranscriptRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeTranscriptRow.swift; sourceTree = "<group>"; };
+		7B6A100F2E0000010000000F /* RealtimeTurnCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeTurnCoordinator.swift; sourceTree = "<group>"; };
+		7B6A10112E00000100000011 /* RealtimeMicrophoneGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeMicrophoneGate.swift; sourceTree = "<group>"; };
 		7B3DDCC42BAAA722004B5C96 /* AssistantsListDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantsListDemoView.swift; sourceTree = "<group>"; };
 		7B3DDCC62BAAAD34004B5C96 /* AssistantThreadConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantThreadConfigurationProvider.swift; sourceTree = "<group>"; };
 		7B3DDCC82BAAAF96004B5C96 /* AssistantStreamDemoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantStreamDemoScreen.swift; sourceTree = "<group>"; };
@@ -318,6 +334,21 @@
 			path = LocalChatDemo;
 			sourceTree = "<group>";
 		};
+		7B6A10052E00000100000005 /* RealtimeDemo */ = {
+			isa = PBXGroup;
+			children = (
+				7B6A100A2E0000010000000A /* RealtimeConversation.swift */,
+				7B6A10032E00000100000003 /* RealtimeConversationDemoView.swift */,
+				7B6A10042E00000100000004 /* RealtimeConversationProvider.swift */,
+				7B6A100B2E0000010000000B /* RealtimeConversationStatusView.swift */,
+				7B6A100C2E0000010000000C /* RealtimeConversationControls.swift */,
+				7B6A100D2E0000010000000D /* RealtimeTranscriptRow.swift */,
+				7B6A100F2E0000010000000F /* RealtimeTurnCoordinator.swift */,
+				7B6A10112E00000100000011 /* RealtimeMicrophoneGate.swift */,
+			);
+			path = RealtimeDemo;
+			sourceTree = "<group>";
+		};
 		7B72399E2AF625B700646679 /* ChatStreamFluidConversationDemo */ = {
 			isa = PBXGroup;
 			children = (
@@ -393,6 +424,7 @@
 			isa = PBXGroup;
 			children = (
 				7B2B6D542DF434550059B4BB /* ResponseAPIDemo */,
+				7B6A10052E00000100000005 /* RealtimeDemo */,
 				7BA788CC2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift */,
 				7BE802572D2877D30080E06A /* PredictedOutputsDemo */,
 				7B50DD292C2A9D1D0070A64D /* LocalChatDemo */,
@@ -663,6 +695,13 @@
 				7BBE7EDE2B03718E0096A693 /* ChatFunctionCallProvider.swift in Sources */,
 				7B7239A62AF628F800646679 /* ChatDisplayMessageView.swift in Sources */,
 				7B99C2ED2C071B1600E701B3 /* FilesPickerProvider.swift in Sources */,
+				7B6A10012E00000100000001 /* RealtimeConversationDemoView.swift in Sources */,
+				7B6A10062E00000100000006 /* RealtimeConversation.swift in Sources */,
+				7B6A10072E00000100000007 /* RealtimeConversationStatusView.swift in Sources */,
+				7B6A10082E00000100000008 /* RealtimeConversationControls.swift in Sources */,
+				7B6A10092E00000100000009 /* RealtimeTranscriptRow.swift in Sources */,
+				7B6A100E2E0000010000000E /* RealtimeTurnCoordinator.swift in Sources */,
+				7B6A10102E00000100000010 /* RealtimeMicrophoneGate.swift in Sources */,
 				7B7239A02AF625F200646679 /* ChatFluidConversationProvider.swift in Sources */,
 				7BA788CF2AE23A48008825D5 /* ApiKeyIntroView.swift in Sources */,
 				7BA788CD2AE23A48008825D5 /* SwiftOpenAIExampleApp.swift in Sources */,
@@ -694,6 +733,7 @@
 				7B436B992AE25052003CE281 /* ContentLoader.swift in Sources */,
 				7B436BC12AE7B01F003CE281 /* ModerationProvider.swift in Sources */,
 				7B436BBC2AE7ABD3003CE281 /* ModelsProvider.swift in Sources */,
+				7B6A10022E00000100000002 /* RealtimeConversationProvider.swift in Sources */,
 				7B2B6D562DF434670059B4BB /* ResponseStreamDemoView.swift in Sources */,
 				7B2B6D582DF4347E0059B4BB /* ResponseStreamProvider.swift in Sources */,
 				7B436BA62AE77F37003CE281 /* Embeddingsprovider.swift in Sources */,

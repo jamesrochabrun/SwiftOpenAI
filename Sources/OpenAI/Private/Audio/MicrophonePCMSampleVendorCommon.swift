@@ -20,9 +20,9 @@ nonisolated final class MicrophonePCMSampleVendorCommon {
   var bufferAccumulator: AVAudioPCMBuffer?
   var audioConverter: AVAudioConverter?
 
-  func resampleAndAccumulate(_ pcm16Buffer: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
+  func resampleAndAccumulate(_ inputBuffer: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
     if
-      let resampledBuffer = convertPCM16BufferToExpectedSampleRate(pcm16Buffer),
+      let resampledBuffer = convertToRealtimeFormat(inputBuffer),
       let accumulatedBuffer = accummulateAndVendIfFull(resampledBuffer)
     {
       return accumulatedBuffer
@@ -30,7 +30,7 @@ nonisolated final class MicrophonePCMSampleVendorCommon {
     return nil
   }
 
-  private func convertPCM16BufferToExpectedSampleRate(_ pcm16Buffer: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
+  private func convertToRealtimeFormat(_ inputBuffer: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
     guard
       let audioFormat = AVAudioFormat(
         commonFormat: .pcmFormatInt16,
@@ -43,7 +43,7 @@ nonisolated final class MicrophonePCMSampleVendorCommon {
     }
 
     if audioConverter == nil {
-      audioConverter = AVAudioConverter(from: pcm16Buffer.format, to: audioFormat)
+      audioConverter = AVAudioConverter(from: inputBuffer.format, to: audioFormat)
     }
 
     guard let converter = audioConverter else {
@@ -66,11 +66,11 @@ nonisolated final class MicrophonePCMSampleVendorCommon {
     // reached or outStatus.pointee is set to `.noDataNow` or `.endStream`.
     var error: NSError?
     nonisolated(unsafe) var ptr: UInt32 = 0
-    let targetFrameLength = pcm16Buffer.frameLength
+    let targetFrameLength = inputBuffer.frameLength
     let _ = converter.convert(to: outputBuffer, error: &error) { numberOfFrames, outStatus in
       guard
         ptr < targetFrameLength,
-        let workingCopy = advancedPCMBuffer_noCopy(pcm16Buffer, offset: ptr)
+        let workingCopy = advancedPCMBufferNoCopy(inputBuffer, offset: ptr)
       else {
         outStatus.pointee = .noDataNow
         return nil
@@ -92,34 +92,58 @@ nonisolated final class MicrophonePCMSampleVendorCommon {
 
   /// The incoming buffer here must be guaranteed at 24kHz in PCM16Int format.
   private func accummulateAndVendIfFull(_ buf: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {
-    var returnBuffer: AVAudioPCMBuffer? = nil
     let targetAccumulatorLength = 2400
-    if bufferAccumulator == nil {
-      bufferAccumulator = AVAudioPCMBuffer(pcmFormat: buf.format, frameCapacity: AVAudioFrameCount(targetAccumulatorLength * 2))
+    guard let source = buf.int16ChannelData?[0] else {
+      logger.error("Converted microphone buffer did not contain PCM16 channel data")
+      return nil
     }
-    guard let accumulator = bufferAccumulator else { return nil }
 
-    let copyFrames = min(buf.frameLength, accumulator.frameCapacity - accumulator.frameLength)
-    let dst = accumulator.int16ChannelData![0].advanced(by: Int(accumulator.frameLength))
-    let src = buf.int16ChannelData![0]
+    var completedBuffer: AVAudioPCMBuffer?
+    var sourceOffset = 0
+    while sourceOffset < Int(buf.frameLength) {
+      if bufferAccumulator == nil {
+        bufferAccumulator = AVAudioPCMBuffer(
+          pcmFormat: buf.format,
+          frameCapacity: AVAudioFrameCount(targetAccumulatorLength))
+      }
+      guard
+        let accumulator = bufferAccumulator,
+        let destination = accumulator.int16ChannelData?[0]
+      else {
+        logger.error("Could not create the realtime microphone accumulator")
+        return completedBuffer
+      }
 
-    dst.update(from: src, count: Int(copyFrames))
-    accumulator.frameLength += copyFrames
-    if accumulator.frameLength >= targetAccumulatorLength {
-      returnBuffer = accumulator
-      bufferAccumulator = nil
+      let remainingTargetFrames = targetAccumulatorLength - Int(accumulator.frameLength)
+      let copyFrames = min(Int(buf.frameLength) - sourceOffset, remainingTargetFrames)
+      destination
+        .advanced(by: Int(accumulator.frameLength))
+        .update(from: source.advanced(by: sourceOffset), count: copyFrames)
+      accumulator.frameLength += AVAudioFrameCount(copyFrames)
+      sourceOffset += copyFrames
+
+      if accumulator.frameLength == targetAccumulatorLength {
+        if completedBuffer == nil {
+          completedBuffer = accumulator
+        }
+        bufferAccumulator = nil
+      }
     }
-    return returnBuffer
+    return completedBuffer
   }
 }
 
-nonisolated private func advancedPCMBuffer_noCopy(_ originalBuffer: AVAudioPCMBuffer, offset: UInt32) -> AVAudioPCMBuffer? {
+nonisolated private func advancedPCMBufferNoCopy(
+  _ originalBuffer: AVAudioPCMBuffer,
+  offset: UInt32)
+  -> AVAudioPCMBuffer?
+{
   let audioBufferList = originalBuffer.mutableAudioBufferList
   guard
     audioBufferList.pointee.mNumberBuffers == 1,
     audioBufferList.pointee.mBuffers.mNumberChannels == 1
   else {
-    logger.error("Broken programmer assumption. Audio conversion depends on single channel PCM16 as input")
+    logger.error("Audio conversion depends on single-channel noninterleaved input")
     return nil
   }
   guard let audioBufferData = audioBufferList.pointee.mBuffers.mData else {
@@ -127,8 +151,13 @@ nonisolated private func advancedPCMBuffer_noCopy(_ originalBuffer: AVAudioPCMBu
     return nil
   }
   // advanced(by:) is O(1)
+  let bytesPerFrame = Int(originalBuffer.format.streamDescription.pointee.mBytesPerFrame)
+  guard bytesPerFrame > 0 else {
+    logger.error("Could not determine input audio bytes per frame")
+    return nil
+  }
   audioBufferList.pointee.mBuffers.mData = audioBufferData.advanced(
-    by: Int(offset) * MemoryLayout<UInt16>.size)
+    by: Int(offset) * bytesPerFrame)
   return AVAudioPCMBuffer(
     pcmFormat: originalBuffer.format,
     bufferListNoCopy: audioBufferList)

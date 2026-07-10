@@ -278,11 +278,11 @@ class MicrophonePCMSampleVendorAT: MicrophonePCMSampleVendor {
 /// This @RealtimeActor annotation is a lie.
 @RealtimeActor private let audioRenderCallback: AURenderCallback = {
   inRefCon,
-  ioActionFlags,
-  inTimeStamp,
-  inBusNumber,
-  inNumberFrames,
-  _ in
+    ioActionFlags,
+    inTimeStamp,
+    inBusNumber,
+    inNumberFrames,
+    _ in
   let microphonePCMSampleVendor = Unmanaged<MicrophonePCMSampleVendorAT>
     .fromOpaque(inRefCon)
     .takeUnretainedValue()

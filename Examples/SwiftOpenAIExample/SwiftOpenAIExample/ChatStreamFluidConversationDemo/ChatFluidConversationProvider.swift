@@ -45,7 +45,7 @@ class ChatFluidConversationProvider {
       let stream = try await service.startStreamedChat(parameters: localParameters)
       for try await result in stream {
         // Extract the first choice from the stream results, if none exist, exit the loop.
-        guard let choice = result.choices?.first else { return }
+        guard let choice = result.choices?.first else { continue }
 
         // Store initial `role` and `functionCall` data from the first `choice.delta` for UI display.
         // This information is essential for maintaining context in the conversation and for updating

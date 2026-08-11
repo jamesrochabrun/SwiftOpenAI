@@ -88,6 +88,10 @@ final class AudioPCMPlayer {
     logger.debug("AudioPCMPlayer is being freed")
   }
 
+  public var isPlaybackActive: Bool {
+    hasActivePlayback
+  }
+
   public func playPCM16Audio(from base64String: String, itemID: String?) {
     guard let audioData = Data(base64Encoded: base64String) else {
       logger.error("Could not decode base64 string for audio playback")
@@ -186,10 +190,6 @@ final class AudioPCMPlayer {
     playbackStartSampleTime = nil
     scheduledFrameCount = 0
     playerNodeStopper.stopWithoutWaiting()
-  }
-
-  public var isPlaybackActive: Bool {
-    hasActivePlayback
   }
 
   public func waitUntilPlaybackFinishes() async {

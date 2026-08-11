@@ -86,6 +86,11 @@ public final class AudioController {
 
   public let modes: [Mode]
 
+  /// Whether queued assistant audio is still audibly playing.
+  public var isPlaybackActive: Bool {
+    audioPCMPlayer?.isPlaybackActive ?? false
+  }
+
   /// Installs the microphone tap and starts the shared audio engine. Call this once before expecting
   /// playback from a controller configured with both record and playback modes.
   public func micStream() throws -> AsyncStream<AVAudioPCMBuffer> {
@@ -144,11 +149,6 @@ public final class AudioController {
       return nil
     }
     return await audioPCMPlayer.interruptPlayback()
-  }
-
-  /// Whether queued assistant audio is still audibly playing.
-  public var isPlaybackActive: Bool {
-    audioPCMPlayer?.isPlaybackActive ?? false
   }
 
   /// Suspends until all currently queued audio buffers have played.

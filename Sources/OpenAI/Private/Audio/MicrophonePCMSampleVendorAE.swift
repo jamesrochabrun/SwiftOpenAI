@@ -65,6 +65,14 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
     logger.debug("MicrophonePCMSampleVendorAE is being freed")
   }
 
+  nonisolated static func makeMonoTapFormat(sampleRate: Double) -> AVAudioFormat? {
+    AVAudioFormat(
+      commonFormat: .pcmFormatInt16,
+      sampleRate: sampleRate,
+      channels: 1,
+      interleaved: false)
+  }
+
   func start() throws -> AsyncStream<AVAudioPCMBuffer> {
     let outputFormat = inputNode.outputFormat(forBus: 0)
     guard outputFormat.sampleRate > 0 else {
@@ -113,14 +121,6 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   private let microphonePCMSampleVendorCommon = MicrophonePCMSampleVendorCommon()
   private var continuation: AsyncStream<AVAudioPCMBuffer>.Continuation?
   private var hasLoggedFirstBuffer = false
-
-  nonisolated static func makeMonoTapFormat(sampleRate: Double) -> AVAudioFormat? {
-    AVAudioFormat(
-      commonFormat: .pcmFormatInt16,
-      sampleRate: sampleRate,
-      channels: 1,
-      interleaved: false)
-  }
 
   private nonisolated func installTapNonIsolated(
     inputNode: AVAudioInputNode,

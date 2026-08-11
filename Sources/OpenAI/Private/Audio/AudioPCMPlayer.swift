@@ -7,11 +7,37 @@
 //
 
 #if canImport(AVFoundation)
-import AVFoundation
+@preconcurrency import AVFoundation
 import Foundation
 import OSLog
 
 private let logger = Logger(subsystem: "com.swiftopenai", category: "Audio")
+
+private final class AudioPlayerNodeStopper: @unchecked Sendable {
+  init(playerNode: AVAudioPlayerNode) {
+    self.playerNode = playerNode
+  }
+
+  func stop() async {
+    await withCheckedContinuation { continuation in
+      queue.async {
+        self.playerNode.stop()
+        continuation.resume()
+      }
+    }
+  }
+
+  func stopWithoutWaiting() {
+    queue.async {
+      self.playerNode.stop()
+    }
+  }
+
+  private let playerNode: AVAudioPlayerNode
+  private let queue = DispatchQueue(
+    label: "com.swiftopenai.audio-player-stop",
+    qos: .default)
+}
 
 // MARK: - AudioPCMPlayer
 
@@ -47,9 +73,13 @@ final class AudioPCMPlayer {
     let node = AVAudioPlayerNode()
 
     audioEngine.attach(node)
-    audioEngine.connect(node, to: audioEngine.outputNode, format: playableFormat)
+    // Route through the main mixer: connecting a 24 kHz mono format straight into the output
+    // node fails AUGraph initialization (-10875) on devices whose hardware format differs;
+    // the mixer performs the sample-rate conversion to the hardware format.
+    audioEngine.connect(node, to: audioEngine.mainMixerNode, format: playableFormat)
 
     playerNode = node
+    playerNodeStopper = AudioPlayerNodeStopper(playerNode: node)
     self.inputFormat = inputFormat
     self.playableFormat = playableFormat
   }
@@ -129,14 +159,13 @@ final class AudioPCMPlayer {
     }
   }
 
-  public func interruptPlayback() -> Int? {
+  public func interruptPlayback() async -> Int? {
     guard hasActivePlayback else {
-      playerNode.stop()
+      await playerNodeStopper.stop()
       return nil
     }
     logger.debug("Interrupting playback")
     let playedMilliseconds = Int((Double(playedFrameCount) / playableFormat.sampleRate) * 1000)
-    playerNode.stop()
     playbackGeneration += 1
     pendingBufferCount = 0
     resumePlaybackWaiters()
@@ -144,7 +173,23 @@ final class AudioPCMPlayer {
     hasActivePlayback = false
     playbackStartSampleTime = nil
     scheduledFrameCount = 0
+    await playerNodeStopper.stop()
     return playedMilliseconds
+  }
+
+  public func stop() {
+    playbackGeneration += 1
+    pendingBufferCount = 0
+    resumePlaybackWaiters()
+    activeItemID = nil
+    hasActivePlayback = false
+    playbackStartSampleTime = nil
+    scheduledFrameCount = 0
+    playerNodeStopper.stopWithoutWaiting()
+  }
+
+  public var isPlaybackActive: Bool {
+    hasActivePlayback
   }
 
   public func waitUntilPlaybackFinishes() async {
@@ -159,6 +204,7 @@ final class AudioPCMPlayer {
   private let inputFormat: AVAudioFormat
   private let playableFormat: AVAudioFormat
   private let playerNode: AVAudioPlayerNode
+  private let playerNodeStopper: AudioPlayerNodeStopper
   private var activeItemID: String?
   private var hasActivePlayback = false
   private var playbackStartSampleTime: AVAudioFramePosition?

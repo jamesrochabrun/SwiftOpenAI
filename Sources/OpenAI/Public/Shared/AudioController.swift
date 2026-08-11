@@ -49,6 +49,13 @@ public final class AudioController {
 
     audioEngine = AVAudioEngine()
 
+    // The playback graph must be wired before the capture vendor enables voice processing on
+    // the input node. Enabling voice processing first and then touching the mixer/player nodes
+    // leaves the engine unable to initialize (kAudioUnitErr_FailedInitialization, -10875).
+    if modes.contains(.playback) {
+      audioPCMPlayer = try await AudioPCMPlayer(audioEngine: audioEngine)
+    }
+
     if modes.contains(.record) {
       #if os(macOS) || os(iOS)
       let needsSharedPlaybackReference = modes.contains(.playback)
@@ -62,10 +69,6 @@ public final class AudioController {
       microphonePCMSampleVendor = try MicrophonePCMSampleVendorAE(audioEngine: audioEngine)
       usesAudioEngineForCapture = true
       #endif
-    }
-
-    if modes.contains(.playback) {
-      audioPCMPlayer = try await AudioPCMPlayer(audioEngine: audioEngine)
     }
 
     // Capture installs its input tap in `micStream()`. Starting the engine before that tap exists
@@ -110,7 +113,7 @@ public final class AudioController {
   }
 
   public func stop() {
-    _ = audioPCMPlayer?.interruptPlayback()
+    audioPCMPlayer?.stop()
     audioEngine.stop()
     microphonePCMSampleVendor?.stop()
   }
@@ -132,7 +135,7 @@ public final class AudioController {
 
   /// Stops queued playback and returns how many milliseconds of the current item were heard.
   @discardableResult
-  public func interruptPlayback() -> Int? {
+  public func interruptPlayback() async -> Int? {
     guard
       modes.contains(.playback),
       let audioPCMPlayer
@@ -140,7 +143,12 @@ public final class AudioController {
       logger.error("Please pass [.playback] to the AudioController initializer")
       return nil
     }
-    return audioPCMPlayer.interruptPlayback()
+    return await audioPCMPlayer.interruptPlayback()
+  }
+
+  /// Whether queued assistant audio is still audibly playing.
+  public var isPlaybackActive: Bool {
+    audioPCMPlayer?.isPlaybackActive ?? false
   }
 
   /// Suspends until all currently queued audio buffers have played.

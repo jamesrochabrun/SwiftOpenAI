@@ -66,10 +66,14 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   }
 
   func start() throws -> AsyncStream<AVAudioPCMBuffer> {
-    let tapFormat = inputNode.outputFormat(forBus: 0)
-    guard tapFormat.sampleRate > 0, tapFormat.channelCount == 1 else {
+    let outputFormat = inputNode.outputFormat(forBus: 0)
+    guard outputFormat.sampleRate > 0 else {
       throw OpenAIError.audioConfigurationError(
-        "Realtime microphone input must have a valid mono output format")
+        "Realtime microphone input must have a valid sample rate")
+    }
+    guard let tapFormat = Self.makeMonoTapFormat(sampleRate: outputFormat.sampleRate) else {
+      throw OpenAIError.audioConfigurationError(
+        "Could not create the mono tap format for realtime microphone input")
     }
 
     // The buffer size argument specifies the target number of audio frames.
@@ -97,7 +101,10 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
     continuation?.finish()
     continuation = nil
     inputNode.removeTap(onBus: 0)
-    try? inputNode.setVoiceProcessingEnabled(false)
+    // Deliberately leave voice processing enabled: each session uses a
+    // throwaway engine, so the AU is torn down when the engine deallocates.
+    // Disabling it here blocks on default-QoS CoreAudio reconfiguration and
+    // trips the priority-inversion diagnostic whenever stop is boosted.
     microphonePCMSampleVendorCommon.audioConverter = nil
   }
 
@@ -106,6 +113,14 @@ class MicrophonePCMSampleVendorAE: MicrophonePCMSampleVendor {
   private let microphonePCMSampleVendorCommon = MicrophonePCMSampleVendorCommon()
   private var continuation: AsyncStream<AVAudioPCMBuffer>.Continuation?
   private var hasLoggedFirstBuffer = false
+
+  nonisolated static func makeMonoTapFormat(sampleRate: Double) -> AVAudioFormat? {
+    AVAudioFormat(
+      commonFormat: .pcmFormatInt16,
+      sampleRate: sampleRate,
+      channels: 1,
+      interleaved: false)
+  }
 
   private nonisolated func installTapNonIsolated(
     inputNode: AVAudioInputNode,

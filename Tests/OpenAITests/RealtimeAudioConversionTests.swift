@@ -5,6 +5,16 @@ import XCTest
 @testable import SwiftOpenAI
 
 final class RealtimeAudioConversionTests: XCTestCase {
+  func testVoiceProcessingOutputIsTappedAsMono() throws {
+    let tapFormat = try XCTUnwrap(
+      MicrophonePCMSampleVendorAE.makeMonoTapFormat(sampleRate: 48_000))
+
+    XCTAssertEqual(tapFormat.commonFormat, .pcmFormatInt16)
+    XCTAssertEqual(tapFormat.sampleRate, 48_000)
+    XCTAssertEqual(tapFormat.channelCount, 1)
+    XCTAssertFalse(tapFormat.isInterleaved)
+  }
+
   func testNativeFloatMicrophoneBuffersConvertToRealtimePCM16() throws {
     let inputFormat = try XCTUnwrap(AVAudioFormat(
       commonFormat: .pcmFormatFloat32,

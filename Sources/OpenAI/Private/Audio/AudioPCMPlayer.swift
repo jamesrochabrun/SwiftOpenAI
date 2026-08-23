@@ -93,6 +93,19 @@ final class AudioPCMPlayer {
   }
 
   public func playPCM16Audio(from base64String: String, itemID: String?) {
+    // `isRunning` alone does not prove the graph is alive: after a voice-processing stream
+    // timeout (`AUVPAggregate`, -10877) the engine reports running while its IO thread never
+    // cycles, and `AVAudioPlayerNode.play()` raises an uncatchable NSException ("player did
+    // not see an IO cycle") in that state. A valid sample time on the output node is the
+    // evidence that the render loop has actually produced cycles.
+    guard
+      audioEngine.isRunning,
+      audioEngine.outputNode.lastRenderTime?.isSampleTimeValid == true
+    else {
+      logger.warning("Dropping assistant audio: engine is not rendering IO cycles")
+      return
+    }
+
     guard let audioData = Data(base64Encoded: base64String) else {
       logger.error("Could not decode base64 string for audio playback")
       return
@@ -136,30 +149,28 @@ final class AudioPCMPlayer {
       return
     }
 
-    if audioEngine.isRunning {
-      if !hasActivePlayback || activeItemID != itemID {
-        hasActivePlayback = true
-        activeItemID = itemID
-        playbackStartSampleTime = currentSampleTime
-        scheduledFrameCount = 0
+    if !hasActivePlayback || activeItemID != itemID {
+      hasActivePlayback = true
+      activeItemID = itemID
+      playbackStartSampleTime = currentSampleTime
+      scheduledFrameCount = 0
+    }
+    scheduledFrameCount += AVAudioFramePosition(outPCMBuf.frameLength)
+    let generation = playbackGeneration
+    pendingBufferCount += 1
+    playerNode.scheduleBuffer(
+      outPCMBuf,
+      at: nil,
+      options: [],
+      completionCallbackType: .dataPlayedBack)
+    { [weak self] _ in
+      Task { @RealtimeActor [weak self] in
+        self?.didFinishBuffer(generation: generation)
       }
-      scheduledFrameCount += AVAudioFramePosition(outPCMBuf.frameLength)
-      let generation = playbackGeneration
-      pendingBufferCount += 1
-      playerNode.scheduleBuffer(
-        outPCMBuf,
-        at: nil,
-        options: [],
-        completionCallbackType: .dataPlayedBack)
-      { [weak self] _ in
-        Task { @RealtimeActor [weak self] in
-          self?.didFinishBuffer(generation: generation)
-        }
-      }
-      playerNode.play()
-      if playbackStartSampleTime == nil {
-        playbackStartSampleTime = currentSampleTime ?? 0
-      }
+    }
+    playerNode.play()
+    if playbackStartSampleTime == nil {
+      playbackStartSampleTime = currentSampleTime ?? 0
     }
   }
 

@@ -56,13 +56,13 @@ public struct HTTPRequest {
   }
 
   /// The URL for the request
-  var url: URL
+  public var url: URL
   /// The HTTP method for the request
-  var method: HTTPMethod
+  public var method: HTTPMethod
   /// The HTTP headers for the request
-  var headers: [String: String]
+  public var headers: [String: String]
   /// The body of the request, if any
-  var body: Data?
+  public var body: Data?
 }
 
 // MARK: - HTTPResponse
@@ -70,9 +70,9 @@ public struct HTTPRequest {
 /// Represents an HTTP response with platform-agnostic properties
 public struct HTTPResponse {
   /// The HTTP status code of the response
-  var statusCode: Int
+  public var statusCode: Int
   /// The HTTP headers in the response
-  var headers: [String: String]
+  public var headers: [String: String]
 
   public init(statusCode: Int, headers: [String: String]) {
     self.statusCode = statusCode

@@ -188,7 +188,7 @@ nonisolated private func isBuiltInHeadphonePort(deviceID: AudioDeviceID) -> Bool
     mElement: kAudioObjectPropertyElementMain)
 
   let err = withUnsafeMutablePointer(to: &deviceUID) { ptr -> OSStatus in
-    return AudioObjectGetPropertyData(
+    AudioObjectGetPropertyData(
       deviceID,
       &address,
       0,

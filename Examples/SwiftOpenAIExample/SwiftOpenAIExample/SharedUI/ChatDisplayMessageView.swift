@@ -18,17 +18,17 @@ struct ChatDisplayMessageView: View {
         case .content(let content):
           let text = content.compactMap { contentItem -> String? in
             if case .text(let text) = contentItem {
-              return text
+              text
             } else {
-              return nil
+              nil
             }
           }.first ?? ""
 
           let urls = content.compactMap { contentItem -> URL? in
             if case .imageUrl(let imageDetail) = contentItem {
-              return imageDetail.url
+              imageDetail.url
             } else {
-              return nil
+              nil
             }
           }
           VStack(alignment: .leading, spacing: 8) {

@@ -199,17 +199,17 @@ public struct ResponseModel: Decodable {
     let outputTextItems = output.compactMap { outputItem -> String? in
       switch outputItem {
       case .message(let message):
-        return message.content.compactMap { contentItem -> String? in
+        message.content.compactMap { contentItem -> String? in
           switch contentItem {
           case .outputText(let outputText):
-            return outputText.text
+            outputText.text
           case .refusal:
-            return nil
+            nil
           }
         }.joined()
 
       default:
-        return nil
+        nil
       }
     }
 

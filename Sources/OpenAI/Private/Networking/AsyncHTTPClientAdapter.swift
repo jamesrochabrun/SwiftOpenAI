@@ -66,23 +66,9 @@ public class AsyncHTTPClientAdapter: HTTPClient {
       statusCode: Int(response.status.code),
       headers: convertHeaders(response.headers))
 
-    let stream = AsyncThrowingStream<String, Error> { continuation in
-      Task {
-        do {
-          for try await byteBuffer in response.body {
-            if let string = byteBuffer.getString(at: 0, length: byteBuffer.readableBytes) {
-              let lines = string.split(separator: "\n", omittingEmptySubsequences: false)
-              for line in lines {
-                continuation.yield(String(line))
-              }
-            }
-          }
-          continuation.finish()
-        } catch {
-          continuation.finish(throwing: error)
-        }
-      }
-    }
+    // HTTP body chunks are arbitrary byte ranges, not lines or UTF-8 boundaries.
+    // Keep pending bytes until a delimiter arrives; use the buffer's readable region.
+    let stream = HTTPLineStream.lines(from: response.body.map { Array($0.readableBytesView) })
 
     return (.lines(stream), httpResponse)
   }

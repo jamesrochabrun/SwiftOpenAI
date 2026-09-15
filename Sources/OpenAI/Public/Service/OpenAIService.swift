@@ -1290,19 +1290,7 @@ extension OpenAIService {
     }
 
     guard response.statusCode == 200 else {
-      var errorMessage = "status code \(response.statusCode)"
-      do {
-        // For error responses, we need to get the raw data instead of using the stream
-        // as error responses are regular JSON, not streaming data
-        let (errorData, _) = try await httpClient.data(for: httpRequest)
-        let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
-        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
-      } catch {
-        // If decoding fails, keep the original error message with status code
-      }
-      throw APIError.responseUnsuccessful(
-        description: errorMessage,
-        statusCode: response.statusCode)
+      throw try await streamResponseError(from: byteStream, statusCode: response.statusCode)
     }
 
     // Create a stream from the lines
@@ -1312,58 +1300,47 @@ extension OpenAIService {
 
     return AsyncThrowingStream { continuation in
       let fetchTask = Task {
+        var eventData = [String]()
+        var firstLine = true
+        func emitEvent() throws -> Bool {
+          guard !eventData.isEmpty else { return false }
+          let payload = eventData.joined(separator: "\n")
+          eventData.removeAll(keepingCapacity: true)
+          if payload == "[DONE]" { return true }
+          let data = Data(payload.utf8)
+          #if DEBUG
+          if debugEnabled {
+            try print(
+              "DEBUG JSON STREAM EVENT = \(JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
+          }
+          #endif
+          let decoded = try self.decoder.decode(T.self, from: data)
+          if case .terminated = continuation.yield(decoded) { return true }
+          return false
+        }
         do {
-          for try await line in lineStream {
-            if
-              line.hasPrefix("data:"), line != "data: [DONE]",
-              let data = String(line.dropFirst(5)).data(using: .utf8)
-            {
-              #if DEBUG
-              if debugEnabled {
-                try print(
-                  "DEBUG JSON STREAM LINE = \(JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])")
-              }
-              #endif
-              do {
-                let decoded = try self.decoder.decode(T.self, from: data)
-                continuation.yield(decoded)
-              } catch DecodingError.keyNotFound(let key, let context) {
-                let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-                let codingPath = "codingPath: \(context.codingPath)"
-                let debugMessage = debug + codingPath
-                #if DEBUG
-                if debugEnabled {
-                  print(debugMessage)
-                }
-                #endif
-                throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
-              } catch {
-                #if DEBUG
-                if debugEnabled {
-                  debugPrint("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-                }
-                #endif
-                continuation.finish(throwing: error)
-              }
+          for try await rawLine in lineStream {
+            try Task.checkCancellation()
+            let line = firstLine && rawLine.hasPrefix("\u{FEFF}") ? String(rawLine.dropFirst()) : rawLine
+            firstLine = false
+            if line.isEmpty {
+              if try emitEvent() { break }
+            } else if line == "data" {
+              eventData.append("")
+            } else if line.hasPrefix("data:") {
+              let value = line.dropFirst(5)
+              eventData.append(String(value.first == " " ? value.dropFirst() : value))
             }
           }
+          try Task.checkCancellation()
+          // Preserve the existing behavior for a final event without a trailing blank line.
+          _ = try emitEvent()
           continuation.finish()
         } catch DecodingError.keyNotFound(let key, let context) {
           let debug = "Key '\(key.stringValue)' not found: \(context.debugDescription)"
-          let codingPath = "codingPath: \(context.codingPath)"
-          let debugMessage = debug + codingPath
-          #if DEBUG
-          if debugEnabled {
-            print(debugMessage)
-          }
-          #endif
-          throw APIError.dataCouldNotBeReadMissingData(description: debugMessage)
+          let message = debug + "codingPath: \(context.codingPath)"
+          continuation.finish(throwing: APIError.dataCouldNotBeReadMissingData(description: message))
         } catch {
-          #if DEBUG
-          if debugEnabled {
-            print("CONTINUATION ERROR DECODING \(error.localizedDescription)")
-          }
-          #endif
           continuation.finish(throwing: error)
         }
       }
@@ -1388,19 +1365,7 @@ extension OpenAIService {
     printHTTPResponse(response)
 
     guard response.statusCode == 200 else {
-      var errorMessage = "status code \(response.statusCode)"
-      do {
-        // For error responses, we need to get the raw data instead of using the stream
-        // as error responses are regular JSON, not streaming data
-        let (errorData, _) = try await httpClient.data(for: httpRequest)
-        let error = try decoder.decode(OpenAIErrorResponse.self, from: errorData)
-        errorMessage = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
-      } catch {
-        // If decoding fails, keep the original error message with status code
-      }
-      throw APIError.responseUnsuccessful(
-        description: errorMessage,
-        statusCode: response.statusCode)
+      throw try await streamResponseError(from: byteStream, statusCode: response.statusCode)
     }
 
     // Create a stream from the lines
@@ -1532,6 +1497,34 @@ extension OpenAIService {
         streamTask.cancel()
       }
     }
+  }
+
+  private func streamResponseError(from stream: HTTPByteStream, statusCode: Int) async throws -> APIError {
+    var message = "status code \(statusCode)"
+    do {
+      // Consume the failed response, never send the same POST again to obtain its body.
+      var data = Data()
+      switch stream {
+      case .lines(let lines):
+        for try await line in lines {
+          try Task.checkCancellation()
+          data.append(contentsOf: line.utf8)
+          data.append(0x0A)
+        }
+
+      case .bytes(let bytes):
+        for try await byte in bytes {
+          try Task.checkCancellation()
+          data.append(byte)
+        }
+      }
+      let error = try decoder.decode(OpenAIErrorResponse.self, from: data)
+      message = error.error.message ?? "NO ERROR MESSAGE PROVIDED"
+    } catch {
+      // Retain the HTTP status when the body cannot be read or decoded.
+    }
+    try Task.checkCancellation()
+    return .responseUnsuccessful(description: message, statusCode: statusCode)
   }
 
   // MARK: Debug Helpers

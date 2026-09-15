@@ -60,7 +60,7 @@ final class ResponseModelValidationTests: XCTestCase {
     XCTAssertEqual(responseModel.topP, 1.0)
     XCTAssertEqual(responseModel.truncation, "disabled")
     XCTAssertNil(responseModel.user)
-    XCTAssertTrue(responseModel.metadata.isEmpty)
+    XCTAssertEqual(responseModel.metadata, [:])
 
     // Validate usage
     XCTAssertNotNil(responseModel.usage)

@@ -1622,6 +1622,7 @@ OpenAI's most advanced interface for generating model responses. Supports text a
 - Support for reasoning summaries, web search, file search, and image generation events
 - **NEW**: Support for GPT-5 models (gpt-5, gpt-5-mini, gpt-5-nano)
 - **NEW**: Verbosity parameter for controlling response detail level
+- **NEW**: Support for GPT-6 models (gpt-6-astra, gpt-6.1-sol) and the Ultrafast service tier
 
 #### ModelResponseParameter
 
@@ -1641,15 +1642,31 @@ let parameters = ModelResponseParameter(
 let response = try await service.responseCreate(parameters)
 ```
 
-#### Available GPT-5 Models
+#### Available GPT-5 and GPT-6 Models
 
 ```swift
 public enum Model {
     case gpt5        // Complex reasoning, broad world knowledge, and code-heavy or multi-step agentic tasks
     case gpt5Mini    // Cost-optimized reasoning and chat; balances speed, cost, and capability
     case gpt5Nano    // High-throughput tasks, especially simple instruction-following or classification
+    case gpt6Astra   // Flagship model for complex reasoning and agentic tasks
+    case gpt61Sol    // Near-Astra intelligence at a fifth of the price; 1M+ token context window
     // ... other models
 }
+```
+
+#### Ultrafast Service Tier
+
+The [Ultrafast service tier](https://developers.openai.com/api/docs/guides/ultrafast-mode) offers up to 6x faster token generation at a premium price. It is available in the Responses API for `gpt-6-astra` (broadly available) and `gpt-5.6-sol` (preview access):
+
+```swift
+let parameters = ModelResponseParameter(
+    input: .text("Summarize this ticket in one sentence."),
+    model: .gpt6Astra,
+    serviceTier: ServiceTier.ultrafast.rawValue
+)
+
+let response = try await service.responseCreate(parameters)
 ```
 
 #### TextConfiguration with Verbosity

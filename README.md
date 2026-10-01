@@ -64,6 +64,7 @@ An open-source Swift package designed for effortless interaction with OpenAI's p
 - [Vector Stores](#vector-stores)
    - [Vector store File](#vector-store-file)
    - [Vector store File Batch](#vector-store-file-batch)
+- [Agents](#agents)
 
 ## Getting an API Key
 
@@ -4322,6 +4323,62 @@ let vectorStoreFiles = try await service.listVectorStoreFilesInABatch(vectorStor
 ```
 
 ⚠️ We currently support Only Assistants Beta 2. If you need support for Assistants V1, you can access it in the jroch-supported-branch-for-assistants-v1 branch or in the v2.3 release.. [Check OpenAI Documentation for details on migration.](https://platform.openai.com/docs/assistants/migration))
+
+### Agents
+
+The [Agents API](https://developers.openai.com/api/docs/guides/agents-api/quickstart) (public beta) gives access to the managed Codex harness: hosted execution, memory, tools, and multi-agent support, with OpenAI handling sessions, orchestration, context compaction and recovery. All requests are sent with the `OpenAI-Beta: agents=v1` header automatically.
+
+Create a session and stream its events:
+
+```swift
+let parameters = AgentSessionParameters(
+    agent: .init(
+        model: .gpt6Astra,
+        instructions: "Write clean code, run it, and report the actual output.",
+        tools: [.computerUse(includeScreenshots: true)]),
+    environment: .init(type: .openAIHosted, desktop: .init(enabled: true)),
+    input: "Create tree.py, a Python script that prints a readable tree of the files in the current directory. Run it and show me the output.")
+
+var sessionID: String?
+let stream = try await service.createAgentSessionStream(parameters)
+for try await event in stream {
+    if sessionID == nil { sessionID = event.sessionId }
+    switch event.kind {
+    case .turnOutputTextDone:
+        print(event.text ?? "")
+    case .turnCompleted:
+        print("Task finished")
+    case .requiresAction:
+        print("Pending approval: \(event.requestId ?? "")")
+    case .unknown(let type):
+        print("Unhandled event: \(type)")  // Full payload available in event.raw
+    default:
+        break
+    }
+}
+```
+
+Send follow-up input to an existing session (reopen the event stream first to capture all events):
+
+```swift
+let sessionID = "sess_abc123"
+let events = try await service.agentSessionEventStream(sessionID: sessionID)
+try await service.submitAgentSessionEvents(
+    sessionID: sessionID,
+    parameters: .init(events: [.message("Now add unit tests.")]))
+for try await event in events {
+    // Handle events as above.
+}
+```
+
+List the session's saved items and delete the session when done:
+
+```swift
+let items = try await service.listAgentSessionItems(sessionID: sessionID, limit: 100, order: "asc", after: nil)
+let deletion = try await service.deleteAgentSession(sessionID: sessionID)
+```
+
+⚠️ The Agents API is in public beta and OpenAI has not published the complete schemas. Response models decode the documented fields and keep the full payload in a `raw` member; unrecognized stream event types decode as `.unknown` instead of failing the stream. Use `.custom` tools and client events for shapes not yet modeled, such as MCP servers and approval responses.
 
 ## Anthropic
 

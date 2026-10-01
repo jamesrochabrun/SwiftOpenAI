@@ -643,6 +643,61 @@ struct LocalModelService: OpenAIService {
       "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
   }
 
+  // MARK: Agents (Beta)
+
+  func createAgentSession(
+    _: AgentSessionParameters)
+    async throws -> AgentSessionObject
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func createAgentSessionStream(
+    _: AgentSessionParameters)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func agentSessionEventStream(
+    sessionID _: String)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  @discardableResult
+  func submitAgentSessionEvents(
+    sessionID _: String,
+    parameters _: AgentSessionEventsParameter)
+    async throws -> OpenAIJSONValue
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func listAgentSessionItems(
+    sessionID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?)
+    async throws -> OpenAIResponse<AgentSessionItem>
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
+  func deleteAgentSession(
+    sessionID _: String)
+    async throws -> DeletionStatus
+  {
+    fatalError(
+      "Currently, this API is not supported. We welcome and encourage contributions to our open-source project. Please consider opening an issue or submitting a pull request to add support for this feature.")
+  }
+
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
   private let apiKey: Authorization
   /// Set this flag to TRUE if you need to print request events in DEBUG builds.

@@ -10,6 +10,7 @@ import Foundation
 // MARK: - OpenAIAPI
 
 enum OpenAIAPI {
+  case agent(AgentCategory) // https://developers.openai.com/api/docs/guides/agents-api/quickstart
   case assistant(AssistantCategory) // https://platform.openai.com/docs/api-reference/assistants
   case audio(AudioCategory) // https://platform.openai.com/docs/api-reference/audio
   case chat /// https://platform.openai.com/docs/api-reference/chat
@@ -35,6 +36,13 @@ enum OpenAIAPI {
   /// Conversations
   /// Create and manage conversations to store and retrieve conversation state across Response API calls.
   case conversantions(ConversationCategory) // https://platform.openai.com/docs/api-reference/conversations
+
+  enum AgentCategory {
+    case createSession
+    case session(sessionID: String)
+    case events(sessionID: String)
+    case items(sessionID: String)
+  }
 
   enum AssistantCategory {
     case create
@@ -191,6 +199,14 @@ extension OpenAIAPI: Endpoint {
       }
 
     switch self {
+    case .agent(let category):
+      switch category {
+      case .createSession: return "\(version)/agents/sessions"
+      case .session(let sessionID): return "\(version)/agents/sessions/\(sessionID)"
+      case .events(let sessionID): return "\(version)/agents/sessions/\(sessionID)/events"
+      case .items(let sessionID): return "\(version)/agents/sessions/\(sessionID)/items"
+      }
+
     case .assistant(let category):
       switch category {
       case .create, .list: return "\(version)/assistants"

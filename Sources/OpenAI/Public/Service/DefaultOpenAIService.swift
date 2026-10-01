@@ -1634,7 +1634,118 @@ struct DefaultOpenAIService: OpenAIService {
     return try await fetch(debugEnabled: debugEnabled, type: ConversationModel.self, with: request)
   }
 
+  // MARK: Agents (Beta)
+
+  func createAgentSession(
+    _ parameters: AgentSessionParameters)
+    async throws -> AgentSessionObject
+  {
+    var sessionParameters = parameters
+    sessionParameters.stream = false
+    let request = try OpenAIAPI.agent(.createSession).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: sessionParameters,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: AgentSessionObject.self, with: request)
+  }
+
+  func createAgentSessionStream(
+    _ parameters: AgentSessionParameters)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    var sessionParameters = parameters
+    sessionParameters.stream = true
+    let request = try OpenAIAPI.agent(.createSession).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: sessionParameters,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetchStream(debugEnabled: debugEnabled, type: AgentSessionStreamEvent.self, with: request)
+  }
+
+  func agentSessionEventStream(
+    sessionID: String)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    let request = try OpenAIAPI.agent(.events(sessionID: sessionID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .get,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetchStream(debugEnabled: debugEnabled, type: AgentSessionStreamEvent.self, with: request)
+  }
+
+  @discardableResult
+  func submitAgentSessionEvents(
+    sessionID: String,
+    parameters: AgentSessionEventsParameter)
+    async throws -> OpenAIJSONValue
+  {
+    let request = try OpenAIAPI.agent(.events(sessionID: sessionID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .post,
+      params: parameters,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: OpenAIJSONValue.self, with: request)
+  }
+
+  func listAgentSessionItems(
+    sessionID: String,
+    limit: Int?,
+    order: String?,
+    after: String?)
+    async throws -> OpenAIResponse<AgentSessionItem>
+  {
+    var queryItems = [URLQueryItem]()
+    if let limit {
+      queryItems.append(.init(name: "limit", value: "\(limit)"))
+    }
+    if let order {
+      queryItems.append(.init(name: "order", value: order))
+    }
+    if let after {
+      queryItems.append(.init(name: "after", value: after))
+    }
+    let request = try OpenAIAPI.agent(.items(sessionID: sessionID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .get,
+      queryItems: queryItems,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: OpenAIResponse<AgentSessionItem>.self, with: request)
+  }
+
+  func deleteAgentSession(
+    sessionID: String)
+    async throws -> DeletionStatus
+  {
+    let request = try OpenAIAPI.agent(.session(sessionID: sessionID)).request(
+      apiKey: apiKey,
+      openAIEnvironment: openAIEnvironment,
+      organizationID: organizationID,
+      method: .delete,
+      betaHeaderField: Self.agentsBetaV1,
+      extraHeaders: extraHeaders)
+    return try await fetch(debugEnabled: debugEnabled, type: DeletionStatus.self, with: request)
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
+
+  private static let agentsBetaV1 = "agents=v1"
 
   /// [authentication](https://platform.openai.com/docs/api-reference/authentication)
   private let apiKey: Authorization

@@ -1427,6 +1427,55 @@ struct AIProxyService: OpenAIService {
     fatalError("deleteConversationItem not implemented for AIProxy Service")
   }
 
+  // MARK: Agents (Beta)
+
+  func createAgentSession(
+    _: AgentSessionParameters)
+    async throws -> AgentSessionObject
+  {
+    fatalError("createAgentSession not implemented for AIProxy Service")
+  }
+
+  func createAgentSessionStream(
+    _: AgentSessionParameters)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    fatalError("createAgentSessionStream not implemented for AIProxy Service")
+  }
+
+  func agentSessionEventStream(
+    sessionID _: String)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+  {
+    fatalError("agentSessionEventStream not implemented for AIProxy Service")
+  }
+
+  @discardableResult
+  func submitAgentSessionEvents(
+    sessionID _: String,
+    parameters _: AgentSessionEventsParameter)
+    async throws -> OpenAIJSONValue
+  {
+    fatalError("submitAgentSessionEvents not implemented for AIProxy Service")
+  }
+
+  func listAgentSessionItems(
+    sessionID _: String,
+    limit _: Int?,
+    order _: String?,
+    after _: String?)
+    async throws -> OpenAIResponse<AgentSessionItem>
+  {
+    fatalError("listAgentSessionItems not implemented for AIProxy Service")
+  }
+
+  func deleteAgentSession(
+    sessionID _: String)
+    async throws -> DeletionStatus
+  {
+    fatalError("deleteAgentSession not implemented for AIProxy Service")
+  }
+
   private static let assistantsBetaV2 = "assistants=v2"
 
   /// Your partial key is provided during the integration process at dashboard.aiproxy.pro

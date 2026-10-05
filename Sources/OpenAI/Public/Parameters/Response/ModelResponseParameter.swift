@@ -165,8 +165,9 @@ public struct ModelResponseParameter: Codable {
   ///
   /// If set to 'auto', then the request will be processed with the service tier configured in the Project settings. Unless otherwise configured, the Project will use 'default'.
   /// If set to 'default', then the request will be processed with the standard pricing and performance for the selected model.
-  /// If set to 'flex' or 'priority', then the request will be processed with the corresponding service tier.
+  /// If set to 'flex', 'priority', or 'ultrafast', then the request will be processed with the corresponding service tier.
   /// When not set, the default behavior is 'auto'.
+  /// Use `ServiceTier` for the known values, e.g. `ServiceTier.ultrafast.rawValue`.
   /// When the service_tier parameter is set, the response body will include the service_tier value based on the processing mode actually used to serve the request. This response value may be different from the value set in the parameter.
   public var serviceTier: String?
 

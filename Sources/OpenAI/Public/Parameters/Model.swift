@@ -71,6 +71,19 @@ public enum Model {
 
   case gpt5Codex
 
+  /// GPT-5.6 Sol. Supports the Ultrafast service tier in the Responses API (preview access).
+  case gpt56Sol
+
+  /// ### GPT-6 family
+
+  /// OpenAI's flagship model for complex reasoning and agentic tasks.
+  /// Supports the Ultrafast service tier in the Responses API via `service_tier: "ultrafast"`.
+  case gpt6Astra
+  /// Major upgrade to GPT-6 Sol with exceptionally strong performance on agentic coding, computer use,
+  /// and professional work, delivering near-Astra intelligence at a fifth of Astra's token prices.
+  /// 1,050,000 token context window, 128,000 max output tokens.
+  case gpt61Sol
+
   /// Latest GA Realtime voice-agent model for low-latency speech-to-speech conversations.
   case gptRealtime21
   /// Smaller, lower-cost GPT-Realtime 2.1 variant.
@@ -123,6 +136,9 @@ public enum Model {
     case .gpt5Mini: "gpt-5-mini"
     case .gpt5Nano: "gpt-5-nano"
     case .gpt5Codex: "gpt-5-codex"
+    case .gpt56Sol: "gpt-5.6-sol"
+    case .gpt6Astra: "gpt-6-astra"
+    case .gpt61Sol: "gpt-6.1-sol"
     case .gptRealtime21: "gpt-realtime-2.1"
     case .gptRealtime21Mini: "gpt-realtime-2.1-mini"
     case .gptRealtime2: "gpt-realtime-2"

@@ -1106,6 +1106,80 @@ public protocol OpenAIService {
     conversationID: String,
     itemID: String)
     async throws -> ConversationModel
+
+  // MARK: - Agents (Beta)
+
+  /// Creates an agent session without streaming.
+  ///
+  /// The Agents API is in public beta; requests are sent with the `OpenAI-Beta: agents=v1` header.
+  ///
+  /// - Parameter parameters: The parameters needed to create the session, [AgentSessionParameters](https://developers.openai.com/api/docs/guides/agents-api/quickstart).
+  /// - Returns: An [AgentSessionObject](https://developers.openai.com/api/docs/guides/agents-api/quickstart).
+  /// - Throws: An APIError if the request fails.
+  func createAgentSession(
+    _ parameters: AgentSessionParameters)
+    async throws -> AgentSessionObject
+
+  /// Creates an agent session and streams its events.
+  ///
+  /// - Parameter parameters: The parameters needed to create the session.
+  /// - Returns: An AsyncThrowingStream of AgentSessionStreamEvent objects. Store the
+  ///   `sessionId` from the initial events to send follow-up input and manage the session.
+  /// - Throws: An APIError if the request fails.
+  func createAgentSessionStream(
+    _ parameters: AgentSessionParameters)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+
+  /// Reopens the event stream of an existing agent session.
+  ///
+  /// Reopen the stream before submitting new input to capture all events.
+  ///
+  /// - Parameter sessionID: The identifier of the session.
+  /// - Returns: An AsyncThrowingStream of AgentSessionStreamEvent objects.
+  /// - Throws: An APIError if the request fails.
+  func agentSessionEventStream(
+    sessionID: String)
+    async throws -> AsyncThrowingStream<AgentSessionStreamEvent, Error>
+
+  /// Submits client events to an agent session: follow-up messages, cancellations,
+  /// or approval responses.
+  ///
+  /// - Parameters:
+  ///   - sessionID: The identifier of the session.
+  ///   - parameters: The events to submit, [AgentSessionEventsParameter](https://developers.openai.com/api/docs/guides/agents-api/quickstart).
+  /// - Returns: The raw JSON payload returned by the API. The Agents API is in beta and
+  ///   OpenAI has not published this response's schema.
+  /// - Throws: An APIError if the request fails.
+  @discardableResult
+  func submitAgentSessionEvents(
+    sessionID: String,
+    parameters: AgentSessionEventsParameter)
+    async throws -> OpenAIJSONValue
+
+  /// Lists the items saved in an agent session: messages, tool call responses, and activity.
+  ///
+  /// - Parameters:
+  ///   - sessionID: The identifier of the session.
+  ///   - limit: A limit on the number of items to be returned.
+  ///   - order: Sort order of the items, `asc` or `desc`.
+  ///   - after: A cursor for use in pagination.
+  /// - Returns: An OpenAIResponse of AgentSessionItem objects.
+  /// - Throws: An APIError if the request fails.
+  func listAgentSessionItems(
+    sessionID: String,
+    limit: Int?,
+    order: String?,
+    after: String?)
+    async throws -> OpenAIResponse<AgentSessionItem>
+
+  /// Deletes an agent session.
+  ///
+  /// - Parameter sessionID: The identifier of the session to delete.
+  /// - Returns: A DeletionStatus.
+  /// - Throws: An APIError if the request fails.
+  func deleteAgentSession(
+    sessionID: String)
+    async throws -> DeletionStatus
 }
 
 extension OpenAIService {

@@ -281,8 +281,16 @@ public enum OutputItem: Decodable {
   public struct WebSearchToolCall: Decodable {
     /// Action taken in web search
     public struct Action: Decodable {
-      // Action properties will use AnyCodable for flexibility
-      // as different action types (search, open_page, find) have different structures
+      /// The action performed: search, open_page, or find_in_page.
+      public let type: String?
+      /// The search query returned by older responses.
+      public let query: String?
+      /// The search queries performed by the tool.
+      public let queries: [String]?
+      /// The URL opened or searched within.
+      public let url: String?
+      /// The pattern searched for within a page.
+      public let pattern: String?
     }
 
     /// An object describing the specific action taken in this web search call
@@ -487,9 +495,12 @@ public enum OutputItem: Decodable {
     public let status: String?
     /// The type of the image generation call. Always "image_generation_call"
     public let type: String
+    /// The output format used for generation: png, webp, or jpeg.
+    public let outputFormat: String?
 
     enum CodingKeys: String, CodingKey {
       case id, result, status, type
+      case outputFormat = "output_format"
     }
   }
 

@@ -49,15 +49,32 @@ public class URLSessionHTTPClientAdapter: HTTPClient {
       headers: convertHeaders(httpURLResponse.allHeaderFields))
 
     let stream = AsyncThrowingStream<String, Error> { continuation in
-      Task {
+      let producer = Task {
+        defer { asyncBytes.task.cancel() }
+        var decoder = HTTPLineDecoder()
+        var chunk = [UInt8]()
         do {
-          for try await line in asyncBytes.lines {
-            continuation.yield(line)
+          for try await byte in asyncBytes {
+            try Task.checkCancellation()
+            chunk.append(byte)
+            if byte == 0x0A || byte == 0x0D || chunk.count >= 16_384 {
+              for line in decoder.append(chunk) {
+                if case .terminated = continuation.yield(line) { return }
+              }
+              chunk.removeAll(keepingCapacity: true)
+            }
           }
+          try Task.checkCancellation()
+          for line in decoder.append(chunk) { continuation.yield(line) }
+          if let tail = decoder.finish() { continuation.yield(tail) }
           continuation.finish()
         } catch {
           continuation.finish(throwing: error)
         }
+      }
+      continuation.onTermination = { _ in
+        producer.cancel()
+        asyncBytes.task.cancel()
       }
     }
 

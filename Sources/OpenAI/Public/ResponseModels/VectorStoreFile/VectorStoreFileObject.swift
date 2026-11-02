@@ -23,4 +23,15 @@ public struct VectorStoreFileObject: Decodable {
   public let status: String
   /// The last error associated with this vector store file. Will be null if there are no errors.
   public let lastError: LastError?
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case object
+    case usageBytes = "usage_bytes"
+    case createdAt = "created_at"
+    case vectorStoreID = "vector_store_id"
+    case status
+    case lastError = "last_error"
+  }
+
 }
